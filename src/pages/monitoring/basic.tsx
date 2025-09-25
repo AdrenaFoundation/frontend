@@ -10,78 +10,72 @@ import FeesBarChart from '@/components/pages/global/Fees/FeesBarChart';
 import LpIntegrationChart from '@/components/pages/global/LpIntegration/LpIntegrationChart';
 import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenInterestChart';
 import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
-import TopProtocolsByFees from '@/components/pages/global/TopProtocolsByFees/TopProtocolsByFees';
 import { UnrealizedPnlChart } from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
 import UsersCohortsChart from '@/components/pages/global/UsersCohorts/UsersCohortsChart';
 import UtilizationChart from '@/components/pages/global/UtilizationChart/UtilizationChart';
 import VolumeBarChart from '@/components/pages/global/Volume/VolumeBarChart';
+import VelocityIndicator from '@/components/pages/monitoring/VelocityIndicator';
 import DataApiClient from '@/DataApiClient';
 import { PoolInfo } from '@/hooks/usePoolInfo';
+import useVelocityIndicators from '@/hooks/useVelocityIndicators';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 
 export default function BasicMonitoring({
   mainPool,
   isSmallScreen,
-  view
+  view,
 }: PageProps & {
   poolInfo: PoolInfo | null;
   isSmallScreen: boolean;
   view: string;
 }) {
-  const [allTimeTraders, setAllTimeTraders] = React.useState<number | null>(null);
+  const [allTimeTraders, setAllTimeTraders] = React.useState<number | null>(
+    null,
+  );
+  const [aprs, setAprs] = React.useState<{ lp: number; lm: number } | null>(
+    null,
+  );
 
-  const [aprs, setAprs] = React.useState<{
-    lp: number;
-    lm: number;
-  } | null>(null);
+  const velocityData = useVelocityIndicators();
 
-  const useSqrtScaleForVolumeAndFeeChart = useSelector((state) => state.settings.useSqrtScaleForVolumeAndFeeChart);
+  const useSqrtScaleForVolumeAndFeeChart = useSelector(
+    (state) => state.settings.useSqrtScaleForVolumeAndFeeChart,
+  );
 
   useEffect(() => {
     if (view !== 'lite') return;
 
-    DataApiClient.getRolling7DGlobalApr().then(
-      ({
-        lp_apr_rolling_seven_day,
-        lm_apr_rolling_seven_day,
-      }) => {
+    DataApiClient.getRolling7DGlobalApr()
+      .then(({ lp_apr_rolling_seven_day, lm_apr_rolling_seven_day }) => {
         setAprs({
           lp: lp_apr_rolling_seven_day,
           lm: lm_apr_rolling_seven_day,
         });
       })
-      .catch(() => {
-        // Ignore
-      });
+      .catch(() => { });
 
-    DataApiClient.getAllTimeTradersCount().then((count) => {
-      setAllTimeTraders(count);
-    })
-      .catch(() => {
-        // Ignore
-      });
+    DataApiClient.getAllTimeTradersCount()
+      .then((count) => {
+        setAllTimeTraders(count);
+      })
+      .catch(() => { });
 
     const interval = setInterval(() => {
-      DataApiClient.getRolling7DGlobalApr().then(
-        ({
-          lp_apr_rolling_seven_day,
-          lm_apr_rolling_seven_day,
-        }) => {
+      DataApiClient.getRolling7DGlobalApr()
+        .then(({ lp_apr_rolling_seven_day, lm_apr_rolling_seven_day }) => {
           setAprs({
             lp: lp_apr_rolling_seven_day,
             lm: lm_apr_rolling_seven_day,
           });
         })
-        .catch(() => {
-          // Ignore
-        });
+        .catch(() => { });
 
-      DataApiClient.getAllTimeTradersCount().then((count) => {
-        setAllTimeTraders(count);
-      }).catch(() => {
-        // Ignore
-      });
+      DataApiClient.getAllTimeTradersCount()
+        .then((count) => {
+          setAllTimeTraders(count);
+        })
+        .catch(() => { });
     }, 60000);
 
     return () => clearInterval(interval);
@@ -97,10 +91,22 @@ export default function BasicMonitoring({
               nb={mainPool.totalTradingVolume}
               format="currency"
               precision={0}
-              className='border-0 min-w-[12em]'
-              bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-              headerClassName='pb-2'
-              titleClassName='text-[0.7em] sm:text-[0.7em]'
+              className="border-0 min-w-[12em] text-center"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
+              headerClassName="pb-1 text-center"
+              titleClassName="text-[0.7em] sm:text-[0.7em] text-center"
+              footer={
+                <div className="flex justify-center">
+                  <VelocityIndicator
+                    dailyChange={velocityData['24h'].tradingVolumeChange}
+                    weeklyChange={velocityData['7d'].tradingVolumeChange}
+                    dailyTippyContent="Change over the last 24 hours"
+                    weeklyTippyContent="Change over the last 7 days"
+                    className="mt-1"
+                    format="currency"
+                  />
+                </div>
+              }
             />
 
             <NumberDisplay
@@ -108,21 +114,22 @@ export default function BasicMonitoring({
               nb={mainPool.totalLiquidationVolume}
               format="currency"
               precision={0}
-              className='border-0 min-w-[12em]'
-              bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-              headerClassName='pb-2'
-              titleClassName='text-[0.7em] sm:text-[0.7em]'
-            />
-
-            <NumberDisplay
-              title="TOTAL ALP VOLUME"
-              nb={mainPool.totalAddRemoveLiquidityVolume}
-              format="currency"
-              precision={0}
-              className='border-0 min-w-[12em]'
-              bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-              headerClassName='pb-2'
-              titleClassName='text-[0.7em] sm:text-[0.7em]'
+              className="border-0 min-w-[12em] text-center"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
+              headerClassName="pb-1 text-center"
+              titleClassName="text-[0.7em] sm:text-[0.7em] text-center"
+              footer={
+                <div className="flex justify-center">
+                  <VelocityIndicator
+                    dailyChange={velocityData['24h'].liquidationVolumeChange}
+                    weeklyChange={velocityData['7d'].liquidationVolumeChange}
+                    dailyTippyContent="Change over the last 24 hours"
+                    weeklyTippyContent="Change over the last 7 days"
+                    className="mt-1"
+                    format="currency"
+                  />
+                </div>
+              }
             />
 
             <NumberDisplay
@@ -130,10 +137,22 @@ export default function BasicMonitoring({
               nb={mainPool.totalFeeCollected}
               format="currency"
               precision={0}
-              className='border-0 min-w-[12em]'
-              bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-              headerClassName='pb-2'
-              titleClassName='text-[0.7em] sm:text-[0.7em]'
+              className="border-0 min-w-[12em] text-center"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
+              headerClassName="pb-1 text-center"
+              titleClassName="text-[0.7em] sm:text-[0.7em] text-center"
+              footer={
+                <div className="flex justify-center">
+                  <VelocityIndicator
+                    dailyChange={velocityData['24h'].totalFeesChange}
+                    weeklyChange={velocityData['7d'].totalFeesChange}
+                    dailyTippyContent="Change over the last 24 hours"
+                    weeklyTippyContent="Change over the last 7 days"
+                    className="mt-1"
+                    format="currency"
+                  />
+                </div>
+              }
             />
 
             <NumberDisplay
@@ -142,11 +161,23 @@ export default function BasicMonitoring({
               format="percentage"
               precision={2}
               isDecimalDimmed={false}
-              className='border-0 min-w-[10em]'
-              bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-              headerClassName='pb-2'
-              titleClassName='text-[0.85em] sm:text-[0.85em]'
-              tippyInfo='Average yield for ALP in the last 7 days'
+              className="border-0 min-w-[10em] text-center"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
+              headerClassName="pb-1 text-center"
+              titleClassName="text-[0.85em] sm:text-[0.85em] text-center"
+              tippyInfo="Average yield for ALP in the last 7 days"
+              footer={
+                <div className="flex justify-center">
+                  <VelocityIndicator
+                    dailyChange={velocityData['24h'].alpAprChange}
+                    weeklyChange={velocityData['7d'].alpAprChange}
+                    dailyTippyContent="Difference from yesterday's APR"
+                    weeklyTippyContent="Difference from last week's APR"
+                    className="mt-1"
+                    format="percentage"
+                  />
+                </div>
+              }
             />
 
             <NumberDisplay
@@ -155,65 +186,95 @@ export default function BasicMonitoring({
               format="percentage"
               precision={2}
               isDecimalDimmed={false}
-              className='border-0 min-w-[10em]'
-              bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-              headerClassName='pb-2'
-              titleClassName='text-[0.85em] sm:text-[0.85em]'
-              tippyInfo='Average yield for 540d staked ADX in the last 7 days'
+              className="border-0 min-w-[10em] text-center"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
+              headerClassName="pb-1 text-center"
+              titleClassName="text-[0.85em] sm:text-[0.85em] text-center"
+              tippyInfo="Average yield for 540d staked ADX in the last 7 days"
+              footer={
+                <div className="flex justify-center">
+                  <VelocityIndicator
+                    dailyChange={velocityData['24h'].adxAprChange}
+                    weeklyChange={velocityData['7d'].adxAprChange}
+                    dailyTippyContent="Difference from yesterday's APR"
+                    weeklyTippyContent="Difference from last week's APR"
+                    className="mt-1"
+                    format="percentage"
+                  />
+                </div>
+              }
             />
 
             <NumberDisplay
-              title="Traders"
+              title="Total Traders"
               nb={allTimeTraders ?? null}
               format="number"
               precision={0}
-              className='border-0 min-w-[8em]'
-              bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
-              headerClassName='pb-2'
-              titleClassName='text-[0.7em] sm:text-[0.7em]'
+              className="border-0 min-w-[8em] text-center"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
+              headerClassName="pb-1 text-center"
+              titleClassName="text-[0.7em] sm:text-[0.7em] text-center"
+              footer={
+                <div className="flex justify-center">
+                  <VelocityIndicator
+                    dailyChange={velocityData['24h'].newTraders}
+                    weeklyChange={velocityData['7d'].newTraders}
+                    dailyTippyContent="New traders in the last 24 hours"
+                    weeklyTippyContent="New traders in the last 7 days"
+                    className="mt-1"
+                    format="number"
+                  />
+                </div>
+              }
             />
           </div>
         </StyledContainer>
       )}
 
-      {
-        view === 'lite' ?
-          <StyledContainer className="flex gap-6">
-            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-              <AumChart />
-              <VolumeBarChart isSmallScreen={false} yAxisBarScale={useSqrtScaleForVolumeAndFeeChart ? 'sqrt' : 'linear'} />
-            </div>
+      {/* Rest of the charts remain the same */}
+      {view === 'lite' ? (
+        <StyledContainer className="flex gap-6">
+          <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+            <AumChart />
+            <VolumeBarChart
+              isSmallScreen={false}
+              yAxisBarScale={
+                useSqrtScaleForVolumeAndFeeChart ? 'sqrt' : 'linear'
+              }
+            />
+          </div>
 
-            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-              <UtilizationChart />
-              <FeesBarChart isSmallScreen={isSmallScreen} yAxisBarScale={useSqrtScaleForVolumeAndFeeChart ? 'sqrt' : 'linear'} />
-            </div>
+          <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+            <UtilizationChart />
+            <FeesBarChart
+              isSmallScreen={isSmallScreen}
+              yAxisBarScale={
+                useSqrtScaleForVolumeAndFeeChart ? 'sqrt' : 'linear'
+              }
+            />
+          </div>
 
-            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-              <OpenInterestChart isSmallScreen={isSmallScreen} />
-              <BorrowRateChart />
-            </div>
+          <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+            <OpenInterestChart isSmallScreen={isSmallScreen} />
+            <BorrowRateChart />
+          </div>
 
-            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-              <CompositionChart />
-              <UsersCohortsChart />
-            </div>
+          <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+            <CompositionChart />
+            <UsersCohortsChart />
+          </div>
 
-            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-              <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
-              <RealizedPnlChart isSmallScreen={isSmallScreen} />
-            </div>
+          <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+            <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
+            <RealizedPnlChart isSmallScreen={isSmallScreen} />
+          </div>
 
-            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-              <DefilamaProtocolFeesChart isSmallScreen={isSmallScreen} />
-              <TopProtocolsByFees />
-            </div>
-
-            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-              <LpIntegrationChart />
-            </div>
-          </StyledContainer >
-          : null}
-    </div >
+          <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+            <DefilamaProtocolFeesChart isSmallScreen={isSmallScreen} />
+            <LpIntegrationChart />
+          </div>
+        </StyledContainer>
+      ) : null}
+    </div>
   );
 }

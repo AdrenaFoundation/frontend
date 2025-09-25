@@ -522,12 +522,12 @@ export default function ClosePosition({
         <div className="flex gap-4 flex-col sm:flex-row">
           <div className="flex flex-col w-full sm:w-1/2">
             <div>
-              <p className="text-sm font-boldy mb-2">
+              <p className="text-sm font-semibold mb-2">
                 {activePercent && activePercent !== 1 ? 'Size to Partially Close' : 'Size to Close'}
               </p>
 
               <div className="flex flex-col gap-2">
-                <div className="flex flex-row items-center justify-between border bg-third rounded-lg p-3">
+                <div className="flex flex-row items-center justify-between border bg-third rounded-md p-3">
                   <InputNumber
                     value={customAmount ?? (activePercent === 1 ? calculatePercentage(1) ?? undefined : undefined)}
                     placeholder={
@@ -539,7 +539,7 @@ export default function ClosePosition({
                     min={0.01}
                   />
 
-                  <p className="font-boldy opacity-50 cursor-default">USD</p>
+                  <p className="font-semibold opacity-50 cursor-default">USD</p>
                 </div>
 
                 <div className="flex flex-row gap-3 w-full">
@@ -551,7 +551,7 @@ export default function ClosePosition({
                         variant="secondary"
                         rounded={false}
                         className={twMerge(
-                          'flex-grow text-xs bg-third border border-bcolor text-opacity-50 hover:text-opacity-100 hover:border-white/10 rounded-lg flex-1 font-mono',
+                          'flex-grow text-xs bg-third border border-bcolor text-opacity-50 hover:text-opacity-100 hover:border-white/10 rounded-md flex-1 font-mono',
                           percent / 100 === activePercent &&
                           'border-white/10 text-opacity-100',
                         )}
@@ -586,7 +586,7 @@ export default function ClosePosition({
 
             <div className="my-3">
               <div className="flex items-center justify-between mb-2">
-                <p className="font-boldy text-sm">Receive</p>
+                <p className="font-semibold text-sm">Receive</p>
                 {isCalculating ? (
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-txtfade">
@@ -596,7 +596,7 @@ export default function ClosePosition({
                   </div>
                 ) : null}
               </div>
-              <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-lg p-4 py-2.5">
+              <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-md p-4 py-2.5">
                 <div className="flex flex-col">
                   <FormatNumber
                     nb={
@@ -636,7 +636,7 @@ export default function ClosePosition({
                     <Image src={chevronDownIcon} alt="chevron down" />
                   </div>
 
-                  <div className="font-archivo">
+                  <div className="font-regular">
                     {redeemToken.symbol ?? '-'}
                   </div>
 
@@ -744,11 +744,11 @@ export default function ClosePosition({
 
           <div className="flex flex-col w-full sm:w-1/2">
             <div>
-              <div className="text-white text-sm mb-1 font-boldy">
+              <div className="text-white text-sm mb-1 font-semibold">
                 Close {formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position
               </div>
 
-              <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg my-3">
+              <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-md my-3">
                 <div className="w-full flex justify-between">
                   <div className="flex gap-2 items-center">
                     <Image
@@ -808,7 +808,7 @@ export default function ClosePosition({
                 </div>
               </div>
 
-              <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg mt-4">
+              <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-md mt-4">
                 <ValueDisplay
                   label="Size"
                   value={position.sizeUsd}
@@ -901,7 +901,7 @@ export default function ClosePosition({
 
             <div className="pt-4 pb-2">
               <div className="flex justify-between items-center">
-                <div className="text-white text-sm font-boldy">Fees</div>
+                <div className="text-white text-sm font-semibold">Fees</div>
 
                 <button
                   className="text-txtfade text-xs underline pr-2"
@@ -912,13 +912,13 @@ export default function ClosePosition({
               </div>
 
               {showFees && (
-                <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg mt-2">
+                <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-md mt-2">
                   <div className={rowStyle}>
                     <div className="flex items-center text-sm text-txtfade">
                       Exit Fees
                       <Tippy
                         content={
-                          <p className="font-medium">
+                          <p className="font-regular">
                             Open fees are 0 bps, while close fees are 16 bps.
                             This average to 8bps entry and close fees, but allow
                             for opening exactly the requested position size.
@@ -950,7 +950,7 @@ export default function ClosePosition({
                       Borrow Fees
                       <Tippy
                         content={
-                          <p className="font-medium">
+                          <p className="font-regular">
                             Total of fees accruing continuously while the
                             leveraged position is open, to pay interest rate on
                             the borrowed assets from the Liquidity Pool.
@@ -1027,7 +1027,7 @@ export default function ClosePosition({
             size="lg"
             variant="primary"
             title={
-              <span className="text-main text-base font-boldy">
+              <span className="text-main text-base font-semibold">
                 {(activePercent !== null && activePercent < 0.01) ? 'Cannot close less than 1%' : `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`}
               </span>
             }

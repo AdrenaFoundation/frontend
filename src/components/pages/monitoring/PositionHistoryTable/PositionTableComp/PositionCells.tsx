@@ -27,7 +27,7 @@ export const TokenCell = ({
         height={16}
         className="w-3 h-3"
       />
-      <p className="text-sm font-interSemibold opacity-90">{symbol}</p>
+      <p className="text-sm font-semibold opacity-90">{symbol}</p>
       {isLiquidated ? (
         <div className="absolute left-0 top-0 h-full w-[0.0625rem] bg-orange" />
       ) : null}
@@ -178,7 +178,7 @@ export const BottomBar = ({
             // handle toggle in parent div
           }}
         />
-        <p className="text-sm font-interMedium opacity-50">PnL w/o fees</p>
+        <p className="text-sm opacity-50">PnL w/o fees</p>
       </div>
 
       <div
@@ -192,7 +192,7 @@ export const BottomBar = ({
             // handle toggle in parent div
           }}
         />
-        <p className="text-sm font-interMedium opacity-50">Native</p>
+        <p className="text-sm opacity-50">Native</p>
       </div>
 
       <div

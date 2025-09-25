@@ -56,7 +56,7 @@ export default function StakeAnimation({ isADX = false }: { isADX?: boolean }) {
     <div className="flex flex-col md:flex-row gap-[30px] justify-between items-center mb-[200px]">
       <div className="w-full">
         <div className="max-w-[600px] md:ml-auto">
-          <div className="flex flex-row gap-3 lg:gap-6 p-3 rounded-lg mb-[50px]">
+          <div className="flex flex-row gap-3 lg:gap-6 p-3 rounded-md mb-[50px]">
             <div className="opacity-50">
               <Image
                 src={walletIcon}

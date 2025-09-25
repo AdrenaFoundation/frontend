@@ -49,7 +49,7 @@ export default function ALPHeader() {
           />
 
           <div className="flex flex-row items-center gap-4">
-            <h1 className="font-interBold text-[1.5rem] sm:text-4xl">ALP</h1>
+            <h1 className="font-bold text-[1.5rem] sm:text-4xl">ALP</h1>
           </div>
         </div>
 
@@ -85,12 +85,12 @@ export default function ALPHeader() {
           format="percentage"
           suffix="APR"
           precision={0}
-          suffixClassName="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
-          className="font-interBold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+          suffixClassName="font-bold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+          className="font-bold text-[1rem] sm:text-[1.5rem] bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
           isDecimalDimmed
         />
         {tokenPriceALP != null ? (
-          <span className="text-xl font-boldy">
+          <span className="text-xl font-semibold">
             ${tokenPriceALP.toFixed(4)}
           </span>
         ) : null}

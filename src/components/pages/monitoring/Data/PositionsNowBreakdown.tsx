@@ -15,7 +15,7 @@ export default function PositionsNowBreakdown({
   titleClassName?: string;
 }) {
   return (
-    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+    <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
 
       <div className="flex flex-row items-center gap-2 w-full border-b p-3">
         <p className={titleClassName}>Live Positions Open Interest</p>
@@ -28,7 +28,7 @@ export default function PositionsNowBreakdown({
           .filter((c) => !c.isStable)
           .map((custody, i) => {
             return (
-              <div key={custody.pubkey.toBase58()} className={twMerge('flex-1 border rounded-xl lg:rounded-none lg:border-0 pl-5 pt-3 pr-3 pb-3',
+              <div key={custody.pubkey.toBase58()} className={twMerge('flex-1 border rounded-md lg:rounded-none lg:border-0 pl-5 pt-3 pr-3 pb-3',
                 i !== 0 ? 'lg:border-l' : '',
                 i !== 2 ? 'lg:pr-0' : ''
               )}>

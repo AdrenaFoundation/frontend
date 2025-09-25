@@ -202,7 +202,7 @@ export default function Table({
   const defaultBlockComponent = (item: TableRowType, index: number) => (
     <div
       key={`block-${index}`}
-      className={twMerge("p-4 bg-main border border-inputcolor rounded-lg hover:bg-third transition-colors",
+      className={twMerge("p-4 bg-main border border-inputcolor rounded-md hover:bg-third transition-colors",
         onRowClick ? 'cursor-pointer' : '',
       )}
       onClick={() => { if (onRowClick) onRowClick(item.id as string | number); }}
@@ -212,7 +212,7 @@ export default function Table({
           const key = header.key ?? header.title;
           return (
             <div key={key} className="flex flex-col">
-              <span className="text-xs sm:text-sm text-white/50 font-interMedium">
+              <span className="text-xs sm:text-sm text-white/50 font-regular">
                 {header.title}
               </span>
               <div className="mt-1">{item[key]}</div>
@@ -231,7 +231,7 @@ export default function Table({
         <button
           onClick={() => onViewModeChange('table')}
           className={twMerge(
-            'font-interMedium px-3 py-0.5 text-xs sm:text-sm rounded transition-colors',
+            'px-3 py-0.5 text-xs sm:text-sm rounded transition-colors',
             viewMode === 'table'
               ? 'bg-white text-black'
               : 'text-white/70 hover:text-white',
@@ -242,7 +242,7 @@ export default function Table({
         <button
           onClick={() => onViewModeChange('block')}
           className={twMerge(
-            'font-interMedium px-3 py-0.5 text-xs sm:text-sm rounded transition-colors',
+            'px-3 py-0.5 text-xs sm:text-sm rounded transition-colors',
             viewMode === 'block'
               ? 'bg-white text-black'
               : 'text-white/70 hover:text-white',
@@ -261,14 +261,14 @@ export default function Table({
       <>
         <div
           className={twMerge(
-            'relative rounded-xl border border-inputcolor bg-secondary overflow-hidden',
+            'relative rounded-md border border-inputcolor bg-secondary overflow-hidden',
             className,
           )}
         >
           {/* View toggle header */}
           {onViewModeChange && (
             <div className="flex justify-between items-center p-2 px-3 bg-secondary border-b border-bcolor">
-              <div className="text-lg font-interMedium">{title}</div>
+              <div className="text-lg font-regular">{title}</div>
               <ViewToggle />
             </div>
           )}
@@ -315,14 +315,14 @@ export default function Table({
     <>
       <div
         className={twMerge(
-          'relative rounded-xl border border-inputcolor bg-secondary overflow-hidden',
+          'relative rounded-md border border-inputcolor bg-secondary overflow-hidden',
           className,
         )}
       >
         {/* View toggle header for table view */}
         {onViewModeChange && (
           <div className="flex justify-between items-center p-2 px-3 bg-secondary border-b border-bcolor">
-            <div className="text-lg font-interMedium">{title}</div>
+            <div className="text-lg font-regular">{title}</div>
             <ViewToggle />
           </div>
         )}
@@ -380,7 +380,7 @@ export default function Table({
                             order={sortDirection}
                           />
                         ) : null}
-                        <span className="text-xs sm:text-sm font-interMedium opacity-50 group-hover:opacity-100 transition-opacity duration-300">
+                        <span className="text-xs sm:text-sm opacity-50 group-hover:opacity-100 transition-opacity duration-300">
                           {header.title}
                         </span>
                         {header.isSortable && header.align === 'left' ? (

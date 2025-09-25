@@ -80,7 +80,7 @@ export default function SearchUserProfiles({
               <div className="p-4 pb-0 border-bcolor">
                 <div className="relative">
                   <InputString
-                    className="w-full pl-8 pr-4 py-2 bg-inputcolor border border-white/20 rounded-lg !text-sm font-mono"
+                    className="w-full pl-8 pr-4 py-2 bg-inputcolor border border-white/20 rounded-md !text-sm font-mono"
                     placeholder="Search by username or wallet address..."
                     value={searchQuery}
                     onChange={(value) => setSearchQuery(value || '')}
@@ -103,7 +103,7 @@ export default function SearchUserProfiles({
                     className="flex flex-col items-center justify-center h-full text-center p-4 pb-10"
                   >
                     <div className="text-6xl mb-2">🔍</div>
-                    <h3 className="text-lg font-boldy mb-2">
+                    <h3 className="text-lg font-semibold mb-2">
                       Search for Traders
                     </h3>
                     <p className="text-sm opacity-70">
@@ -117,7 +117,7 @@ export default function SearchUserProfiles({
                     className="flex flex-col items-center justify-center h-full text-center p-4 pb-10"
                   >
                     <div className="text-6xl mb-2">😔</div>
-                    <h3 className="text-lg font-boldy mb-2">
+                    <h3 className="text-lg font-semibold mb-2">
                       No Results Found
                     </h3>
                     <p className="text-sm opacity-70">
@@ -140,10 +140,10 @@ export default function SearchUserProfiles({
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
                             className={twMerge(
-                              'flex items-center gap-3 p-2 px-4 rounded-lg border border-bcolor hover:border-white/10 cursor-pointer transition-all duration-200',
+                              'flex items-center gap-3 p-2 px-4 rounded-md border border-bcolor hover:border-white/10 cursor-pointer transition-all duration-200',
                               'hover:bg-third/50 group',
                               loadingProfile === user.owner.toBase58() &&
-                                'opacity-50 pointer-events-none',
+                              'opacity-50 pointer-events-none',
                             )}
                             onClick={() =>
                               setSelectedProfile(user as UserProfileExtended)
@@ -153,7 +153,7 @@ export default function SearchUserProfiles({
                               <Image
                                 src={
                                   PROFILE_PICTURES[
-                                    user.profilePicture as keyof typeof PROFILE_PICTURES
+                                  user.profilePicture as keyof typeof PROFILE_PICTURES
                                   ] || PROFILE_PICTURES[0]
                                 }
                                 alt="Profile"
@@ -170,7 +170,7 @@ export default function SearchUserProfiles({
 
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <h4 className="font-boldy text-base truncate group-hover:text-blue transition-colors duration-200">
+                                <h4 className="font-semibold text-base truncate group-hover:text-blue transition-colors duration-200">
                                   {user.nickname}
                                 </h4>
                               </div>

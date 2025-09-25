@@ -26,7 +26,7 @@ export default function LiquidStakeSection({
             <div className="h-[1px] bg-bcolor w-full my-5" />
             <div className="px-5">
                 <h3 className="text-lg font-semibold mb-2">Liquid stake</h3>
-                <div className="flex flex-col sm:flex-row justify-between items-center border p-3 bg-secondary rounded-xl mt-3 shadow-lg">
+                <div className="flex flex-col sm:flex-row justify-between items-center border p-3 bg-secondary rounded-md mt-3 shadow-lg">
                     <div className="flex items-center">
                         <Image
                             src={adxTokenLogo}
@@ -43,7 +43,7 @@ export default function LiquidStakeSection({
 
                     <div className="flex gap-2 mt-4 sm:mt-0 flex-col sm:flex-row w-full sm:w-auto">
                         <Button
-                            variant="outline"
+                            variant="primary"
                             size="sm"
                             title="Unstake"
                             className={twMerge(
@@ -56,7 +56,7 @@ export default function LiquidStakeSection({
                         />
 
                         <Button
-                            variant="primary"
+                            variant="danger"
                             size="sm"
                             title={
                                 totalLiquidStaked && totalLiquidStaked > 0

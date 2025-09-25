@@ -110,15 +110,15 @@ export default function QuestMenu({
                     setIsOpen(!isOpen);
                 }} />
 
-                <div className="p-3 z-10 -translate-x-3 rounded-lg">
-                    <p className="font-archivoblack uppercase bg-[#8DC52E]/70 px-1 mb-2 text-white w-fit">
+                <div className="p-3 z-10 -translate-x-3 rounded-md">
+                    <p className="font-bold uppercase bg-[#8DC52E]/70 px-1 mb-2 text-white w-fit">
                         Season 1: Expanse
                     </p>
 
-                    <p className="font-archivoblack text-lg uppercase animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#8DC52E,40%,#FFFA5D,60%,#8DC52E)]">
+                    <p className="font-bold text-lg uppercase animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#8DC52E,40%,#FFFA5D,60%,#8DC52E)]">
                         COMPLETE QUESTS TO ASCEND
                     </p>
-                    <p className="font-archivoblack text-xxs animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#fff,40%,#888,60%,#fff)]">
+                    <p className="font-bold text-xxs animate-text-shimmer bg-clip-text text-transparent bg-[length:300%_100%] bg-[linear-gradient(110deg,#fff,40%,#888,60%,#fff)]">
                         * Only positions opened and closed within the periods count
                     </p>
                 </div>
@@ -126,7 +126,7 @@ export default function QuestMenu({
 
             {!inSeason ?
                 <div className="absolute top-[calc(50%-1em)] z-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <p className="font-boldy tracking-wider text-center text-base opacity-40">
+                    <p className="font-semibold tracking-wider text-center text-base opacity-40">
                         Starts in
                     </p>
 
@@ -285,7 +285,7 @@ export default function QuestMenu({
 
                         <p
                             className={twMerge(
-                                'absolute top-[5em] left-[8em] bg-red px-2 font-archivoblack uppercase',
+                                'absolute top-[5em] left-[8em] bg-red px-2 font-bold uppercase',
                                 isMobile && 'top-[5em] left-[4em] text-[0.55em]',
                             )}
                         >
@@ -298,7 +298,7 @@ export default function QuestMenu({
                     <motion.div
                         key="open-state"
                         ref={ref}
-                        className="fixed flex flex-col items-center rounded-lg overflow-hidden border shadow-2xl z-30"
+                        className="fixed flex flex-col items-center rounded-md overflow-hidden border shadow-2xl z-30"
                         initial={{
                             left: 0,
                             bottom: 0,

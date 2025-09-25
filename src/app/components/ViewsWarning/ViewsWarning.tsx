@@ -36,7 +36,7 @@ export default function ViewsWarning() {
                 >
                     <div className="flex flex-row items-center gap-2">
                         <Image src={infoIcon} alt="Warning" width={14} height={14} />
-                        <p className="text-sm font-interSemibold max-w-[300px] sm:max-w-max text-center">
+                        <p className="text-sm font-semibold max-w-[300px] sm:max-w-max text-center">
                             {msg.message}
                         </p>
                     </div>
@@ -58,7 +58,7 @@ export default function ViewsWarning() {
                 <div className="flex flex-row items-center justify-center gap-3 p-1 bg-amber-700 w-full z-20 border-b border-b-white/20">
                     <div className="flex flex-row items-center gap-2">
                         <Image src={infoIcon} alt="Warning" width={14} height={14} />
-                        <p className="text-sm font-interSemibold max-w-[300px] sm:max-w-max text-center">
+                        <p className="text-sm font-semibold max-w-[300px] sm:max-w-max text-center">
                             You need at least{' '}
                             <FormatNumber nb={0.001} precision={3} isDecimalDimmed={false} />{' '}
                             SOL to interact with the app

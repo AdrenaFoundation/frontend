@@ -22,12 +22,12 @@ export default function MutationComp({
                 <div className="flex flex-col gap-1">
                     {mutation.name && (
                         <div className='flex gap-1'>
-                            <div className="text-[0.8em] font-boldy">
+                            <div className="text-[0.8em] font-semibold">
                                 {mutation.name}
                             </div>
 
                             <div className="flex items-center gap-1 flex-shrink-0">
-                                <span className="font-boldy text-xs text-[#e47dbb]">
+                                <span className="font-semibold text-xs text-[#e47dbb]">
                                     {mutation.calculationType === "per_increment" ? (
                                         <>+{formatNumber(mutation.points, 3)} - {formatNumber(mutation.maxPoints, 3)}  mutagen</>
                                     ) : (

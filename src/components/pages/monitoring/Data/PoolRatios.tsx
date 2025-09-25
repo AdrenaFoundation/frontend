@@ -11,7 +11,7 @@ export default function PoolRatios({
   titleClassName?: string;
 }) {
   return (
-    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+    <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
         <p className={titleClassName}>Pool Ratios</p>
       </div>
@@ -60,7 +60,7 @@ export default function PoolRatios({
                       height="24"
                     />
 
-                    <p className="text-lg font-boldy">{token.symbol}</p>
+                    <p className="text-lg font-semibold">{token.symbol}</p>
                   </div>
                   <div
                     className={twMerge(
@@ -68,7 +68,7 @@ export default function PoolRatios({
                     )}
                     key={i}
                   >
-                    <div className="bg-third rounded-lg h-3 w-full relative overflow-visible">
+                    <div className="bg-third rounded-md h-3 w-full relative overflow-visible">
                       <div className="absolute left-0 -bottom-8 font-mono text-sm text-gray-500">
                         Min: {minRatio}%
                       </div>
@@ -105,11 +105,11 @@ export default function PoolRatios({
                         )}
                       >
                         {currentRatio < minRatio ? (
-                          <div className="mr-1 font-boldy">{'<<<'}</div>
+                          <div className="mr-1 font-semibold">{'<<<'}</div>
                         ) : null}
                         Current Ratio: {currentRatio}%
                         {currentRatio > maxRatio ? (
-                          <div className="ml-1 font-boldy">{'>>>'}</div>
+                          <div className="ml-1 font-semibold">{'>>>'}</div>
                         ) : null}
                       </div>
 

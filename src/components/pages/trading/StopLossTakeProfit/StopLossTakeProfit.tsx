@@ -186,7 +186,7 @@ export default function StopLossTakeProfit({
     >
       <div className="px-6 sm:px-3 w-full">
 
-        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg mb-3 w-full">
+        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-md mb-3 w-full">
           <div className="w-full flex justify-between">
             <div className="flex gap-2 items-center">
               <Image
@@ -247,7 +247,7 @@ export default function StopLossTakeProfit({
 
         </div>
 
-        <div className="flex-col items-center justify-center text-sm w-full bg-[#040D14] rounded-lg border p-3 py-2.5">
+        <div className="flex-col items-center justify-center text-sm w-full bg-[#040D14] rounded-md border p-3 py-2.5">
 
           <div className="flex w-full justify-between items-center">
             <span className="text-sm text-txtfade">Net Value</span>
@@ -273,7 +273,7 @@ export default function StopLossTakeProfit({
             </div>
             <div
               className={twMerge(
-                'font-bold text-sm',
+                'text-sm',
                 positionNetPnl > 0
                   ? 'text-green'
                   : positionNetPnl < 0
@@ -288,7 +288,7 @@ export default function StopLossTakeProfit({
                 format="currency"
                 precision={2}
                 className={twMerge(
-                  'font-bold text-sm',
+                  'text-sm',
                   positionNetPnl > 0
                     ? 'text-green'
                     : positionNetPnl < 0
@@ -324,7 +324,7 @@ export default function StopLossTakeProfit({
 
       <div className="w-full mt-0 gap-4 flex flex-col sm:flex-row p-4 border-t">
         <Button
-          className="font-boldy w-full"
+          className="font-semibold w-full"
           size="lg"
           title="Cancel"
           variant="outline"
@@ -332,7 +332,7 @@ export default function StopLossTakeProfit({
         />
 
         <Button
-          className="font-boldy w-full"
+          className="font-semibold w-full"
           size="lg"
           title="Confirm"
           disabled={stopLossError || takeProfitError}

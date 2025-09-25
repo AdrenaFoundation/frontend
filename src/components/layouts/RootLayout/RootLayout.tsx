@@ -207,7 +207,7 @@ export default function RootLayout({
       )}
       <ViewsWarning />
 
-      <div className="w-full grow flex justify-center sm:pb-10">
+      <div className="w-full grow flex justify-center sm:pb-[2em]">
         <div
           className={twMerge(
             'w-full flex flex-col max-w-[200em]',

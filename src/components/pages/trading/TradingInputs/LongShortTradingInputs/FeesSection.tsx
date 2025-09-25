@@ -49,7 +49,7 @@ export const FeesSection = ({
                 <span className="ml-1">
                     <Tippy
                         content={
-                            <p className="font-medium text-txtfade">
+                            <p className="text-txtfade">
                                 0 BPS entry fees - 14 BPS exit fees{newPositionInfo && newPositionInfo.swapFeeUsd ? ' - dynamic swap fees' : ''}. 🎊 NO SIZE FEES! 🎊
                             </p>
                         }
@@ -147,7 +147,7 @@ export const FeesSection = ({
 
                             {newPositionInfo.highSwapFees && (
                                 <Tippy content={highSwapFeeTippyContent}>
-                                    <div className='text-xs text-orange font-boldy underline-dashed'>
+                                    <div className='text-xs text-orange font-semibold underline-dashed'>
                                         warning: high swap fees
                                     </div>
                                 </Tippy>
@@ -171,7 +171,7 @@ export const FeesSection = ({
                         </AutoScalableDiv>
                     ) : (
                         <div className="flex h-full justify-center items-center">
-                            <div className="w-40 h-4 bg-gray-800 rounded-xl" />
+                            <div className="w-40 h-4 bg-gray-800 rounded-md" />
                         </div>
                     )}
                 </StyledSubSubContainer>

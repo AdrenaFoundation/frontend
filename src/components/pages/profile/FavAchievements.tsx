@@ -39,7 +39,7 @@ export default function FavAchievements({
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3, delay: i * 0.05 }}
                       className={twMerge(
-                        'bg-[#050D14] animate-loader rounded-lg w-[8rem] h-[9.5rem] md:w-[6.5rem] md:h-[9rem] border border-white/10 scale-[0.6] lg:scale-[0.8] lg:w-[9rem] lg:h-[11rem]',
+                        'bg-[#050D14] animate-loader rounded-md w-[8rem] h-[9.5rem] md:w-[6.5rem] md:h-[9rem] border border-white/10 scale-[0.6] lg:scale-[0.8] lg:w-[9rem] lg:h-[11rem]',
                         i === 0 ? 'rotate-[-30deg] relative top-6 left-4' : '',
                         i === 2 ? 'rotate-[20deg] relative top-6' : '',
                       )}

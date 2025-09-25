@@ -144,7 +144,7 @@ export default function MutagenLeaderboardInterseason3({
     const renderProgressMessage = useCallback((isMobile: boolean = false) => {
         if (!userRow || !sortedTraders) return null;
 
-        const messageClass = "text-sm font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]";
+        const messageClass = "text-sm font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]";
 
         if (userRow.rank === 1) {
             return (
@@ -178,7 +178,7 @@ export default function MutagenLeaderboardInterseason3({
         return (
             <div
                 className={twMerge(`
-                    relative flex flex-col gap-2 px-4 rounded-2xl
+                    relative flex flex-col gap-2 px-4 rounded-md
                     max-w-3xl mx-auto mb-6 ${marginTop} ml-2 mr-2 md:ml-auto md:mr-auto
                     bg-gradient-to-br from-mutagenDark/40 to-mutagenBg/80
                     border border-mutagen/40
@@ -203,33 +203,33 @@ export default function MutagenLeaderboardInterseason3({
                 {renderProfilePicture('lg')}
 
                 <div className="flex flex-col items-center">
-                    <span className="font-boldy text-white text-xl sm:text-2xl truncate text-center">
+                    <span className="font-semibold text-white text-xl sm:text-2xl truncate text-center">
                         {userRow.nickname}
                     </span>
 
                     {userRow.title !== null && (
-                        <span className="text-sm font-boldy text-txtfade opacity-70 truncate text-center">
+                        <span className="text-sm font-semibold text-txtfade opacity-70 truncate text-center">
                             &quot;{USER_PROFILE_TITLES[userRow.title]}&quot;
                         </span>
                     )}
                 </div>
 
                 <div className="flex items-center gap-1 mt-2">
-                    <span className="font-boldy text-white text-sm">Rank:</span>
-                    <span className="text-base font-boldy text-white bg-mutagen/40 px-3 py-1 rounded-full shadow">
+                    <span className="font-semibold text-white text-sm">Rank:</span>
+                    <span className="text-base font-semibold text-white bg-mutagen/40 px-3 py-1 rounded-full shadow">
                         #{userRow.rank}
                     </span>
                 </div>
 
                 <div className="flex items-center gap-1 mt-2">
-                    <span className="font-boldy text-white text-sm">Mutagen (Trading):</span>
-                    <span className="text-sm font-boldy text-mutagen">
+                    <span className="font-semibold text-white text-sm">Mutagen (Trading):</span>
+                    <span className="text-sm font-semibold text-mutagen">
                         {formatNumber(userRow.pointsTrading, 2, 0)}
                     </span>
                 </div>
 
                 <div className="flex items-center gap-1 mt-2">
-                    <span className="font-boldy text-white text-sm">Rewards:</span>
+                    <span className="font-semibold text-white text-sm">Rewards:</span>
                     <span className={totalRewardUsd > 0 ? "text-green" : "text-white"}>
                         {formatPriceInfo(totalRewardUsd, 0, 0)}
                     </span>
@@ -252,27 +252,27 @@ export default function MutagenLeaderboardInterseason3({
                     <div className="flex flex-row items-center gap-3 flex-1 justify-center">
                         {renderProfilePicture('sm')}
                         <div className="flex flex-col items-start text-left">
-                            <span className="font-boldy text-white text-lg sm:text-xl truncate">{userRow.nickname}</span>
+                            <span className="font-semibold text-white text-lg sm:text-xl truncate">{userRow.nickname}</span>
                             {userRow.title !== null && (
-                                <span className="text-xs font-boldy text-txtfade opacity-70 truncate">
+                                <span className="text-xs font-semibold text-txtfade opacity-70 truncate">
                                     &quot;{USER_PROFILE_TITLES[userRow.title]}&quot;
                                 </span>
                             )}
                         </div>
-                        <span className="text-base font-boldy text-white bg-mutagen/40 px-3 py-1 rounded-full shadow">#{userRow.rank}</span>
+                        <span className="text-base font-semibold text-white bg-mutagen/40 px-3 py-1 rounded-full shadow">#{userRow.rank}</span>
                     </div>
                 </div>
                 <div className="flex w-full flex-row items-center gap-8 justify-center mt-2 mb-2">
                     <div className="flex items-center gap-2">
-                        <span className="font-boldy text-white text-sm">Mutagen (Trading):</span>
-                        <span className="text-sm font-boldy text-mutagen">{formatNumber(userRow.pointsTrading, 2, 0)}</span>
+                        <span className="font-semibold text-white text-sm">Mutagen (Trading):</span>
+                        <span className="text-sm font-semibold text-mutagen">{formatNumber(userRow.pointsTrading, 2, 0)}</span>
                     </div>
                     <div className="flex items-center gap-1">
                         <span className="text-txtfade">|</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="font-boldy text-white text-sm">Rewards:</span>
-                        <span className="text-sm font-boldy">
+                        <span className="font-semibold text-white text-sm">Rewards:</span>
+                        <span className="text-sm font-semibold">
                             <span className={totalRewardUsd > 0 ? "text-green" : "text-white"}>
                                 {formatPriceInfo(totalRewardUsd, 0, 0)}
                             </span>
@@ -383,7 +383,7 @@ export default function MutagenLeaderboardInterseason3({
                                     <p
                                         key={`trader-${i}`}
                                         className={twMerge(
-                                            'text-xs font-boldy hover:underline transition duration-300 cursor-pointer truncate text-left',
+                                            'text-xs font-semibold hover:underline transition duration-300 cursor-pointer truncate text-left',
                                         )}
                                         onClick={() => {
                                             onClickUserProfile(d.userWallet);
@@ -396,7 +396,7 @@ export default function MutagenLeaderboardInterseason3({
                                 ) : (
                                     <p
                                         key={`trader-${i}`}
-                                        className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer text-txtfade truncate text-left')}
+                                        className={twMerge('text-xs font-semibold hover:underline transition duration-300 cursor-pointer text-txtfade truncate text-left')}
                                         onClick={() => {
                                             onClickUserProfile(d.userWallet);
                                         }}
@@ -406,7 +406,7 @@ export default function MutagenLeaderboardInterseason3({
                                 )}
 
                                 {d.title !== null ? (
-                                    <div className="text-[0.68em] font-boldy text-nowrap text-txtfade truncate text-left">
+                                    <div className="text-[0.68em] font-semibold text-nowrap text-txtfade truncate text-left">
                                         {USER_PROFILE_TITLES[d.title]}
                                     </div>
                                 ) : null}
@@ -414,7 +414,7 @@ export default function MutagenLeaderboardInterseason3({
                         ) : (
                             <p
                                 key={`trader-${i}`}
-                                className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer text-txtfade truncate text-left')}
+                                className={twMerge('text-xs font-semibold hover:underline transition duration-300 cursor-pointer text-txtfade truncate text-left')}
                                 onClick={() => {
                                     onClickUserProfile(d.userWallet);
                                 }}
@@ -435,7 +435,7 @@ export default function MutagenLeaderboardInterseason3({
                         <FormatNumber
                             prefix="$"
                             nb={d.totalVolume}
-                            className="text-xs font-boldy"
+                            className="text-xs font-semibold"
                             precision={2}
                             isDecimalDimmed={false}
                             format="currency"
@@ -454,7 +454,7 @@ export default function MutagenLeaderboardInterseason3({
                     >
                         <FormatNumber
                             nb={d.pointsTrading}
-                            className="text-xs font-boldy text-[#e47dbb]"
+                            className="text-xs font-semibold text-[#e47dbb]"
                             precision={d.pointsTrading && d.pointsTrading >= 50 ? 0 : 2}
                             isDecimalDimmed={false}
                         />
@@ -470,7 +470,7 @@ export default function MutagenLeaderboardInterseason3({
                     <Tippy
                         key={`rewards-${d.nickname}`}
                         content={
-                            <div className="text-xs font-boldy min-w-[15em]">
+                            <div className="text-xs font-semibold min-w-[15em]">
                                 {rewards.jtoRewards > 0 && (
                                     <div className='flex gap-1 justify-center p-2 bg-third rounded mb-1'>
                                         <div className="flex items-center gap-1">
@@ -485,7 +485,7 @@ export default function MutagenLeaderboardInterseason3({
                                         <div className='flex items-center gap-1'>
                                             <FormatNumber
                                                 nb={rewards.jtoRewards}
-                                                className="text-xs font-boldy"
+                                                className="text-xs font-semibold"
                                                 precision={0}
                                                 isDecimalDimmed={false}
                                             />
@@ -507,7 +507,7 @@ export default function MutagenLeaderboardInterseason3({
                                         <div className='flex items-center gap-1'>
                                             <FormatNumber
                                                 nb={rewards.bonkRewards}
-                                                className="text-xs font-boldy"
+                                                className="text-xs font-semibold"
                                                 precision={0}
                                                 isDecimalDimmed={false}
                                             />
@@ -521,7 +521,7 @@ export default function MutagenLeaderboardInterseason3({
                         <div className="flex flex-col items-center justify-center ml-auto mr-auto">
                             <FormatNumber
                                 nb={totalRewardUsd}
-                                className="text-xs font-boldy text-[#24af54]"
+                                className="text-xs font-semibold text-[#24af54]"
                                 format='currency'
                                 prefix='$'
                                 isDecimalDimmed={false}

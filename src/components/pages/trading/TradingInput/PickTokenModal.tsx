@@ -62,7 +62,7 @@ export function PickTokenModal({
                     />
 
                     <InputString
-                        className="text-lg relative p-2 rounded-lg text-left w-full bg-transparent"
+                        className="text-lg relative p-2 rounded-md text-left w-full bg-transparent"
                         value={tokenSearch ?? ''}
                         onChange={setTokenSearch}
                         placeholder="Token Symbol"
@@ -86,7 +86,7 @@ export function PickTokenModal({
                             <div className='text-sm text-txtfade ml-1'>Recommended</div>
                         </Tippy>
 
-                        <div className='flex items-center cursor-pointer gap-2 rounded-lg pr-2 pt-1 pb-1' onClick={() => pick(recommendedToken)}>
+                        <div className='flex items-center cursor-pointer gap-2 rounded-md pr-2 pt-1 pb-1' onClick={() => pick(recommendedToken)}>
                             <Image
                                 className='h-4 w-4'
                                 src={recommendedToken.image}
@@ -95,7 +95,7 @@ export function PickTokenModal({
                                 height="40"
                             />
 
-                            <div className='font-archivo flex items-center justify-center text-sm'>
+                            <div className='flex items-center justify-center text-sm'>
                                 {recommendedToken.symbol}
                             </div>
                         </div>
@@ -105,7 +105,7 @@ export function PickTokenModal({
                 {!isDisplayAllTokens ? <div className='w-full flex gap-2'>
                     <Button
                         title="Your tokens"
-                        className={twMerge("text-xs rounded-lg", !displayAllTokens ? 'border-white/30 text-white/80 border-2' : 'border-transparent text-white/40 border bg-third')}
+                        className={twMerge("text-xs rounded-md", !displayAllTokens ? 'border-white/30 text-white/80 border-2' : 'border-transparent text-white/40 border bg-third')}
                         onClick={() => {
                             setDisplayAllTokens(false);
                         }}
@@ -114,7 +114,7 @@ export function PickTokenModal({
 
                     <Button
                         title="All tokens"
-                        className={twMerge("text-xs rounded-lg", displayAllTokens ? 'border-white/30 border-2' : 'border-transparent text-white/40 border bg-third')}
+                        className={twMerge("text-xs rounded-md", displayAllTokens ? 'border-white/30 border-2' : 'border-transparent text-white/40 border bg-third')}
                         onClick={() => {
                             setDisplayAllTokens(true);
                         }}
@@ -125,7 +125,7 @@ export function PickTokenModal({
                 <div className={twMerge("flex flex-col w-full items-center mt-2 pr-2.5 max-h-full overflow-y-auto")}>
                     {filteredTokenList.length ? filteredTokenList.map((token, i) => (<div
                         key={'pick-token-modal-inner-' + i}
-                        className='flex gap-2 cursor-pointer w-full hover:bg-third hover:rounded-lg p-2'
+                        className='flex gap-2 cursor-pointer w-full hover:bg-third hover:rounded-md p-2'
                         onClick={() => pick(token)}
                     >
                         <Image
@@ -137,11 +137,11 @@ export function PickTokenModal({
                         />
 
                         <div className='flex flex-col items-start'>
-                            <div className='font-archivo flex items-center justify-center text-sm'>
+                            <div className='flex items-center justify-center text-sm'>
                                 {token.symbol}
                             </div>
 
-                            <div className='font-archivo text-txtfade flex items-center justify-center text-xxs'>
+                            <div className='text-txtfade flex items-center justify-center text-xxs'>
                                 {token.name}
                             </div>
                         </div>
@@ -154,7 +154,7 @@ export function PickTokenModal({
                                     minimumFractionDigits={0}
                                     precisionIfPriceDecimalsBelow={4}
                                     isDecimalDimmed={false}
-                                    className='text-sm text-white font-archivo'
+                                    className='text-sm text-white font-regular'
                                 /> : null}
 
                             <div className='gap-1 flex text-xs items-center'>
@@ -167,7 +167,7 @@ export function PickTokenModal({
                                     precisionIfPriceDecimalsBelow={4}
                                     isDecimalDimmed={false}
                                     suffix={token.symbol}
-                                    suffixClassName='text-xs text-txtfade font-archivo'
+                                    suffixClassName='text-xs text-txtfade font-regular'
                                     className='text-xs text-txtfade'
                                 />
                             </div>

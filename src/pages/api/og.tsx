@@ -107,7 +107,7 @@ export default async function handler(request: NextRequest) {
 
                     <p
                         tw={twMerge(
-                            'flex text-[24px] px-4 py-1 rounded-lg archivo-black capitalize ml-3',
+                            'flex text-[24px] px-4 py-1 rounded-md archivo-black capitalize ml-3',
                             side === 'long'
                                 ? 'bg-[#0F2E2B] text-[#49d7ad]'
                                 : 'bg-[#2D1418] text-[#c9243a]',
