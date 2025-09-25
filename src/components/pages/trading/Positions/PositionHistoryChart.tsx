@@ -6,13 +6,11 @@ import {
   CartesianGrid,
   ReferenceLine,
   ResponsiveContainer,
-  Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
-import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { EnrichedPositionApi } from '@/types';
@@ -376,7 +374,6 @@ export default function PositionHistoryChart({
     return data;
   }, [positionHistory, realPriceData, isLoading, events]);
 
-  const breakEvenPrice = positionHistory.entryPrice;
   const currentPnl = positionHistory.pnl || 0;
 
   // Check if position duration is less than 24 hours for reference line positioning
@@ -580,13 +577,13 @@ export default function PositionHistoryChart({
             />
 
             {/* Break Even Line */}
-            <ReferenceLine
+            {/* <ReferenceLine
               y={breakEvenPrice}
               stroke="#9333ea"
               strokeDasharray="5 5"
               strokeWidth={1}
               strokeOpacity={0.5}
-            />
+            /> */}
 
             {/* White connection line between open and close/liquidated - moved after Line to be on top */}
             {openPoint &&
@@ -630,7 +627,6 @@ export default function PositionHistoryChart({
                 }
                 return null;
               })()}
-            <Tooltip content={<CustomRechartsToolTip isValueOnly />} />
           </AreaChart>
         </ResponsiveContainer>
       </div>

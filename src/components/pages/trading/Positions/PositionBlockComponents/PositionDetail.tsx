@@ -85,7 +85,8 @@ export const PositionDetail = ({
                   format={d.format}
                   precision={d.precision}
                   suffix={d.suffix}
-                  className={twMerge('text-sm flex', d.value && d.color)}
+                  className={twMerge('text-xs flex', d.value && d.color)}
+                  suffixClassName="text-xs"
                   isDecimalDimmed={
                     typeof d.isDecimalDimmed === 'undefined'
                       ? true
@@ -98,13 +99,13 @@ export const PositionDetail = ({
             ) : (
               <div
                 className={twMerge(
-                  'flex items-center',
+                  'flex',
                   d?.onEditClick &&
                     'cursor-pointer hover:bg-[#1A2531] rounded-md transition-colors duration-300',
                 )}
                 onClick={d?.onEditClick}
               >
-                <p className="text-sm font-mono">{d.value}</p>
+                <p className="text-xs font-mono">{d.value}</p>
                 {d?.onEditClick && editIcon}
               </div>
             )}

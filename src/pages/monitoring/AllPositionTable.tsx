@@ -14,6 +14,7 @@ import {
 import Table, { TableHeaderType } from '@/components/pages/monitoring/Table';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import { PROFILE_PICTURES } from '@/constant';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PositionExtended, UserProfileExtended } from '@/types';
 import { getAbbrevWalletAddress, getNonUserProfile } from '@/utils';
 
@@ -37,6 +38,8 @@ export default function AllPositionTable({
   const [isPnlWithFees] = useState<boolean>(true);
   const [isNative] = useState<boolean>(false);
   const [activeTrader, setActiveTrader] = useState<string | null>(null);
+
+  const isMobile = useBetterMediaQuery(`(max-width: 1400px)`);
 
   const headers: TableHeaderType[] = [
     { title: 'Owner', key: 'owner', sticky: 'left' },
@@ -120,7 +123,7 @@ export default function AllPositionTable({
 
   return (
     <>
-      <div className="border-t p-3">
+      <div className="p-3 overflow-hidden">
         <Table
           title="All Positions"
           headers={headers}
@@ -135,6 +138,7 @@ export default function AllPositionTable({
           onRowClick={(row) => {
             setActiveTrader(String(row));
           }}
+          isSticky={!!isMobile}
         />
       </div>
 

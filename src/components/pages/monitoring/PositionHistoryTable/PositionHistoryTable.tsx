@@ -446,7 +446,7 @@ export default function PositionHistoryTable({
         </Modal>
       ) : null}
 
-      <div className="border-t p-3">
+      <div className="border-t p-3 overflow-hidden">
         <Table
           title="Position History"
           headers={headers}
