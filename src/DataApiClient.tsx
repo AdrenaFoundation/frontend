@@ -43,10 +43,47 @@ import {
 } from './types';
 import { hexStringToByteArray } from './utils';
 
+// Anniversary Event Types
+export interface AnniversaryRecord {
+  wallet: string;
+  value: number;
+  date?: Date;
+}
+
+export interface AnniversaryRecords {
+  best_pnl_percentage: AnniversaryRecord;
+  biggest_liquidation: AnniversaryRecord;
+  biggest_borrow_fees: AnniversaryRecord;
+  biggest_exit_fees: AnniversaryRecord;
+  most_trades: AnniversaryRecord;
+  most_consecutive_wins: AnniversaryRecord;
+  most_consecutive_losses: AnniversaryRecord;
+  most_consecutive_liquidations: AnniversaryRecord;
+  first_trader: AnniversaryRecord;
+  last_trader: AnniversaryRecord;
+}
+
+// Add user stats interface
+export interface UserAnniversaryStats {
+  best_pnl_percentage: number;
+  biggest_liquidation: number;
+  biggest_borrow_fees: number;
+  biggest_exit_fees: number;
+  most_trades: number;
+  most_consecutive_wins: number;
+  most_consecutive_losses: number;
+  most_consecutive_liquidations: number;
+}
+
+export interface AnniversaryResponse {
+  records: AnniversaryRecords;
+  user_stats: UserAnniversaryStats | null;
+}
+
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
-  // public static DATAPI_URL = 'http://localhost:8080';
-  public static DATAPI_URL = 'https://datapi.adrena.xyz';
+  public static DATAPI_URL = 'http://localhost:8080';
+  // public static DATAPI_URL = 'https://datapi.adrena.xyz';
 
   public static async getPriceAtDate(date: Date): Promise<{
     adxPrice: number | null;
@@ -624,14 +661,18 @@ export default class DataApiClient {
   } & T): Promise<GetPositionStatsReturnType<T> | null> {
     try {
       const result = await fetch(
-        `${DataApiClient.DATAPI_URL}/position-stats?${symbol ? `symbol=${symbol}` : ''
-        }${side ? `&side=${side}` : ''}${startDate
-          ? `&start_date=${encodeURIComponent(startDate.toISOString())}`
-          : ''
-        }${endDate
-          ? `&end_date=${encodeURIComponent(endDate.toISOString())}`
-          : ''
-        }&show_position_activity=${showPositionActivity ? showPositionActivity : false
+        `${DataApiClient.DATAPI_URL}/position-stats?${
+          symbol ? `symbol=${symbol}` : ''
+        }${side ? `&side=${side}` : ''}${
+          startDate
+            ? `&start_date=${encodeURIComponent(startDate.toISOString())}`
+            : ''
+        }${
+          endDate
+            ? `&end_date=${encodeURIComponent(endDate.toISOString())}`
+            : ''
+        }&show_position_activity=${
+          showPositionActivity ? showPositionActivity : false
         }${walletAddress ? `&wallet_address=${walletAddress}` : ''}`,
       ).then((res) => res.json());
 
@@ -694,13 +735,13 @@ export default class DataApiClient {
     limit?: number;
     walletAddress?: string;
     orderColumn?:
-    | 'pnl'
-    | 'pnl_minus_fees'
-    | 'volume'
-    | 'win_rate_percentage'
-    | 'volume_weighted_pnl'
-    | 'volume_weighted_pnl_percentage'
-    | 'pnl_volatility';
+      | 'pnl'
+      | 'pnl_minus_fees'
+      | 'volume'
+      | 'win_rate_percentage'
+      | 'volume_weighted_pnl'
+      | 'volume_weighted_pnl_percentage'
+      | 'pnl_volatility';
     sort?: 'ASC' | 'DESC';
   } = {}): Promise<{
     success: boolean;
@@ -842,9 +883,12 @@ export default class DataApiClient {
   }): Promise<EnrichedPositionApiV2 | null> {
     try {
       const response = await fetch(
-        `${DataApiClient.DATAPI_URL}/v4/position?user_wallet=${walletAddress
-        }&status=liquidate&status=close&limit=${limit}&offset=${offset}${entryDate ? `&entry_date=${entryDate.toISOString()}` : ''
-        }${exitDate ? `&exit_date=${exitDate.toISOString()}` : ''}${sortBy ? `&sortField=${sortBy}` : ''
+        `${DataApiClient.DATAPI_URL}/v4/position?user_wallet=${
+          walletAddress
+        }&status=liquidate&status=close&limit=${limit}&offset=${offset}${
+          entryDate ? `&entry_date=${entryDate.toISOString()}` : ''
+        }${exitDate ? `&exit_date=${exitDate.toISOString()}` : ''}${
+          sortBy ? `&sortField=${sortBy}` : ''
         }${sortDirection ? `&sort=${sortDirection.toUpperCase()}` : ''}`,
       );
 
@@ -1080,7 +1124,7 @@ export default class DataApiClient {
         dateDataPeriod.setDate(dateDataPeriod.getDate() - dataPeriod);
         startDate =
           dateDataPeriod.getTime() >
-            new Date('2025-03-19T12:00:00.000Z').getTime()
+          new Date('2025-03-19T12:00:00.000Z').getTime()
             ? dateDataPeriod
             : new Date('2025-03-19T12:00:00.000Z');
       } else {
@@ -1301,30 +1345,30 @@ export default class DataApiClient {
         const claims =
           s.claims && Array.isArray(s.claims)
             ? s.claims
-              .map((claim) => {
-                // Additional null checking
-                if (!claim) return null;
+                .map((claim) => {
+                  // Additional null checking
+                  if (!claim) return null;
 
-                const symbol =
-                  claim.mint === window.adrena.client.lmTokenMint.toBase58()
-                    ? 'ADX'
-                    : 'ALP';
+                  const symbol =
+                    claim.mint === window.adrena.client.lmTokenMint.toBase58()
+                      ? 'ADX'
+                      : 'ALP';
 
-                return {
-                  claim_id: claim.claim_id,
-                  rewards_adx: claim.rewards_adx,
-                  rewards_adx_genesis: claim.rewards_adx_genesis ?? 0,
-                  rewards_usdc: claim.rewards_usdc,
-                  signature: claim.signature,
-                  transaction_date: new Date(claim.transaction_date),
-                  created_at: new Date(claim.created_at),
-                  stake_mint: claim.mint,
-                  symbol: symbol,
-                  source: claim.source,
-                  adx_price_at_claim: claim.adx_price_at_claim,
-                } as ClaimHistoryExtended;
-              })
-              .filter((claim) => claim !== null)
+                  return {
+                    claim_id: claim.claim_id,
+                    rewards_adx: claim.rewards_adx,
+                    rewards_adx_genesis: claim.rewards_adx_genesis ?? 0,
+                    rewards_usdc: claim.rewards_usdc,
+                    signature: claim.signature,
+                    transaction_date: new Date(claim.transaction_date),
+                    created_at: new Date(claim.created_at),
+                    stake_mint: claim.mint,
+                    symbol: symbol,
+                    source: claim.source,
+                    adx_price_at_claim: claim.adx_price_at_claim,
+                  } as ClaimHistoryExtended;
+                })
+                .filter((claim) => claim !== null)
             : []; // Empty array if s.claims is undefined or not an array
 
         return {
@@ -1345,32 +1389,32 @@ export default class DataApiClient {
       symbols: enrichedClaimsWithSymbol,
       allTimeUsdcClaimed: symbol
         ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
-          ?.allTimeRewardsUsdc ?? 0)
+            ?.allTimeRewardsUsdc ?? 0)
         : enrichedClaimsWithSymbol.reduce(
-          (acc, curr) => acc + curr.allTimeRewardsUsdc,
-          0,
-        ),
+            (acc, curr) => acc + curr.allTimeRewardsUsdc,
+            0,
+          ),
       allTimeAdxClaimed: symbol
         ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
-          ?.allTimeRewardsAdx ?? 0)
+            ?.allTimeRewardsAdx ?? 0)
         : enrichedClaimsWithSymbol.reduce(
-          (acc, curr) => acc + curr.allTimeRewardsAdx,
-          0,
-        ),
+            (acc, curr) => acc + curr.allTimeRewardsAdx,
+            0,
+          ),
       allTimeAdxGenesisClaimed: symbol
         ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
-          ?.allTimeRewardsAdxGenesis ?? 0)
+            ?.allTimeRewardsAdxGenesis ?? 0)
         : enrichedClaimsWithSymbol.reduce(
-          (acc, curr) => acc + curr.allTimeRewardsAdxGenesis,
-          0,
-        ),
+            (acc, curr) => acc + curr.allTimeRewardsAdxGenesis,
+            0,
+          ),
       allTimeCountClaims: symbol
         ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
-          ?.allTimeCountClaims ?? 0)
+            ?.allTimeCountClaims ?? 0)
         : enrichedClaimsWithSymbol.reduce(
-          (acc, curr) => acc + curr.allTimeCountClaims,
-          0,
-        ),
+            (acc, curr) => acc + curr.allTimeCountClaims,
+            0,
+          ),
     };
   }
 
@@ -1776,6 +1820,33 @@ export default class DataApiClient {
       return data.data;
     } catch (error) {
       console.error('Error fetching velocity indicators:', error);
+      return null;
+    }
+  }
+
+  public static async getAnniversaryRecords(
+    userWallet?: string,
+  ): Promise<AnniversaryResponse | null> {
+    try {
+      const url = userWallet
+        ? `${DataApiClient.DATAPI_URL}/anniversary_event_stats?user_wallet=${encodeURIComponent(userWallet)}`
+        : `${DataApiClient.DATAPI_URL}/anniversary_event_stats`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.success ? data.data : null;
+    } catch (error) {
+      console.error('Error fetching anniversary records:', error);
       return null;
     }
   }
