@@ -33,6 +33,9 @@ export const DISABLED_FEATURES = [
   'symbol_info',
   'symbol_info_long_description',
   'symbol_info_price_source',
+  'show_zoom_and_move_hint',
+  'show_chart_property_page',
+  'popup_hints',
 ] as const;
 
 export const ENABLED_FEATURES = [
