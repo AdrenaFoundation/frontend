@@ -436,14 +436,14 @@ export default function PositionHistoryChart({
             nb={
               showAfterFees
                 ? positionHistory.pnl
-                : positionHistory.pnl - positionHistory.fees
+                : positionHistory.pnl + positionHistory.fees
             }
             format="currency"
             className={twMerge(
               'text-4xl font-mono font-bold',
               (showAfterFees
                 ? positionHistory.pnl
-                : positionHistory.pnl - positionHistory.fees) >= 0
+                : positionHistory.pnl + positionHistory.fees) >= 0
                 ? 'text-[#35C488]'
                 : 'text-redbright',
             )}
@@ -454,7 +454,7 @@ export default function PositionHistoryChart({
               nb={
                 ((showAfterFees
                   ? positionHistory.pnl
-                  : positionHistory.pnl - positionHistory.fees) /
+                  : positionHistory.pnl + positionHistory.fees) /
                   positionHistory.collateralAmount) *
                 100
               }
@@ -462,11 +462,11 @@ export default function PositionHistoryChart({
               prefix="("
               suffix=")"
               prefixClassName="text-lg"
-              suffixClassName={`ml-0 text-lg ${(showAfterFees ? positionHistory.pnl : positionHistory.pnl - positionHistory.fees) > 0 ? 'text-[#35C488]' : 'text-redbright'}`}
+              suffixClassName={`ml-0 text-lg ${(showAfterFees ? positionHistory.pnl : positionHistory.pnl + positionHistory.fees) > 0 ? 'text-[#35C488]' : 'text-redbright'}`}
               precision={2}
               minimumFractionDigits={2}
               isDecimalDimmed={false}
-              className={`text-lg ${(showAfterFees ? positionHistory.pnl : positionHistory.pnl - positionHistory.fees) > 0 ? 'text-[#35C488]' : 'text-redbright'}`}
+              className={`text-lg ${(showAfterFees ? positionHistory.pnl : positionHistory.pnl + positionHistory.fees) > 0 ? 'text-[#35C488]' : 'text-redbright'}`}
             />
           </div>
         </div>

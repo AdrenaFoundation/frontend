@@ -94,6 +94,7 @@ export default function PositionBlockV2({
       suffix: 'x',
       precision: 1,
       isDecimalDimmed: false,
+      className: 'hidden xl:flex',
     },
     {
       title: 'Collateral',
@@ -190,7 +191,6 @@ export default function PositionBlockV2({
                   ),
                 ),
                 format: 'time',
-                className: 'hidden xl:flex',
               },
               ...allData,
             ]}
