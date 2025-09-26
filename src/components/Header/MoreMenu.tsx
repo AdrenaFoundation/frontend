@@ -112,6 +112,8 @@ export default function MoreMenu({
                               src={page.icon}
                               alt={page.name}
                               className="w-3 h-3"
+                              width={12}
+                              height={12}
                             />
                           </div>
                         ) : null}
@@ -125,6 +127,8 @@ export default function MoreMenu({
                         src={rightArrow}
                         alt="arrow icon"
                         className="w-3 h-3 rotate-90 opacity-0 blur-sm -translate-x-3 group-hover:blur-0 group-hover:translate-x-0 group-hover:opacity-100 transition duration-300"
+                        width={12}
+                        height={12}
                       />
                     </Link>
                   );
@@ -152,6 +156,8 @@ export default function MoreMenu({
                               src={page.icon}
                               alt={page.name}
                               className="w-3 h-3"
+                              width={12}
+                              height={12}
                             />
                           ) : null}
                           <div>
@@ -163,6 +169,8 @@ export default function MoreMenu({
                           src={arrow}
                           alt="arrow icon"
                           className="w-2 h-2"
+                          width={8}
+                          height={8}
                         />
                       </Link>
                     );
@@ -187,6 +195,8 @@ export default function MoreMenu({
                             src={page.icon}
                             alt={page.name}
                             className="w-3 h-3"
+                            width={12}
+                            height={12}
                           />
                         ) : null}
                       </Link>

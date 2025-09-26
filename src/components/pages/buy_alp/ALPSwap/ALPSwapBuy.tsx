@@ -205,6 +205,7 @@ export default function ALPSwapBuy({
     collateralToken.mint,
     doJupiterSwap,
     swapSlippage,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     !!tokenPrices[usdcToken.symbol],
     usdcToken,
   ]);

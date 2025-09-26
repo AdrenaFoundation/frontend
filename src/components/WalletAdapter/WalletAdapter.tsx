@@ -1,3 +1,5 @@
+import { usePrivy } from '@privy-io/react-auth';
+import { useWallets } from '@privy-io/react-auth/solana';
 import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -10,6 +12,7 @@ import {
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
 import { PROFILE_PICTURES } from '@/constant';
+import { usePrivySidebar } from '@/contexts/PrivySidebarContext';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
@@ -52,9 +55,19 @@ export default function WalletAdapter({
   const { wallet } = useSelector((s) => s.walletState);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
+  const { authenticated: privyAuthenticated, logout: privyLogout } = usePrivy();
+  const { isSidebarOpen, openSidebar, closeSidebar } = usePrivySidebar();
+  const { ready: walletsReady } = useWallets();
+
   const connectedAdapter = useMemo(
     () => wallet && adapters.find((x) => x.name === wallet.adapterName),
     [wallet, adapters],
+  );
+
+  // Check if any adapter is currently connecting
+  const isConnecting = useMemo(
+    () => adapters.some((adapter) => adapter.connecting),
+    [adapters],
   );
 
   // We use a ref in order to avoid getting item from local storage unnecessarily on every render.
@@ -78,18 +91,29 @@ export default function WalletAdapter({
   }
 
   const connectedWalletAdapterName = wallet?.adapterName;
-  const connected = !!connectedWalletAdapterName;
+
+  // handle Privy connected stay to be actually authenticated, not just connected
+  const connected = !!connectedWalletAdapterName || (privyAuthenticated && walletsReady);
 
   const isBreak = useBetterMediaQuery('(min-width: 640px)');
 
   // Attempt to auto-connect Wallet on mount.
   useEffect(() => {
     if (autoConnectAuthorizedRef.current && lastConnectedWalletRef.current) {
+      // Check if the last connection was via Privy - if so, skip native auto-connect
+      const wasPrivyConnection = localStorage.getItem('lastConnectionSource') === 'privy';
+
+      if (wasPrivyConnection) {
+        console.log('🚫 Skipping native auto-connect - last connection was via Privy');
+        return;
+      }
+
       const adapter = adapters.find(
         (x) => x.name === lastConnectedWalletRef.current,
       );
       if (!adapter) return;
 
+      console.log('🔄 Native auto-connecting to:', adapter.name);
       dispatch(autoConnectWalletAction(adapter));
       return;
     }
@@ -153,7 +177,7 @@ export default function WalletAdapter({
                   !isIconOnly
                     ? userProfile
                       ? getAbbrevNickname(userProfile.nickname)
-                      : getAbbrevWalletAddress(wallet.walletAddress)
+                      : getAbbrevWalletAddress(wallet?.walletAddress ?? 'User')
                     : null
                 }
                 leftIcon={
@@ -172,6 +196,16 @@ export default function WalletAdapter({
                     return;
                   }
 
+                  if (privyAuthenticated) {
+                    // For Privy wallets, open/close the sidebar instead of opening profile page
+                    if (isSidebarOpen) {
+                      closeSidebar();
+                    } else {
+                      openSidebar();
+                    }
+                    return;
+                  }
+
                   router.push('/profile');
                 }}
               />
@@ -183,7 +217,33 @@ export default function WalletAdapter({
 
                   if (!connected || !connectedAdapter) return;
 
-                  dispatch(disconnectWalletAction(connectedAdapter));
+                  // Check if current connection is through Privy
+                  if (wallet?.isPrivy) {
+                    // This is a Privy connection - logout from Privy
+                    if (privyAuthenticated) {
+                      console.log('🔌 Logging out from Privy');
+
+                      // Clear Redux state FIRST to prevent auto-reconnect during logout
+                      dispatch(disconnectWalletAction(connectedAdapter));
+
+                      // Clear localStorage to prevent auto-reconnect
+                      localStorage.removeItem('privy:selectedWallet');
+                      localStorage.setItem('lastConnectionSource', 'manual-disconnect');
+
+                      // Then logout from Privy (async, don't wait for it)
+                      privyLogout().catch((error) => {
+                        // Don't throw on logout errors - they're often harmless (400 = already logged out)
+                        console.warn('🔌 Privy logout warning (likely harmless):', error);
+                      });
+
+                      console.log('🔌 Privy logout initiated and state cleared');
+                    }
+                  } else {
+                    // This is a native connection - disconnect the native adapter
+                    if (connectedAdapter) {
+                      dispatch(disconnectWalletAction(connectedAdapter));
+                    }
+                  }
                 }}
               >
                 <Image
@@ -298,9 +358,22 @@ export default function WalletAdapter({
                 <MenuItem
                   className="sm:hidden py-2"
                   onClick={() => {
-                    if (!connected || !connectedAdapter) return;
+                    if (!connected) return;
 
-                    dispatch(disconnectWalletAction(connectedAdapter));
+                    // Check if current connection is through Privy
+                    if (wallet?.isPrivy) {
+                      // This is a Privy connection - logout from Privy
+                      if (privyAuthenticated) {
+                        privyLogout();
+                      }
+                      // Also clear Redux state immediately
+                      dispatch({ type: 'disconnect' });
+                    } else {
+                      // This is a native connection - disconnect the native adapter
+                      if (connectedAdapter) {
+                        dispatch(disconnectWalletAction(connectedAdapter));
+                      }
+                    }
                   }}
                 >
                   Disconnect
@@ -315,14 +388,16 @@ export default function WalletAdapter({
             className,
             'gap-1 p-1 h-auto px-3 pr-4 text-xs border border-[#414E5E] bg-transparent hover:bg-third rounded-md',
             isIconOnly && 'p-0 h-8 w-8 rounded-full',
+            isConnecting && 'opacity-50 cursor-not-allowed',
           )}
-          title={!isIconOnly ? 'Connect wallet' : null}
-          leftIcon={walletIcon}
+          title={!isIconOnly ? (isConnecting ? 'Connecting...' : 'Connect wallet') : null}
+          leftIcon={isConnecting ? undefined : walletIcon}
           alt="wallet icon"
           leftIconClassName="w-4 h-4"
           variant="lightbg"
+          disabled={isConnecting}
           onClick={() => {
-            if (!connected) {
+            if (!connected && !isConnecting) {
               dispatch(openCloseConnectionModalAction(true));
             }
           }}

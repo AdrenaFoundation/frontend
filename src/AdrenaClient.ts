@@ -14,6 +14,7 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
   createAssociatedTokenAccountInstruction,
+  createTransferInstruction,
   NATIVE_MINT,
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
@@ -1691,6 +1692,85 @@ export class AdrenaClient {
         tokenProgram: TOKEN_PROGRAM_ID,
         adrenaProgram: this.adrenaProgram.programId,
       });
+  }
+
+  // Transfer SOL from one account to another
+  public async buildTransferSolTx({
+    owner,
+    recipient,
+    amount,
+  }: {
+    owner: PublicKey;
+    recipient: PublicKey;
+    amount: BN; // Amount in lamports
+  }) {
+    if (!this.connection) {
+      throw new Error('Connection not ready');
+    }
+
+    const transferInstruction = SystemProgram.transfer({
+      fromPubkey: owner,
+      toPubkey: recipient,
+      lamports: amount.toNumber(),
+    });
+
+    const transaction = new Transaction().add(transferInstruction);
+
+    // Set fee payer and recent blockhash following AdrenaClient pattern
+    transaction.feePayer = owner;
+    const { blockhash } = await this.connection.getLatestBlockhash('confirmed');
+    transaction.recentBlockhash = blockhash;
+
+    return transaction;
+  }
+
+  // Transfer SPL tokens from one account to another
+  public async buildTransferTokenTx({
+    owner,
+    recipient,
+    mint,
+    amount,
+  }: {
+    owner: PublicKey;
+    recipient: PublicKey;
+    mint: PublicKey;
+    amount: BN; // Amount in token's smallest unit
+  }) {
+    if (!this.connection) {
+      throw new Error('Connection not ready');
+    }
+
+    // Get associated token addresses
+    const senderTokenAddress = findATAAddressSync(owner, mint);
+    const recipientTokenAddress = findATAAddressSync(recipient, mint);
+
+    const preInstructions: TransactionInstruction[] = [];
+
+    // Check if recipient token account exists, create if needed
+    await this.checkATAAddressInitializedAndCreatePreInstruction({
+      mint,
+      owner: recipient,
+      preInstructions,
+    });
+
+    // Create transfer instruction
+    const transferInstruction = createTransferInstruction(
+      senderTokenAddress,
+      recipientTokenAddress,
+      owner,
+      amount.toNumber(),
+    );
+
+    // Build transaction with all instructions
+    const allInstructions = [...preInstructions, transferInstruction];
+    const transaction = new Transaction().add(...allInstructions);
+
+    // Set fee payer and recent blockhash following AdrenaClient pattern
+    transaction.feePayer = owner;
+    const { blockhash } = await this.connection.getLatestBlockhash('confirmed');
+    transaction.recentBlockhash = blockhash;
+
+    return transaction;
   }
 
   // Swap tokenA for tokenB
