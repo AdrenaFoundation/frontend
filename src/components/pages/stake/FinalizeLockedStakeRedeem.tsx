@@ -42,7 +42,7 @@ export default function FinalizeLockedStakeRedeem({
 
 
   return (
-    <div className="flex flex-col rounded-lg sm:min-w-[400px] h-fit p-5">
+    <div className="flex flex-col rounded-md sm:min-w-[400px] h-fit p-5">
       <StyledSubSubContainer className="flex flex-col">
         <div className="flex w-full items-center justify-between">
           <div className="text-sm">Staked amount</div>

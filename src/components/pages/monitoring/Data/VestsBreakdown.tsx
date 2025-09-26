@@ -6,7 +6,7 @@ import abbreviateWords from '../abbreviateWords';
 import DateInfo from '../DateInfo';
 import NumberInfo from '../NumberInfo';
 import OnchainAccountInfo from '../OnchainAccountInfo';
-import Table from '../Table';
+import Table from '../TableLegacy';
 
 export default function VestsBreakdown({
   vests,
@@ -16,7 +16,7 @@ export default function VestsBreakdown({
   titleClassName?: string;
 }) {
   return vests?.length ? (
-    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl overflow-hidden">
+    <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl overflow-hidden">
       <div className="w-full border-b p-3 flex gap-2">
         <p className={titleClassName}>Vest Breakdown</p>
         {vests ? <p className='text-base opacity-50 font-mono'>{vests.length} vests</p> : null}

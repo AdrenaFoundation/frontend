@@ -17,11 +17,11 @@ const PnlBlock = (position: PositionExtended | EnrichedPositionApi, showAfterFee
             nb={showAfterFees ? position.pnl : position.pnl - fees}
             format="currency"
             minimumFractionDigits={2}
-            className={`mr-0.5 font-bold text-sm text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0 ? 'green' : 'redbright'}`}
+            className={`mr-0.5 font-monobold text-sm text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0 ? 'green' : 'redbright'}`}
             isDecimalDimmed={false}
         />
         <FormatNumber
-            nb={((showAfterFees ? position.pnl : position.pnl - fees) / ('entryCollateralAmount' in position ? position.entryCollateralAmount : position.collateralUsd)) * 100}
+            nb={((showAfterFees ? position.pnl : position.pnl - fees) / ('closeCollateralAmount' in position ? position.closeCollateralAmount : position.collateralUsd)) * 100}
             format="percentage"
             prefix="("
             suffix=")"

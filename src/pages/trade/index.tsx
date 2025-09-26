@@ -115,6 +115,7 @@ export default function Trade({
     'showPositionHistory',
     'updateTPSLByDrag',
     'showHighLow',
+    'last-selected-trading-token',
   ]);
 
   const [chartPreferences, setChartPreferences] = useState<ChartPreferences>({
@@ -265,15 +266,21 @@ export default function Trade({
         ? window.adrena.client.tokens
         : window.adrena.client.tokens.filter((t) => !t.isStable);
 
-    // If token is not set or token is not allowed, set default token
     if (
       !tokenB ||
       !tokenBCandidate.find((token) => token.symbol === tokenB.symbol)
     ) {
-      setTokenB(pickDefaultToken(positions));
+      const lastSelectedToken = tokenBCandidate.find(
+        (t) => t.symbol === settings.lastSelectedTradingToken,
+      );
+
+      if (lastSelectedToken) {
+        setTokenB(lastSelectedToken);
+      } else {
+        setTokenB(pickDefaultToken(positions));
+      }
     }
 
-    // If token is not set or token is not allowed, set default token
     if (
       !tokenA ||
       !tokenACandidate.find((token) => token.symbol === tokenA.symbol)
@@ -452,13 +459,18 @@ export default function Trade({
 
 
       <div className="flex flex-col w-full">
-        <div className="flex flex-col w-full border sm:rounded-lg overflow-hidden bg-secondary">
+        <div className="flex flex-col w-full border sm:rounded-md overflow-hidden bg-secondary">
           {/* Trading chart header */}
           {tokenB ? (
             <TradingChartHeader
               tokenList={window.adrena.client.tokens.filter((t) => !t.isStable)}
               selected={tokenB}
               onChange={(t: Token) => {
+                dispatch(
+                  setSettings({
+                    lastSelectedTradingToken: t.symbol,
+                  }),
+                );
                 setTokenB(t);
               }}
               allActivePositions={allActivePositions}
@@ -547,7 +559,7 @@ export default function Trade({
 
         {!!isBigScreen ? (
           <>
-            <div className="bg-secondary mt-4 border rounded-lg relative">
+            <div className="bg-secondary mt-4 border rounded-md relative">
               <ViewTabs
                 view={view}
                 setView={setView}
@@ -597,7 +609,7 @@ export default function Trade({
           </>
         ) : (
           <div className="flex">
-            <div className="bg-secondary mt-4 border rounded-lg w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full flex flex-col relative">
+            <div className="bg-secondary mt-4 border rounded-md w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full flex flex-col relative">
               <ViewTabs
                 view={view}
                 setView={setView}
@@ -719,7 +731,7 @@ export default function Trade({
           <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
             <li>
               <Button
-                className="bg-transparent font-boldy border-[#10e1a3] text-[#10e1a3]"
+                className="bg-transparent font-semibold border-[#10e1a3] text-[#10e1a3]"
                 title="Long"
                 variant="outline"
                 size="lg"
@@ -731,7 +743,7 @@ export default function Trade({
             </li>
             <li>
               <Button
-                className="bg-transparent font-boldy border-[#f24f4f] text-[#f24f4f]"
+                className="bg-transparent font-semibold border-[#f24f4f] text-[#f24f4f]"
                 title="Short"
                 variant="outline"
                 size="lg"
@@ -743,7 +755,7 @@ export default function Trade({
             </li>
             <li>
               <Button
-                className="bg-transparent font-boldy border-white text-white"
+                className="bg-transparent font-semibold border-white text-white"
                 title="Swap"
                 variant="outline"
                 size="lg"

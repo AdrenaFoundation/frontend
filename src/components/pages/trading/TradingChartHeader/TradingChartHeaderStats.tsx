@@ -83,13 +83,12 @@ export default function TradingChartHeaderStats({
             24h Change
           </span>
           <span
-            className={`font-mono leading-none text-xxs ${
-              dailyChange
+            className={`font-mono leading-none text-xxs ${dailyChange
                 ? dailyChange > 0
                   ? 'text-green'
                   : 'text-redbright'
                 : 'text-white'
-            }`}
+              }`}
           >
             {dailyChange ? `${dailyChange.toFixed(2)}%` : '-'}
           </span>
@@ -157,7 +156,7 @@ export default function TradingChartHeaderStats({
         {/* Desktop: Long/Short first, Mobile: Price first */}
         {numberLong && numberShort ? (
           <div className="flex-row gap-2 mr-0 xl:mr-4 hidden md:flex">
-            <div className="px-2 py-1 bg-green/10 rounded-lg inline-flex justify-center items-center gap-2">
+            <div className="px-2 py-1 bg-green/10 rounded-md inline-flex justify-center items-center gap-2">
               <Link
                 href="/monitoring?view=livePositions"
                 className="text-center justify-start text-greenSide text-xxs font-mono"
@@ -165,7 +164,7 @@ export default function TradingChartHeaderStats({
                 Long:{numberLong}
               </Link>
             </div>
-            <div className="px-2 py-1 bg-red/10 rounded-lg inline-flex justify-center items-center gap-2">
+            <div className="px-2 py-1 bg-red/10 rounded-md inline-flex justify-center items-center gap-2">
               <Link
                 href="/monitoring?view=livePositions"
                 className="text-center justify-start text-redSide text-xxs font-mono"

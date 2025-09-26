@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 import Loader from '@/components/Loader/Loader';
 import { AllStakingStats } from '@/hooks/useAllStakingStats';
-import { formatNumberShort } from '@/utils';
+import { formatNumberShort, periodModeToSeconds } from '@/utils';
 
 const formatYAxis = (tickItem: number) => {
   return formatNumberShort(tickItem, 0);
@@ -13,10 +13,10 @@ const formatYAxis = (tickItem: number) => {
 
 export default function UnlockStakingChart({
   allStakingStats,
-  stakingType,
+  stakingType = 'ADX',
 }: {
   allStakingStats: AllStakingStats | null;
-  stakingType: 'ADX' | 'ALP';
+  stakingType?: 'ADX';
 }) {
   const [timingMode, setTimingMode] = useState<'days' | 'weeks' | 'months'>('weeks');
   const [infoMode, setInfoMode] = useState<'count' | 'volume'>('volume');
@@ -38,14 +38,11 @@ export default function UnlockStakingChart({
     const divider = timingMode === 'days' ? 24 * 60 * 60 : timingMode === 'weeks' ? 7 * 24 * 60 * 60 : 30 * 24 * 60 * 60;
 
     const groupedData = Object.values(
-      allStakingStats.byRemainingTime[stakingType]
+      allStakingStats.byRemainingTime.ADX
         .sort((a, b) => a.endTime - b.endTime) // Sort by end time
         .reduce((acc, { endTime, tokenAmount }) => {
           // Check if it's within bounds
-          if (periodMode === '7D' && endTime > now + 7 * 24 * 60 * 60) return acc;
-          if (periodMode === '1M' && endTime > now + 30 * 24 * 60 * 60) return acc;
-          if (periodMode === '3M' && endTime > now + 90 * 24 * 60 * 60) return acc;
-          if (periodMode === '6M' && endTime > now + 180 * 24 * 60 * 60) return acc;
+          if (endTime > now + periodModeToSeconds(periodMode)) return acc;
 
           let remaining = Math.floor((endTime - now) / divider); // Calculate period remaining
 
@@ -152,7 +149,7 @@ export default function UnlockStakingChart({
             />
           } cursor={false} />
 
-          <Bar dataKey={infoMode} fill={stakingType === "ALP" ? '#256281' : "#a82e2e"} />
+          <Bar dataKey={infoMode} fill={"#a82e2e"} />
         </BarChart>
       </ResponsiveContainer>
     </div>

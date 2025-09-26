@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import DataApiClient from '@/DataApiClient';
-import { ClaimHistoryExtended, ClaimHistoryExtendedApi } from '@/types';
+import {
+  ClaimHistoryExtended,
+  ClaimHistoryExtendedApi,
+  ClaimHistoryGraph,
+} from '@/types';
 
 // Cache the API responses by token and offset
 const apiResponseCache: Record<
@@ -35,7 +39,10 @@ export default function useClaimHistory({
   interval?: number;
 }): {
   isLoadingClaimHistory: boolean;
+  isInitialLoad: boolean;
   claimsHistory: ClaimHistoryExtendedApi | null;
+  claimHistoryGraphData: ClaimHistoryGraph[] | null;
+  isLoadingGraphData: boolean;
   // Pagination-related return values
   currentPage: number;
   totalItems: number;
@@ -46,6 +53,10 @@ export default function useClaimHistory({
 } {
   const [claimsHistory, setClaimsHistory] =
     useState<ClaimHistoryExtendedApi | null>(null);
+  const [claimHistoryGraphData, setClaimHistoryGraphData] = useState<
+    ClaimHistoryGraph[] | null
+  >(null);
+  const [isLoadingGraphData, setIsLoadingGraphData] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [isLoadingClaimHistory, setIsLoadingClaimHistory] =
@@ -56,6 +67,7 @@ export default function useClaimHistory({
   const symbolRef = useRef<'ADX' | 'ALP'>(symbol);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isInitializedRef = useRef<boolean>(false);
+  const isInitialLoadRef = useRef<boolean>(true);
   const currentPageRef = useRef<number>(1);
 
   // Derived values
@@ -93,6 +105,10 @@ export default function useClaimHistory({
         // Handle empty response
         if (claimsHistoryData === null) {
           setClaimsHistory(null);
+          // Set initial load to false only once
+          if (isInitialLoadRef.current) {
+            isInitialLoadRef.current = false;
+          }
           return;
         }
 
@@ -133,13 +149,45 @@ export default function useClaimHistory({
           `Error loading claims history for ${currentToken}:`,
           error,
         );
+
+        // Set initial load to false even on error to prevent infinite loading state
+        if (isInitialLoadRef.current) {
+          isInitialLoadRef.current = false;
+        }
       } finally {
+        // Set initial load to false only once after first successful fetch
+        if (isInitialLoadRef.current) {
+          isInitialLoadRef.current = false;
+        }
+
         setIsLoadingClaimHistory(false);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [batchSize, isLoadingClaimHistory],
   );
+
+  /**
+   * Load claim history graph data
+   */
+  const loadGraphData = useCallback(async () => {
+    if (!walletAddressRef.current) return;
+
+    setIsLoadingGraphData(true);
+    try {
+      const graphData = await DataApiClient.getClaimHistoryGraphData({
+        walletAddress: walletAddressRef.current,
+        sortDirection: 'asc',
+        symbol: symbolRef.current,
+      });
+      setClaimHistoryGraphData(graphData);
+    } catch (error) {
+      console.error('Error loading claim history graph data:', error);
+      setClaimHistoryGraphData(null);
+    } finally {
+      setIsLoadingGraphData(false);
+    }
+  }, []);
 
   // Update currentPageRef when currentPage changes
   useEffect(() => {
@@ -158,6 +206,9 @@ export default function useClaimHistory({
       walletAddressRef.current = walletAddress;
       symbolRef.current = symbol;
 
+      // Reset initial load state for new wallet
+      isInitialLoadRef.current = true;
+
       // Clear cache for current token
       apiResponseCache[symbol] = {};
 
@@ -171,6 +222,15 @@ export default function useClaimHistory({
   }, [walletAddress, symbol, loadClaimsData]);
 
   /**
+   * Load graph data when wallet or symbol changes
+   */
+  useEffect(() => {
+    if (walletAddress) {
+      loadGraphData();
+    }
+  }, [walletAddress, symbol, loadGraphData]);
+
+  /**
    * Initialize data loading and set up refresh interval
    * Only runs once when component mounts
    */
@@ -182,6 +242,7 @@ export default function useClaimHistory({
 
     // Initial data load
     loadClaimsData(0, true);
+    loadGraphData();
 
     // Set up refresh interval
     if (!hooksInitialized[symbol]) {
@@ -268,7 +329,10 @@ export default function useClaimHistory({
 
   return {
     isLoadingClaimHistory,
+    isInitialLoad: isInitialLoadRef.current,
     claimsHistory,
+    claimHistoryGraphData,
+    isLoadingGraphData,
     currentPage,
     totalItems,
     totalPages,

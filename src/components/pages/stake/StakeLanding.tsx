@@ -14,7 +14,7 @@ import { useDispatch } from '@/store/store';
 import adxLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import adxMonster from '../../../../public/images/ADX_monster.png';
 import governanceIcon from '../../../../public/images/governance.svg';
-import Table from '../monitoring/Table';
+import Table from '../monitoring/TableLegacy';
 
 export default function StakeLanding({
   handleClickOnStakeMoreADX,
@@ -141,7 +141,7 @@ export default function StakeLanding({
 
         <div
           className={twMerge(
-            'bg-secondary rounded-lg border p-1 mt-10',
+            'bg-secondary rounded-md border p-1 mt-10',
             'border-double border-[#da1a305f]',
           )}
         >
@@ -151,7 +151,7 @@ export default function StakeLanding({
               d === 0 ? 'liquid' : `${d}d`,
             )}
             columnTitlesClassName="text-lg sm:text-sm text-white sm:opacity-50"
-            rowTitleClassName="text-base sm:text-sm text-white opacity-50 uppercase font-boldy"
+            rowTitleClassName="text-base sm:text-sm text-white opacity-50 uppercase font-semibold"
             columnWrapperClassName="ml-1"
             data={[
               {

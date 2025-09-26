@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts';
 import { twMerge } from 'tailwind-merge';
@@ -19,6 +19,7 @@ import { useSelector } from '@/store/store';
 import { PageProps, RechartsData } from '@/types';
 import { getCustodyByMint, getTokenSymbol } from '@/utils';
 
+import InfiniteScroll from '../common/InfiniteScroll/InfiniteScroll';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
@@ -125,8 +126,8 @@ export default function FooterStats({
     try {
       const response = await fetch(
         `${CHAOS_API_ENDPOINT}/trading-view/data?feed=${token}USD&type=1H&from=${
-          // past 24 hours
-          Math.floor(Date.now() / 1000) - 24 * 60 * 60
+        // past 24 hours
+        Math.floor(Date.now() / 1000) - 24 * 60 * 60
         }&till=${Date.now()}`,
       );
 
@@ -243,7 +244,7 @@ export default function FooterStats({
 
   const stats = [
     {
-      label: `24h ${activeToken} Price`,
+      label: `${activeToken} Price`,
       value: tokenPrices[activeToken],
     },
     {
@@ -293,7 +294,7 @@ export default function FooterStats({
               animate={{ opacity: 1, x: 0, filter: 'blur(0)' }}
               exit={{ opacity: 0, x: '-1rem', filter: 'blur(2px)' }}
               transition={{ duration: 0.3 }}
-              className="text-sm font-interMedium"
+              className="text-sm font-regular"
             >
               Open monitoring page
             </motion.p>
@@ -317,61 +318,31 @@ export default function FooterStats({
       <div className="w-5 h-full bg-gradient-to-r from-secondary to-transparent absolute left-0 top-0 z-20" />
       <div className="w-5 h-full bg-gradient-to-l from-secondary to-transparent absolute right-0 top-0 z-20" />
 
-      <div className="group overflow-hidden w-full">
-        <motion.div
-          className="flex flex-row items-center gap-3 whitespace-nowrap"
-          initial={{ x: 0 }}
-          animate={{ x: ['0%', '-50%'] }}
-          transition={{
-            repeat: Infinity,
-            repeatType: 'loop',
-            duration: 20,
-            ease: 'linear',
-          }}
-          style={{ willChange: 'transform' }}
-        >
-          {stats.map((stat, i) => (
-            <div
-              key={stat.label + i}
-              className="flex flex-row items-center px-3"
-            >
-              <span className="text-xs font-interMedium opacity-50 mr-1">
-                {stat.label}
-              </span>{' '}
-              <FormatNumber
-                nb={stat.value as number}
-                className="text-xs"
-                format="currency"
-                prefix="$"
-                prefixClassName="text-xs"
-                isDecimalDimmed={false}
-                precision={activeToken === 'BONK' ? 6 : 2}
-                isAbbreviate
-              />
-            </div>
-          ))}
-          {stats.map((stat, i) => (
-            <div
-              key={stat.label + 'dup' + i}
-              className="flex flex-row items-center px-3"
-            >
-              <span className="text-xs font-interMedium opacity-50 mr-1">
-                {stat.label}
-              </span>{' '}
-              <FormatNumber
-                nb={stat.value as number}
-                className="text-xs"
-                format="currency"
-                prefix="$"
-                prefixClassName="text-xs"
-                isDecimalDimmed={false}
-                precision={activeToken === 'BONK' ? 6 : 2}
-                isAbbreviate
-              />
-            </div>
-          ))}
-        </motion.div>
-      </div>
+      <InfiniteScroll speed={20} gap="md">
+        {stats.map((stat, i) => (
+          <div
+            key={stat.label + i}
+            className="flex flex-row items-center flex-shrink-0"
+          >
+            <span className="text-xs opacity-50 mr-1">
+              {stat.label}
+            </span>
+            <FormatNumber
+              nb={stat.value as number}
+              className="text-xs"
+              format="currency"
+              prefix="$"
+              prefixClassName="text-xs"
+              isDecimalDimmed={false}
+              precision={activeToken === 'BONK' ? 6 : 2}
+              isAbbreviate
+              isAbbreviateIcon={
+                stat.label.includes('Price') ? false : undefined
+              }
+            />
+          </div>
+        ))}
+      </InfiniteScroll>
 
       <AnimatePresence>
         {showDetails ? (
@@ -380,11 +351,11 @@ export default function FooterStats({
             animate={{ opacity: 1, y: '-2.5rem' }}
             exit={{ opacity: 0, y: '-2rem' }}
             transition={{ duration: 0.3 }}
-            className="absolute left-0 bottom-0 min-w-[18.75rem] flex flex-col bg-secondary border border-inputcolor rounded-lg z-50 p-2"
+            className="absolute left-0 bottom-0 min-w-[18.75rem] flex flex-col bg-secondary border border-inputcolor rounded-md z-50 p-2"
           >
             <div
               className={twMerge(
-                'relative flex flex-row items-center justify-between gap-3 p-3 transition-opacity duration-300 border border-inputcolor rounded-lg',
+                'relative flex flex-row items-center justify-between gap-3 p-3 transition-opacity duration-300 border border-inputcolor rounded-md',
                 isTokenDataLoading
                   ? 'opacity-30 pointer-events-none cursor-not-allowed'
                   : '',
@@ -394,7 +365,7 @@ export default function FooterStats({
                 <Menu
                   trigger={
                     <div className="flex flex-row items-center gap-1 mb-1 opacity-50 hover:opacity-100 transition-opacity duration-300">
-                      <p className="text-xs font-interMedium">
+                      <p className="text-xs font-regular">
                         24h {activeToken} Price
                       </p>
 
@@ -407,8 +378,8 @@ export default function FooterStats({
                       />
                     </div>
                   }
-                  openMenuClassName="top-3 rounded-lg"
-                  bgClassName="rounded-lg fixed"
+                  openMenuClassName="top-3 rounded-md"
+                  bgClassName="rounded-md fixed"
                   isDim
                 >
                   <MenuItems>
@@ -482,14 +453,14 @@ export default function FooterStats({
                     className="inline-flex ml-0 opacity-30"
                     text="This value represents the total size available for borrowing in this market and side by all traders. It depends on the pool's available liquidity and configuration restrictions."
                   />
-                  <p className="text-xs opacity-30 font-boldy">
+                  <p className="text-xs opacity-30 font-semibold">
                     Avail. long liq.
                   </p>
                   <AnimatePresence mode="wait">
                     {custodyLiquidity !== null &&
-                    tokenPrice &&
-                    custody &&
-                    !isTokenDataLoading ? (
+                      tokenPrice &&
+                      custody &&
+                      !isTokenDataLoading ? (
                       <motion.span
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -500,9 +471,11 @@ export default function FooterStats({
                         <FormatNumber
                           nb={custodyLiquidity * tokenPrice}
                           format="currency"
-                          precision={0}
+                          precision={2}
                           className="text-xs opacity-50 transition-opacity duration-300"
                           isDecimalDimmed={false}
+                          isAbbreviate
+                          isAbbreviateIcon
                         />
                       </motion.span>
                     ) : (
@@ -512,7 +485,7 @@ export default function FooterStats({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="bg-[#050D14] h-[1.125rem] w-[3rem] animate-loader rounded-lg"
+                        className="bg-[#050D14] h-[1.125rem] w-[3rem] animate-loader rounded-md"
                       />
                     )}
                   </AnimatePresence>
@@ -541,7 +514,7 @@ export default function FooterStats({
               </ResponsiveContainer>
             </div>
 
-            <div className="flex flex-col border border-inputcolor rounded-lg overflow-hidden mt-3">
+            <div className="flex flex-col border border-inputcolor rounded-md overflow-hidden mt-3">
               <div
                 className="flex flex-row items-center justify-between gap-3 p-3 border-inputcolor hover:bg-third transition duration-300"
                 onClick={() => {
@@ -549,7 +522,7 @@ export default function FooterStats({
                 }}
               >
                 <div>
-                  <p className="text-xs font-interMedium opacity-50">
+                  <p className="text-xs opacity-50">
                     {' '}
                     24h Volume
                   </p>
@@ -580,7 +553,7 @@ export default function FooterStats({
                 }}
               >
                 <div>
-                  <p className="text-xs font-interMedium opacity-50">AUM</p>
+                  <p className="text-xs opacity-50">AUM</p>
                   <FormatNumber
                     nb={aumUsd}
                     className="text-base"
@@ -608,7 +581,7 @@ export default function FooterStats({
                 }}
               >
                 <div>
-                  <p className="text-xs font-interMedium opacity-50">
+                  <p className="text-xs opacity-50">
                     Open Interest
                   </p>
                   <FormatNumber

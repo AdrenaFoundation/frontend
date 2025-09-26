@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from '@/store/store';
 import { AdrenaNotificationData, PageProps } from '@/types';
 
 import Button from '../common/Button/Button';
+import InfiniteScroll from '../common/InfiniteScroll/InfiniteScroll';
 import { AdrenaNotification } from './AdrenaNotification';
 import { DialectNotification } from './DialectNotification';
 
@@ -30,7 +31,6 @@ export const Notifications = ({
   hasMore: boolean;
   isDialectSubscriber: boolean;
 }) => {
-
   const dispatch = useDispatch();
   const enableDialectNotifications = useSelector(
     (state) => state.settings.enableDialectNotifications,
@@ -85,9 +85,9 @@ export const Notifications = ({
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
             key={'dialect-notification'}
-            className="w-full rounded-2xl border border-white/10 bg-main mb-3 p-1"
+            className="w-full rounded-md border border-white/10 bg-main mb-3 p-1"
           >
-            <div className="w-full rounded-xl border border-[#414E5E]/75 bg-[#050505] p-3">
+            <div className="w-full rounded-md border border-[#414E5E]/75 bg-[#050505] p-3">
               <div>
                 <div className="flex flex-row items-center justify-between">
                   <Image
@@ -109,44 +109,26 @@ export const Notifications = ({
                     }}
                   />
                 </div>
-                <p className="text-sm font-boldy opacity-75">
+                <p className="text-sm font-semibold opacity-75">
                   Supercharge your Adrena notifications
                 </p>
               </div>
 
               <div className="relative overflow-hidden w-full mt-1">
-                <div className="absolute left-0 top-0 w-12 h-full bg-gradient-to-r from-[#050505] to-transparent pointer-events-none z-20" />
-                <div className="absolute right-0 top-0 w-12 h-full bg-gradient-to-l from-[#050505] to-transparent pointer-events-none z-20" />
-                <motion.div
-                  className="flex flex-row items-center gap-4 whitespace-nowrap"
-                  initial={{ x: 0 }}
-                  animate={{ x: ['0%', '-50%'] }}
-                  transition={{
-                    repeat: Infinity,
-                    repeatType: 'loop',
-                    duration: 12,
-                    ease: 'linear',
-                  }}
-                  style={{ willChange: 'transform' }}
+                <InfiniteScroll
+                  speed={15}
+                  gap="lg"
+                  fadeColor="from-[#050505] to-transparent"
                 >
                   {['email', 'telegram', 'announcements'].map((point, i) => (
                     <span
                       key={point + i}
-                      className="text-sm font-boldy opacity-30 px-3"
+                      className="text-sm font-semibold opacity-30 px-3 flex-shrink-0"
                     >
                       {point}
                     </span>
                   ))}
-                  {/* Duplicate for loop */}
-                  {['email', 'telegram', 'announcements'].map((point, i) => (
-                    <span
-                      key={point + 'dup' + i}
-                      className="text-sm font-boldy opacity-30 px-3"
-                    >
-                      {point}
-                    </span>
-                  ))}
-                </motion.div>
+                </InfiniteScroll>
               </div>
             </div>
           </motion.div>
@@ -157,9 +139,9 @@ export const Notifications = ({
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
             key={'enable-adrena-notifications'}
-            className="flex flex-row  items-center justify-between w-full rounded-xl border border-white/10 bg-main mb-3 p-3"
+            className="flex flex-row  items-center justify-between w-full rounded-md border border-white/10 bg-main mb-3 p-3"
           >
-            <p className="text-sm font-boldy">Enable in-app notifications</p>
+            <p className="text-sm font-semibold">Enable in-app notifications</p>
             <Button
               title="Enable"
               size="sm"

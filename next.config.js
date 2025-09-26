@@ -28,6 +28,11 @@ module.exports = (phase, { defaultConfig }) => {
         },
         {
           protocol: 'https',
+          hostname: 'raw.githubusercontent.com',
+          pathname: '/wormhole-foundation/wormhole-token-list/main/assets/**',
+        },
+        {
+          protocol: 'https',
           hostname: 'metadata.jito.network',
           pathname: '/token/**',
         },
@@ -40,6 +45,11 @@ module.exports = (phase, { defaultConfig }) => {
           protocol: 'https',
           hostname: 'static.jup.ag',
           pathname: '/jlp/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'static.jup.ag',
+          pathname: '/**',
         },
         {
           protocol: 'https',
@@ -76,6 +86,31 @@ module.exports = (phase, { defaultConfig }) => {
           hostname: 'statics.solscan.io',
           pathname: '/**',
         },
+        {
+          protocol: 'https',
+          hostname: 'cdn.jsdelivr.net',
+          pathname: '/gh/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'assets.coingecko.com',
+          pathname: '/coins/images/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'storage.googleapis.com',
+          pathname: '/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'cloudflare-ipfs.com',
+          pathname: '/ipfs/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'cf-ipfs.com',
+          pathname: '/ipfs/**',
+        },
       ],
     },
 
@@ -88,6 +123,17 @@ module.exports = (phase, { defaultConfig }) => {
           os: false,
         },
       };
+
+      // Add new Solana program externals for Privy 3.0
+      config.externals = config.externals || {};
+      config.externals['@solana/kit'] = 'commonjs @solana/kit';
+      config.externals['@solana-program/memo'] =
+        'commonjs @solana-program/memo';
+      config.externals['@solana-program/system'] =
+        'commonjs @solana-program/system';
+      config.externals['@solana-program/token'] =
+        'commonjs @solana-program/token';
+
       return config;
     },
 
@@ -98,6 +144,8 @@ module.exports = (phase, { defaultConfig }) => {
       KV_REST_API_URL: process.env.KV_REST_API_URL,
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+      PRIVY_APP_ID: process.env.PRIVY_APP_ID,
+      PRIVY_CLIENT_ID: process.env.PRIVY_CLIENT_ID,
     },
   };
 };

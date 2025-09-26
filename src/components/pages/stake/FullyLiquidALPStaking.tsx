@@ -34,7 +34,6 @@ export default function FullyLiquidALPStaking({
     lockedStakes,
     handleLockedStakeRedeem,
     handleClickOnClaimRewardsAndRedeem,
-    handleClickOnFinalizeLockedRedeem,
     userPendingUsdcRewards,
     userPendingAdxRewards,
     pendingGenesisAdxRewards,
@@ -44,10 +43,8 @@ export default function FullyLiquidALPStaking({
     lockedStakes: LockedStakeExtended[] | null;
     handleLockedStakeRedeem: (
         lockedStake: LockedStakeExtended,
-        earlyExit: boolean,
     ) => void;
     handleClickOnClaimRewardsAndRedeem: () => Promise<void>;
-    handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
     userPendingUsdcRewards: number;
     userPendingAdxRewards: number;
     roundPendingUsdcRewards: number;
@@ -147,10 +144,10 @@ export default function FullyLiquidALPStaking({
     const medianStakedTime = calculateMedianStakedTime.total ? calculateMedianStakedTime.acc / calculateMedianStakedTime.total : 0;
 
     return (
-        <div className="flex flex-col bg-main rounded-2xl border">
+        <div className="flex flex-col bg-main rounded-md border">
             <div className="p-5 pb-0">
-                <div className="flex flex-col h-full w-full bg-gradient-to-br from-[#07111A] to-[#0B1722] border rounded-lg shadow-lg">
-                    <span className='text-lg font-boldy ml-auto mr-auto mt-2'>Attention: ALP is becoming fully liquid</span>
+                <div className="flex flex-col h-full w-full bg-gradient-to-br from-[#07111A] to-[#0B1722] border rounded-md shadow-lg">
+                    <span className='text-lg font-semibold ml-auto mr-auto mt-2'>Attention: ALP is becoming fully liquid</span>
 
                     <div className="h-[1px] bg-bcolor w-full my-2" />
 
@@ -228,10 +225,10 @@ export default function FullyLiquidALPStaking({
                     <h3 className="text-lg font-semibold">Pending Rewards</h3>
                 </div>
 
-                <div className="flex flex-col border bg-secondary rounded-xl shadow-lg overflow-hidden">
+                <div className="flex flex-col border bg-secondary rounded-md shadow-lg overflow-hidden">
                     {/* Pending rewards block */}
                     <div className="flex-grow"></div>
-                    <div className="flex flex-col border p-3 bg-secondary rounded-xl shadow-lg">
+                    <div className="flex flex-col border p-3 bg-secondary rounded-md shadow-lg">
                         <div className="flex flex-col space-y-1 flex-grow">
                             <div className="flex justify-between">
                                 <span className="text-txtfade">
@@ -441,9 +438,6 @@ export default function FullyLiquidALPStaking({
                             lockedStakes={sortedLockedStakes}
                             className='gap-3 mt-4'
                             handleRedeem={handleLockedStakeRedeem}
-                            handleClickOnFinalizeLockedRedeem={
-                                handleClickOnFinalizeLockedRedeem
-                            }
                             handleClickOnUpdateLockedStake={
                                 () => {
                                     // Nothing

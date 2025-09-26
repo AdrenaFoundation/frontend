@@ -1,5 +1,5 @@
 import Tippy from '@tippyjs/react';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import {
   Area,
   AreaChart,
@@ -38,6 +38,8 @@ export default function AreaRechart<T extends string>({
   lockPeriod,
   setLockPeriod,
   lockPeriods,
+  startTimestamp,
+  endTimestamp,
 }: {
   title: string;
   data: RechartsData[];
@@ -62,8 +64,14 @@ export default function AreaRechart<T extends string>({
   lockPeriod?: number;
   setLockPeriod?: (period: number) => void;
   lockPeriods?: number[];
+  startTimestamp?: number;
+  endTimestamp?: number;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<DataKey<string | number>[]>([]);
+
+  const activeEvents = useMemo(() => {
+    return (events || []).filter(event => startTimestamp && endTimestamp && event.timestamp >= startTimestamp && event.timestamp <= endTimestamp);
+  }, [events, startTimestamp, endTimestamp]);
 
   const formatYAxis = (tickItem: number) => {
     if (formatY === 'percentage') {
@@ -137,6 +145,8 @@ export default function AreaRechart<T extends string>({
                 format={formatTooltipNumber}
                 gmt={gmt}
                 events={events}
+                startTimestamp={startTimestamp}
+                endTimestamp={endTimestamp}
               />
             }
             cursor={false}
@@ -191,7 +201,7 @@ export default function AreaRechart<T extends string>({
             );
           })}
 
-          {events?.map(({
+          {activeEvents?.map(({
             label,
             time,
             color,

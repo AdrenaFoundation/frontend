@@ -90,7 +90,7 @@ export const NotificationItem = ({
     return (
         <div
             className={twMerge(
-                'relative p-4 border rounded-lg cursor-pointer transition-all duration-200',
+                'relative p-4 border rounded-md cursor-pointer transition-all duration-200',
                 'hover:bg-white/5 group',
                 colors.bg,
                 colors.border,
@@ -136,14 +136,14 @@ export const NotificationItem = ({
                 {/* Side & Market */}
                 <div>
                     <p className="text-gray-400 text-xs mb-1">Side</p>
-                    <p className="font-mono font-medium">
+                    <p className="font-mono font-regular">
                         {notification.side.toUpperCase()}
                     </p>
                 </div>
 
                 <div>
                     <p className="text-gray-400 text-xs mb-1">Market</p>
-                    <p className="font-mono font-medium">{notification.market}</p>
+                    <p className="font-mono font-regular">{notification.market}</p>
                 </div>
 
                 {/* Size & Price */}
@@ -152,7 +152,7 @@ export const NotificationItem = ({
                     <FormatNumber
                         nb={notification.size_usd_decimal || 0}
                         format="currency"
-                        className="font-mono font-medium text-sm mr-1"
+                        className="font-mono text-sm mr-1"
                         minimumFractionDigits={2}
                     />
                 </div>
@@ -164,11 +164,11 @@ export const NotificationItem = ({
                             nb={notification.price_decimal}
                             format="currency"
                             precision={token?.displayPriceDecimalsPrecision || 2}
-                            className="font-mono font-medium text-sm"
+                            className="font-mono text-sm"
                             minimumFractionDigits={2}
                         />
                     ) : (
-                        <p className="font-mono font-medium text-sm">N/A</p>
+                        <p className="font-mono text-sm">N/A</p>
                     )}
                 </div>
 
@@ -181,11 +181,11 @@ export const NotificationItem = ({
                                 <FormatNumber
                                     nb={notification.collateral_amount_usd_decimal}
                                     format="currency"
-                                    className="font-mono font-medium text-sm"
+                                    className="font-mono text-sm"
                                     minimumFractionDigits={2}
                                 />
                             ) : (
-                                <p className="font-mono font-medium text-sm">N/A</p>
+                                <p className="font-mono text-sm">N/A</p>
                             )}
                         </div>
 
@@ -197,10 +197,10 @@ export const NotificationItem = ({
                                     format="number"
                                     precision={2}
                                     suffix="x"
-                                    className="font-mono font-medium text-sm"
+                                    className="font-mono text-sm"
                                 />
                             ) : (
-                                <p className="font-mono font-medium text-sm">N/A</p>
+                                <p className="font-mono text-sm">N/A</p>
                             )}
                         </div>
                     </>
@@ -216,7 +216,7 @@ export const NotificationItem = ({
                                     nb={pnl}
                                     format="currency"
                                     className={twMerge(
-                                        'font-mono font-medium text-sm',
+                                        'font-mono text-sm',
                                         isProfit ? 'text-green-400' : 'text-red-400'
                                     )}
                                     prefix={isProfit ? '+' : ''}
@@ -230,7 +230,7 @@ export const NotificationItem = ({
                             <FormatNumber
                                 nb={notification.total_fees_decimal || 0}
                                 format="currency"
-                                className="font-mono font-medium text-sm"
+                                className="font-mono text-sm"
                                 minimumFractionDigits={2}
                             />
                         </div>

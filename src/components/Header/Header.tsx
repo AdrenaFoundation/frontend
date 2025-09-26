@@ -149,7 +149,7 @@ export default function Header({
                   height={12}
                 />
               )}
-              <h5 className="whitespace-nowrap font-medium">{page.name}</h5>
+              <h5 className="whitespace-nowrap font-regular">{page.name}</h5>
 
               {page.name === 'Ranked' && (
                 <Image
@@ -184,7 +184,7 @@ export default function Header({
       <div className="flex flex-row items-center gap-2 sm:gap-3">
         <Link href="/buy_alp">
           {tokenPriceALP && aprs ? (
-            <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-lg hover:bg-third transition-colors duration-300">
+            <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-md hover:bg-third transition-colors duration-300">
               <Image
                 src={alpLogo}
                 alt="ALP Logo"
@@ -216,13 +216,13 @@ export default function Header({
               </div>
             </div>
           ) : (
-            <div className="w-[8.33875rem] h-[1.75rem] bg-gray-800 rounded-xl" />
+            <div className="w-[8.33875rem] h-[1.75rem] bg-gray-800 rounded-md" />
           )}
         </Link>
 
         <Link href="/buy_adx">
           {tokenPriceADX && aprs ? (
-            <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-lg hover:bg-third transition-colors duration-300">
+            <div className="flex flex-row items-center gap-2 lg:gap-1 border p-2 py-1 rounded-md hover:bg-third transition-colors duration-300">
               <Image
                 src={adxLogo}
                 alt="ALP Logo"
@@ -254,13 +254,13 @@ export default function Header({
               </div>
             </div>
           ) : (
-            <div className="w-[8.33875rem] h-[1.75rem] bg-gray-800 rounded-xl" />
+            <div className="w-[8.33875rem] h-[1.75rem] bg-gray-800 rounded-md" />
           )}
         </Link>
 
         <Mutagen />
 
-        <div className="flex flex-row items-center border border-[#414E5E] rounded-lg">
+        <div className="flex flex-row items-center border border-[#414E5E] rounded-md">
           <NotificationBell adapters={adapters} />
 
           <PriorityFeeSetting isOpen={isPriorityFeeOpen} setIsOpen={setIsPriorityFeeOpen} />

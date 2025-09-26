@@ -14,17 +14,12 @@ export default function LockedStake({
   className,
   readonly = false,
   handleRedeem,
-  handleClickOnFinalizeLockedRedeem,
   handleClickOnUpdateLockedStake,
 }: {
   lockedStake: LockedStakeExtended;
   className?: string;
   readonly?: boolean;
   handleRedeem: (lockedStake: LockedStakeExtended, earlyExit: boolean) => void;
-  handleClickOnFinalizeLockedRedeem: (
-    lockedStake: LockedStakeExtended,
-    earlyExit: boolean,
-  ) => void;
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
 }) {
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
@@ -50,7 +45,7 @@ export default function LockedStake({
   return (
     <div key={lockedStake.id.toString()} className={twMerge('flex flex-col p-2 w-full', className)}>
       <div className={twMerge('flex w-full items-center gap-4 pb-4 sm:pl-2 sm:pr-2 flex-col sm:flex-row', !readonly ? 'sm:pb-2' : 'sm:pb-0')}>
-        <div className='font-boldy text-xs border w-full sm:rounded-xl sm:w-16 h-6 items-center justify-center bg-[#1e272e] flex text-txtfade'>Stake #{lockedStake.index}</div>
+        <div className='font-semibold text-xs border w-full sm:rounded-md sm:w-16 h-6 items-center justify-center bg-[#1e272e] flex text-txtfade'>Stake #{lockedStake.index}</div>
 
         <div className='ml-0 flex gap-0 items-center'>
           <div className='flex gap-1'>
@@ -64,11 +59,11 @@ export default function LockedStake({
           </div>
 
           {lockedStake.isGenesis ?
-            <div className='text-xxs bg-[#068862a0] font-boldy pt-[0.1em] pb-[0.1em] px-2 ml-4 rounded w-14 text-center'>genesis</div> : null}
+            <div className='text-xxs bg-[#068862a0] font-semibold pt-[0.1em] pb-[0.1em] px-2 ml-4 rounded w-14 text-center'>genesis</div> : null}
         </div>
 
         <div className='flex gap-2 items-center sm:ml-auto'>
-          <div className='text-xs font-boldy text-txtfade'>Unlocks in</div>
+          <div className='text-xs font-semibold text-txtfade'>Unlocks in</div>
           <RemainingTimeToDate timestamp={lockedStake.endTime.toNumber()} className='text-xs' />
         </div>
       </div>
@@ -78,19 +73,9 @@ export default function LockedStake({
           variant="secondary"
           size="lg"
           title="Redeem"
-          className="rounded-lg rounded-t-none border-none py-2 bg-green text-white w-full"
+          className="rounded-md rounded-t-none border-none py-2 bg-green text-white w-full"
           onClick={() => handleRedeem(lockedStake, false)}
         /> : <>
-          <Button
-            variant="outline"
-            size="xs"
-            title="Early Exit"
-            className="py-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-6"
-            onClick={() => {
-              handleClickOnFinalizeLockedRedeem(lockedStake, true)
-            }}
-          />
-
           {!lockedStake.isGenesis ? (
             <Tippy
               disabled={lockedStake.qualifiedForRewardsInResolvedRoundCount !== 0}

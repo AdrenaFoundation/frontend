@@ -4,19 +4,22 @@
  */
 
 import { usePrivy, type WalletWithMetadata } from '@privy-io/react-auth';
-import { useConnectedStandardWallets, useExportWallet, useFundWallet } from '@privy-io/react-auth/solana';
-import { useEffect, useState } from 'react';
+import { useExportWallet, useFundWallet, useWallets } from '@privy-io/react-auth/solana';
+import Image from 'next/image';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { usePrivySidebar } from '@/contexts/PrivySidebarContext';
+import { useTokenBalances } from '@/hooks/useTokenBalances';
 import { useDispatch, useSelector } from '@/store/store';
 
+import { PrivySendSOL } from './PrivySendSOL';
 import { PrivyWalletDropdown } from './PrivyWalletDropdown';
 
 export function PrivyGlobalSidebar() {
     const { ready, authenticated, user } = usePrivy();
     const { fundWallet } = useFundWallet();
     const { exportWallet } = useExportWallet();
-    const { wallets: connectedStandardWallets } = useConnectedStandardWallets();
+    const { wallets: connectedStandardWallets } = useWallets();
 
     const dispatch = useDispatch();
 
@@ -25,11 +28,70 @@ export function PrivyGlobalSidebar() {
 
     // State for wallet selection and balance with persistence
     const [selectedWalletIndex, setSelectedWalletIndex] = useState(0);
-    /*   const [balance, setBalance] = useState<number | null>(null);
-      const [isLoadingBalance, setIsLoadingBalance] = useState(false); */
+    const [showSendModal, setShowSendModal] = useState(false);
 
-    /*  const [splTokens, setSplTokens] = useState<{ mint: string; uiAmount: number; decimals: number }[]>([]);
-     const [isLoadingSplTokens, setIsLoadingSplTokens] = useState(false); */
+    // Get current wallet address for token balances
+    const currentWalletAddress = wallet?.walletAddress;
+
+    // Use token balances hook
+    const {
+        tokenBalances,
+        isLoadingBalances,
+        isLoadingPrices,
+        error: balancesError,
+        refreshBalances,
+    } = useTokenBalances(currentWalletAddress);
+
+    // Get token prices from Redux
+    const tokenPrices = useSelector((s) => s.tokenPrices || {});
+    const streamingTokenPrices = useSelector((s) => s.streamingTokenPrices || {});
+
+    // Helper function to get token symbol from mint address
+    const getTokenSymbolFromMint = useCallback((mint: string): string | undefined => {
+        // Check app's token definitions
+        if (window.adrena?.client) {
+            const token = window.adrena.client.tokens.find(t => t.mint.toBase58() === mint);
+            if (token) return token.symbol;
+
+            if (mint === window.adrena.client.alpToken.mint.toBase58()) return 'ALP';
+            if (mint === window.adrena.client.lmTokenMint.toBase58()) return 'ADX';
+        }
+
+        // Fallback to hardcoded well-known tokens
+        const knownTokens: Record<string, string> = {
+            'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v': 'USDC',
+            'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB': 'USDT',
+            '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk': 'ETH',
+            '3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh': 'BTC',
+            'So11111111111111111111111111111111111111112': 'SOL',
+            'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL': 'JTO',
+            'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN': 'JUP',
+            'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So': 'mSOL',
+            'bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1': 'bSOL',
+            'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn': 'jitoSOL',
+        };
+        return knownTokens[mint];
+    }, []);
+
+    // Calculate token balances with prices
+    const tokenBalancesWithPrices = useMemo(() => {
+        return tokenBalances.map(token => {
+            const symbol = getTokenSymbolFromMint(token.mint);
+            const priceUsd = symbol ? (streamingTokenPrices[symbol] ?? tokenPrices[symbol] ?? undefined) : undefined;
+            const valueUsd = priceUsd ? token.uiAmount * priceUsd : undefined;
+
+            return {
+                ...token,
+                priceUsd,
+                valueUsd,
+            };
+        });
+    }, [tokenBalances, tokenPrices, streamingTokenPrices, getTokenSymbolFromMint]);
+
+    // Calculate total portfolio value
+    const totalValueUsd = useMemo(() => {
+        return tokenBalancesWithPrices.reduce((total: number, token: typeof tokenBalancesWithPrices[0]) => total + (token.valueUsd || 0), 0);
+    }, [tokenBalancesWithPrices]);
 
     // Use context for sidebar state
     const { isSidebarOpen, closeSidebar } = usePrivySidebar();
@@ -91,29 +153,49 @@ export function PrivyGlobalSidebar() {
     const selectedWallet = solanaWallets[selectedWalletIndex];
 
     // Persist wallet selection when it changes
-    const handleWalletSelection = (index: number) => {
+    const handleWalletSelection = (index: number, walletType?: 'privy' | 'external') => {
+        if (walletType === 'external') {
+            // External wallet selection is handled by handleExternalWalletSelection
+            return;
+        }
+
         setSelectedWalletIndex(index);
         const wallet = solanaWallets[index];
-        if (wallet && typeof window !== 'undefined') {
-            localStorage.setItem('privy:selectedWallet', wallet.address);
-            console.log('Persisted selected wallet:', wallet.address);
+        if (wallet) {
+            console.log('Selected Privy wallet:', wallet.address.slice(0, 8) + '...');
 
-            // Dispatch custom event to notify other components
-            window.dispatchEvent(new CustomEvent('privyWalletSelected'));
+            // Mark this as a Privy connection to prevent native auto-connect
+            localStorage.setItem('lastConnectionSource', 'privy');
 
-            // Update global wallet state so the rest of the app refreshes immediately
+            // Update global wallet state
             dispatch({
                 type: 'connect',
                 payload: {
                     adapterName: 'Privy',
                     walletAddress: wallet.address,
+                    isPrivy: true,
                 },
             });
-            // Trigger immediate refreshes
-            /* fetchWalletBalance(wallet.address);
-            fetchSplTokens(wallet.address); */
         }
     };
+
+    // Handle external wallet selection
+    const handleExternalWalletSelection = useCallback(async (address: string, adapterName: string) => {
+        console.log('Selected external wallet:', address, 'Adapter:', adapterName);
+
+        // Mark this as a Privy connection to prevent native auto-connect
+        localStorage.setItem('lastConnectionSource', 'privy');
+
+        // Update global wallet state to use external wallet
+        dispatch({
+            type: 'connect',
+            payload: {
+                adapterName: adapterName,
+                walletAddress: address,
+                isPrivy: true,
+            },
+        });
+    }, [dispatch]);
 
     // Auto-open sidebar when wallet connects
     useEffect(() => {
@@ -211,8 +293,15 @@ export function PrivyGlobalSidebar() {
         if (!selectedWallet) return;
 
         try {
-            // Try to call fundWallet with minimal parameters to open standard modal
-            await fundWallet(selectedWallet.address);
+            // Try to call fundWallet with new Privy 3.0 interface
+            await fundWallet({
+                address: selectedWallet.address,
+                options: {
+                    amount: '1',
+                    asset: 'native-currency',
+                    chain: 'solana:mainnet'
+                }
+            });
         } catch (error) {
             console.error('Error funding wallet:', error);
 
@@ -279,6 +368,7 @@ export function PrivyGlobalSidebar() {
                         user={user}
                         wallet={wallet}
                         onWalletSelection={handleWalletSelection}
+                        onExternalWalletSelection={handleExternalWalletSelection}
                         className="text-white"
                     />
                 </div>
@@ -286,58 +376,82 @@ export function PrivyGlobalSidebar() {
                 {/* Holdings List */}
                 <div className="p-6">
                     <div className="mb-4">
-                        <div className="text-sm text-gray-400 mb-2">Total: ${/* {totalUsdValue ? totalUsdValue.toFixed(2) : '0.00'} */}</div>
-                    </div>
-
-                    {/* SOL Asset */}
-                    <div className="flex items-center justify-between py-3 border-b border-gray-800">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <div className="text-white font-medium">Solana</div>
-                                <div className="text-sm text-gray-400">
-                                    {/* {isLoadingBalance ? 'Loading...' : balance ? `${balance.toFixed(4)} SOL` : '0.0000 SOL'} */}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="text-right">
-                            <div className="text-white font-medium">
-                                {/* {solUsdValue ? `$${solUsdValue.toFixed(2)}` : '$0.00'} */}
-                            </div>
-                            <div className="text-xs text-gray-400">
-                                {/* {solPrice ? `$${solPrice.toFixed(2)}` : 'Loading...'} */}
-                            </div>
+                        <div className="text-sm text-gray-400 mb-2">
+                            Portfolio Value: {isLoadingPrices ? (
+                                <span className="animate-pulse">Loading...</span>
+                            ) : (
+                                <span className="text-white font-medium">
+                                    ${totalValueUsd.toFixed(2)}
+                                </span>
+                            )}
                         </div>
                     </div>
 
-                    {/* SPL Tokens */}
-                    {/* {isLoadingSplTokens ? (
-                        <div className="py-3 text-sm text-gray-400">Loading tokens...</div>
+                    {/* Token Balances */}
+                    {balancesError ? (
+                        <div className="py-3 space-y-2">
+                            <div className="text-sm text-red-400">Failed to load balances</div>
+                            <div className="text-xs text-gray-400">{balancesError}</div>
+                            <button
+                                onClick={refreshBalances}
+                                className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                            >
+                                🔄 Retry
+                            </button>
+                        </div>
+                    ) : isLoadingBalances ? (
+                        <div className="py-3 text-sm text-gray-400">Loading token balances...</div>
                     ) : (
-                        splTokens.map((t) => (
-                            <div key={t.mint} className="flex items-center justify-between py-3 border-b border-gray-800">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
-                                        <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                        </svg>
+                        <div className="space-y-2 max-h-64 overflow-y-auto">
+                            {tokenBalancesWithPrices.map((token: typeof tokenBalancesWithPrices[0]) => (
+                                <div key={token.mint} className="flex items-center justify-between py-3 border-b border-gray-800">
+                                    <div className="flex items-center gap-3">
+                                        {token.logoURI ? (
+                                            <Image
+                                                src={token.logoURI}
+                                                alt={token.symbol}
+                                                width={32}
+                                                height={32}
+                                                className="rounded-full"
+                                            />
+                                        ) : (
+                                            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                                                <span className="text-white text-xs font-bold">
+                                                    {token.symbol.charAt(0)}
+                                                </span>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <div className="text-white font-medium">{token.symbol}</div>
+                                            <div className="text-sm text-gray-400">{token.name}</div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <div className="text-white font-medium">{(window as unknown as { adrena?: { config?: { tokensInfo?: Record<string, { symbol?: string }> } } }).adrena?.config?.tokensInfo?.[t.mint]?.symbol ?? t.mint.slice(0, 4) + '...' + t.mint.slice(-4)}</div>
-                                        <div className="text-sm text-gray-400">Mint: {t.mint.slice(0, 4)}...{t.mint.slice(-4)}</div>
+                                    <div className="text-right">
+                                        <div className="text-white font-medium">
+                                            {token.uiAmount.toFixed(Math.min(6, token.decimals))}
+                                        </div>
+                                        <div className="text-xs text-gray-400">
+                                            {token.valueUsd ? (
+                                                `$${token.valueUsd.toFixed(2)}`
+                                            ) : token.priceUsd ? (
+                                                `$${token.priceUsd.toFixed(4)} each`
+                                            ) : (
+                                                'Price N/A'
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <div className="text-white font-medium">{t.uiAmount.toFixed(Math.min(4, t.decimals))}</div>
-                                    <div className="text-xs text-gray-400">Balance</div>
-                                </div>
-                            </div>
-                        ))
-                    )} */}
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Refresh Button */}
+                    <button
+                        onClick={refreshBalances}
+                        className="w-full mt-4 text-sm text-gray-400 hover:text-white transition-colors py-2"
+                    >
+                        🔄 Refresh Balances
+                    </button>
 
                     {/* Fund Wallet */}
                     <div className="mt-6 space-y-3">
@@ -346,6 +460,15 @@ export function PrivyGlobalSidebar() {
                             className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
                         >
                             💳 Fund the Account
+                        </button>
+
+                        {/* Send Tokens Button */}
+                        <button
+                            onClick={() => setShowSendModal(true)}
+                            disabled={!ready || !authenticated || !selectedWallet}
+                            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
+                        >
+                            📤 Send Tokens
                         </button>
 
                         {/* Export Wallet Button */}
@@ -365,6 +488,22 @@ export function PrivyGlobalSidebar() {
                     </div>
                 </div>
             </div>
+
+            {/* Send Tokens Modal */}
+            {showSendModal && (
+                <>
+                    {/* Modal Overlay - Higher z-index than sidebar */}
+                    <div
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]"
+                        onClick={() => setShowSendModal(false)}
+                    />
+
+                    {/* Modal - Even higher z-index */}
+                    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-gray-800 border border-gray-600 rounded-xl shadow-2xl z-[110]">
+                        <PrivySendSOL onClose={() => setShowSendModal(false)} />
+                    </div>
+                </>
+            )}
         </>
     );
 }

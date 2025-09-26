@@ -404,6 +404,7 @@ export const DEFAULT_SETTINGS = {
   enableDialectNotifications: false,
   enableAdrenaNotifications: true,
   useSqrtScaleForVolumeAndFeeChart: true,
+  lastSelectedTradingToken: '',
 } as SettingsState;
 
 export const PercentilePriorityFeeList = {
@@ -432,7 +433,7 @@ export function addNotification({
         error: '!bg-red !border-white/20',
         info: '!bg-inputcolor !border-white/10',
       }[type],
-      title: '!font-archivo !text-base',
+      title: '!!text-base',
       description: '!text-white/70',
       actionButton: 'action-button',
       cancelButton: 'cancel-button',
@@ -1857,4 +1858,29 @@ export function getWalletAddress(wallet: Wallet | null | undefined): string | nu
 // Hook for getting a memoized wallet address that updates safely
 export function useWalletAddress(wallet: Wallet | null | undefined): string | null {
   return React.useMemo(() => getWalletAddress(wallet), [wallet]);
+}
+
+export function periodModeToSeconds(periodMode: '1d' | '7d' | '1D' | '7D' | '1M' | '3M' | '6M' | '1Y' | 'All Time') {
+  switch (periodMode) {
+    case '1d':
+      return 1 * 24 * 60 * 60; // 1 day in seconds
+    case '1D':
+      return 1 * 24 * 60 * 60; // 1 day in seconds
+    case '7d':
+      return 7 * 24 * 60 * 60; // 7 days in seconds
+    case '7D':
+      return 7 * 24 * 60 * 60; // 7 days in seconds
+    case '1M':
+      return 30 * 24 * 60 * 60; // 30 days in seconds
+    case '3M':
+      return 90 * 24 * 60 * 60; // 90 days in seconds
+    case '6M':
+      return 180 * 24 * 60 * 60; // 180 days in seconds
+    case '1Y':
+      return 365 * 24 * 60 * 60; // 365 days in seconds
+    case 'All Time':
+      return Number.MAX_SAFE_INTEGER; // Effectively no limit
+    default:
+      throw new Error('Invalid period mode');
+  }
 }

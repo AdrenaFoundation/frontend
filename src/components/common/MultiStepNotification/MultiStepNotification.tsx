@@ -6,12 +6,10 @@ import { twMerge } from 'tailwind-merge';
 
 import { getLogs } from '@/logs';
 import {
-  addNotification,
   AdrenaTransactionError,
   getTxExplorer,
 } from '@/utils';
 
-import copyIcon from '../../../../public/images/copy.svg';
 import discordLogo from '../../../../public/images/discord.png';
 import arrowIcon from '../../../../public/images/Icons/arrow-sm-45.svg';
 import clockIcon from '../../../../public/images/Icons/clock.png';
@@ -20,6 +18,7 @@ import doneIcon from '../../../../public/images/Icons/done.png';
 import errorIcon from '../../../../public/images/Icons/error-full.png';
 import loaderIcon from '../../../../public/images/Icons/loader.svg';
 import Button from '../Button/Button';
+import CopyButton from '../CopyButton/CopyButton';
 
 export enum NotificationStepState {
   waiting,
@@ -156,10 +155,9 @@ export default class MultiStepNotification {
       const currentUrl =
         typeof window !== 'undefined' ? window.location.href : '';
 
-
       const timestamp = new Date().toISOString();
 
-      const recentLogs = getLogs()
+      const recentLogs = getLogs();
 
       const response = await fetch('/api/error_reports', {
         method: 'POST',
@@ -252,14 +250,16 @@ export default class MultiStepNotification {
             ? '10em'
             : this.error !== null
               ? 'auto'
-              : this.steps.length === 5 ? '12.873125em' : '11em',
+              : this.steps.length === 5
+                ? '12.873125em'
+                : '11em',
         }}
         transition={{ duration: 0.2 }}
-        className="w-[20em] bg-[#08141E] shadow-2xl z-[9999] border border-[#1A2938] rounded-xl"
+        className="w-[20em] bg-[#08141E] shadow-2xl z-[9999] border border-[#1A2938] rounded-md"
       >
         <div className="flex flex-col h-full w-full">
           <div className="flex w-full justify-between p-2 px-3">
-            <h3 className="font-boldy capitalize">{this.title ?? 'Title'}</h3>
+            <h3 className="font-semibold capitalize">{this.title ?? 'Title'}</h3>
 
             <Image
               className="opacity-20 hover:opacity-40 cursor-pointer"
@@ -278,29 +278,21 @@ export default class MultiStepNotification {
           {this.report_code !== null ? (
             <div className="flex flex-col gap-3 p-2 px-3">
               <div>
-                <p className="mb-1 text-sm font-boldy bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]">
+                <p className="mb-1 text-sm font-semibold bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]">
                   Report code:{' '}
-                  <span className="text-white font-mono">{this.report_code}</span>
-                  <Image
-                    src={copyIcon}
-                    alt="copy icon"
-                    width={10}
-                    height={10}
-                    className="inline-block cursor-pointer ml-2 opacity-50 hover:opacity-100 transition-opacity duration-300"
-                    onClick={() => {
-                      navigator.clipboard.writeText(this.report_code!);
-                      addNotification({
-                        title: 'Report code copied',
-                        type: 'success',
-                        duration: 'regular',
-                        position: 'top-right',
-                      });
-                    }}
+                  <span className="text-white font-mono">
+                    {this.report_code}
+                  </span>
+                  <CopyButton
+                    textToCopy={this.report_code!}
+                    notificationTitle="Report code copied"
+                    className="inline-block ml-2 opacity-50"
                   />
                 </p>
 
                 <p className="text-sm text-txtfade">
-                  If you need help, please provide this code to the support team.
+                  If you need help, please provide this code to the support
+                  team.
                 </p>
               </div>
               <Button
@@ -308,10 +300,7 @@ export default class MultiStepNotification {
                 className="w-full text-xs border border-[#1A2938]"
                 leftIcon={discordLogo}
                 onClick={() => {
-                  window.open(
-                    'https://discord.gg/adrena',
-                    '_blank',
-                  );
+                  window.open('https://discord.gg/adrena', '_blank');
                 }}
                 variant="outline"
               />
@@ -366,7 +355,7 @@ export default class MultiStepNotification {
 
                       <div
                         className={twMerge(
-                          'flex flex-row items-center gap-2 w-auto text-sm font-interMedium text-nowrap max-w-full overflow-hidden transition duration-500',
+                          'flex flex-row items-center gap-2 w-auto text-sm text-nowrap max-w-full overflow-hidden transition duration-500',
                           step.state === NotificationStepState.inProgress &&
                           'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]',
                           step.state === NotificationStepState.error &&
@@ -423,7 +412,7 @@ export default class MultiStepNotification {
 
                       <p
                         className={twMerge(
-                          'text-sm font-boldy text-redbright w-full h-full',
+                          'text-sm font-semibold text-redbright w-full h-full',
                           errorMessage.length >= 70 && 'text-xs',
                         )}
                       >

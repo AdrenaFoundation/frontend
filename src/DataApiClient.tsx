@@ -1,6 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 
+import { PositionSortOption, SortDirection } from './hooks/usePositionHistory';
 import {
   ChaosLabsPricesExtended,
   ChaosLabsPricesResponse,
@@ -8,6 +9,8 @@ import {
   ClaimHistoryBySymbolExtended,
   ClaimHistoryExtended,
   ClaimHistoryExtendedApi,
+  ClaimHistoryGraph,
+  ClaimHistoryGraphRaw,
   CustodyInfoResponse,
   EnrichedPositionApi,
   EnrichedPositionApiV2,
@@ -818,11 +821,19 @@ export default class DataApiClient {
   }
 
   public static async getPositions({
+    entryDate,
+    exitDate,
+    sortBy,
+    sortDirection,
     walletAddress,
     tokens,
     limit = 1000,
     offset = 0,
   }: {
+    entryDate?: Date;
+    exitDate?: Date;
+    sortBy?: PositionSortOption;
+    sortDirection?: SortDirection;
     walletAddress: string;
     tokens: Token[];
     limit?: number;
@@ -830,8 +841,10 @@ export default class DataApiClient {
   }): Promise<EnrichedPositionApiV2 | null> {
     try {
       const response = await fetch(
-        `${DataApiClient.DATAPI_URL}/v3/position?user_wallet=${walletAddress
-        }&status=liquidate&status=close&limit=${limit}&offset=${offset}`,
+        `${DataApiClient.DATAPI_URL}/v4/position?user_wallet=${walletAddress
+        }&status=liquidate&status=close&limit=${limit}&offset=${offset}${entryDate ? `&entry_date=${entryDate.toISOString()}` : ''
+        }${exitDate ? `&exit_date=${exitDate.toISOString()}` : ''}${sortBy ? `&sortField=${sortBy}` : ''
+        }${sortDirection ? `&sort=${sortDirection.toUpperCase()}` : ''}`,
       );
 
       if (!response.ok) {
@@ -1169,6 +1182,55 @@ export default class DataApiClient {
       );
     } catch (e) {
       console.error('Error fetching trader Info:', e);
+      return null;
+    }
+  }
+
+  public static async getClaimHistoryGraphData({
+    walletAddress,
+    sortDirection = 'asc',
+    startDate = new Date('2024-09-25T00:00:00Z'),
+    endDate = new Date(),
+    symbol = 'ADX',
+  }: {
+    walletAddress: string;
+    sortDirection?: 'asc' | 'desc';
+    startDate?: Date;
+    endDate?: Date;
+    symbol?: 'ADX' | 'ALP';
+  }): Promise<ClaimHistoryGraph[] | null> {
+    if (!walletAddress) return null;
+
+    const url = `${DataApiClient.DATAPI_URL}/claimGraph?user_wallet=${walletAddress}&start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}&symbol=${symbol}&sort=${sortDirection.toUpperCase()}`;
+
+    try {
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        console.log('API response was not ok');
+        return null;
+      }
+
+      const apiBody = await response.json();
+
+      const apiData: ClaimHistoryGraphRaw[] | undefined = apiBody.data;
+
+      if (typeof apiData === 'undefined') {
+        console.log('apiData is undefined');
+        return null;
+      }
+
+      const formattedData: ClaimHistoryGraph[] = apiData.map((data) => ({
+        rewardsAdx: data.rewards_adx,
+        rewardsUsdc: data.rewards_usdc,
+        rewardsAdxGenesis: data.rewards_adx_genesis,
+        transactionDate: new Date(data.transaction_date),
+        symbol: data.symbol,
+      }));
+
+      return formattedData;
+    } catch (error) {
+      console.error('Error fetching claim history graph data:', error);
       return null;
     }
   }
@@ -1692,6 +1754,27 @@ export default class DataApiClient {
       };
     } catch (error) {
       console.error('Error exporting claims:', error);
+      return null;
+    }
+  }
+
+  public static async getVelocityIndicators() {
+    try {
+      const response = await fetch(`${DataApiClient.DATAPI_URL}/velocity`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      console.error('Error fetching velocity indicators:', error);
       return null;
     }
   }

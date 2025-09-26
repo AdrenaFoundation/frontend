@@ -28,7 +28,7 @@ export default function FooterAnnouncement() {
           style={{ willChange: 'transform' }}
         >
           {announcements.map((announcement, index) => (
-            <p key={index} className="text-xs font-interMedium opacity-75">
+            <p key={index} className="text-xs opacity-75">
               {announcement}
             </p>
           ))}

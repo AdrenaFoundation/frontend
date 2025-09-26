@@ -211,6 +211,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '9/17',
+    timestamp: 1726516800,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Genesis phase: liquidity pool raises 10m to bootstrap trading.`,
@@ -219,6 +220,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '9/25',
+    timestamp: 1727208000,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Trading goes live.`,
@@ -227,6 +229,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '10/15',
+    timestamp: 1728936000,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Increase WBTC and JitoSOL max position size to $500k.`,
@@ -235,6 +238,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '10/30',
+    timestamp: 1730232000,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Increase WBTC and JitoSOL max position size to $750k.`,
@@ -243,6 +247,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '11/2',
+    timestamp: 1730491200,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Update pool target ratios to [15% USDC, 7% BONK, 54% jitoSOL, 24% WBTC].`,
@@ -251,6 +256,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '11/2',
+    timestamp: 1730491200,
     color: '#ffffff40',
     labelPosition: 'insideTopLeft',
     description: 'BONK borrow rate increased from 0.008%/h to 0.016%/h',
@@ -259,6 +265,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '11/11',
+    timestamp: 1731268800,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `"Pre-season: AWAKENING" trading competition starts.`,
@@ -267,6 +274,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '11/13',
+    timestamp: 1731441600,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Increase WBTC and jitoSOL max position size to $1m.`,
@@ -275,6 +283,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '11/20',
+    timestamp: 1732046400,
     color: '#ffffff40',
     labelPosition: 'insideTopLeft',
     description: 'BONK borrow rate increased from 0.016%/h to 0.032%/h',
@@ -283,6 +292,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '11/23',
+    timestamp: 1732305600,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Increase WBTC and jitoSOL max position size to $2m.`,
@@ -291,6 +301,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '12/8',
+    timestamp: 1733601600,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Increase WBTC and jitoSOL max position size to $4m.`,
@@ -299,6 +310,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '12/10',
+    timestamp: 1733774400,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Increase liquidity pool soft cap to $30m.`,
@@ -307,6 +319,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '12/23',
+    timestamp: 1734897600,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `"Pre-season: AWAKENING" trading competition ends. 876 participants fought for 2.27M ADX and 25k JTO rewards.`,
@@ -315,6 +328,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '1/5',
+    timestamp: 1736020800,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Adrena is now supported by Solana AgentKit from SendAI.`,
@@ -323,6 +337,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '2/1',
+    timestamp: 1738353600,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Season 1: Expanse trading competition starts.`,
@@ -331,6 +346,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '3/6',
+    timestamp: 1741204800,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Referral Fees are now live.`,
@@ -339,6 +355,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '3/19',
+    timestamp: 1742328000,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `ALP becomes liquid.`,
@@ -347,6 +364,7 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '4/11',
+    timestamp: 1744315200,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Season 1: Expanse trading competition ends.`,
@@ -355,9 +373,37 @@ export const ADRENA_EVENTS: AdrenaEvent[] = [
   {
     label: '',
     time: '4/26',
+    timestamp: 1745611200,
     color: '#ffffff40',
     labelPosition: 'insideTopRight',
     description: `Season 2: Factions trading competition starts.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '7/5',
+    timestamp: 1751659200,
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Season 2: Factions trading competition ends.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '7/5',
+    timestamp: 1751659200,
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Summer Event: trading competition starts.`,
+    type: 'Global',
+  },
+  {
+    label: '',
+    time: '9/5',
+    timestamp: 1757016000,
+    color: '#ffffff40',
+    labelPosition: 'insideTopRight',
+    description: `Summer Event: trading competition ends.`,
     type: 'Global',
   },
 ];
@@ -366,6 +412,7 @@ export const TRADING_COMPETITION_SEASONS = {
   awakening: {
     img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/awakening/comp-banner-I4GlDkseidl72PgFvy8rbqb4Ktxr9s.jpg',
     title: 'Awakening',
+    bannerTitle: 'Awakening',
     subTitle: 'pre-season',
     startDate: new Date('11/11/2024'),
     endDate: new Date('12/23/2024'),
@@ -374,6 +421,7 @@ export const TRADING_COMPETITION_SEASONS = {
     adxRewards: 2270000,
     jtoRewards: 25000,
     bonkRewards: 0,
+    usdcRewards: 0,
     description: [
       "Welcome to Adrena's trading pre-season, anon! This six-week event is the introduction to our upcoming recurring trading seasons. From November 11th 12pm UTC to December 23rd 12pm UTC, traders will vie for PnL-based ranks in one of four volume-based divisions. Your total trading volume during the six-week event determines your division qualification. Check out the divisions below, continuously updated based on onchain events.",
       "Only positions open after the start date and closed before the end date qualify. Each weekly periods ends on Monday 12am UTC, except the last one ending at 12pm UTC. Volume is determined by Open/Increase and Close positions. It's accounted for when the position closes (close or liquidation).",
@@ -386,6 +434,7 @@ export const TRADING_COMPETITION_SEASONS = {
   expanse: {
     img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/expanse/expanse-banner-M4jVXVtzATa0P36KUpVvc1hXFNkznk.jpg',
     title: 'The Expanse',
+    bannerTitle: 'The Expanse',
     subTitle: 'new season',
     startDate: new Date('2025-01-31T23:59:59.999Z'),
     endDate: new Date('2025-04-11T23:59:59.999Z'),
@@ -394,6 +443,7 @@ export const TRADING_COMPETITION_SEASONS = {
     adxRewards: 5000000,
     jtoRewards: 50000,
     bonkRewards: 0,
+    usdcRewards: 0,
     description: [
       `Adrena's first Trading Season: The Expanse. Get ready for Adrena's inaugural trading season, The Expanse. Engage in our division-based trading competition where you can:`,
       `- Farm Mutagen through daily and weekly quests. By accumulating Mutagen through leverage trading, you can improve your ranking in the upcoming season and secure a share in the upcoming $ADX Airdrop. Can only generate through trading activities.`,
@@ -411,6 +461,7 @@ export const TRADING_COMPETITION_SEASONS = {
   factions: {
     img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/factions/factions-banner-OKwsUEBqusOest7hhIPaKsklmSlNdh.jpg',
     title: 'Factions',
+    bannerTitle: 'Factions',
     subTitle: 'Season 2',
     startDate: new Date('2025-04-25T23:59:59.999Z'),
     endDate: new Date('2025-07-04T23:59:59.999Z'),
@@ -419,6 +470,7 @@ export const TRADING_COMPETITION_SEASONS = {
     adxRewards: 12000000,
     jtoRewards: 25000,
     bonkRewards: 4200000000,
+    usdcRewards: 0,
     description: [``] as string[],
     bannerClassName: 'h-[32em] pt-20',
     width: 1040,
@@ -428,6 +480,7 @@ export const TRADING_COMPETITION_SEASONS = {
   interseason3: {
     img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/summerEvent/summer-event.jpg',
     title: 'Summer Event',
+    bannerTitle: 'Summer Event',
     subTitle: 'Interseason',
     startDate: new Date('2025-07-04T23:59:59.999Z'),
     endDate: new Date('2025-09-05T23:59:59.999Z'),
@@ -436,10 +489,45 @@ export const TRADING_COMPETITION_SEASONS = {
     adxRewards: 0,
     jtoRewards: 21200,
     bonkRewards: 3160000000,
+    usdcRewards: 0,
     description: [`Welcome to the Summer Event!`] as string[],
     bannerClassName: 'h-[32em] pt-20',
     width: 1040,
     height: 1040,
+  },
+
+  anniversary1: {
+    img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/anniversary.jpg',
+    title: '1st Anniversary',
+    bannerTitle: 'Anniversary',
+    subTitle: 'ADRENA',
+    startDate: new Date('2025-09-26T00:00:00.000Z'),
+    endDate: new Date('2025-10-25T23:59:59.999Z'),
+    gradient: 'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
+    primaryColor: '#247CFA',
+    adxRewards: 0,
+    jtoRewards: 0,
+    bonkRewards: 0,
+    usdcRewards: 50000,
+    description: [`Welcome to the Adrena Birthday Party!`] as string[],
+    bannerClassName: 'h-[32em] pt-20',
+  },
+
+  anniversary1: {
+    img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/anniversary.jpg',
+    title: '1st Anniversary',
+    bannerTitle: 'Anniversary',
+    subTitle: 'ADRENA',
+    startDate: new Date('2025-09-26T00:00:00.000Z'),
+    endDate: new Date('2025-10-25T23:59:59.999Z'),
+    gradient: 'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
+    primaryColor: '#247CFA',
+    adxRewards: 0,
+    jtoRewards: 0,
+    bonkRewards: 0,
+    usdcRewards: 50000,
+    description: [`Welcome to the Adrena Birthday Party!`] as string[],
+    bannerClassName: 'h-[32em] pt-20',
   },
 } as const;
 

@@ -263,7 +263,7 @@ export default function AllUserProfiles() {
         {activeProfile && (
           <Modal
             className="h-[80vh] w-full overflow-y-auto"
-            wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]"
+            wrapperClassName="items-start w-full max-w-[70em] sm:mt-0"
             title=""
             close={() => setActiveProfile(null)}
             isWrapped={false}
@@ -290,7 +290,7 @@ const LoaderState = () => (
       {Array.from({ length: 20 }).map((_, i) => (
         <div
           key={i}
-          className="w-full h-[3.918125rem] bg-third rounded-lg animate-loader"
+          className="w-full h-[3.918125rem] bg-third rounded-md animate-loader"
           style={{
             // strong fade from top to bottom
             opacity: 1 - i * 0.05,

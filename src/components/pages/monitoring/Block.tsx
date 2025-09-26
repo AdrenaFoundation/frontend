@@ -33,15 +33,10 @@ export default function Block({
       )}
     >
       {data.map(({ rowTitle, ...v }, i) => (
-        <div
-          className={
-            'bg-transparent rounded-md border p-3'
-          }
-          key={i}
-        >
+        <div className={'bg-transparent rounded-md border p-3'} key={i}>
           <div
             className={twMerge(
-              'text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 text-txtfade',
+              'text-lg font-semibold overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 text-txtfade',
               columnTitlesClassName,
             )}
           >

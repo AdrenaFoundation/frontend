@@ -33,7 +33,6 @@ export default function StakeOverview({
   handleClickOnClaimRewards,
   handleClickOnRedeem,
   handleClickOnClaimRewardsAndBuyAdx,
-  handleClickOnFinalizeLockedRedeem,
   handleClickOnUpdateLockedStake,
   userPendingUsdcRewards,
   userPendingAdxRewards,
@@ -47,12 +46,11 @@ export default function StakeOverview({
   totalLiquidStaked?: number | null;
   totalRedeemableLockedStake: number | null;
   lockedStakes: LockedStakeExtended[] | null;
-  handleLockedStakeRedeem: (lockedStake: LockedStakeExtended, earlyExit: boolean) => void;
+  handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
   handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod | AdxLockPeriod) => void;
   handleClickOnClaimRewards: () => Promise<void>;
   handleClickOnClaimRewardsAndBuyAdx: () => Promise<void>;
   handleClickOnRedeem?: () => void;
-  handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
   userPendingUsdcRewards: number;
   userPendingAdxRewards: number;
@@ -166,7 +164,7 @@ export default function StakeOverview({
       : (Number(totalLockedStake) || 0) + (Number(totalLiquidStaked) || 0)) ?? 0;
 
   return (
-    <div className="flex flex-col bg-main rounded-2xl border">
+    <div className="flex flex-col bg-main rounded-md border">
       {/* Token info header */}
       <TokenInfoHeader
         token={token}
@@ -206,7 +204,6 @@ export default function StakeOverview({
           onSort={handleSort}
           onAddStake={handleClickOnStakeMore}
           onRedeem={handleLockedStakeRedeem}
-          onFinalize={handleClickOnFinalizeLockedRedeem}
           onUpdate={handleClickOnUpdateLockedStake}
           defaultLockPeriod={DEFAULT_LOCKED_STAKE_LOCK_DURATION}
         />

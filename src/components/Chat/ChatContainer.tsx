@@ -252,7 +252,7 @@ function ChatContainer({
         {activeProfile && (
           <Modal
             className="h-[80vh] w-full overflow-y-auto"
-            wrapperClassName="items-start w-full max-w-[55em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]"
+            wrapperClassName="items-start w-full max-w-[70em] sm:mt-0"
             title=""
             close={() => setActiveProfile(null)}
             isWrapped={false}
@@ -316,7 +316,7 @@ function ChatTitle({
             />
           </div>
         ) : null}
-        <p className="text-base font-boldy capitalize">
+        <p className="text-base font-semibold capitalize">
           <span className="opacity-50 text-base">
             # {!isChatOpen && !isLoading ? 'Chat:' : null}
           </span>
@@ -390,7 +390,7 @@ function ChatContainerWrapper({
           animate={{ opacity: 1, y: '-2.5rem' }}
           exit={{ opacity: 0, y: '-2rem' }}
           transition={{ duration: 0.3 }}
-          className="fixed bottom-0 right-4 z-20 flex flex-row bg-secondary border-2 rounded-lg w-[32rem] overflow-hidden"
+          className="fixed bottom-0 right-4 z-20 flex flex-row bg-secondary border-2 rounded-md w-[32rem] overflow-hidden"
           style={{
             userSelect: isDragging ? 'none' : 'auto',
             height: height || 'auto',

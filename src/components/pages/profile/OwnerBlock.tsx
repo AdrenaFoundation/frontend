@@ -6,14 +6,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../../public/images/adx.svg';
-import copyIcon from '@/../../public/images/copy.svg';
 import editIcon from '@/../../public/images/Icons/edit.svg';
+import shareIcon from '@/../../public/images/Icons/share-fill.svg';
 import snsBadgeIcon from '@/../../public/images/sns-badge.svg';
 import Button from '@/components/common/Button/Button';
+import CopyButton from '@/components/common/CopyButton/CopyButton';
 import InputString from '@/components/common/inputString/InputString';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
 import {
   ACHIEVEMENTS,
   PROFILE_PICTURES,
@@ -28,7 +28,7 @@ import {
   UserProfileTitle,
   Wallpaper,
 } from '@/types';
-import { addNotification } from '@/utils';
+import { addNotification, getAbbrevWalletAddress } from '@/utils';
 
 import imageIcon from '../../../../public/images/Icons/image.svg';
 import imagesIcon from '../../../../public/images/Icons/images.svg';
@@ -290,7 +290,9 @@ export default function OwnerBloc({
 
     return Object.entries(WALLPAPERS).map(([v, path]) => {
       const unlocked = unlockedWallpapers.includes(Number(v));
-      const achievement = ACHIEVEMENTS.find((achievement) => achievement.wallpaperUnlock === Number(v));
+      const achievement = ACHIEVEMENTS.find(
+        (achievement) => achievement.wallpaperUnlock === Number(v),
+      );
       return (
         <Tippy
           content={
@@ -378,7 +380,9 @@ export default function OwnerBloc({
 
     return Object.entries(PROFILE_PICTURES).map(([v, path]) => {
       const unlocked = unlockedPfpIndexes.includes(Number(v));
-      const achievement = ACHIEVEMENTS.find((achievement) => achievement.pfpUnlock === Number(v));
+      const achievement = ACHIEVEMENTS.find(
+        (achievement) => achievement.pfpUnlock === Number(v),
+      );
       return (
         <Tippy
           content={
@@ -490,8 +494,12 @@ export default function OwnerBloc({
             return (
               <Tippy
                 content={
-                  ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index) &&
-                    ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index)?.title
+                  ACHIEVEMENTS.find(
+                    (achievement) => achievement.titleUnlock === index,
+                  ) &&
+                    ACHIEVEMENTS.find(
+                      (achievement) => achievement.titleUnlock === index,
+                    )?.title
                     ? `Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index)?.title}"`
                     : 'Unlocked by default'
                 }
@@ -504,7 +512,7 @@ export default function OwnerBloc({
                       (index as unknown as ProfilePicture)
                       ? 'border-yellow-400/80'
                       : 'border-transparent grayscale',
-                    'cursor-pointer'
+                    'cursor-pointer',
                   )}
                   onClick={() => {
                     // if (!unlocked) return;
@@ -526,8 +534,12 @@ export default function OwnerBloc({
         <div className="w-full h-[1px] bg-bcolor" />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 opacity-20 cursor-disabled">
           {lockedTitles.map((title) => {
-            const index = Object.values(USER_PROFILE_TITLES).findIndex((t) => t === title);
-            const achievement = ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index);
+            const index = Object.values(USER_PROFILE_TITLES).findIndex(
+              (t) => t === title,
+            );
+            const achievement = ACHIEVEMENTS.find(
+              (achievement) => achievement.titleUnlock === index,
+            );
             return (
               <Tippy
                 content={
@@ -626,7 +638,7 @@ export default function OwnerBloc({
                 <>
                   <div className="h-full w-full absolute z-10 backdrop-blur-2xl"></div>
                   <div className="h-full w-full absolute z-20 items-center justify-center flex flex-col">
-                    <div className="font-archivoblack tracking-widest opacity-70 text-sm text-center">
+                    <div className="font-bold tracking-widest opacity-70 text-sm text-center">
                       Change Profile Picture
                     </div>
                   </div>
@@ -636,48 +648,71 @@ export default function OwnerBloc({
           </div>
         </Tippy>
 
-        <div className="flex flex-col items-center mt-12 mb-4 sm:mb-0 sm:mt-0 sm:items-start w-full h-full justify-center z-20 pl-6">
+        <div className="flex flex-col items-center sm:items-start w-full h-full justify-center z-20 pl-6">
           <div className="flex flex-row items-center gap-3">
             {walletPubkey ? (
-              <Tippy content={'Wallet address'}>
-                <div className="z-20 flex items-center gap-1">
-                  <Image
-                    onClick={async () => {
-                      try {
-                        await navigator.clipboard.writeText(
-                          walletPubkey.toBase58(),
-                        );
+              <Tippy
+                content={
+                  <p className="!text-xs !font-semibold">
+                    <span className="text-xs opacity-50 mr-1">
+                      Wallet Address
+                    </span>{' '}
+                    {getAbbrevWalletAddress(walletPubkey.toBase58())}
+                  </p>
+                }
+              >
+                <CopyButton
+                  textToCopy={walletPubkey.toBase58()}
+                  notificationTitle="Wallet address copied to clipboard"
+                  className="opacity-70"
+                />
+              </Tippy>
+            ) : null}
 
-                        addNotification({
-                          title: 'Wallet address copied to clipboard',
-                          message: '',
-                          type: 'info',
-                          duration: 'regular',
-                        });
-                      } catch (err) {
-                        console.error('Could not copy text: ', err);
-                      }
-                    }}
-                    src={copyIcon}
-                    className="w-3 h-3 opacity-90 cursor-pointer hover:opacity-100 mr-1"
-                    alt="copy icon"
-                  />
+            <Tippy
+              content="Share Profile"
+              className="!text-xs !font-semibold"
+              placement="top"
+            >
+              <Image
+                src={shareIcon}
+                className="w-3 h-3 opacity-70 cursor-pointer hover:opacity-100 transition-opacity duration-300"
+                alt="share icon"
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    `https://app.adrena.xyz/profile/${userProfile.owner.toBase58()}`,
+                  );
+                  addNotification({
+                    title: 'Profile link copied to clipboard',
+                    message: '',
+                    type: 'info',
+                    duration: 'regular',
+                  });
+                }}
+              />
+            </Tippy>
 
-                  <OnchainAccountInfo
-                    address={walletPubkey}
-                    className="text-sm opacity-90"
-                    addressClassName="text-xs tracking-[0.12em]"
-                    iconClassName="ml-1"
-                    shorten={true}
-                  />
-                </div>
+            {canUpdateNickname && userProfile.version > 1 ? (
+              <Tippy
+                content="Edit Nickname"
+                className="!text-xs !font-semibold"
+                placement="top"
+              >
+                <Image
+                  onClick={() => {
+                    setNicknameUpdating(true);
+                  }}
+                  src={editIcon}
+                  alt="Edit nickname"
+                  className="w-4 h-4 opacity-70 cursor-pointer hover:opacity-100 transition-opacity duration-300"
+                />
               </Tippy>
             ) : null}
 
             {snsDomain ? (
               <Tippy
                 content="Registered Domain through Solana Name Service (SNS)"
-                className="!text-xs !font-boldy"
+                className="!text-xs !font-semibold"
                 placement="top"
               >
                 <div className="flex flex-row gap-1 items-center sm:pr-4">
@@ -695,20 +730,9 @@ export default function OwnerBloc({
           </div>
 
           <div className="flex mt-1">
-            <div className="flex flex-row items-center gap-1 font-mono text-3xl relative">
+            <p className="font-semibold text-3xl relative">
               {userProfile.nickname}
-
-              {canUpdateNickname && userProfile.version > 1 ? (
-                <Image
-                  onClick={() => {
-                    setNicknameUpdating(true);
-                  }}
-                  src={editIcon}
-                  alt="Edit nickname"
-                  className="w-4 h-4 opacity-70 cursor-pointer hover:opacity-100 transition-opacity duration-300"
-                />
-              ) : null}
-            </div>
+            </p>
           </div>
 
           <Tippy
@@ -732,7 +756,7 @@ export default function OwnerBloc({
               <span className="text-lg font-cursive relative top-1">
                 &quot;
               </span>
-              <span className="text-sm font-boldy">{title}</span>
+              <span className="text-sm font-semibold">{title}</span>
               <span className="text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100">
                 &quot;
               </span>
@@ -791,7 +815,7 @@ export default function OwnerBloc({
               </div>
 
               <InputString
-                className="font-boldy text-xl relative p-3 border rounded-lg text-center"
+                className="font-semibold text-xl relative p-3 border rounded-md text-center"
                 value={updatedNickname ?? ''}
                 onChange={setUpdatedNickname}
                 placeholder="The Great Trader"
@@ -803,7 +827,7 @@ export default function OwnerBloc({
                 {(trimmedUpdatedNickname &&
                   trimmedUpdatedNickname.length < 3) ||
                   !trimmedUpdatedNickname ? (
-                  <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">
+                  <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-semibold">
                     Nickname must be at least 3 characters
                   </div>
                 ) : null}
@@ -812,21 +836,21 @@ export default function OwnerBloc({
                   typeof alreadyTakenNicknames[trimmedUpdatedNickname] ===
                   'undefined' &&
                   trimmedUpdatedNickname.length > 3 ? (
-                  <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">
+                  <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-semibold">
                     Checking nickname availability...
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
                   alreadyTakenNicknames[trimmedUpdatedNickname] === true ? (
-                  <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-boldy">
+                  <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-semibold">
                     Nickname is already taken
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
                   alreadyTakenNicknames[trimmedUpdatedNickname] === false ? (
-                  <div className="text-red-500 text-xs text-center mb-4 text-green font-boldy">
+                  <div className="text-red-500 text-xs text-center mb-4 text-green font-semibold">
                     Nickname is available
                   </div>
                 ) : null}
@@ -904,7 +928,7 @@ export default function OwnerBloc({
                           alt="settings icon"
                           className="w-[0.7em] h-[0.7em]"
                         />
-                        <p className="text-nowrap font-boldy text-sm">{name}</p>
+                        <p className="text-nowrap font-semibold text-sm">{name}</p>
                       </div>
                     </li>
                   ))}
@@ -932,11 +956,11 @@ export default function OwnerBloc({
                   {activeUpdateTab === 'achievements' ? (
                     <div className="flex flex-col gap-3 p-3">
                       <div>
-                        <h4 className="font-boldy">
+                        <h4 className="font-semibold">
                           Select your favorite achievements
                         </h4>
 
-                        <p className="text-sm font-boldy opacity-50">
+                        <p className="text-sm font-semibold opacity-50">
                           Selected{' '}
                           {updatingMetadata.favoriteAchievements?.length
                             ? updatingMetadata.favoriteAchievements.length
@@ -949,7 +973,7 @@ export default function OwnerBloc({
                         {currentAchievements.map((achievement) => (
                           <div
                             className={twMerge(
-                              'relative flex flex-row gap-3 items-center border-4 p-3 rounded-lg cursor-pointer transition duration-200 overflow-hidden',
+                              'relative flex flex-row gap-3 items-center border-4 p-3 rounded-md cursor-pointer transition duration-200 overflow-hidden',
                               updatingMetadata.favoriteAchievements?.includes(
                                 achievement.index,
                               )
@@ -996,11 +1020,11 @@ export default function OwnerBloc({
                               achievement={
                                 achievement as AchievementInfoExtended
                               }
-                              className="absolute -top-9 scale-[1.5] w-full rounded-lg opacity-20"
+                              className="absolute -top-9 scale-[1.5] w-full rounded-md opacity-20"
                               key={`achievement-${achievement.index}`}
                             />
                             <div className="relative z-20">
-                              <p className="text-base font-boldy">
+                              <p className="text-base font-semibold">
                                 {achievement.title}
                               </p>
                               <p className="opacity-75 text-xs">

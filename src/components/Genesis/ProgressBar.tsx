@@ -105,7 +105,7 @@ export default function ProgressBar({
   return (
     <>
       <div className="relative p-4 sm:p-0 max-w-[1150px] sm:max-w-full">
-        <div className="flex flex-col gap-3 justify-center items-center relative mx-auto border border-bcolor bg-gradient-to-tr from-[#07111A] to-[#0B1722] sm:bg-none rounded-lg sm:border-none sm:p-0 z-10 w-full">
+        <div className="flex flex-col gap-3 justify-center items-center relative mx-auto border border-bcolor bg-gradient-to-tr from-[#07111A] to-[#0B1722] sm:bg-none rounded-md sm:border-none sm:p-0 z-10 w-full">
           <Image
             src={GensisStepsBGImg}
             alt="Steps background"

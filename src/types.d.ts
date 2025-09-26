@@ -107,6 +107,7 @@ export type LinksType = {
 
 export type PageProps = {
   mainPool: PoolExtended | null;
+  isUserProfileLoading: boolean;
   userProfile: UserProfileExtended | null | false;
   triggerUserProfileReload: () => void;
   custodies: CustodyExtended[] | null;
@@ -527,6 +528,7 @@ export type AdrenaEvent = {
   label: string;
   description: string;
   time: string;
+  timestamp: number;
   color: string;
   labelPosition?: LabelPosition;
   type: AdrenaEventType;
@@ -560,6 +562,22 @@ export type ClaimHistoryApi = {
       claims: ClaimApi[];
     },
   ];
+};
+
+export type ClaimHistoryGraph = {
+  rewardsAdx: number;
+  rewardsUsdc: number;
+  rewardsAdxGenesis: number;
+  transactionDate: Date;
+  symbol: string;
+};
+
+export type ClaimHistoryGraphRaw = {
+  rewards_adx: number;
+  rewards_usdc: number;
+  rewards_adx_genesis: number;
+  transaction_date: Date;
+  symbol: string;
 };
 
 export type ClaimHistoryExtended = {

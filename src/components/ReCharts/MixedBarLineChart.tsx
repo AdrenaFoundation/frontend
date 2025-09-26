@@ -1,5 +1,5 @@
 import Tippy from '@tippyjs/react';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import {
     Bar,
     CartesianGrid,
@@ -43,6 +43,8 @@ export default function MixedBarLineChart<T extends string>({
     total,
     events,
     yAxisBarScale = 'linear',
+    startTimestamp,
+    endTimestamp,
 }: {
     title: string;
     data: RechartsData[];
@@ -62,10 +64,16 @@ export default function MixedBarLineChart<T extends string>({
     total?: boolean;
     events?: AdrenaEvent[];
     yAxisBarScale: ScaleType;
+    startTimestamp?: number;
+    endTimestamp?: number;
 }) {
     const [hiddenLabels, setHiddenLabels] = React.useState<
         DataKey<string | number>[]
     >([]);
+
+    const activeEvents = useMemo(() => {
+        return (events || []).filter(event => startTimestamp && endTimestamp && event.timestamp >= startTimestamp && event.timestamp <= endTimestamp);
+    }, [events, startTimestamp, endTimestamp]);
 
     const formatYAxis = (tickItem: number) => {
         return formatGraphCurrency({ tickItem, maxDecimals: 0 });
@@ -169,6 +177,8 @@ export default function MixedBarLineChart<T extends string>({
                                 events={events}
                                 lineDataKeys={lineLabels.map(label => label.name).concat(cumulativeLabel ? [cumulativeLabel.name] : [])}
                                 precision={0}
+                                startTimestamp={startTimestamp}
+                                endTimestamp={endTimestamp}
                             />
                         }
                         cursor={false}
@@ -247,7 +257,7 @@ export default function MixedBarLineChart<T extends string>({
                         />
                     )}
 
-                    {events?.map(({
+                    {activeEvents?.map(({
                         label,
                         time,
                         color,

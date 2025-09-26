@@ -16,8 +16,7 @@ interface LockedStakesSectionProps {
     sortConfig: SortConfig;
     onSort: (key: 'size' | 'duration') => void;
     onAddStake: (lockPeriod: AdxLockPeriod | AlpLockPeriod) => void;
-    onRedeem: (lockedStake: LockedStakeExtended, earlyExit: boolean) => void;
-    onFinalize: (lockedStake: LockedStakeExtended) => void;
+    onRedeem: (lockedStake: LockedStakeExtended) => void;
     onUpdate: (lockedStake: LockedStakeExtended) => void;
     defaultLockPeriod: AdxLockPeriod | AlpLockPeriod;
 }
@@ -28,7 +27,6 @@ export default function LockedStakesSection({
     onSort,
     onAddStake,
     onRedeem,
-    onFinalize,
     onUpdate,
     defaultLockPeriod,
 }: LockedStakesSectionProps) {
@@ -88,7 +86,7 @@ export default function LockedStakesSection({
                     </div>
 
                     <Button
-                        variant="primary"
+                        variant="danger"
                         size="sm"
                         className='w-[8em]'
                         title="Add Stake"
@@ -101,7 +99,6 @@ export default function LockedStakesSection({
                 lockedStakes={sortedLockedStakes}
                 className='gap-3 mt-4'
                 handleRedeem={onRedeem}
-                handleClickOnFinalizeLockedRedeem={onFinalize}
                 handleClickOnUpdateLockedStake={onUpdate}
             />
         </div>

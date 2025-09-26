@@ -68,7 +68,7 @@ export default function DetailedMonitoring({
   //
   // I know the following is not the best naming convention, but it allow tweaking the styles easily
   //
-  const titleClassName = 'text-lg opacity-50 font-boldy';
+  const titleClassName = 'text-lg opacity-50 font-semibold';
 
   const handleTabChange = (tab: (typeof tabs)[number]) => {
     setSelectedTab(tab);
@@ -89,7 +89,7 @@ export default function DetailedMonitoring({
   }));
 
   return (
-    <div className="border bg-secondary rounded-lg overflow-hidden">
+    <div className="border bg-secondary rounded-md overflow-hidden">
       <TabSelect
         wrapperClassName="hidden md:flex gap-6 border-b p-3 pb-0 select-none mb-3"
         titleClassName="whitespace-nowrap text-sm"
@@ -105,7 +105,7 @@ export default function DetailedMonitoring({
 
       <Menu
         trigger={
-          <div className="flex flex-row justify-between bg-secondary border w-full p-3 rounded-lg cursor-pointer text-lg font-boldy select-none">
+          <div className="flex flex-row justify-between bg-secondary border w-full p-3 rounded-md cursor-pointer text-lg font-semibold select-none">
             {selectedTab}
 
             <Image
@@ -188,7 +188,7 @@ export default function DetailedMonitoring({
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="bg-[#050D14] h-[5.4375rem] animate-loader rounded-lg"
+                    className="bg-[#050D14] h-[5.4375rem] animate-loader rounded-md"
                   />
                 )}
               </AnimatePresence>
@@ -220,7 +220,7 @@ export default function DetailedMonitoring({
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="bg-[#050D14] h-[5.4375rem] animate-loader rounded-lg"
+                    className="bg-[#050D14] h-[5.4375rem] animate-loader rounded-md"
                   />
                 )}
               </AnimatePresence>
@@ -258,7 +258,7 @@ export default function DetailedMonitoring({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-[#050D14] h-32 animate-loader rounded-lg flex-1"
+                  className="bg-[#050D14] h-32 animate-loader rounded-md flex-1"
                 />
               )}
             </AnimatePresence>
@@ -285,7 +285,7 @@ export default function DetailedMonitoring({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-[#050D14] h-32 animate-loader rounded-lg flex-1"
+                  className="bg-[#050D14] h-32 animate-loader rounded-md flex-1"
                 />
               )}
             </AnimatePresence>
@@ -335,7 +335,7 @@ export default function DetailedMonitoring({
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="bg-[#050D14] h-[9.161875rem] animate-loader rounded-lg flex-1"
+                    className="bg-[#050D14] h-[9.161875rem] animate-loader rounded-md flex-1"
                   />
                 )}
               </AnimatePresence>
@@ -362,7 +362,7 @@ export default function DetailedMonitoring({
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="bg-[#050D14] h-[9.161875rem] animate-loader rounded-lg flex-1"
+                    className="bg-[#050D14] h-[9.161875rem] animate-loader rounded-md flex-1"
                   />
                 )}
               </AnimatePresence>
@@ -403,7 +403,7 @@ export default function DetailedMonitoring({
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="bg-[#050D14] h-[9.161875rem] animate-loader rounded-lg flex-1"
+                    className="bg-[#050D14] h-[9.161875rem] animate-loader rounded-md flex-1"
                   />
                 )}
               </AnimatePresence>
@@ -431,7 +431,7 @@ export default function DetailedMonitoring({
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="bg-[#050D14] h-[9.161875rem] animate-loader rounded-lg flex-1"
+                    className="bg-[#050D14] h-[9.161875rem] animate-loader rounded-md flex-1"
                   />
                 )}
               </AnimatePresence>
@@ -462,7 +462,7 @@ export default function DetailedMonitoring({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="bg-[#050D14] h-32 animate-loader rounded-lg"
+                className="bg-[#050D14] h-32 animate-loader rounded-md"
               />
             )}
           </AnimatePresence>
@@ -491,7 +491,7 @@ export default function DetailedMonitoring({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="bg-[#050D14] h-32 animate-loader rounded-lg"
+                className="bg-[#050D14] h-32 animate-loader rounded-md"
               />
             )}
           </AnimatePresence>
@@ -519,7 +519,7 @@ export default function DetailedMonitoring({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="bg-[#050D14] h-32 animate-loader rounded-lg"
+                className="bg-[#050D14] h-32 animate-loader rounded-md"
               />
             )}
           </AnimatePresence>
@@ -548,7 +548,7 @@ export default function DetailedMonitoring({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="bg-[#050D14] h-32 animate-loader rounded-lg"
+                className="bg-[#050D14] h-32 animate-loader rounded-md"
               />
             )}
           </AnimatePresence>
@@ -577,7 +577,7 @@ export default function DetailedMonitoring({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="bg-[#050D14] h-32 animate-loader rounded-lg"
+                className="bg-[#050D14] h-32 animate-loader rounded-md"
               />
             )}
           </AnimatePresence>
@@ -614,7 +614,7 @@ export default function DetailedMonitoring({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-[#050D14] h-32 animate-loader rounded-lg"
+                  className="bg-[#050D14] h-32 animate-loader rounded-md"
                 />
               )}
             </AnimatePresence>
@@ -640,7 +640,7 @@ export default function DetailedMonitoring({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-[#050D14] h-32 animate-loader rounded-lg"
+                  className="bg-[#050D14] h-32 animate-loader rounded-md"
                 />
               )}
             </AnimatePresence>
@@ -666,7 +666,7 @@ export default function DetailedMonitoring({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-[#050D14] h-32 animate-loader rounded-lg"
+                  className="bg-[#050D14] h-32 animate-loader rounded-md"
                 />
               )}
             </AnimatePresence>
@@ -692,7 +692,7 @@ export default function DetailedMonitoring({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-[#050D14] h-32 animate-loader rounded-lg"
+                  className="bg-[#050D14] h-32 animate-loader rounded-md"
                 />
               )}
             </AnimatePresence>

@@ -25,6 +25,7 @@ export default function CompetitionBanner({
     adxRewards,
     bonkRewards,
     jtoRewards,
+    usdcRewards,
     bannerClassName,
     jtoPrice,
 }: {
@@ -38,6 +39,7 @@ export default function CompetitionBanner({
     adxRewards: number;
     bonkRewards: number;
     jtoRewards: number;
+    usdcRewards: number;
     bannerClassName: string;
     jtoPrice: number | null;
 }) {
@@ -49,11 +51,11 @@ export default function CompetitionBanner({
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
     const totalPrize = useMemo(() => {
-        return adxRewards * (tokenPrices.ADX ?? 0) + jtoRewards * (jtoPrice ?? 0) + bonkRewards * (tokenPrices.BONK ?? 0);
-    }, [adxRewards, bonkRewards, jtoRewards, tokenPrices.ADX, tokenPrices.BONK, jtoPrice]);
+        return adxRewards * (tokenPrices.ADX ?? 0) + jtoRewards * (jtoPrice ?? 0) + bonkRewards * (tokenPrices.BONK ?? 0) + usdcRewards;
+    }, [adxRewards, tokenPrices.ADX, tokenPrices.BONK, jtoRewards, jtoPrice, bonkRewards, usdcRewards]);
 
     return (
-        <div className="relative">
+        <div className="relative z-20">
             <div className={twMerge("relative flex flex-col items-center w-full border-b", bannerClassName)}>
                 <div className="mt-[4em]">
                     <AnimatePresence>
@@ -65,7 +67,7 @@ export default function CompetitionBanner({
                             key={title}
                         >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            {seasonName === 'interseason3' ? <div
+                            {seasonName === 'interseason3' || seasonName === 'anniversary1' ? <div
                                 className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-60"
                                 style={{
                                     backgroundImage: `url(${banner})`,
@@ -88,7 +90,7 @@ export default function CompetitionBanner({
                     <p className="text-lg tracking-[0.2rem] uppercase">{subTitle}</p>
                     <h1
                         className={twMerge(
-                            'text-[2.5em] sm:text-[3em] md:text-[4em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                            'text-[2.2em] sm:text-[3em] md:text-[4em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                             gradientColor,
                         )}
                     >
@@ -117,12 +119,12 @@ export default function CompetitionBanner({
                 </div>}
 
                 {startDate && startDate.getTime() >= Date.now() ? (
-                    <ul className="flex flex-row gap-3 md:gap-9 mt-2 px-6 md:px-9 p-3 bg-black/40 rounded-lg z-10">
+                    <ul className="flex flex-row gap-3 md:gap-9 mt-2 px-6 md:px-9 p-3 bg-black/40 rounded-md z-10">
                         <li className="flex flex-col items-center justify-center">
                             <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">
                                 {days >= 0 ? days : '–'}
                             </p>
-                            <p className="text-center text-sm font-boldy tracking-widest">
+                            <p className="text-center text-sm font-semibold tracking-widest">
                                 Days
                             </p>
                         </li>
@@ -131,7 +133,7 @@ export default function CompetitionBanner({
                             <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">
                                 {Number(hours) >= 0 ? hours : '–'}
                             </p>
-                            <p className="text-center text-sm font-boldy tracking-widest">
+                            <p className="text-center text-sm font-semibold tracking-widest">
                                 Hours
                             </p>
                         </li>
@@ -140,7 +142,7 @@ export default function CompetitionBanner({
                             <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">
                                 {Number(minutes) >= 0 ? minutes : '–'}
                             </p>
-                            <p className="text-center text-sm font-boldy tracking-widest">
+                            <p className="text-center text-sm font-semibold tracking-widest">
                                 Minutes
                             </p>
                         </li>
@@ -149,51 +151,55 @@ export default function CompetitionBanner({
                             <p className="text-center text-[1rem] md:text-[2rem] font-mono leading-[30px] md:leading-[46px]">
                                 {Number(seconds) >= 0 ? seconds : '–'}
                             </p>
-                            <p className="text-center text-sm font-boldy tracking-widest">
+                            <p className="text-center text-sm font-semibold tracking-widest">
                                 seconds
                             </p>
                         </li>
                     </ul>
                 ) : null}
 
-                {(adxRewards + jtoRewards + bonkRewards) > 0 ? <div className='flex flex-col mt-8 z-10 items-center'>
-                    <div className='text-xs font-thin text-txtfade'>{seasonName === 'factions' ? 'MAX' : null} PRIZE POOL</div>
+                {(adxRewards + jtoRewards + bonkRewards + usdcRewards) > 0 ? <div className='flex flex-col mt-8 z-10 items-center'>
+                    <div className='text-xs font-thin text-txtfade tracking-wider'>{seasonName === 'factions' ? 'MAX' : null} PRIZE POOL</div>
 
-                    <div className={twMerge('w-[20em] max-w-full flex items-center justify-center rounded-lg flex-col')}>
+                    <div className={twMerge('w-[20em] max-w-full flex items-center justify-center rounded-md flex-col')}>
                         {seasonName === 'factions'
                             ? <FormatNumber
                                 format='currency'
                                 nb={417564.28}
-                                className="text-5xl font-boldy"
+                                className="text-5xl font-semibold"
                                 isDecimalDimmed={false}
                             />
                             : seasonName === 'expanse' ? <FormatNumber
                                 format='currency'
                                 nb={204396.55}
-                                className="text-5xl font-boldy"
+                                className="text-5xl font-semibold"
                                 isDecimalDimmed={false}
                             /> : seasonName === 'awakening' ? <FormatNumber
                                 format='currency'
                                 nb={97166.49}
-                                className="text-5xl font-boldy"
+                                className="text-5xl font-semibold"
                                 isDecimalDimmed={false}
-                            /> : seasonName === 'interseason3' ?
+                            /> : seasonName === 'interseason3' || seasonName === 'anniversary1' ?
                                 <FormatNumber
                                     format='currency'
                                     nb={totalPrize}
-                                    className="text-3xl sm:text-4xl md:text-5xl font-boldy"
+                                    className="text-3xl sm:text-4xl md:text-5xl font-semibold"
                                     isDecimalDimmed={false}
                                 />
                                 : (!tokenPrices.ADX || !jtoPrice || !tokenPrices.BONK ? '-' :
                                     <FormatNumber
                                         format='currency'
                                         nb={totalPrize}
-                                        className="text-5xl font-boldy"
+                                        className="text-5xl font-semibold"
                                         isDecimalDimmed={false}
                                     />
                                 )}
 
-                        <div className='flex gap-1 rounded-lg pt-2 pb-2 pl-4 pr-4'>
+                        <div className='flex gap-1 rounded-md pt-2 pb-2 pl-4 pr-4'>
+                            {seasonName === 'anniversary1' ?
+                                <div className="text-xs text-txtfade uppercase tracking-wider">Distributed in ADX</div>
+                                : null}
+
                             {adxRewards > 0 ?
                                 <div className="flex flex-row gap-1 items-center justify-center">
                                     <Image
@@ -209,16 +215,15 @@ export default function CompetitionBanner({
                                         precision={0}
                                         isAbbreviate={true}
                                         isAbbreviateIcon={false}
-                                        className="text-md font-boldy text-txtfade"
-                                        suffixClassName='text-base font-boldy text-txtfade'
+                                        className="text-md font-semibold text-txtfade"
+                                        suffixClassName='text-base font-semibold text-txtfade'
                                         isDecimalDimmed={false}
                                     />
 
-                                    <div className='flex text-md text-txtfade'>/</div>
+                                    {jtoRewards || bonkRewards ? <div className='flex text-md text-txtfade'>/</div> : null}
                                 </div> : null}
 
                             {jtoRewards ? <>
-
                                 <div className="flex flex-row gap-1 items-center justify-center">
                                     <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" />
 
@@ -229,8 +234,8 @@ export default function CompetitionBanner({
                                         precision={0}
                                         isAbbreviate={true}
                                         isAbbreviateIcon={false}
-                                        className="text-md font-boldy text-txtfade"
-                                        suffixClassName='text-base font-boldy text-txtfade'
+                                        className="text-md font-semibold text-txtfade"
+                                        suffixClassName='text-base font-semibold text-txtfade'
                                         isDecimalDimmed={false}
                                     />
                                 </div>
@@ -249,8 +254,8 @@ export default function CompetitionBanner({
                                         precision={0}
                                         isAbbreviate={true}
                                         isAbbreviateIcon={false}
-                                        className="text-md font-boldy text-txtfade"
-                                        suffixClassName='text-base font-boldy text-txtfade'
+                                        className="text-md font-semibold text-txtfade"
+                                        suffixClassName='text-base font-semibold text-txtfade'
                                         isDecimalDimmed={false}
                                     />
                                 </div>
@@ -259,7 +264,7 @@ export default function CompetitionBanner({
                     </div>
                 </div> : null}
 
-                <div
+                {seasonName !== 'anniversary1' ? <div
                     className={twMerge(
                         'flex flex-row items-center gap-3 z-10 sm:absolute sm:bottom-6 sm:right-8',
                         startDate && startDate.getTime() >= Date.now() ? 'mt-[2em]' : 'mt-[4em]',
@@ -282,7 +287,7 @@ export default function CompetitionBanner({
                             className="w-[1.7em] md:w-[2.5em]"
                         />
                     </> : null}
-                </div>
+                </div> : null}
             </div>
 
             <div className="flex items-center justify-center">
@@ -295,12 +300,12 @@ export default function CompetitionBanner({
                                     className="items-center text-base"
                                     tippyText=""
                                 />
-                                <span className="ml-2 text-base font-boldy tracking-widest">
+                                <span className="ml-2 text-base font-semibold tracking-widest">
                                     left
                                 </span>
                             </>
                         ) : (
-                            <span className="font-boldy tracking-widest text-sm">
+                            <span className="font-semibold tracking-widest text-sm">
                                 Begins{' '}
                                 {startDate.toLocaleDateString('en-US', {
                                     month: 'short',
@@ -310,7 +315,7 @@ export default function CompetitionBanner({
                             </span>
                         )
                     ) : (
-                        <span className="font-boldy tracking-widest text-sm">
+                        <span className="font-semibold tracking-widest text-sm">
                             Competition has ended
                         </span>
                     )}

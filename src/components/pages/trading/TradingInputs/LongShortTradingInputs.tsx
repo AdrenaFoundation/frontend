@@ -14,6 +14,7 @@ import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
 import DataApiClient from '@/DataApiClient';
 import { useDebounce } from '@/hooks/useDebounce';
 import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
+import { useFavorites } from '@/hooks/useFavoriteToken';
 import { useDispatch, useSelector } from '@/store/store';
 import { ChaosLabsPricesExtended, PositionExtended } from '@/types';
 import {
@@ -69,6 +70,19 @@ export default function LongShortTradingInputs({
   const borrowRates = useSelector((s) => s.borrowRates);
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const walletState = useSelector((s) => s.walletState.wallet);
+
+  // Get wallet address safely, prioritizing Redux state over adapter
+  const walletAddress = useMemo(() => {
+    // First try to get from Redux state (works with external wallets selected in Privy)
+    if (walletState?.walletAddress) {
+      return walletState.walletAddress;
+    }
+
+    // Fallback to adapter publicKey (traditional wallet connection)
+    return getWalletAddress(wallet);
+  }, [walletState?.walletAddress, wallet]);
+
   const [takeProfitInput, setTakeProfitInput] = useState<number | null>(null);
   const [stopLossInput, setStopLossInput] = useState<number | null>(null);
   const [swapSlippage, setSwapSlippage] = useState<number>(0.3); // Default swap slippage
@@ -110,19 +124,20 @@ export default function LongShortTradingInputs({
       return [usdcCustody];
     }
     return [];
-  }, [side, positionInfo.custody, usdcCustody]);
+  }, [
+    side,
+    positionInfo.custody?.pubkey.toBase58(),
+    usdcCustody?.pubkey.toBase58(),
+  ]);
 
   const custodyLiquidity = useDynamicCustodyAvailableLiquidity(custodyArray);
 
-  const tokenLiquidity =
+  const availableLiquidity =
     side === 'long' && positionInfo.custody && custodyLiquidity
       ? custodyLiquidity[positionInfo.custody.pubkey.toBase58()]
-      : null;
-
-  const usdcLiquidity =
-    side === 'short' && usdcCustody && custodyLiquidity
-      ? custodyLiquidity[usdcCustody.pubkey.toBase58()]
-      : null;
+      : side === 'short' && usdcCustody && custodyLiquidity
+        ? custodyLiquidity[usdcCustody.pubkey.toBase58()]
+        : null;
 
   // Check of maximum shorts across traders
   const availableLiquidityShort =
@@ -374,7 +389,7 @@ export default function LongShortTradingInputs({
   };
 
   const handleExecuteButton = async (): Promise<void> => {
-    if (!connected || !dispatch || !wallet) {
+    if (!connected || !dispatch || !walletAddress) {
       dispatch(openCloseConnectionModalAction(true));
       return;
     }
@@ -460,7 +475,7 @@ export default function LongShortTradingInputs({
 
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
-          owner: new PublicKey(wallet.publicKey),
+          owner: new PublicKey(walletAddress),
           collateralMint: tokenA.mint,
           mint: tokenB.mint,
           price: entryPrice,
@@ -474,7 +489,7 @@ export default function LongShortTradingInputs({
           swapSlippage,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
-          owner: new PublicKey(wallet.publicKey),
+          owner: new PublicKey(walletAddress),
           collateralMint: tokenA.mint,
           mint: tokenB.mint,
           price: entryPrice,
@@ -856,27 +871,40 @@ export default function LongShortTradingInputs({
         errorMessage: `Position Exceeds Max Size`,
       }));
 
-    if (side === 'long' && tokenLiquidity && projectedSize > tokenLiquidity) {
-      return setPositionInfo((prev) => ({
-        ...prev,
-        errorMessage: `Insufficient ${tokenB.symbol} liquidity`,
-      }));
+    if (
+      side === 'long' &&
+      availableLiquidity &&
+      projectedSize > availableLiquidity
+    ) {
+      const projectedSizeUSD = projectedSize * tokenPriceBTrade;
+      const tokenPrice = tokenPrices[tokenB.symbol];
+
+      if (!tokenPriceBTrade || !tokenPrice) {
+        return setPositionInfo((prev) => ({
+          ...prev,
+          errorMessage: `Cannot verify liquidity - missing price data for ${tokenB.symbol}. Please try again later.`,
+        }));
+      }
+
+      const availableLiquidityUSD = availableLiquidity * tokenPrice;
+
+      if (projectedSizeUSD > availableLiquidityUSD) {
+        return setPositionInfo((prev) => ({
+          ...prev,
+          errorMessage: `Insufficient ${tokenB.symbol} liquidity`,
+        }));
+      }
     }
 
-    if (side === 'short' && usdcCustody) {
-      if (usdcLiquidity && projectedSizeUsd > usdcLiquidity) {
-        return setPositionInfo((prev) => ({
-          ...prev,
-          errorMessage: `Insufficient USDC liquidity`,
-        }));
-      }
-
-      if (projectedSizeUsd > availableLiquidityShort) {
-        return setPositionInfo((prev) => ({
-          ...prev,
-          errorMessage: `Position Exceeds USDC liquidity`,
-        }));
-      }
+    if (
+      side === 'short' &&
+      availableLiquidity &&
+      projectedSizeUsd > availableLiquidity
+    ) {
+      return setPositionInfo((prev) => ({
+        ...prev,
+        errorMessage: `Insufficient USDC liquidity`,
+      }));
     }
 
     // Only clear error message if we have valid position info
@@ -899,8 +927,7 @@ export default function LongShortTradingInputs({
     tokenPrices,
     side,
     availableLiquidityShort,
-    tokenLiquidity,
-    usdcLiquidity,
+    availableLiquidity,
   ]);
 
   // Instead, use the original approach where size is calculated from position info
@@ -1040,6 +1067,8 @@ export default function LongShortTradingInputs({
     return window.adrena.client.getUsdcToken();
   }, [tokenB, side]);
 
+  const { favorites, toggleFavorite } = useFavorites(allowedTokenB);
+
   return (
     <>
       <div className={twMerge('flex flex-col', className)}>
@@ -1073,12 +1102,12 @@ export default function LongShortTradingInputs({
             >
               <div className="text-xs gap-1 flex mt-3 pb-1 w-full items-center opacity-30">
                 <Image src={infoIcon} alt="Info" width={12} height={12} />
-                <span className="font-xs font-semibold">{tokenA.symbol}</span>
-                <span className="font-xs font-semibold">auto-swapped to</span>
-                <span className="font-xs font-semibold">
+                <span className="font-xs">{tokenA.symbol}</span>
+                <span className="font-xs">auto-swapped to</span>
+                <span className="font-xs">
                   {recommendedToken.symbol}
                 </span>
-                <span className="font-xs font-semibold">via Jupiter</span>
+                <span className="font-xs">via Jupiter</span>
               </div>
             </Tippy>
 
@@ -1086,7 +1115,7 @@ export default function LongShortTradingInputs({
               swapSlippage={swapSlippage}
               setSwapSlippage={setSwapSlippage}
               className="mt-2"
-              titleClassName="font-interMedium"
+              titleClassName="font-regular"
             />
           </>
         ) : null}
@@ -1155,14 +1184,10 @@ export default function LongShortTradingInputs({
               onInputBChange={handleInputBChange}
               onExecute={handleExecuteButton}
               tokenPriceBTrade={tokenPriceBTrade}
-              walletAddress={getWalletAddress(wallet)}
-              custodyLiquidity={
-                side === 'long' && positionInfo.custody && custodyLiquidity
-                  ? custodyLiquidity[positionInfo.custody.pubkey.toBase58()]
-                  : side === 'short' && usdcCustody && custodyLiquidity
-                    ? custodyLiquidity[usdcCustody.pubkey.toBase58()]
-                    : null
-              }
+              walletAddress={walletAddress}
+              custodyLiquidity={availableLiquidity}
+              favorites={favorites}
+              onToggleFavorite={toggleFavorite}
             />
             {inputState.inputA && !positionInfo.errorMessage ? (
               <>

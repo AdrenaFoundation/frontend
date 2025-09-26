@@ -1,8 +1,9 @@
+import CopyButton from '@/components/common/CopyButton/CopyButton';
 import { Cortex } from '@/types';
 
 import InfoAnnotation from '../InfoAnnotation';
 import OnchainAccountInfo from '../OnchainAccountInfo';
-import Table from '../Table';
+import Table from '../TableLegacy';
 import TitleAnnotation from '../TitleAnnotation';
 
 export default function GovernanceAccounts({
@@ -13,7 +14,7 @@ export default function GovernanceAccounts({
   titleClassName?: string;
 }) {
   return (
-    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+    <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
         <p className={titleClassName}>Governance Accounts</p>
         <p className="text-base opacity-50">
@@ -25,11 +26,16 @@ export default function GovernanceAccounts({
         rowHovering={true}
         breakpoint="767px"
         rowTitleWidth="30%"
-        className='rounded-none bg-transparent border-none'
+        className="rounded-none bg-transparent border-none"
         data={[
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-semibold">
+                <CopyButton
+                  textToCopy={cortex.governanceProgram.toBase58()}
+                  notificationTitle="Governance Program address copied to clipboard"
+                  className="mr-2"
+                />
                 Governance Program
                 <InfoAnnotation
                   text="Manages the DAO's operations as the official Solana governance smart contract."
@@ -46,7 +52,12 @@ export default function GovernanceAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-semibold">
+                <CopyButton
+                  textToCopy={cortex.governanceRealm.toBase58()}
+                  notificationTitle="Governance Realm PDA address copied to clipboard"
+                  className="mr-2"
+                />
                 Governance Realm <TitleAnnotation text="PDA" />
                 <InfoAnnotation
                   text="Represents Adrena's DAO within the Solana DAO program."

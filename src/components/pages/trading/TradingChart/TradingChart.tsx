@@ -45,7 +45,7 @@ export default function TradingChart({
 
   // Update chart symbol when token changes
   useEffect(() => {
-    if (!widget) return;
+    if (!widget || !widgetReady) return;
 
     // Retrieve saved resolution or default to '60'
     const savedResolution =
@@ -62,7 +62,7 @@ export default function TradingChart({
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token.symbol]);
+  }, [token.symbol, widgetReady]);
 
   return (
     <div className="flex flex-col w-full overflow-hidden bg-secondary select-none relative">

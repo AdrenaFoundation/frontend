@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adrenaLogo from '@/../public/images/adrena_logo_adx_white.svg';
@@ -22,9 +22,9 @@ import pplIcon from '@/../public/images/people-fill.svg';
 import rpcIcon from '@/../public/images/rpc.svg';
 import xLogo from '@/../public/images/x.svg';
 import { setIsAuthModalOpen } from '@/actions/supabaseAuthActions';
+import useAdminStatus from '@/hooks/useAdminStatus';
 import usePriorityFee from '@/hooks/usePriorityFees';
 import { useDispatch, useSelector } from '@/store/store';
-import supabaseAnonClient from '@/supabaseAnonClient';
 import { PageProps } from '@/types';
 import { formatNumber } from '@/utils';
 
@@ -82,9 +82,8 @@ export default function SuperchargedFooter({
   const currentPriorityFeeValue =
     priorityFeeAmounts[priorityFeeOption] || priorityFeeAmounts.medium;
 
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isCheckAdminLoading, setIsCheckAdminLoading] = useState(false);
-  const isCheckingAdminRef = useRef(false); // Use ref instead of state to prevent re-renders
+  const { isAdmin, isLoading: isCheckAdminLoading } =
+    useAdminStatus(walletAddress);
 
   const [onlineCount, setOnlineCount] = useState<number | null>(null);
   const [isNewNotification, setIsNewNotification] = useState(false);
@@ -92,63 +91,6 @@ export default function SuperchargedFooter({
   const [isAnnouncementView] = useState(false);
 
   const [showAudits, setShowAudits] = useState(false);
-
-  useEffect(() => {
-    if (!walletAddress || isCheckingAdminRef.current) {
-      return;
-    }
-
-    const checkAdminStatus = async () => {
-      isCheckingAdminRef.current = true; // Prevent concurrent calls
-      let attemps = 3; // Reset attempts counter for each call
-      setIsCheckAdminLoading(true);
-
-      const {
-        data: { session },
-      } = await supabaseAnonClient.auth.getSession();
-
-      if (!session) {
-        setIsCheckAdminLoading(false);
-        isCheckingAdminRef.current = false;
-        return;
-      };
-
-      while (attemps <= 3) {
-        try {
-          const response = await fetch(
-            `/api/verify_signature?walletAddress=${walletAddress}`,
-            {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                ...(session
-                  ? { Authorization: `Bearer ${session.access_token}` }
-                  : {}),
-              },
-            },
-          );
-
-          if (response.ok) {
-            const data = await response.json();
-            setIsAdmin(data.isAdmin);
-          } else {
-            console.error('Failed to verify admin status');
-          }
-        } catch (error) {
-          console.error('Error checking admin status:', error);
-        } finally {
-          setIsCheckAdminLoading(false);
-        }
-
-        attemps++;
-      }
-
-      // Reset checking flag when done
-      isCheckingAdminRef.current = false;
-    };
-
-    checkAdminStatus();
-  }, [walletAddress, verifiedWalletAddresses]);
 
   return (
     <>
@@ -192,7 +134,7 @@ export default function SuperchargedFooter({
           >
             <div className="hidden group-hover:block absolute w-full h-2 -top-2 left-0" />
 
-            <p className="text-xs font-interMedium">Audited by</p>
+            <p className="text-xs font-regular">Audited by</p>
 
             <Image
               src={ottersecLogo}
@@ -217,15 +159,15 @@ export default function SuperchargedFooter({
                   animate={{ opacity: 1, y: '-2.5rem' }}
                   exit={{ opacity: 0, y: '-2rem' }}
                   transition={{ duration: 0.3 }}
-                  className="absolute left-0 bottom-0 min-w-[18.75rem] flex flex-col gap-3 bg-secondary border border-inputcolor rounded-lg p-3 z-50"
+                  className="absolute left-0 bottom-0 min-w-[18.75rem] flex flex-col gap-3 bg-secondary border border-inputcolor rounded-md p-3 z-50"
                 >
                   <Link
                     href="https://2570697779-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FSrdLcmUOicAVBsHQeHAa%2Fuploads%2FJwTdoGS6JrPpPxYMJJAh%2FAdrena_Dec_2024_OffsideLabs.pdf?alt=media&token=f9f9753d-cc91-457a-a674-1fd0d3b5460a"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex flex-row items-center gap-3 border border-bcolor hover:bg-third p-2 pr-4 rounded-lg transition-colors duration-300 cursor-pointer"
+                    className="flex flex-row items-center gap-3 border border-bcolor hover:bg-third p-2 pr-4 rounded-md transition-colors duration-300 cursor-pointer"
                   >
-                    <div className="flex items-center justify-center w-9 h-9 rounded-lg border border-inputcolor">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-md border border-inputcolor">
                       <Image
                         src={documentIcon}
                         alt="Document Icon"
@@ -236,7 +178,7 @@ export default function SuperchargedFooter({
                     </div>
 
                     <div>
-                      <p className="text-base font-interMedium">
+                      <p className="text-base font-regular">
                         Offside Labs Audit.pdf
                       </p>
                       <p className="text-xs font-mono opacity-50">
@@ -249,9 +191,9 @@ export default function SuperchargedFooter({
                     href="https://2570697779-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FSrdLcmUOicAVBsHQeHAa%2Fuploads%2FflVY9AoiV2b2dzv0wbZ3%2Fadrena_audit_ottersec.pdf?alt=media&token=25f7c2c0-052f-4fce-a44c-759d9bdd39b5"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex flex-row items-center gap-3 border border-bcolor  hover:bg-third p-2 rounded-lg transition-colors duration-300 cursor-pointer"
+                    className="flex flex-row items-center gap-3 border border-bcolor  hover:bg-third p-2 rounded-md transition-colors duration-300 cursor-pointer"
                   >
-                    <div className="flex items-center justify-center w-9 h-9 rounded-lg border border-inputcolor">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-md border border-inputcolor">
                       <Image
                         src={documentIcon}
                         alt="Document Icon"
@@ -262,7 +204,7 @@ export default function SuperchargedFooter({
                     </div>
 
                     <div>
-                      <p className="text-base font-interMedium">
+                      <p className="text-base font-regular">
                         Ottersec Audit.pdf
                       </p>
                       <p className="text-xs font-mono opacity-50">July 2024</p>
@@ -289,7 +231,7 @@ export default function SuperchargedFooter({
               height={12}
               width={12}
             />
-            <p className="text-xs font-interMedium capitalize">
+            <p className="text-xs capitalize">
               {priorityFeeOption}
               <span className="font-mono ml-1 text-xs">
                 @ {formatNumber(currentPriorityFeeValue, 0)} μLamport / CU
@@ -311,7 +253,7 @@ export default function SuperchargedFooter({
               height={12}
               width={12}
             />
-            <p className="text-xs font-interMedium"> {activeRpc.name} </p>
+            <p className="text-xs font-regular"> {activeRpc.name} </p>
             <div
               className={twMerge(
                 'w-1.5 h-1.5 bg-green rounded-full ml-1',
@@ -365,7 +307,7 @@ export default function SuperchargedFooter({
                 width={12}
               />
 
-              <p className="text-sm font-interMedium capitalize">
+              <p className="text-sm capitalize">
                 <span className="opacity-50">#</span> {title}
               </p>
 

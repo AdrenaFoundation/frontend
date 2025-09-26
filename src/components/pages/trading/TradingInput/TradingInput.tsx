@@ -66,16 +66,16 @@ export default function TradingInput({
       <div className={twMerge('relative flex flex-col', className)}>
         <div
           className={twMerge(
-            'rounded-lg flex w-full border h-12',
+            'rounded-md flex w-full border h-12',
             inputClassName,
             inputContainerClassName,
           )}
           style={
             disabled
               ? {
-                  backgroundSize: '10px 10px',
-                  cursor: 'not-allowed',
-                }
+                backgroundSize: '10px 10px',
+                cursor: 'not-allowed',
+              }
               : {}
           }
         >
@@ -134,7 +134,7 @@ export default function TradingInput({
                   </div>
                 ) : null}
 
-                <div className="font-archivo text-base">
+                <div className="text-base">
                   {selectedToken.symbol ?? '-'}
                 </div>
 
