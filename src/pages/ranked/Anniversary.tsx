@@ -275,6 +275,10 @@ function RaffleAdditionalPrize({
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletAddress = wallet?.walletAddress ?? null;
 
+  // Check if competition has ended (hardcoded end date: Oct 25, 2025)
+  const competitionEndDate = new Date('2025-10-25T23:59:59.999Z');
+  const isCompetitionEnded = new Date() > competitionEndDate;
+
   const getDisplayName = useCallback(
     (wallet: string) => {
       const profile = profileMap.get(wallet);
@@ -293,6 +297,21 @@ function RaffleAdditionalPrize({
         : PROFILE_PICTURES[0];
     },
     [profileMap],
+  );
+
+  const getStatusLabel = useCallback(
+    (title: string): string => {
+      if (title === 'First Blood') {
+        return 'Winner:';
+      }
+
+      if (isCompetitionEnded) {
+        return 'Winner:';
+      }
+
+      return 'Leading:';
+    },
+    [isCompetitionEnded],
   );
 
   const getEnhancedTippyContent = useCallback(() => {
@@ -383,11 +402,14 @@ function RaffleAdditionalPrize({
           />
         </div>
 
-        {/* Second line: Profile picture and name (conditional rendering) */}
+        {/* Second line: Status label, profile picture and name (conditional rendering) */}
         {showSecondLine && (
           <div className="flex items-center gap-2">
             {record?.wallet ? (
               <>
+                <div className="text-xs text-white/40 font-medium">
+                  {getStatusLabel(title)}
+                </div>
                 <Image
                   src={getProfilePictureUrl(record.wallet)}
                   alt="Profile"
