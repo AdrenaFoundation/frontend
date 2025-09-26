@@ -512,23 +512,6 @@ export const TRADING_COMPETITION_SEASONS = {
     description: [`Welcome to the Adrena Birthday Party!`] as string[],
     bannerClassName: 'h-[32em] pt-20',
   },
-
-  anniversary1: {
-    img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/anniversary.jpg',
-    title: '1st Anniversary',
-    bannerTitle: 'Anniversary',
-    subTitle: 'ADRENA',
-    startDate: new Date('2025-09-26T00:00:00.000Z'),
-    endDate: new Date('2025-10-25T23:59:59.999Z'),
-    gradient: 'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
-    primaryColor: '#247CFA',
-    adxRewards: 0,
-    jtoRewards: 0,
-    bonkRewards: 0,
-    usdcRewards: 50000,
-    description: [`Welcome to the Adrena Birthday Party!`] as string[],
-    bannerClassName: 'h-[32em] pt-20',
-  },
 } as const;
 
 export const QUESTS = {
