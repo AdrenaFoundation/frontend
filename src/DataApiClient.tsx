@@ -3,6 +3,7 @@ import BN from 'bn.js';
 
 import { PositionSortOption, SortDirection } from './hooks/usePositionHistory';
 import {
+  AnniversaryResponse,
   ChaosLabsPricesExtended,
   ChaosLabsPricesResponse,
   ClaimHistoryApi,
@@ -43,47 +44,10 @@ import {
 } from './types';
 import { hexStringToByteArray } from './utils';
 
-// Anniversary Event Types
-export interface AnniversaryRecord {
-  wallet: string;
-  value: number;
-  date?: Date;
-}
-
-export interface AnniversaryRecords {
-  best_pnl_percentage: AnniversaryRecord;
-  biggest_liquidation: AnniversaryRecord;
-  biggest_borrow_fees: AnniversaryRecord;
-  biggest_exit_fees: AnniversaryRecord;
-  most_trades: AnniversaryRecord;
-  most_consecutive_wins: AnniversaryRecord;
-  most_consecutive_losses: AnniversaryRecord;
-  most_consecutive_liquidations: AnniversaryRecord;
-  first_trader: AnniversaryRecord;
-  last_trader: AnniversaryRecord;
-}
-
-// Add user stats interface
-export interface UserAnniversaryStats {
-  best_pnl_percentage: number;
-  biggest_liquidation: number;
-  biggest_borrow_fees: number;
-  biggest_exit_fees: number;
-  most_trades: number;
-  most_consecutive_wins: number;
-  most_consecutive_losses: number;
-  most_consecutive_liquidations: number;
-}
-
-export interface AnniversaryResponse {
-  records: AnniversaryRecords;
-  user_stats: UserAnniversaryStats | null;
-}
-
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
-  public static DATAPI_URL = 'http://localhost:8080';
-  // public static DATAPI_URL = 'https://datapi.adrena.xyz';
+  // public static DATAPI_URL = 'http://localhost:8080';
+  public static DATAPI_URL = 'https://datapi.adrena.xyz';
 
   public static async getPriceAtDate(date: Date): Promise<{
     adxPrice: number | null;
