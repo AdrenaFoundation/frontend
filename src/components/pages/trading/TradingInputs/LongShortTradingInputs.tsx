@@ -126,8 +126,8 @@ export default function LongShortTradingInputs({
     return [];
   }, [
     side,
-    positionInfo.custody?.pubkey.toBase58(),
-    usdcCustody?.pubkey.toBase58(),
+    positionInfo.custody,
+    usdcCustody,
   ]);
 
   const custodyLiquidity = useDynamicCustodyAvailableLiquidity(custodyArray);
