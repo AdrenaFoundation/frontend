@@ -679,7 +679,6 @@ export default function Stake({
   const { rewards: adxRewards, fetchRewards: fetchAdxRewards } =
     useStakingClaimableRewards('ADX');
 
-
   // The rewards pending collection in the current round
   const alpStakingCurrentRoundRewards = useStakingAccountRewardsAccumulated(
     window.adrena.client.lpTokenMint,
@@ -800,6 +799,7 @@ export default function Stake({
                 handleClickOnClaimRewardsAndRedeem={() => handleClaimRewardsAndRedeemALP()}
                 userPendingUsdcRewards={0}
                 userPendingAdxRewards={0}
+
                 roundPendingUsdcRewards={
                   alpStakingCurrentRoundRewards.usdcRewards ??
                   0

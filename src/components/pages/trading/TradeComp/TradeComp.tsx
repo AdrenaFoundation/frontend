@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
-import IntegratedTerminal from '@/components/Footer/IntegratedTerminal';
+import JupiterWidget from '@/components/JupiterWidget/JupiterWidget';
+import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { ALTERNATIVE_SWAP_TOKENS } from '@/constant';
 import { Action } from '@/pages/trade';
 import { PositionExtended, Token, WalletAdapterExtended } from '@/types';
@@ -111,19 +112,30 @@ export default function TradeComp({
               />
             ) : (
               <>
-                {isJupSwap || !isWhitelistedSwapper ? (
-                  <IntegratedTerminal
-                    connected={connected}
-                    activeRpc={activeRpc}
-                    id={terminalId}
-                    className="bg-transparent border-transparent h-[575px] min-w-[300px] w-full p-0"
-                    adapters={adapters}
-                    allowedTokenB={window.adrena.client.tokens.filter(
-                      (t) => !t.isStable,
-                    )}
-                    setTokenB={setTokenB}
-                  />
-                ) : (
+                {/* Always render Jupiter widget but hide when not needed */}
+                <div className={twMerge(
+                  'relative h-[575px] min-w-[300px] w-full',
+                  !connected && 'overflow-hidden',
+                  !(isJupSwap || !isWhitelistedSwapper) && 'hidden'
+                )}>
+                  <div className={!connected ? 'blur-sm' : ''}>
+                    <JupiterWidget
+                      adapters={adapters}
+                      activeRpc={activeRpc}
+                      id={terminalId}
+                      className="bg-transparent border-transparent min-w-[300px] w-full min-h-[550px]"
+                    />
+                  </div>
+
+                  {!connected ? (
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 h-full w-full backdrop-blur-sm">
+                      <WalletConnection />
+                    </div>
+                  ) : null}
+                </div>
+
+                {/* Show SwapTradingInputs when not using Jupiter */}
+                {!(isJupSwap || !isWhitelistedSwapper) && (
                   <SwapTradingInputs
                     allowedTokenA={window.adrena.client.tokens}
                     allowedTokenB={window.adrena.client.tokens}

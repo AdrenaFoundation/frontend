@@ -2,6 +2,8 @@ import '@/styles/globals.scss';
 
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { PrivyProvider, usePrivy } from '@privy-io/react-auth';
+import { toSolanaWalletConnectors } from '@privy-io/react-auth/solana';
+import { createSolanaRpc, createSolanaRpcSubscriptions } from '@solana/kit';
 import { Connection } from '@solana/web3.js';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -23,7 +25,6 @@ import RootLayout from '@/components/layouts/RootLayout/RootLayout';
 import MigrateUserProfileV1Tov2Modal from '@/components/pages/profile/MigrateUserProfileV1Tov2Modal';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
 import initConfig from '@/config/init';
-import { privyConfig } from '@/config/privy';
 import { PrivySidebarProvider } from '@/contexts/PrivySidebarContext';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
@@ -31,12 +32,13 @@ import useRpc from '@/hooks/useRPC';
 import useSettingsPersistence from '@/hooks/useSettingsPersistence';
 import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
-import useWalletAdapters from '@/hooks/useWalletAdapters';
+import useWalletAdapters, { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import useWatchBorrowRates from '@/hooks/useWatchBorrowRates';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import initializeApp, { createReadOnlyAdrenaProgram } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { VestExtended } from '@/types';
+import { clearCorruptedWalletData } from '@/utils/clearCorruptedWalletData';
 
 import logo from '../../public/images/logo.svg';
 import store, { useDispatch, useSelector } from '../store/store';
@@ -59,6 +61,12 @@ function Loader(): JSX.Element {
 // initialized once, doesn't move afterwards.
 // actually twice, once on the server to `null` & once on the client.
 const CONFIG = initConfig();
+
+const privyAppId = process.env.PRIVY_APP_ID || 'no-privy-app-id';
+
+if (privyAppId === 'no-privy-app-id') {
+  console.error('PRIVY_APP_ID is not set');
+}
 
 // Load cluster from URL then load the config and initialize the app.
 // When everything is ready load the main component
@@ -93,20 +101,66 @@ export default function App(props: AppProps) {
 
   // Create dynamic Privy configuration that updates when RPC changes (needed for custom RPCs)
   const privyConfigDynamic = useMemo(() => ({
-    appId: privyConfig.appId,
+    appId: privyAppId,
+    supportedChains: ['solana'],
     config: {
-      solanaClusters: [
-        {
-          name: 'mainnet-beta',
-          rpcUrl: activeRpc?.connection?.rpcEndpoint || `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`,
-          blockExplorerUrl: 'https://solscan.io',
+      // Use new Solana RPC configuration format for Privy 3.0
+      solana: {
+        rpcs: {
+          'solana:mainnet': {
+            rpc: createSolanaRpc(activeRpc?.connection?.rpcEndpoint || `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`),
+            rpcSubscriptions: createSolanaRpcSubscriptions(
+              (activeRpc?.connection?.rpcEndpoint || `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`)
+                .replace('https', 'wss')
+            )
+          },
+          'solana:devnet': {
+            rpc: createSolanaRpc('https://api.devnet.solana.com'),
+            rpcSubscriptions: createSolanaRpcSubscriptions('wss://api.devnet.solana.com')
+          },
         }
-      ] as SolanaCluster[],
-      appearance: privyConfig.appearance,
-      loginMethods: privyConfig.loginMethods as unknown as ('email' | 'google' | 'twitter' | 'discord' | 'wallet')[],
-      embeddedWallets: privyConfig.embeddedWallets,
-      externalWallets: privyConfig.externalWallets,
-      walletConnectCloudProjectId: privyConfig.walletConnectCloudProjectId,
+      },
+      appearance: {
+        theme: 'dark' as const,
+        accentColor: '#ab9ff2' as const,
+        logo: '/images/logo.svg',
+        showWalletLoginFirst: false,
+        walletList: ['detected_wallets'],
+        walletChainType: 'solana-only' as const,
+      },
+      loginMethods: ['email', 'google', 'twitter', 'discord', 'wallet'],
+      embeddedWallets: {
+        solana: {
+          createOnLogin: 'all-users' as const,
+        },
+        ethereum: {
+          createOnLogin: 'off' as const,
+        },
+        fundingConfig: {
+          methods: ['moonpay', 'external'] as const,
+          options: {
+            defaultRecommendedCurrency: 'SOL_SOLANA' as const,
+            promptFundingOnWalletCreation: true,
+          },
+        },
+        fundingMethodConfig: {
+          moonpay: {
+            useSandbox: process.env.NEXT_PUBLIC_DEV_CLUSTER === 'devnet',
+            paymentMethod: 'credit_debit_card' as const,
+            uiConfig: {
+              theme: 'dark' as const,
+              accentColor: '#ab9ff2' as const,
+            },
+          },
+        },
+      },
+      externalWallets: {
+        solana: {
+          connectors: toSolanaWalletConnectors(),
+        },
+      },
+      // walletConnectCloudProjectId: '549f49d83c4bc0a5c405d8ef6db772a', // TODO: crash in localhost
+
     }
   }), [activeRpc?.connection?.rpcEndpoint]);
 
@@ -115,7 +169,8 @@ export default function App(props: AppProps) {
 
   return (
     <PrivyProvider
-      appId={privyConfigDynamic.appId}
+      appId={privyConfigDynamic.appId as string}
+      // @ts-expect-error Privy types are not updated yet
       config={privyConfigDynamic.config}
     >
       <Provider store={store}>
@@ -193,40 +248,132 @@ function AppComponent({
   // Add Privy integration to check for authenticated state
   const { ready: privyReady, authenticated: privyAuthenticated, user } = usePrivy();
 
+  // Track logout to prevent immediate auto-reconnect
+  const [lastLogoutTime, setLastLogoutTime] = useState<number>(0);
+  const [hasAutoConnected, setHasAutoConnected] = useState<boolean>(false);
+
+  // Track when user logs out to prevent immediate auto-reconnect
+  useEffect(() => {
+    // Detect logout: either Privy auth lost OR wallet state exists but should be cleared
+    const privyLogoutDetected = privyReady && !privyAuthenticated && hasAutoConnected;
+    const manualDisconnectDetected = localStorage.getItem('lastConnectionSource') === 'manual-disconnect' && walletState?.isPrivy;
+
+    if (privyLogoutDetected || manualDisconnectDetected) {
+      // User just logged out - immediately clear UI to prevent flicker
+      console.log('🔌 Logout detected, immediately clearing state', { privyLogoutDetected, manualDisconnectDetected });
+      setLastLogoutTime(Date.now());
+      setHasAutoConnected(false);
+
+      // Immediately clear UI state to prevent showing old wallet info
+      setConnected(false);
+
+      // Clear Redux wallet state - this will trigger other cleanup effects
+      console.log('🔌 Dispatching disconnect action');
+      dispatch({
+        type: 'disconnect',
+      });
+
+      // Clear any Privy-related localStorage to prevent auto-reconnect
+      localStorage.removeItem('privy:selectedWallet');
+      localStorage.setItem('lastConnectionSource', 'manual-disconnect');
+    }
+  }, [privyReady, privyAuthenticated, hasAutoConnected, walletState?.isPrivy, dispatch]);
+
+
   // Auto-connect Privy adapter when authenticated
   useEffect(() => {
-    if (!privyReady || !privyAuthenticated) return;
+    // Clear any corrupted wallet data on first load
+    clearCorruptedWalletData();
 
-    // Check if Privy adapter is already connected
-    if (walletState?.adapterName === 'Privy') return;
+    if (!privyReady || !privyAuthenticated || walletState?.adapterName) {
+      return; // Don't auto-connect if already connected
+    }
+
+    // Prevent auto-connect for 5 seconds after logout
+    const timeSinceLogout = Date.now() - lastLogoutTime;
+    if (timeSinceLogout < 5000) {
+      console.log('🔌 Skipping auto-connect due to recent logout cooldown');
+      return;
+    }
+
+    // Check if this is a manual disconnect
+    const lastConnectionSource = localStorage.getItem('lastConnectionSource');
+    if (lastConnectionSource === 'manual-disconnect') {
+      console.log('🔌 Skipping auto-connect due to manual disconnect');
+      return;
+    }
+
+    // Additional check: don't auto-connect if we just cleared wallet state
+    if (!walletState && timeSinceLogout < 10000) {
+      console.log('🔌 Skipping auto-connect - wallet state was just cleared');
+      return;
+    }
+
+    console.log('Auto-connecting Privy');
 
     // Find the Privy adapter
     const privyAdapter = adapters.find(adapter => adapter.name === 'Privy');
     if (!privyAdapter) return;
 
-    // Get wallet address from Privy user data or localStorage
+    console.log('Privy adapter found:', privyAdapter);
+    console.log('Wallet state:', walletState);
+
+    // Get wallet address from localStorage (for selected wallet) or Privy user data (embedded wallet)
     let walletAddress = null;
 
     // First try to get from localStorage (for selected wallet)
     if (typeof window !== 'undefined') {
-      walletAddress = localStorage.getItem('privy:selectedWallet');
-    }
-    // else get from Privy user data (embedded wallet)
-    else if (user?.wallet?.address) {
-      walletAddress = user.wallet.address;
+      const savedWallet = localStorage.getItem('privy:selectedWallet');
+      console.log('Raw localStorage value:', savedWallet, typeof savedWallet);
+      walletAddress = savedWallet;
     }
 
-    if (walletAddress) {
+    console.log('user', user)
+
+    // If no localStorage preference, try Privy user data (embedded wallet)
+    if (!walletAddress && user && user?.linkedAccounts?.length > 0) {
+      const embeddedWallet = user.linkedAccounts.find(account =>
+        account.type === 'wallet' &&
+        account.chainType === 'solana' &&
+        account.connectorType === "embedded"
+      );
+      if (embeddedWallet && embeddedWallet.type === 'wallet') {
+        walletAddress = embeddedWallet.address;
+        console.log('Using Privy embedded wallet:', walletAddress);
+      }
+    }
+
+    console.log('Final wallet address:', walletAddress, typeof walletAddress);
+
+    // Validate wallet address more strictly
+    if (walletAddress &&
+      typeof walletAddress === 'string' &&
+      walletAddress.length > 0 &&
+      walletAddress !== 'null' &&
+      walletAddress !== 'undefined' &&
+      !walletAddress.includes('{') &&
+      !walletAddress.includes('}')) {
+
       console.log('Auto-connecting Privy adapter with address:', walletAddress);
+
+      // Mark this as a Privy connection to prevent native auto-connect
+      localStorage.setItem('lastConnectionSource', 'privy');
+      setHasAutoConnected(true);
+
       dispatch({
         type: 'connect',
         payload: {
-          adapterName: 'Privy',
+          adapterName: privyAdapter.name as WalletAdapterName,
           walletAddress: walletAddress,
+          isPrivy: true,
         },
       });
+    } else if (walletAddress) {
+      console.error('Invalid wallet address type or value:', walletAddress, typeof walletAddress);
+      // Clear invalid localStorage value
+      localStorage.removeItem('privy:selectedWallet');
     }
-  }, [privyReady, privyAuthenticated, user, walletState?.adapterName, adapters, dispatch]);
+  }, [privyReady, privyAuthenticated, user, walletState, adapters, dispatch, lastLogoutTime]);
 
   useSettingsPersistence();
   useWatchTokenPrices();
@@ -280,9 +427,19 @@ function AppComponent({
   }, [cookies]);
 
   useEffect(() => {
-    if (!wallet) {
+
+    console.log('Checcking wallet to see if connected');
+    console.log('wallet', wallet);
+    console.log('walletAddress', walletAddress);
+    // Use wallet address from Redux state for more reliable connection detection
+    const isWalletConnected = !!(wallet && walletAddress);
+
+    console.log('isWalletConnected', isWalletConnected);
+
+    if (!isWalletConnected) {
       setConnected(false);
       console.log('No wallet connected, setting Adrena program to null');
+
       window.adrena.client.setAdrenaProgram(null);
       return;
     }
@@ -290,6 +447,7 @@ function AppComponent({
     dispatch(setVerifiedWalletAddresses());
 
     setConnected(true);
+    console.log('Setting connected to true', true);
     window.adrena.client.setAdrenaProgram(
       new Program(
         ADRENA_IDL,
@@ -300,8 +458,7 @@ function AppComponent({
         }),
       ),
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet]);
+  }, [wallet, walletAddress, dispatch]);
 
   useEffect(() => {
     dispatch(checkAndSignInAnonymously());
@@ -328,7 +485,7 @@ function AppComponent({
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRpc.name]);
+  }, [activeRpc.name, wallet]);
 
   const [
     isUserProfileMigrationV1Tov2Open,

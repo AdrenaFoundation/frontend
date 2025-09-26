@@ -70,6 +70,19 @@ export default function LongShortTradingInputs({
   const borrowRates = useSelector((s) => s.borrowRates);
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const walletState = useSelector((s) => s.walletState.wallet);
+
+  // Get wallet address safely, prioritizing Redux state over adapter
+  const walletAddress = useMemo(() => {
+    // First try to get from Redux state (works with external wallets selected in Privy)
+    if (walletState?.walletAddress) {
+      return walletState.walletAddress;
+    }
+
+    // Fallback to adapter publicKey (traditional wallet connection)
+    return getWalletAddress(wallet);
+  }, [walletState?.walletAddress, wallet]);
+
   const [takeProfitInput, setTakeProfitInput] = useState<number | null>(null);
   const [stopLossInput, setStopLossInput] = useState<number | null>(null);
   const [swapSlippage, setSwapSlippage] = useState<number>(0.3); // Default swap slippage
@@ -376,7 +389,7 @@ export default function LongShortTradingInputs({
   };
 
   const handleExecuteButton = async (): Promise<void> => {
-    if (!connected || !dispatch || !wallet) {
+    if (!connected || !dispatch || !walletAddress) {
       dispatch(openCloseConnectionModalAction(true));
       return;
     }
@@ -462,7 +475,7 @@ export default function LongShortTradingInputs({
 
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
-          owner: new PublicKey(wallet.publicKey),
+          owner: new PublicKey(walletAddress),
           collateralMint: tokenA.mint,
           mint: tokenB.mint,
           price: entryPrice,
@@ -476,7 +489,7 @@ export default function LongShortTradingInputs({
           swapSlippage,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
-          owner: new PublicKey(wallet.publicKey),
+          owner: new PublicKey(walletAddress),
           collateralMint: tokenA.mint,
           mint: tokenB.mint,
           price: entryPrice,
@@ -1171,10 +1184,10 @@ export default function LongShortTradingInputs({
               onInputBChange={handleInputBChange}
               onExecute={handleExecuteButton}
               tokenPriceBTrade={tokenPriceBTrade}
+              walletAddress={walletAddress}
+              custodyLiquidity={availableLiquidity}
               favorites={favorites}
               onToggleFavorite={toggleFavorite}
-              walletAddress={getWalletAddress(wallet)}
-              custodyLiquidity={availableLiquidity}
             />
             {inputState.inputA && !positionInfo.errorMessage ? (
               <>

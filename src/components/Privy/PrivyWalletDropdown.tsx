@@ -13,7 +13,8 @@ interface PrivyWalletDropdownProps {
     selectedWallet: { address: string; standardWallet: { name: string; icon: string } } | null;
     user?: { email?: { address?: string } } | null;
     wallet?: { walletAddress?: string; adapterName?: string } | null;
-    onWalletSelection: (index: number) => void;
+    onWalletSelection: (index: number, walletType?: 'privy' | 'external') => void;
+    onExternalWalletSelection?: (address: string, adapterName: string) => void;
     className?: string;
 }
 
@@ -25,6 +26,7 @@ export function PrivyWalletDropdown({
     user,
     wallet,
     onWalletSelection,
+    onExternalWalletSelection,
     className = ''
 }: PrivyWalletDropdownProps) {
     const [showDropdown, setShowDropdown] = useState(false);
@@ -84,19 +86,31 @@ export function PrivyWalletDropdown({
     }, []);
 
     const getDisplayText = () => {
-        // Determine the active wallet address
-        const activeAddress = selectedWallet?.address || externalWallet?.address || wallet?.walletAddress;
-
-        if (activeAddress) {
-            // Check for cached or fresh profile name
-            const profileName = getProfileName(activeAddress);
+        // Prioritize external wallet if it's selected
+        if (externalWallet?.address) {
+            const profileName = getProfileName(externalWallet.address);
             if (profileName) {
                 return profileName;
             }
+            return getAbbrevWalletAddress(externalWallet.address);
+        }
 
-            // If loading and no cached data, show abbreviated address
-            // This prevents flashing between different display texts
-            return getAbbrevWalletAddress(activeAddress);
+        // Then check selected Privy wallet
+        if (selectedWallet?.address) {
+            const profileName = getProfileName(selectedWallet.address);
+            if (profileName) {
+                return profileName;
+            }
+            return getAbbrevWalletAddress(selectedWallet.address);
+        }
+
+        // Fallback to any wallet address
+        if (wallet?.walletAddress) {
+            const profileName = getProfileName(wallet.walletAddress);
+            if (profileName) {
+                return profileName;
+            }
+            return getAbbrevWalletAddress(wallet.walletAddress);
         }
 
         if (user?.email?.address) {
@@ -107,11 +121,12 @@ export function PrivyWalletDropdown({
     };
 
     const getWalletType = () => {
-        if (selectedWallet) {
-            return getWalletTypeDisplayName(selectedWallet.standardWallet.name);
-        }
+        // Prioritize external wallet if it's selected
         if (externalWallet) {
             return externalWallet.adapterName;
+        }
+        if (selectedWallet) {
+            return getWalletTypeDisplayName(selectedWallet.standardWallet.name);
         }
         if (wallet?.adapterName) {
             return wallet.adapterName;
@@ -339,18 +354,29 @@ export function PrivyWalletDropdown({
                         </>
                     )}
 
-                    {/* External Wallets - Display Only */}
+                    {/* External Wallets - Selectable */}
                     {(privyExternalWallets.length > 0 || externalWallet) ? (
                         <>
                             {(solanaWallets.length > 1 || solanaWallets.length === 1) && <div className="border-t border-gray-700"></div>}
                             <div className="px-4 py-2 text-xs text-gray-500 border-b border-gray-700">
-                                Linked Wallets
+                                External Wallets
                             </div>
 
-                            {/* Privy External Wallets */}
+                            {/* Privy External Wallets - Now Selectable */}
                             {privyExternalWallets.map((wallet) => (
-                                <div key={`privy-ext-${wallet.address}`} className="flex items-center justify-between px-4 py-3 text-sm text-gray-400 opacity-60">
-                                    <div className="flex-1">
+                                <div key={`privy-ext-${wallet.address}`} className={`flex items-center justify-between px-4 py-3 transition-colors ${externalWallet?.address === wallet.address
+                                        ? 'bg-gray-700 border-l-2 border-green-400'
+                                        : 'hover:bg-gray-700'
+                                    }`}>
+                                    <button
+                                        onClick={() => {
+                                            if (onExternalWalletSelection) {
+                                                onExternalWalletSelection(wallet.address, wallet.standardWallet.name);
+                                            }
+                                            setShowDropdown(false);
+                                        }}
+                                        className="flex-1 text-left text-sm text-gray-300 hover:text-white"
+                                    >
                                         <div className="flex items-start gap-3">
                                             {/* Profile Picture - Takes 2 lines height */}
                                             <div className="flex-shrink-0">
@@ -390,8 +416,15 @@ export function PrivyWalletDropdown({
                                             {/* Content - Address + Name */}
                                             <div className="flex-1 min-w-0">
                                                 {/* Wallet Address - 1 line */}
-                                                <div className="font-medium">
-                                                    {getProfileName(wallet.address) || getAbbrevWalletAddress(wallet.address)}
+                                                <div className="flex items-center gap-2">
+                                                    <div className="font-medium">
+                                                        {getProfileName(wallet.address) || getAbbrevWalletAddress(wallet.address)}
+                                                    </div>
+                                                    {externalWallet?.address === wallet.address && (
+                                                        <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                    )}
                                                 </div>
 
                                                 {/* Wallet Icon + Name - Under address */}
@@ -419,7 +452,7 @@ export function PrivyWalletDropdown({
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </button>
                                     <div className="flex items-center gap-1">
                                         <button
                                             onClick={() => navigator.clipboard.writeText(wallet.address)}
@@ -443,6 +476,67 @@ export function PrivyWalletDropdown({
                                     </div>
                                 </div>
                             ))}
+
+                            {/* External Wallet from Redux (non-Privy) */}
+                            {externalWallet && (
+                                <div className={`flex items-center justify-between px-4 py-3 transition-colors ${'bg-gray-700 border-l-2 border-green-400' // Always selected since it's the active external wallet
+                                    }`}>
+                                    <div className="flex-1">
+                                        <div className="flex items-start gap-3">
+                                            {/* Profile Picture - Takes 2 lines height */}
+                                            <div className="flex-shrink-0">
+                                                {getProfilePicture(externalWallet.address) ? (
+                                                    <Image
+                                                        src={getProfilePicture(externalWallet.address) || ''}
+                                                        alt="User Profile"
+                                                        className="w-8 h-8 rounded-full"
+                                                        width={32}
+                                                        height={32}
+                                                    />
+                                                ) : (
+                                                    <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+                                                        <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                                        </svg>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Content - Address + Name */}
+                                            <div className="flex-1 min-w-0">
+                                                {/* Wallet Address - 1 line */}
+                                                <div className="flex items-center gap-2">
+                                                    <div className="font-medium text-white">
+                                                        {getProfileName(externalWallet.address) || getAbbrevWalletAddress(externalWallet.address)}
+                                                    </div>
+                                                    <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                </div>
+
+                                                {/* Wallet Icon + Name - Under address */}
+                                                <div className="text-xs text-gray-400 flex items-center gap-2 mt-1">
+                                                    <span className="text-xs">
+                                                        {externalWallet.adapterName}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <button
+                                            onClick={() => navigator.clipboard.writeText(externalWallet.address)}
+                                            className="p-1 text-gray-400 hover:text-white transition-colors"
+                                            title="Copy address"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <rect x="9" y="9" width="10" height="10" rx="2" ry="2" strokeWidth="2" />
+                                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" strokeWidth="2" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
 
                             <button
                                 onClick={handleLinkWallet}

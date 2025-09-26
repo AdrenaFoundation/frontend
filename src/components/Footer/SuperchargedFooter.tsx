@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adrenaLogo from '@/../public/images/adrena_logo_adx_white.svg';
