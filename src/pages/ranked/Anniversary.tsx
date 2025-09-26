@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image, { StaticImageData } from 'next/image';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import firstImage from '@/../public/images/first-place.svg';
@@ -23,6 +23,180 @@ import {
 } from '@/types';
 import { getAbbrevWalletAddress, getNonUserProfile } from '@/utils';
 
+// Constants
+const CREATIVE_PRIZES = [
+  {
+    title: 'Best Shitpost Tweet',
+    reward: 500,
+    tippyText:
+      'Funniest or most viral shitpost about Adrena. Winner chosen by the team.',
+  },
+  {
+    title: 'Best Anniversary Tweet',
+    reward: 500,
+    tippyText:
+      "Best tweet celebrating Adrena's anniversary. Winner chosen by the team.",
+  },
+  {
+    title: 'Best Feature Idea',
+    reward: 500,
+    tippyText:
+      'Most valuable idea for improving Adrena, submitted on Discord. Winner selected by the team.',
+  },
+  {
+    title: 'Best Artwork',
+    reward: 500,
+    tippyText:
+      'Coolest community artwork related to Adrena. Winner chosen by the team.',
+  },
+] as const;
+
+const TRADING_PRIZES = [
+  {
+    title: 'Best PnL %',
+    reward: 2000,
+    tippyText: 'Trader with the highest single profitable trade by percentage.',
+    recordKey: 'best_pnl_percentage' as const,
+  },
+  {
+    title: 'Top Liquidation',
+    reward: 2000,
+    tippyText: 'Trader with the largest single liquidation in USD value.',
+    recordKey: 'biggest_liquidation' as const,
+  },
+  {
+    title: 'Top Borrow Fees',
+    reward: 2000,
+    tippyText: 'Trader who paid the most borrow fees in USD.',
+    recordKey: 'biggest_borrow_fees' as const,
+  },
+  {
+    title: 'Top Exit Fees',
+    reward: 2000,
+    tippyText: 'Trader who paid the most exit fees in USD.',
+    recordKey: 'biggest_exit_fees' as const,
+  },
+  {
+    title: 'Most Trades',
+    reward: 500,
+    tippyText: 'Trader who closed the most positions.',
+    recordKey: 'most_trades' as const,
+  },
+  {
+    title: 'Consecutive Wins',
+    reward: 500,
+    tippyText: 'Trader with the longest winning streak.',
+    recordKey: 'most_consecutive_wins' as const,
+  },
+  {
+    title: 'Consecutive Losses',
+    reward: 500,
+    tippyText: 'Trader with the longest losing streak.',
+    recordKey: 'most_consecutive_losses' as const,
+  },
+  {
+    title: 'Consecutive Liquidations',
+    reward: 500,
+    tippyText: 'Trader with the longest streak of liquidated trades.',
+    recordKey: 'most_consecutive_liquidations' as const,
+  },
+  {
+    title: 'First Blood',
+    reward: 200,
+    tippyText: (
+      <div>
+        <div>
+          First trader to open and close a position with a PnL/Volume ratio of
+          10% in the competition.
+        </div>
+        <div className="mt-2 text-sm">
+          PnL/Volume ratio formula: PnL / volume * 100
+        </div>
+      </div>
+    ),
+    recordKey: 'first_trader' as const,
+  },
+  {
+    title: 'Last Straw',
+    reward: 200,
+    tippyText: (
+      <div>
+        <div>
+          Last trader to close a position with a PnL/Volume ratio of 10% before
+          the competition ends.
+        </div>
+        <div className="mt-2 text-sm">
+          PnL/Volume ratio formula: PnL / volume * 100
+        </div>
+      </div>
+    ),
+    recordKey: 'last_trader' as const,
+  },
+] as const;
+
+const RAFFLE_PLACES = [
+  { placeTitle: '1st', imageRef: firstImage, reward: 10000 },
+  { placeTitle: '2nd', imageRef: secondImage, reward: 8000 },
+  { placeTitle: '3rd', imageRef: thirdImage, reward: 6000 },
+  { placeTitle: '4th', imageRef: null, reward: 4000 },
+  { placeTitle: '5th', imageRef: null, reward: 3000 },
+  { placeTitle: '6th', imageRef: null, reward: 2000 },
+  { placeTitle: '7th', imageRef: null, reward: 1500 },
+  { placeTitle: '8th', imageRef: null, reward: 1300 },
+  { placeTitle: '9th', imageRef: null, reward: 1000 },
+  { placeTitle: '10th', imageRef: null, reward: 800 },
+] as const;
+
+// Utility functions
+const formatValue = (value: number, title: string): string => {
+  if (title.includes('First Blood') || title.includes('Last Straw')) {
+    return new Date(value).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  if (
+    title.includes('Trades') ||
+    title.includes('Wins') ||
+    title.includes('Losses') ||
+    title.includes('Liquidations')
+  ) {
+    return Math.floor(value).toString();
+  }
+
+  return value.toFixed(2);
+};
+
+const getValueUnit = (title: string): string => {
+  if (title.includes('PnL %')) return '%';
+  if (title.includes('Trades')) return ' trades';
+  if (
+    title.includes('Wins') ||
+    title.includes('Losses') ||
+    title.includes('Liquidations')
+  )
+    return ' consecutive';
+  if (title.includes('Fees') || title.includes('Liquidation')) return ' USD';
+  if (title.includes('First Blood') || title.includes('Last Straw')) return '';
+  return '';
+};
+
+const getBorderClasses = (
+  isCurrentUserHolder: boolean,
+  hasRecord: boolean,
+  hasClickHandler: boolean,
+): string => {
+  if (isCurrentUserHolder) return 'border-green-400/50';
+  if (hasRecord && hasClickHandler)
+    return 'cursor-pointer hover:border-gray-400/30';
+  return 'cursor-help hover:border-white/10';
+};
+
+// Components
 function RafflePlace({
   placeTitle,
   imageRef,
@@ -43,15 +217,15 @@ function RafflePlace({
       }
     >
       <div className="border bg-main rounded-md p-2 flex flex-col items-center justify-center gap-2 z-10 grow relative cursor-help hover:border-white/10">
-        {imageRef ? (
+        {imageRef && (
           <Image
             src={imageRef}
             alt="raffle ranking logo"
-            className={'h-8 w-8'}
+            className="h-8 w-8"
             width={40}
             height={40}
           />
-        ) : null}
+        )}
 
         <div
           className="absolute w-full h-full z-10"
@@ -63,7 +237,7 @@ function RafflePlace({
           }}
         />
 
-        <div className={twMerge('text-sm font-semibold text-white/90')}>
+        <div className="text-sm font-semibold text-white/90">
           {placeTitle} Raffle Winner
         </div>
 
@@ -84,78 +258,44 @@ function RaffleAdditionalPrize({
   reward,
   tippyText,
   record,
-  allUserProfilesMetadata,
+  profileMap,
   onClickProfile,
   getUserComparison,
+  showSecondLine = true,
 }: {
   title: string;
   reward: number;
   tippyText: string | React.ReactNode;
   record?: AnniversaryRecord;
-  allUserProfilesMetadata: UserProfileMetadata[];
+  profileMap: Map<string, UserProfileMetadata>;
   onClickProfile?: (wallet: string) => void;
   getUserComparison?: (title: string, currentValue: number) => React.ReactNode;
+  showSecondLine?: boolean;
 }) {
-  const getDisplayName = (wallet: string) => {
-    const profile = allUserProfilesMetadata.find(
-      (p) => p.owner.toBase58() === wallet,
-    );
-    return profile?.nickname || getAbbrevWalletAddress(wallet);
-  };
+  const wallet = useSelector((s) => s.walletState.wallet);
+  const walletAddress = wallet?.walletAddress ?? null;
 
-  const getProfilePictureUrl = (wallet: string) => {
-    const profile = allUserProfilesMetadata.find(
-      (p) => p.owner.toBase58() === wallet,
-    );
-    return profile
-      ? PROFILE_PICTURES[
-          profile.profilePicture as keyof typeof PROFILE_PICTURES
-        ]
-      : PROFILE_PICTURES[0]; // Always return default profile picture
-  };
+  const getDisplayName = useCallback(
+    (wallet: string) => {
+      const profile = profileMap.get(wallet);
+      return profile?.nickname || getAbbrevWalletAddress(wallet);
+    },
+    [profileMap],
+  );
 
-  const formatValue = (value: number, title: string) => {
-    // For First Blood and Last Straw, format as date
-    if (title.includes('First Blood') || title.includes('Last Straw')) {
-      return new Date(value).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    }
+  const getProfilePictureUrl = useCallback(
+    (wallet: string) => {
+      const profile = profileMap.get(wallet);
+      return profile
+        ? PROFILE_PICTURES[
+            profile.profilePicture as keyof typeof PROFILE_PICTURES
+          ]
+        : PROFILE_PICTURES[0];
+    },
+    [profileMap],
+  );
 
-    // For trades and consecutive counts, show as plain integer
-    if (
-      title.includes('Trades') ||
-      title.includes('Wins') ||
-      title.includes('Losses') ||
-      title.includes('Liquidations')
-    ) {
-      return Math.floor(value).toString();
-    }
-
-    // For percentages and USD amounts, show with decimals
-    return value.toFixed(2);
-  };
-
-  const getValueUnit = (title: string) => {
-    if (title.includes('PnL %')) return '%';
-    if (title.includes('Trades')) return ' trades';
-    if (
-      title.includes('Wins') ||
-      title.includes('Losses') ||
-      title.includes('Liquidations')
-    )
-      return ' consecutive';
-    if (title.includes('Fees') || title.includes('Liquidation')) return ' USD';
-    if (title.includes('First Blood') || title.includes('Last Straw'))
-      return '';
-    return '';
-  };
-
-  const getEnhancedTippyContent = () => {
+  const getEnhancedTippyContent = useCallback(() => {
     if (!record?.wallet) {
       return (
         <div className="text-center max-w-[300px]">
@@ -196,7 +336,6 @@ function RaffleAdditionalPrize({
             </div>
           </div>
 
-          {/* Add user comparison */}
           {getUserComparison && getUserComparison(title, record.value)}
 
           {onClickProfile && (
@@ -207,45 +346,113 @@ function RaffleAdditionalPrize({
         </div>
       </div>
     );
-  };
+  }, [
+    record,
+    title,
+    tippyText,
+    getProfilePictureUrl,
+    getDisplayName,
+    getUserComparison,
+    onClickProfile,
+  ]);
+
+  const isCurrentUserHolder = record?.wallet === walletAddress;
+  const hasRecord = !!record?.wallet;
+  const hasClickHandler = !!onClickProfile;
 
   return (
     <Tippy content={getEnhancedTippyContent()}>
       <div
         className={twMerge(
-          'border bg-main p-2 flex justify-between z-10 grow rounded-md md:w-[12em] gap-2 whitespace-nowrap',
-          record?.wallet && onClickProfile
-            ? 'cursor-pointer hover:border-yellow-400/30'
-            : 'cursor-help hover:border-white/10',
+          'border bg-main p-2 flex flex-col z-10 grow rounded-md md:w-[12em] gap-2',
+          getBorderClasses(isCurrentUserHolder, hasRecord, hasClickHandler),
         )}
         onClick={
-          record?.wallet && onClickProfile
+          hasRecord && onClickProfile
             ? () => onClickProfile(record.wallet)
             : undefined
         }
       >
-        <div className="flex items-center gap-2">
-          {record?.wallet && (
-            <Image
-              src={getProfilePictureUrl(record.wallet)}
-              alt="Profile"
-              width={16}
-              height={16}
-              className="rounded-full"
-            />
-          )}
-          <div className={twMerge('text-sm font-semibold text-white/90')}>
-            {title}
-          </div>
+        {/* First line: Title and reward */}
+        <div className="flex justify-between items-center">
+          <div className="text-sm font-semibold text-white/90">{title}</div>
+          <FormatNumber
+            nb={reward}
+            format="currency"
+            className="text-txtfade text-sm"
+          />
         </div>
 
-        <FormatNumber
-          nb={reward}
-          format="currency"
-          className="text-txtfade text-sm"
-        />
+        {/* Second line: Profile picture and name (conditional rendering) */}
+        {showSecondLine && (
+          <div className="flex items-center gap-2">
+            {record?.wallet ? (
+              <>
+                <Image
+                  src={getProfilePictureUrl(record.wallet)}
+                  alt="Profile"
+                  width={16}
+                  height={16}
+                  className="rounded-full"
+                />
+                <div className="text-xs text-white/70 truncate">
+                  {getDisplayName(record.wallet)}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="w-4 h-4 rounded-full bg-gray-600/50"></div>
+                <div className="text-xs text-white/50">-</div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </Tippy>
+  );
+}
+
+function TradingPrize({
+  prize,
+  record,
+  profileMap,
+  onClickProfile,
+  getUserComparison,
+}: {
+  prize: (typeof TRADING_PRIZES)[number];
+  record?: AnniversaryRecord;
+  profileMap: Map<string, UserProfileMetadata>;
+  onClickProfile?: (wallet: string) => void;
+  getUserComparison?: (title: string, currentValue: number) => React.ReactNode;
+}) {
+  return (
+    <RaffleAdditionalPrize
+      title={prize.title}
+      reward={prize.reward}
+      tippyText={prize.tippyText}
+      record={record}
+      profileMap={profileMap}
+      onClickProfile={onClickProfile}
+      getUserComparison={getUserComparison}
+    />
+  );
+}
+
+function CreativePrize({
+  prize,
+  profileMap,
+}: {
+  prize: (typeof CREATIVE_PRIZES)[number];
+  profileMap: Map<string, UserProfileMetadata>;
+}) {
+  return (
+    <RaffleAdditionalPrize
+      title={prize.title}
+      reward={prize.reward}
+      tippyText={prize.tippyText}
+      profileMap={profileMap}
+      showSecondLine={false}
+    />
   );
 }
 
@@ -263,129 +470,139 @@ export default function Anniversary() {
   const [activeProfile, setActiveProfile] =
     useState<UserProfileExtended | null>(null);
 
-  const handleProfileClick = async (wallet: string) => {
-    const profile = allUserProfilesMetadata.find(
-      (p) => p.owner.toBase58() === wallet,
-    );
+  // Optimize profile lookups with Map for O(1) access
+  const profileMap = useMemo(() => {
+    const map = new Map<string, UserProfileMetadata>();
+    allUserProfilesMetadata.forEach((profile) => {
+      map.set(profile.owner.toBase58(), profile);
+    });
+    return map;
+  }, [allUserProfilesMetadata]);
 
-    if (profile) {
-      const p = await window.adrena.client.loadUserProfile({
-        user: new PublicKey(wallet),
-      });
+  const handleProfileClick = useCallback(
+    async (wallet: string) => {
+      const profile = profileMap.get(wallet);
 
-      if (p === false) {
-        setActiveProfile(getNonUserProfile(wallet));
+      if (profile) {
+        const p = await window.adrena.client.loadUserProfile({
+          user: new PublicKey(wallet),
+        });
+
+        if (p === false) {
+          setActiveProfile(getNonUserProfile(wallet));
+        } else {
+          setActiveProfile(p);
+        }
       } else {
-        setActiveProfile(p);
+        setActiveProfile(getNonUserProfile(wallet));
       }
-    } else {
-      setActiveProfile(getNonUserProfile(wallet));
-    }
-  };
+    },
+    [profileMap],
+  );
 
-  const getUserComparison = (title: string, currentValue: number) => {
-    if (!anniversaryData?.user_stats || !walletAddress) {
-      return null;
-    }
-
-    const userStats = anniversaryData.user_stats;
-    let userValue: number = 0;
-    let unit = '';
-    let isConsecutive = false;
-
-    switch (title) {
-      case 'Best PnL %':
-        userValue = userStats.best_pnl_percentage;
-        unit = '%';
-        break;
-      case 'Top Liquidation':
-        userValue = userStats.biggest_liquidation;
-        unit = ' USD';
-        break;
-      case 'Top Borrow Fees':
-        userValue = userStats.biggest_borrow_fees;
-        unit = ' USD';
-        break;
-      case 'Top Exit Fees':
-        userValue = userStats.biggest_exit_fees;
-        unit = ' USD';
-        break;
-      case 'Most Trades':
-        userValue = userStats.most_trades;
-        unit = ' trades';
-        isConsecutive = true; // No decimals for trade counts
-        break;
-      case 'Consecutive Wins':
-        userValue = userStats.most_consecutive_wins;
-        unit = ' consecutive';
-        isConsecutive = true;
-        break;
-      case 'Consecutive Losses':
-        userValue = userStats.most_consecutive_losses;
-        unit = ' consecutive';
-        isConsecutive = true;
-        break;
-      case 'Consecutive Liquidations':
-        userValue = userStats.most_consecutive_liquidations;
-        unit = ' consecutive';
-        isConsecutive = true;
-        break;
-      case 'First Blood':
-      case 'Last Straw':
-        // These don't have user comparisons since they're time-based
+  const getUserComparison = useCallback(
+    (title: string, currentValue: number) => {
+      if (!anniversaryData?.user_stats || !walletAddress) {
         return null;
-      default:
-        return null;
-    }
+      }
 
-    if (userValue === 0) return null;
+      const userStats = anniversaryData.user_stats;
+      let userValue: number = 0;
+      let unit = '';
+      let isConsecutive = false;
 
-    const difference = userValue - currentValue;
-    const isAhead = difference > 0;
-    const isSame = difference === 0;
+      switch (title) {
+        case 'Best PnL %':
+          userValue = userStats.best_pnl_percentage;
+          unit = '%';
+          break;
+        case 'Top Liquidation':
+          userValue = userStats.biggest_liquidation;
+          unit = ' USD';
+          break;
+        case 'Top Borrow Fees':
+          userValue = userStats.biggest_borrow_fees;
+          unit = ' USD';
+          break;
+        case 'Top Exit Fees':
+          userValue = userStats.biggest_exit_fees;
+          unit = ' USD';
+          break;
+        case 'Most Trades':
+          userValue = userStats.most_trades;
+          unit = ' trades';
+          isConsecutive = true;
+          break;
+        case 'Consecutive Wins':
+          userValue = userStats.most_consecutive_wins;
+          unit = ' consecutive';
+          isConsecutive = true;
+          break;
+        case 'Consecutive Losses':
+          userValue = userStats.most_consecutive_losses;
+          unit = ' consecutive';
+          isConsecutive = true;
+          break;
+        case 'Consecutive Liquidations':
+          userValue = userStats.most_consecutive_liquidations;
+          unit = ' consecutive';
+          isConsecutive = true;
+          break;
+        case 'First Blood':
+        case 'Last Straw':
+          return null;
+        default:
+          return null;
+      }
 
-    // Format the user value - no decimals for consecutive counts
-    const formattedUserValue = isConsecutive
-      ? Math.floor(userValue).toString()
-      : userValue.toFixed(2);
+      if (userValue === 0) return null;
 
-    // Format the difference - no decimals for consecutive counts
-    const formattedDifference = isConsecutive
-      ? Math.floor(Math.abs(difference)).toString()
-      : Math.abs(difference).toFixed(2);
+      const difference = userValue - currentValue;
+      const isAhead = difference > 0;
+      const isSame = difference === 0;
 
-    return (
-      <div className="border-t border-gray-600 pt-2 mt-2">
-        <div className="text-xs text-gray-400 mb-1">Your Stats:</div>
-        <div className="text-sm">
-          <span className="text-white font-bold">
-            {formattedUserValue}
-            {unit}
-          </span>
-          {!isSame && (
-            <div
-              className={`text-xs mt-1 ${isAhead ? 'text-green-400' : 'text-red-400'}`}
-            >
-              {isAhead ? '🏆 ' : ''}
-              {isAhead
-                ? `+${formattedDifference}`
-                : `-${formattedDifference}`}{' '}
-              vs leader
-            </div>
-          )}
-          {isSame && (
-            <div className="text-xs mt-1 text-yellow-400">
-              �� Tied with leader!
-            </div>
-          )}
+      const formattedUserValue = isConsecutive
+        ? Math.floor(userValue).toString()
+        : userValue.toFixed(2);
+
+      const formattedDifference = isConsecutive
+        ? Math.floor(Math.abs(difference)).toString()
+        : Math.abs(difference).toFixed(2);
+
+      return (
+        <div className="border-t border-gray-600 pt-2 mt-2">
+          <div className="text-xs text-gray-400 mb-1">Your Stats:</div>
+          <div className="text-sm">
+            <span className="text-white font-bold">
+              {formattedUserValue}
+              {unit}
+            </span>
+            {!isSame && (
+              <div
+                className={`text-xs mt-1 ${isAhead ? 'text-green-400' : 'text-red-400'}`}
+              >
+                {isAhead ? '🏆 ' : ''}
+                {isAhead
+                  ? `+${formattedDifference}`
+                  : `-${formattedDifference}`}{' '}
+                vs leader
+              </div>
+            )}
+            {isSame && (
+              <div className="text-xs mt-1 text-yellow-400">
+                Tied with leader!
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    );
-  };
+      );
+    },
+    [anniversaryData?.user_stats, walletAddress],
+  );
 
   return (
     <div className="w-full mx-auto relative flex flex-col pb-4">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {/* Background image */}
       <img
         src="https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/hb-3.jpg"
         alt="anniversary bg"
@@ -400,15 +617,11 @@ export default function Anniversary() {
         </div>
 
         <div className="relative w-full sm:max-w-[40em] h-[15em] border-t-2 border-b-2 sm:border-2 sm:border-white/100 overflow-hidden">
-          {/* Fallback image */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/raffle-3.jpg"
             alt="raffle"
             className="absolute inset-0 w-full h-full object-cover"
           />
-
-          {/* Video overlay */}
           <video
             className="absolute inset-0 w-full h-full object-cover"
             src="https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/raffle.mp4"
@@ -429,196 +642,75 @@ export default function Anniversary() {
             PRIZES
           </h1>
 
-          <div className="flex flex-row gap-2 mt-4 justify-center flex-wrap w-full">
-            <div className="w-full lg:w-1/2 lg:max-w-[30em] flex flex-col p-4 border bg-main/40">
-              <h2 className="text-sm ml-auto mr-auto mb-4 tracking-wider font-bold">
-                Raffle Category
-              </h2>
+          <div className="flex flex-col gap-2 mt-4 justify-center flex-wrap w-full">
+            {/* Top row: Raffle (left) and Trading (right) */}
+            <div className="flex flex-row gap-2 justify-center flex-wrap w-full">
+              {/* Raffle Category - Left side */}
+              <div className="w-full lg:w-1/2 lg:max-w-[30.5em] flex flex-col p-4 border bg-main/40">
+                <h2 className="text-sm ml-auto mr-auto mb-4 tracking-wider font-bold">
+                  Raffle Category
+                </h2>
 
-              <div className="w-full flex flex-row flex-wrap grow">
-                <div className="relative z-10 w-full flex flex-row gap-2 grow">
-                  <RafflePlace
-                    placeTitle="1st"
-                    imageRef={firstImage}
-                    reward={10000}
-                  />
-                  <RafflePlace
-                    placeTitle="2nd"
-                    imageRef={secondImage}
-                    reward={8000}
-                  />
-                  <RafflePlace
-                    placeTitle="3rd"
-                    imageRef={thirdImage}
-                    reward={6000}
-                  />
-                </div>
+                <div className="w-full flex flex-row flex-wrap grow">
+                  <div className="relative z-10 w-full flex flex-row gap-2 grow">
+                    {RAFFLE_PLACES.slice(0, 3).map((place) => (
+                      <RafflePlace
+                        key={place.placeTitle}
+                        placeTitle={place.placeTitle}
+                        imageRef={place.imageRef}
+                        reward={place.reward}
+                      />
+                    ))}
+                  </div>
 
-                <div className="relative z-10 w-full flex flex-row gap-2 flex-wrap mt-2">
-                  <RafflePlace placeTitle="4th" imageRef={null} reward={4000} />
-                  <RafflePlace placeTitle="5th" imageRef={null} reward={3000} />
-                  <RafflePlace placeTitle="6th" imageRef={null} reward={2000} />
-                  <RafflePlace placeTitle="7th" imageRef={null} reward={1500} />
-                  <RafflePlace placeTitle="8th" imageRef={null} reward={1300} />
-                  <RafflePlace placeTitle="9th" imageRef={null} reward={1000} />
-                  <RafflePlace placeTitle="10th" imageRef={null} reward={800} />
+                  <div className="relative z-10 w-full flex flex-row gap-2 flex-wrap mt-2">
+                    {RAFFLE_PLACES.slice(3).map((place) => (
+                      <RafflePlace
+                        key={place.placeTitle}
+                        placeTitle={place.placeTitle}
+                        imageRef={place.imageRef}
+                        reward={place.reward}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="w-full lg:w-1/2 lg:max-w-[30em] flex flex-row flex-wrap gap-2">
-              <div className="w-full flex flex-row flex-wrap p-4 border bg-main/40">
+              {/* Trading Category - Right side */}
+              <div className="w-full lg:w-1/2 lg:max-w-[30em] flex flex-col p-4 border bg-main/40">
                 <h2 className="text-sm ml-auto mr-auto mb-4 tracking-wider font-bold">
                   Trading Category
                 </h2>
 
                 <div className="relative z-10 w-full flex flex-row flex-wrap items-center justify-center gap-2">
-                  <RaffleAdditionalPrize
-                    title="Best PnL %"
-                    reward={2000}
-                    tippyText="Trader with the highest single profitable trade by percentage."
-                    record={anniversaryData?.records?.best_pnl_percentage}
-                    allUserProfilesMetadata={allUserProfilesMetadata}
-                    onClickProfile={handleProfileClick}
-                    getUserComparison={getUserComparison}
-                  />
-                  <RaffleAdditionalPrize
-                    title="Top Liquidation"
-                    reward={2000}
-                    tippyText="Trader with the largest single liquidation in USD value."
-                    record={anniversaryData?.records?.biggest_liquidation}
-                    allUserProfilesMetadata={allUserProfilesMetadata}
-                    onClickProfile={handleProfileClick}
-                    getUserComparison={getUserComparison}
-                  />
-                  <RaffleAdditionalPrize
-                    title="Top Borrow Fees"
-                    reward={2000}
-                    tippyText="Trader who paid the most borrow fees in USD."
-                    record={anniversaryData?.records?.biggest_borrow_fees}
-                    allUserProfilesMetadata={allUserProfilesMetadata}
-                    onClickProfile={handleProfileClick}
-                    getUserComparison={getUserComparison}
-                  />
-                  <RaffleAdditionalPrize
-                    title="Top Exit Fees"
-                    reward={2000}
-                    tippyText="Trader who paid the most exit fees in USD."
-                    record={anniversaryData?.records?.biggest_exit_fees}
-                    allUserProfilesMetadata={allUserProfilesMetadata}
-                    onClickProfile={handleProfileClick}
-                    getUserComparison={getUserComparison}
-                  />
-                  <RaffleAdditionalPrize
-                    title="Most Trades"
-                    reward={500}
-                    tippyText="Trader who closed the most positions."
-                    record={anniversaryData?.records?.most_trades}
-                    allUserProfilesMetadata={allUserProfilesMetadata}
-                    onClickProfile={handleProfileClick}
-                    getUserComparison={getUserComparison}
-                  />
-                  <RaffleAdditionalPrize
-                    title="Consecutive Wins"
-                    reward={500}
-                    tippyText="Trader with the longest winning streak."
-                    record={anniversaryData?.records?.most_consecutive_wins}
-                    allUserProfilesMetadata={allUserProfilesMetadata}
-                    onClickProfile={handleProfileClick}
-                    getUserComparison={getUserComparison}
-                  />
-                  <RaffleAdditionalPrize
-                    title="Consecutive Losses"
-                    reward={500}
-                    tippyText="Trader with the longest losing streak."
-                    record={anniversaryData?.records?.most_consecutive_losses}
-                    allUserProfilesMetadata={allUserProfilesMetadata}
-                    onClickProfile={handleProfileClick}
-                    getUserComparison={getUserComparison}
-                  />
-                  <RaffleAdditionalPrize
-                    title="Consecutive Liquidations"
-                    reward={500}
-                    tippyText="Trader with the longest streak of liquidated trades."
-                    record={
-                      anniversaryData?.records?.most_consecutive_liquidations
-                    }
-                    allUserProfilesMetadata={allUserProfilesMetadata}
-                    onClickProfile={handleProfileClick}
-                    getUserComparison={getUserComparison}
-                  />
-                  <RaffleAdditionalPrize
-                    title="First Blood"
-                    reward={200}
-                    tippyText={
-                      <div>
-                        <div>
-                          First trader to open and close a position with a
-                          PnL/Volume ratio of 10% in the competition.
-                        </div>
-                        <div className="mt-2 text-xs text-gray-300">
-                          PnL/Volume ratio formula: PnL / volume * 100
-                        </div>
-                      </div>
-                    }
-                    record={anniversaryData?.records?.first_trader}
-                    allUserProfilesMetadata={allUserProfilesMetadata}
-                    onClickProfile={handleProfileClick}
-                    getUserComparison={getUserComparison}
-                  />
-                  <RaffleAdditionalPrize
-                    title="Last Straw"
-                    reward={200}
-                    tippyText={
-                      <div>
-                        <div>
-                          Last trader to close a position with a PnL/Volume
-                          ratio of 10% before the competition ends.
-                        </div>
-                        <div className="mt-2 text-xs text-gray-300">
-                          PnL/Volume ratio formula: PnL / volume * 100
-                        </div>
-                      </div>
-                    }
-                    record={anniversaryData?.records?.last_trader}
-                    allUserProfilesMetadata={allUserProfilesMetadata}
-                    onClickProfile={handleProfileClick}
-                    getUserComparison={getUserComparison}
-                  />
+                  {TRADING_PRIZES.map((prize) => (
+                    <TradingPrize
+                      key={prize.recordKey}
+                      prize={prize}
+                      record={anniversaryData?.records?.[prize.recordKey]}
+                      profileMap={profileMap}
+                      onClickProfile={handleProfileClick}
+                      getUserComparison={getUserComparison}
+                    />
+                  ))}
                 </div>
               </div>
+            </div>
 
-              <div className="w-full flex flex-row flex-wrap p-4 border bg-main/40">
-                <h2 className="text-sm ml-auto mr-auto mb-4 tracking-wider font-bold">
-                  Creative Category
-                </h2>
+            {/* Bottom row: Creative Category */}
+            <div className="w-full lg:max-w-[61em] lg:mx-auto flex flex-col p-4 border bg-main/40">
+              <h2 className="text-sm ml-auto mr-auto mb-4 tracking-wider font-bold">
+                Creative Category
+              </h2>
 
-                <div className="relative z-10 w-full flex flex-row flex-wrap items-center justify-center gap-2">
-                  <RaffleAdditionalPrize
-                    title="Best Shitpost Tweet"
-                    reward={500}
-                    tippyText="Funniest or most viral shitpost about Adrena. Winner chosen by the team."
-                    allUserProfilesMetadata={allUserProfilesMetadata}
+              <div className="relative z-10 w-full flex flex-row flex-wrap items-center justify-center gap-2">
+                {CREATIVE_PRIZES.map((prize) => (
+                  <CreativePrize
+                    key={prize.title}
+                    prize={prize}
+                    profileMap={profileMap}
                   />
-                  <RaffleAdditionalPrize
-                    title="Best Anniversary Tweet"
-                    reward={500}
-                    tippyText="Best tweet celebrating Adrena's anniversary. Winner chosen by the team."
-                    allUserProfilesMetadata={allUserProfilesMetadata}
-                  />
-                  <RaffleAdditionalPrize
-                    title="Best Feature Idea"
-                    reward={500}
-                    tippyText="Most valuable idea for improving Adrena, submitted on Discord. Winner selected by the team."
-                    allUserProfilesMetadata={allUserProfilesMetadata}
-                  />
-                  <RaffleAdditionalPrize
-                    title="Best Artwork"
-                    reward={500}
-                    tippyText="Coolest community artwork related to Adrena. Winner chosen by the team."
-                    allUserProfilesMetadata={allUserProfilesMetadata}
-                  />
-                </div>
+                ))}
               </div>
             </div>
           </div>
