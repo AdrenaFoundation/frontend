@@ -1811,30 +1811,6 @@ export function isPartialClose(activePercent: number | null) {
   );
 }
 
-export function periodModeToSeconds(periodMode: '1d' | '7d' | '1D' | '7D' | '1M' | '3M' | '6M' | '1Y' | 'All Time') {
-  switch (periodMode) {
-    case '1d':
-      return 1 * 24 * 60 * 60; // 1 day in seconds
-    case '1D':
-      return 1 * 24 * 60 * 60; // 1 day in seconds
-    case '7d':
-      return 7 * 24 * 60 * 60; // 7 days in seconds
-    case '7D':
-      return 7 * 24 * 60 * 60; // 7 days in seconds
-    case '1M':
-      return 30 * 24 * 60 * 60; // 30 days in seconds
-    case '3M':
-      return 90 * 24 * 60 * 60; // 90 days in seconds
-    case '6M':
-      return 180 * 24 * 60 * 60; // 180 days in seconds
-    case '1Y':
-      return 365 * 24 * 60 * 60; // 365 days in seconds
-    case 'All Time':
-      return Number.MAX_SAFE_INTEGER; // Effectively no limit
-    default:
-      throw new Error('Invalid period mode');
-  }
-}
 /**
  * Check if a wallet is a Privy embedded wallet
  * @param walletName - The wallet name to check
