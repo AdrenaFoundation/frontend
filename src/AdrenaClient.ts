@@ -682,9 +682,8 @@ export class AdrenaClient {
           ? nativeToUi(p.totalReferralFeeUsd, USD_DECIMALS)
           : 0,
       // Transform the buffer of bytes to a string
-      nickname: p.nickname.value
-        .map((byte) => String.fromCharCode(byte))
-        .join('')
+      nickname: new TextDecoder('utf-8')
+        .decode(new Uint8Array(p.nickname.value))
         .replace(/\0/g, ''),
       createdAt: p.createdAt.toNumber(),
       owner: p.owner,
