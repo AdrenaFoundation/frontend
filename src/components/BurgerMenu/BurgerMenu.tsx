@@ -108,7 +108,7 @@ export default function BurgerMenu({
   }, [isOpen]);
 
   return (
-    <div className="z-30">
+    <div className="z-40">
       <div className="py-3 p-3 sm:p-4 z-50 flex flex-row justify-between items-center w-full bg-secondary/80 backdrop-blur-md border-b border-bcolor">
         <div className="flex flex-row gap-3 items-center">
           <Link href="/trade">
