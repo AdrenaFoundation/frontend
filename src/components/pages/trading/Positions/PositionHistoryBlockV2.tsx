@@ -49,7 +49,7 @@ export default function PositionHistoryBlockV2({
   return (
     <>
       <AnimatePresence>
-        <motion.div className="border border-inputcolor rounded-xl">
+        <motion.div className="border border-inputcolor rounded-md">
           <div className="flex flex-row items-center justify-between p-2 border-b">
             {!showChart ? (
               <>
@@ -149,7 +149,7 @@ export default function PositionHistoryBlockV2({
                     format: 'time',
                   },
                 ]}
-                className="border rounded-lg"
+                className="border rounded-md"
                 itemClassName="flex-1 justify-center items-center text-center "
               />
               <PositionDetail
@@ -170,7 +170,7 @@ export default function PositionHistoryBlockV2({
                     format: 'currency',
                   },
                 ]}
-                className="flex flex-row items-center border rounded-lg gap-3"
+                className="flex flex-row items-center border rounded-md gap-3"
                 itemClassName="flex-1 justify-center items-center text-center "
                 showDivider
               />
@@ -187,7 +187,7 @@ export default function PositionHistoryBlockV2({
                     format: 'currency',
                   },
                 ]}
-                className="flex flex-row items-center border rounded-lg gap-3"
+                className="flex flex-row items-center border rounded-md gap-3"
                 itemClassName="flex-1 justify-center items-center text-cente r"
                 showDivider
               />
@@ -210,7 +210,7 @@ export default function PositionHistoryBlockV2({
                     format: 'currency',
                   },
                 ]}
-                className="flex flex-row items-center border rounded-lg gap-3"
+                className="flex flex-row items-center border rounded-md gap-3"
                 itemClassName="flex-1 justify-center items-center text-center "
                 showDivider
               />
@@ -226,7 +226,7 @@ export default function PositionHistoryBlockV2({
                     color: 'text-mutagen',
                   },
                 ]}
-                className="w-fit border rounded-lg"
+                className="w-fit border rounded-md"
                 itemClassName="items-center text-center"
               />
             </div>
@@ -274,7 +274,7 @@ export default function PositionHistoryBlockV2({
                     // handle toggle in parent div
                   }}
                 />
-                <p className="text-sm font-interMedium opacity-50">
+                <p className="text-sm font-semibold opacity-50">
                   PnL w/ fees
                 </p>
               </div>
@@ -354,7 +354,7 @@ const TokenDetails = ({
       />
       <div>
         <div className="flex flex-row items-center gap-2 mb-0.5">
-          <p className="font-interSemibold text-base">
+          <p className="font-bold text-base">
             {getTokenSymbol(positionHistory.token.symbol)}
           </p>
           <p

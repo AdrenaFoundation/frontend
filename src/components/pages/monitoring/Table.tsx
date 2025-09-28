@@ -232,7 +232,7 @@ export default function Table({
     <div
       key={`block-${index}`}
       className={twMerge(
-        'p-4 bg-main border border-inputcolor rounded-lg hover:bg-third transition-colors',
+        'p-4 bg-main border border-inputcolor rounded-md hover:bg-third transition-colors',
         onRowClick ? 'cursor-pointer' : '',
       )}
       onClick={() => {

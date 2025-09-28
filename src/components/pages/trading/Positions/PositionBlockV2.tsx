@@ -169,7 +169,7 @@ export default function PositionBlockV2({
   ];
 
   return (
-    <div className="border bg-[#0B131D] rounded-lg overflow-hidden">
+    <div className="border bg-[#0B131D] rounded-md overflow-hidden">
       <div className="flex flex-row items-center justify-between p-2 px-3 border-b">
         <TokenDetails position={position} setTokenB={setTokenB} />
         <PnLDetails
@@ -285,7 +285,7 @@ const TokenDetails = ({
       />
       <div>
         <div className="flex flex-row items-center gap-2 mb-0.5">
-          <p className="font-interSemibold text-base">
+          <p className="font-bold text-base">
             {getTokenSymbol(position.token.symbol)}
           </p>
           <p
@@ -329,7 +329,7 @@ const NetValue = ({
 
   return (
     <div className="hidden md:flex flex-col justify-end items-end">
-      <p className="text-xs opacity-50 text-right md:text-center font-interMedium mb-1">
+      <p className="text-xs opacity-50 text-right md:text-center font-semibold mb-1">
         Net Value
       </p>
 

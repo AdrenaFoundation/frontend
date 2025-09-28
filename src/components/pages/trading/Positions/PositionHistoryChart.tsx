@@ -165,14 +165,14 @@ export default function PositionHistoryChart({
       return {
         time: isLessThan24Hours
           ? time.toLocaleTimeString('en-US', {
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: false,
-            })
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          })
           : time.toLocaleDateString('en-US', {
-              month: 'short',
-              day: '2-digit',
-            }),
+            month: 'short',
+            day: '2-digit',
+          }),
         timestamp,
         price: null,
         priceBeforeEntryPrice: price,
@@ -229,7 +229,7 @@ export default function PositionHistoryChart({
           (isHighPriority && !currentIsHighPriority) ||
           (isHighPriority === currentIsHighPriority &&
             closestDistance <
-              Math.abs(data[closestIndex].timestamp - eventData.timestamp))
+            Math.abs(data[closestIndex].timestamp - eventData.timestamp))
         ) {
           data[closestIndex].eventType = eventData.eventType;
           data[closestIndex].eventColor = eventData.eventColor;
@@ -268,9 +268,9 @@ export default function PositionHistoryChart({
               const pnl =
                 positionHistory.side === 'long'
                   ? (positionHistory.exitPrice - positionHistory.entryPrice) *
-                    (positionHistory.entrySize || 1)
+                  (positionHistory.entrySize || 1)
                   : (positionHistory.entryPrice - positionHistory.exitPrice) *
-                    (positionHistory.entrySize || 1);
+                  (positionHistory.entrySize || 1);
               data[closestIndex].pnl = pnl;
             }
           }
@@ -387,13 +387,13 @@ export default function PositionHistoryChart({
   const breakEvenPrice =
     positionHistory.side === 'long'
       ? positionHistory.entryPrice *
-        (1 +
-          (positionHistory.exitFees + positionHistory.borrowFees) /
-            positionHistory.volume)
+      (1 +
+        (positionHistory.exitFees + positionHistory.borrowFees) /
+        positionHistory.volume)
       : positionHistory.entryPrice *
-        (1 -
-          (positionHistory.exitFees + positionHistory.borrowFees) /
-            positionHistory.volume);
+      (1 -
+        (positionHistory.exitFees + positionHistory.borrowFees) /
+        positionHistory.volume);
 
   // Find open, close, and liquidated points for the connection line
   const openPointIndex = chartData.findIndex((point) => point.isOpen);
@@ -409,7 +409,7 @@ export default function PositionHistoryChart({
 
   if (isLoading) {
     return (
-      <div className="relative overflow-hidden w-full h-[20rem] bg-[#0f1924] border border-inputcolor rounded-xl p-4 flex items-center justify-center">
+      <div className="relative overflow-hidden w-full h-[20rem] bg-[#0f1924] border border-inputcolor rounded-md p-4 flex items-center justify-center">
         <Loader />
       </div>
     );
@@ -439,7 +439,7 @@ export default function PositionHistoryChart({
   };
 
   return (
-    <div className="relative overflow-hidden w-full h-[20rem] bg-[#0f1924] border border-inputcolor rounded-xl p-4 flex flex-col">
+    <div className="relative overflow-hidden w-full h-[20rem] bg-[#0f1924] border border-inputcolor rounded-md p-4 flex flex-col">
       <div className="flex flex-col gap-2 mb-4 flex-shrink-0">
         <TokenDetails positionHistory={positionHistory} />
         <div className="flex flex-row items-center gap-2">
@@ -662,7 +662,7 @@ const TokenDetails = ({
         />
         <div>
           <div className="flex flex-row items-center gap-2 mb-0.5">
-            <p className="font-interSemibold text-base">
+            <p className="font-bold text-base">
               {getTokenSymbol(positionHistory.token.symbol)}
             </p>
             <p

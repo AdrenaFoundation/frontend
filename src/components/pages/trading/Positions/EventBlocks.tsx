@@ -257,7 +257,7 @@ export default function EventBlocks({
       key={`event - ${positionId}`}
       className="bg-main border-b border-bcolor max-h-[24rem] overflow-hidden"
     >
-      <p className="font-interSemibold text-xs opacity-30 mb-3 px-5 pt-5">
+      <p className="font-bold text-xs opacity-30 mb-3 px-5 pt-5">
         {!isLoading ? events.length : ''} Events
       </p>
 
@@ -281,7 +281,7 @@ export default function EventBlocks({
                 >
                   {events.map((event, index) => (
                     <div
-                      className="relative border border-inputcolor rounded-xl w-full md:w-fit"
+                      className="relative border border-inputcolor rounded-md w-full md:w-fit"
                       key={index}
                     >
                       <svg
@@ -346,7 +346,7 @@ export default function EventBlocks({
                         </p>
                       </div>
 
-                      <div className="bg-[#0B131D] p-3 border-t border-t-inputcolor rounded-b-xl">
+                      <div className="bg-[#0B131D] p-3 border-t border-t-inputcolor rounded-b-md">
                         <EventBlock
                           formattedData={event}
                           hoveredEvent={hoveredEvent}
@@ -412,7 +412,7 @@ const EventBlock = ({
           }}
           key={index}
         >
-          <p className="font-interMedium text-sm sm:text-xs opacity-50">
+          <p className="font-semibold text-sm sm:text-xs opacity-50">
             {item.label}
           </p>
           <div className="flex items-center gap-1">
@@ -463,8 +463,8 @@ const EventBlock = ({
 const SkeletonLoader = () => {
   return (
     <div className="flex flex-col gap-3 p-5 pt-0 w-full">
-      <div className="h-[5.6775rem] w-full bg-[#050D14] animate-loader rounded-xl border border-white/10"></div>
-      <div className="h-[5.6775rem] w-1/2 bg-[#050D14] animate-loader rounded-xl border border-white/10 opacity-50"></div>
+      <div className="h-[5.6775rem] w-full bg-[#050D14] animate-loader rounded-md border border-white/10"></div>
+      <div className="h-[5.6775rem] w-1/2 bg-[#050D14] animate-loader rounded-md border border-white/10 opacity-50"></div>
     </div>
   );
 };
