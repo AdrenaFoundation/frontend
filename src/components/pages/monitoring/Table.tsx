@@ -75,6 +75,8 @@ export default function Table({
   // All hooks must be at the very top before any other logic
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
+  const [isHorizontalScrolling, setIsHorizontalScrolling] = useState(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout>();
 
   const handleScroll = () => {
     const container = scrollContainerRef.current;
@@ -86,17 +88,45 @@ export default function Table({
     setIsScrolledToBottom(isAtBottom);
   };
 
+  const handleWheel = (e: WheelEvent) => {
+    if (!isSticky) return;
+
+    // Detect horizontal scrolling (more horizontal delta than vertical, or shift key)
+    const isHorizontalScroll =
+      Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey;
+
+    if (isHorizontalScroll) {
+      // Set horizontal scrolling state
+      setIsHorizontalScrolling(true);
+
+      // Clear existing timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      // Reset horizontal scrolling state after scrolling stops
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsHorizontalScrolling(false);
+      }, 100);
+    }
+  };
+
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
     container.addEventListener('scroll', handleScroll);
+    container.addEventListener('wheel', handleWheel);
     handleScroll();
 
     return () => {
       container.removeEventListener('scroll', handleScroll);
+      container.removeEventListener('wheel', handleWheel);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
     };
-  }, []);
+  }, [isSticky]);
 
   // Memoized calculations for sticky columns and table layout
   const { cumulativeLeft, cumulativeRight, minTableWidthPx } = useMemo(() => {
@@ -339,7 +369,11 @@ export default function Table({
           ref={scrollContainerRef}
           className={twMerge(
             'custom-chat-scrollbar overscroll-contain',
-            isSticky ? 'overflow-auto' : 'overflow-y-auto',
+            isSticky
+              ? isHorizontalScrolling
+                ? 'overflow-x-auto overflow-y-hidden'
+                : 'overflow-auto'
+              : 'overflow-y-auto',
           )}
           style={{
             height: typeof height === 'number' ? `${height}px` : height,

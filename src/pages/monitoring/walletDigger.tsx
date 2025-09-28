@@ -601,7 +601,6 @@ export default function WalletDigger({
                             readOnly={true}
                             key={position.pubkey.toBase58()}
                             position={position}
-                            setTokenB={() => { }}
                           />
                         ))}
                       </div>

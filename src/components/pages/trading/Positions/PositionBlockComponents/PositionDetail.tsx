@@ -29,7 +29,7 @@ export const PositionDetail = ({
   showDivider?: boolean;
   readOnly?: boolean;
 }) => {
-  const editIcon = !readOnly && (
+  const editIcon = !readOnly ? (
     <svg
       className="w-2.5 h-2.5 opacity-70 group-hover:opacity-100 transition-opacity ml-0.5 mt-[0.14rem]"
       viewBox="0 0 24 24"
@@ -39,7 +39,7 @@ export const PositionDetail = ({
         d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"
       />
     </svg>
-  );
+  ) : null;
 
   const ref = useRef<HTMLDivElement>(null);
   return (
@@ -65,7 +65,7 @@ export const PositionDetail = ({
           >
             <p
               className={twMerge(
-                'text-xs opacity-50 whitespace-nowrap font-interMedium',
+                'text-sm sm:text-xs opacity-50 whitespace-nowrap font-interMedium',
                 titleClassName,
               )}
             >
@@ -85,8 +85,11 @@ export const PositionDetail = ({
                   format={d.format}
                   precision={d.precision}
                   suffix={d.suffix}
-                  className={twMerge('text-xs flex', d.value && d.color)}
-                  suffixClassName="text-xs"
+                  className={twMerge(
+                    'text-sm sm:text-xs flex',
+                    d.value && d.color,
+                  )}
+                  suffixClassName="text-sm sm:text-xs"
                   isDecimalDimmed={
                     typeof d.isDecimalDimmed === 'undefined'
                       ? true
@@ -105,7 +108,7 @@ export const PositionDetail = ({
                 )}
                 onClick={d?.onEditClick}
               >
-                <p className="text-xs font-mono">{d.value}</p>
+                <p className="text-sm sm:text-xs font-mono">{d.value}</p>
                 {d?.onEditClick && editIcon}
               </div>
             )}

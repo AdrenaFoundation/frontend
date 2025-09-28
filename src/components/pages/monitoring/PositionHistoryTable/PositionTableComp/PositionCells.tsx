@@ -47,9 +47,11 @@ export const CurrencyCell = ({
       <FormatNumber
         nb={value}
         format={isCurrency ? 'currency' : undefined}
-        prefix={value && value > 10_000 && isCurrency ? '$' : undefined}
+        prefix={
+          value !== null && value > 10_000 && isCurrency ? '$' : undefined
+        }
         isDecimalDimmed={false}
-        isAbbreviate={value ? value > 10_000 : false}
+        isAbbreviate={value !== null ? value > 10_000 : false}
         className="relative"
       />
     </div>

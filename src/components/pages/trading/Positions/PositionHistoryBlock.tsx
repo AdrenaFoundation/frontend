@@ -196,7 +196,6 @@ const PositionHistoryBlock = ({
               position={positionHistory}
               readOnly={true}
               isHistory={true}
-              setTokenB={() => { }}
             />
           }
           pnl={

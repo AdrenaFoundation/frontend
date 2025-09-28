@@ -31,7 +31,7 @@ interface PositionBlockProps {
   triggerStopLossTakeProfit?: (p: PositionExtended) => void;
   triggerEditPositionCollateral?: (p: PositionExtended) => void;
   readOnly?: boolean;
-  setTokenB: (token: Token) => void;
+  setTokenB?: (token: Token) => void;
   setShareClosePosition?: (p: PositionExtended) => void;
 }
 
@@ -80,7 +80,7 @@ export default function PositionBlockV2({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [position.nativeObject.openTime.toNumber()]);
 
-  const allData = [
+  const PositionDataFormatted: PositionDetailType[] = [
     {
       title: 'Net Value',
       value: position.collateralUsd + (position.pnl ?? 0),
@@ -124,7 +124,10 @@ export default function PositionBlockV2({
     },
     {
       title: 'Liquidation',
-      value: position.liquidationPrice,
+      value:
+        typeof position.liquidationPrice !== 'undefined'
+          ? position.liquidationPrice
+          : null,
       format: 'currency',
       color: 'text-orange',
       isDecimalDimmed: false,
@@ -132,7 +135,10 @@ export default function PositionBlockV2({
     },
     {
       title: 'Break Even',
-      value: position.breakEvenPrice ?? 0,
+      value:
+        typeof position.breakEvenPrice !== 'undefined'
+          ? position.breakEvenPrice
+          : null,
       format: 'currency',
       color: 'text-purpleColor',
       className: 'hidden 2xl:flex',
@@ -160,7 +166,7 @@ export default function PositionBlockV2({
       isDecimalDimmed: false,
       onEditClick: () => triggerStopLossTakeProfit?.(position),
     },
-  ].filter((d) => d !== null) as PositionDetailType[];
+  ];
 
   return (
     <div className="border bg-[#0B131D] rounded-lg overflow-hidden">
@@ -192,14 +198,14 @@ export default function PositionBlockV2({
                 ),
                 format: 'time',
               },
-              ...allData,
+              ...PositionDataFormatted,
             ]}
             className="justify-between w-full p-0"
             readOnly={readOnly}
           />
         ) : (
           <PositionDetail
-            data={allData}
+            data={PositionDataFormatted}
             className="bg-transparent items-start flex-col !border-0 rounded-none gap-2 w-full p-0"
             itemClassName="border-0 flex-row justify-between items-center w-full p-0"
             readOnly={readOnly}
@@ -216,7 +222,7 @@ export default function PositionBlockV2({
             onClick={() => triggerEditPositionCollateral?.(position)}
           />
           <Button
-            title="SL/TP"
+            title="TP/SL"
             size="sm"
             className={twMerge(
               'lg:h-auto text-xs px-2 py-1 font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300',

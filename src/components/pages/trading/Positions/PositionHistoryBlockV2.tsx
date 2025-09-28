@@ -5,10 +5,12 @@ import { twMerge } from 'tailwind-merge';
 
 import arrowIcon from '@/../public/images/Icons/arrow-down.svg';
 import shareIcon from '@/../public/images/Icons/share-fill.svg';
+import Modal from '@/components/common/Modal/Modal';
 import Switch from '@/components/common/Switch/Switch';
+import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { EnrichedPositionApi } from '@/types';
+import { EnrichedPositionApi, PositionExtended } from '@/types';
 import {
   formatTimeDifference,
   getFullTimeDifference,
@@ -19,6 +21,7 @@ import {
 import EventBlocks, { FormattedEventsType } from './EventBlocks';
 import { PositionDetail } from './PositionBlockComponents/PositionDetail';
 import PositionHistoryChart from './PositionHistoryChart';
+import SharePositionModal from './SharePositionModal';
 
 export default function PositionHistoryBlockV2({
   positionHistory,
@@ -35,95 +38,40 @@ export default function PositionHistoryBlockV2({
   const [isExpanded, setIsExpanded] = useState(showExpanded);
   const [showAfterFees, setShowAfterFees] = useState(true);
   const isMobile = useBetterMediaQuery('(max-width: 768px)');
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  const pnlValue = showAfterFees
+    ? positionHistory.pnl
+    : positionHistory.pnl + positionHistory.fees;
+
+  const totalFees = positionHistory.exitFees + positionHistory.borrowFees;
 
   return (
-    <AnimatePresence>
-      <motion.div className="border border-inputcolor rounded-xl">
-        <div className="flex flex-row items-center justify-between p-2 border-b">
-          {!showChart ? (
-            <>
-              <TokenDetails positionHistory={positionHistory} />
-              <PnLDetails
+    <>
+      <AnimatePresence>
+        <motion.div className="border border-inputcolor rounded-xl">
+          <div className="flex flex-row items-center justify-between p-2 border-b">
+            {!showChart ? (
+              <>
+                <TokenDetails positionHistory={positionHistory} />
+                <PnLDetails
+                  positionHistory={positionHistory}
+                  showAfterFees={showAfterFees}
+                  setShowAfterFees={setShowAfterFees}
+                  fees={totalFees}
+                />
+                <NetValue positionHistory={positionHistory} />
+              </>
+            ) : (
+              <PositionHistoryChart
                 positionHistory={positionHistory}
+                events={events}
                 showAfterFees={showAfterFees}
-                setShowAfterFees={setShowAfterFees}
               />
-              <NetValue positionHistory={positionHistory} />
-            </>
-          ) : (
-            <PositionHistoryChart
-              positionHistory={positionHistory}
-              events={events}
-              showAfterFees={showAfterFees}
-            />
-          )}
-        </div>
+            )}
+          </div>
 
-        {isMobile ? (
-          <PositionDetail
-            data={[
-              {
-                title: 'Duration',
-                value: formatTimeDifference(
-                  getFullTimeDifference(
-                    positionHistory.entryDate,
-                    positionHistory.exitDate || new Date(),
-                  ),
-                ),
-                format: 'time',
-              },
-              {
-                title: 'Leverage',
-                value: positionHistory.entryLeverage ?? 0,
-                format: 'number',
-              },
-              {
-                title: 'Collateral',
-                value: positionHistory.collateralAmount,
-                format: 'currency',
-              },
-              {
-                title: 'Size',
-                value: positionHistory.entrySize,
-                format: 'currency',
-              },
-              {
-                title: 'Entry',
-                value: positionHistory.entryPrice,
-                format: 'currency',
-                isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
-                precision: positionHistory.token.symbol === 'BONK' ? 8 : 2,
-              },
-              {
-                title: 'Exit',
-                value: positionHistory.exitPrice,
-                format: 'currency',
-                isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
-                precision: positionHistory.token.symbol === 'BONK' ? 8 : 2,
-              },
-              {
-                title: 'Fees',
-                value: positionHistory.fees ?? 0,
-                format: 'currency',
-              },
-              {
-                title: 'Borrow Fees',
-                value: positionHistory.borrowFees ?? 0,
-                format: 'currency',
-              },
-              {
-                title: 'Mutagen',
-                value: positionHistory.totalPoints ?? 0,
-                format: 'number',
-                color: 'text-mutagen',
-              },
-            ]}
-            className="bg-transparent items-start flex-col !border-0 !border-b rounded-none p-3 gap-2"
-            itemClassName="border-0 flex-row justify-between items-center w-full p-0"
-            titleClassName="text-sm"
-          />
-        ) : (
-          <div className="flex flex-row flex-wrap md:grid md:grid-cols-[auto_1fr] lg:grid-cols-[auto_1fr_auto] xl:grid-cols-[auto_2fr_1fr_1fr_auto] gap-1 p-1 border-b">
+          {isMobile ? (
             <PositionDetail
               data={[
                 {
@@ -136,15 +84,9 @@ export default function PositionHistoryBlockV2({
                   ),
                   format: 'time',
                 },
-              ]}
-              className="border rounded-lg"
-              itemClassName="flex-1 justify-center items-center text-center "
-            />
-            <PositionDetail
-              data={[
                 {
                   title: 'Leverage',
-                  value: positionHistory.entryLeverage ?? 0,
+                  value: positionHistory.entryLeverage,
                   format: 'number',
                 },
                 {
@@ -157,120 +99,242 @@ export default function PositionHistoryBlockV2({
                   value: positionHistory.entrySize,
                   format: 'currency',
                 },
-              ]}
-              className="flex flex-row items-center border rounded-lg gap-3"
-              itemClassName="flex-1 justify-center items-center text-center "
-              showDivider
-            />
-            <PositionDetail
-              data={[
                 {
                   title: 'Entry',
                   value: positionHistory.entryPrice,
                   format: 'currency',
+                  isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
+                  precision: positionHistory.token.symbol === 'BONK' ? 8 : 2,
                 },
                 {
                   title: 'Exit',
                   value: positionHistory.exitPrice,
                   format: 'currency',
+                  isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
+                  precision: positionHistory.token.symbol === 'BONK' ? 8 : 2,
                 },
-              ]}
-              className="flex flex-row items-center border rounded-lg gap-3"
-              itemClassName="flex-1 justify-center items-center text-cente r"
-              showDivider
-            />
-            <PositionDetail
-              data={[
                 {
                   title: 'Fees',
-                  value: positionHistory.fees ?? 0,
+                  value: positionHistory.fees,
                   format: 'currency',
                 },
                 {
                   title: 'Borrow Fees',
-                  value: positionHistory.borrowFees ?? 0,
+                  value: positionHistory.borrowFees,
                   format: 'currency',
                 },
-              ]}
-              className="flex flex-row items-center border rounded-lg gap-3"
-              itemClassName="flex-1 justify-center items-center text-center "
-              showDivider
-            />
-            <PositionDetail
-              data={[
                 {
                   title: 'Mutagen',
-                  value: positionHistory.totalPoints ?? 0,
+                  value: positionHistory.totalPoints,
                   format: 'number',
                   color: 'text-mutagen',
                 },
               ]}
-              className="w-fit border rounded-lg"
-              itemClassName="items-center text-center"
+              className="bg-transparent items-start flex-col !border-0 !border-b rounded-none p-3 gap-2"
+              itemClassName="border-0 flex-row justify-between items-center w-full p-0"
+              titleClassName="text-sm"
             />
-          </div>
-        )}
-        <AnimatePresence>
-          {isExpanded ? (
-            <EventBlocks
-              positionId={positionHistory.positionId}
-              events={events}
-              setEvents={setEvents}
-            />
-          ) : null}
-        </AnimatePresence>
-        <div className="flex flex-row items-center justify-between">
-          <div className={'p-1.5 px-2 sm:border-r border-r-bcolor'}>
-            <div
-              className="flex flex-row items-center gap-1 bg-[#142030] border border-inputcolor p-1 px-2 rounded-md opacity-50 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              <p className="text-sm font-interMedium">Events</p>
-              <Image
-                src={arrowIcon}
-                alt="Expand"
-                width={16}
-                height={16}
-                className={twMerge(
-                  'w-3 h-3 transition-transform duration-300',
-                  isExpanded ? 'rotate-180' : 'rotate-0',
-                )}
+          ) : (
+            <div className="flex flex-row flex-wrap md:grid md:grid-cols-[auto_1fr] lg:grid-cols-[auto_1fr_auto] xl:grid-cols-[auto_2fr_1fr_1fr_auto] gap-1 p-1 border-b">
+              <PositionDetail
+                data={[
+                  {
+                    title: 'Duration',
+                    value: formatTimeDifference(
+                      getFullTimeDifference(
+                        positionHistory.entryDate,
+                        positionHistory.exitDate || new Date(),
+                      ),
+                    ),
+                    format: 'time',
+                  },
+                ]}
+                className="border rounded-lg"
+                itemClassName="flex-1 justify-center items-center text-center "
+              />
+              <PositionDetail
+                data={[
+                  {
+                    title: 'Leverage',
+                    value: positionHistory.entryLeverage,
+                    format: 'number',
+                  },
+                  {
+                    title: 'Collateral',
+                    value: positionHistory.collateralAmount,
+                    format: 'currency',
+                  },
+                  {
+                    title: 'Size',
+                    value: positionHistory.entrySize,
+                    format: 'currency',
+                  },
+                ]}
+                className="flex flex-row items-center border rounded-lg gap-3"
+                itemClassName="flex-1 justify-center items-center text-center "
+                showDivider
+              />
+              <PositionDetail
+                data={[
+                  {
+                    title: 'Entry',
+                    value: positionHistory.entryPrice,
+                    format: 'currency',
+                  },
+                  {
+                    title: 'Exit',
+                    value: positionHistory.exitPrice,
+                    format: 'currency',
+                  },
+                ]}
+                className="flex flex-row items-center border rounded-lg gap-3"
+                itemClassName="flex-1 justify-center items-center text-cente r"
+                showDivider
+              />
+              <PositionDetail
+                data={[
+                  {
+                    title: 'Fees',
+                    value:
+                      typeof positionHistory.fees !== 'undefined'
+                        ? positionHistory.fees
+                        : null,
+                    format: 'currency',
+                  },
+                  {
+                    title: 'Borrow Fees',
+                    value:
+                      typeof positionHistory.borrowFees !== 'undefined'
+                        ? positionHistory.borrowFees
+                        : null,
+                    format: 'currency',
+                  },
+                ]}
+                className="flex flex-row items-center border rounded-lg gap-3"
+                itemClassName="flex-1 justify-center items-center text-center "
+                showDivider
+              />
+              <PositionDetail
+                data={[
+                  {
+                    title: 'Mutagen',
+                    value:
+                      typeof positionHistory.totalPoints !== 'undefined'
+                        ? positionHistory.totalPoints
+                        : null,
+                    format: 'number',
+                    color: 'text-mutagen',
+                  },
+                ]}
+                className="w-fit border rounded-lg"
+                itemClassName="items-center text-center"
               />
             </div>
-          </div>
-
-          <div className="flex flex-row items-center">
-            <div
-              className="flex flex-row items-center gap-3 p-2 px-3 border-l border-l-bcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
-              onClick={() => {
-                setShowAfterFees(!showAfterFees);
-              }}
-            >
-              <Switch
-                checked={showAfterFees}
-                size="small"
-                onChange={() => {
-                  // handle toggle in parent div
-                }}
+          )}
+          <AnimatePresence>
+            {isExpanded ? (
+              <EventBlocks
+                positionId={positionHistory.positionId}
+                events={events}
+                setEvents={setEvents}
               />
-              <p className="text-sm font-interMedium opacity-50">PnL w/ fees</p>
-            </div>
-
-            {showShareButton && (
-              <div className="flex flex-row items-center gap-3 p-2.5 px-3 border-l border-l-bcolor cursor-pointer opacity-50 hover:bg-[#131D2C] transition-colors duration-300">
+            ) : null}
+          </AnimatePresence>
+          <div className="flex flex-row items-center justify-between">
+            <div className={'p-1.5 px-2 sm:border-r border-r-bcolor'}>
+              <div
+                className="flex flex-row items-center gap-1 bg-[#142030] border border-inputcolor p-1 px-2 rounded-md opacity-50 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                <p className="text-sm font-interMedium">Events</p>
                 <Image
-                  src={shareIcon}
-                  alt="Share"
+                  src={arrowIcon}
+                  alt="Expand"
                   width={16}
                   height={16}
-                  className="w-3 h-3"
+                  className={twMerge(
+                    'w-3 h-3 transition-transform duration-300',
+                    isExpanded ? 'rotate-180' : 'rotate-0',
+                  )}
                 />
               </div>
-            )}
+            </div>
+
+            <div className="flex flex-row items-center">
+              <div
+                className="flex flex-row items-center gap-3 p-2.5 px-3 border-l border-l-bcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
+                onClick={() => {
+                  setShowAfterFees(!showAfterFees);
+                }}
+              >
+                <Switch
+                  checked={showAfterFees}
+                  size="small"
+                  onChange={() => {
+                    // handle toggle in parent div
+                  }}
+                />
+                <p className="text-sm font-interMedium opacity-50">
+                  PnL w/ fees
+                </p>
+              </div>
+
+              {showShareButton && (
+                <div
+                  className="flex flex-row items-center gap-3 p-3.5 px-3 border-l border-l-bcolor cursor-pointer opacity-50 hover:bg-[#131D2C] transition-colors duration-300"
+                  onClick={() => setIsShareModalOpen(true)}
+                >
+                  <Image
+                    src={shareIcon}
+                    alt="Share"
+                    width={16}
+                    height={16}
+                    className="w-3 h-3"
+                  />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </motion.div>
-    </AnimatePresence>
+        </motion.div>
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isShareModalOpen && (
+          <Modal
+            title="Share PnL"
+            close={() => setIsShareModalOpen(false)}
+            className="overflow-y-auto"
+            wrapperClassName="h-[80vh] sm:h-auto"
+          >
+            <div className="absolute top-0 w-[300px]">
+              {pnlValue > 0 && <Congrats />}
+            </div>
+            <SharePositionModal
+              position={
+                {
+                  pnl: pnlValue,
+                  token: positionHistory.token,
+                  side: positionHistory.side,
+                  price: positionHistory.entryPrice,
+                  fees: -totalFees,
+                  exitFeeUsd: positionHistory.exitFees,
+                  borrowFeeUsd: positionHistory.borrowFees,
+                  collateralUsd: positionHistory.entryCollateralAmount,
+                  sizeUsd:
+                    positionHistory.entryCollateralAmount *
+                    positionHistory.entryLeverage,
+                  exitPrice: positionHistory.exitPrice,
+                  nativeObject: {
+                    openTime:
+                      new Date(positionHistory.entryDate).getTime() / 1000,
+                  },
+                } as unknown as PositionExtended
+              }
+            />
+          </Modal>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -338,14 +402,15 @@ const PnLDetails = ({
   positionHistory,
   showAfterFees,
   setShowAfterFees,
-  fees = 0,
+  fees,
 }: {
   positionHistory: EnrichedPositionApi;
   showAfterFees: boolean;
   setShowAfterFees: (value: boolean) => void;
-  fees?: number;
+  fees: number;
 }) => {
   const pnl = positionHistory.pnl;
+
   if (pnl === undefined || pnl === null) return null;
 
   return (

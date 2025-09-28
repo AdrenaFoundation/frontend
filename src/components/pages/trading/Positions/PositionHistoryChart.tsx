@@ -384,6 +384,17 @@ export default function PositionHistoryChart({
   const timeDifferenceMs = exitDate.getTime() - entryDate.getTime();
   const isLessThan24Hours = timeDifferenceMs < 24 * 60 * 60 * 1000;
 
+  const breakEvenPrice =
+    positionHistory.side === 'long'
+      ? positionHistory.entryPrice *
+        (1 +
+          (positionHistory.exitFees + positionHistory.borrowFees) /
+            positionHistory.volume)
+      : positionHistory.entryPrice *
+        (1 -
+          (positionHistory.exitFees + positionHistory.borrowFees) /
+            positionHistory.volume);
+
   // Find open, close, and liquidated points for the connection line
   const openPointIndex = chartData.findIndex((point) => point.isOpen);
   const closePointIndex = chartData.findIndex((point) => point.isClose);
@@ -577,13 +588,13 @@ export default function PositionHistoryChart({
             />
 
             {/* Break Even Line */}
-            {/* <ReferenceLine
+            <ReferenceLine
               y={breakEvenPrice}
               stroke="#9333ea"
               strokeDasharray="5 5"
               strokeWidth={1}
               strokeOpacity={0.5}
-            /> */}
+            />
 
             {/* White connection line between open and close/liquidated - moved after Line to be on top */}
             {openPoint &&
@@ -640,56 +651,60 @@ const TokenDetails = ({
   positionHistory: EnrichedPositionApi;
 }) => {
   return (
-    <div className="flex flex-row gap-2 items-center">
-      <Image
-        src={getTokenImage(positionHistory.token)}
-        alt="token"
-        height={30}
-        width={30}
-        className="w-9 h-9 border border-bcolor rounded-full"
-      />
-      <div>
-        <div className="flex flex-row items-center gap-2 mb-0.5">
-          <p className="font-interSemibold text-base">
-            {getTokenSymbol(positionHistory.token.symbol)}
+    <div className="flex flex-row items-center justify-between">
+      <div className="flex flex-row gap-2 items-center">
+        <Image
+          src={getTokenImage(positionHistory.token)}
+          alt="token"
+          height={30}
+          width={30}
+          className="w-9 h-9 border border-bcolor rounded-full"
+        />
+        <div>
+          <div className="flex flex-row items-center gap-2 mb-0.5">
+            <p className="font-interSemibold text-base">
+              {getTokenSymbol(positionHistory.token.symbol)}
+            </p>
+            <p
+              className={twMerge(
+                'text-xs p-0.5 px-1.5 rounded-md font-mono capitalize',
+                positionHistory.side === 'long'
+                  ? 'bg-green/10 text-greenSide'
+                  : 'bg-red/10 text-redSide',
+              )}
+            >
+              {positionHistory.side}
+            </p>
+            <FormatNumber
+              nb={positionHistory.entryLeverage}
+              suffix="x"
+              className="opacity-50 text-xs"
+              precision={0}
+              isDecimalDimmed={false}
+            />
+          </div>
+          <p className="text-xs opacity-50 font-boldy">
+            {positionHistory.entryDate.toLocaleDateString('en-US', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+            })}
           </p>
-          <p
-            className={twMerge(
-              'text-xs p-0.5 px-1.5 rounded-md font-mono capitalize',
-              positionHistory.side === 'long'
-                ? 'bg-green/10 text-greenSide'
-                : 'bg-red/10 text-redSide',
-            )}
-          >
-            {positionHistory.side}
-          </p>
-          <FormatNumber
-            nb={positionHistory.entryLeverage}
-            suffix="x"
-            className="opacity-50 text-xs"
-            precision={0}
-            isDecimalDimmed={false}
-          />
         </div>
-        <p className="text-xs opacity-50 font-boldy">
-          {positionHistory.entryDate.toLocaleDateString('en-US', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-          })}
-        </p>
+
+        <div
+          className={twMerge(
+            'text-xs font-mono font-semibold p-0.5 px-3 border rounded-full ml-2',
+            positionHistory.status === 'liquidate'
+              ? 'bg-orange/10 text-orange border-orange'
+              : 'bg-red/10 text-redbright border-red',
+          )}
+        >
+          {positionHistory.status === 'liquidate' ? 'Liquidated' : 'Closed'}
+        </div>
       </div>
 
-      <div
-        className={twMerge(
-          'text-xs font-mono font-semibold p-0.5 px-3 border rounded-full ml-2',
-          positionHistory.status === 'liquidate'
-            ? 'bg-orange/10 text-orange border-orange'
-            : 'bg-red/10 text-redbright border-red',
-        )}
-      >
-        {positionHistory.status === 'liquidate' ? 'Liquidated' : 'Closed'}
-      </div>
+      <p className="opacity-50 font-medium text-sm">Position Analysis</p>
     </div>
   );
 };

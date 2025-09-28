@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import addCollateralIcon from '@/../public/images/Icons/add-collateral-icon.svg';
@@ -386,77 +386,75 @@ const EventBlock = ({
   return (
     <div className="flex flex-col md:flex-row flex-wrap gap-3 sm:gap-6 md:gap-8">
       {displayData.map((item, index) => (
-        <Fragment key={index}>
-          <div
-            className={twMerge(
-              'flex flex-row justify-between md:justify-normal md:flex-col transition-opacity duration-300 cursor-pointer',
-              hoveredEvent !== null &&
-                hoveredEvent !== item.label &&
-                hoveredEvent !== 'Method'
-                ? 'opacity-30'
-                : 'opacity-100',
-            )}
-            onMouseOver={() => setHoveredEvent(item.label as LabelType)}
-            onMouseOut={() => setHoveredEvent(null)}
-            onClick={() => {
-              if (!item.value) return;
+        <div
+          className={twMerge(
+            'flex flex-row justify-between md:justify-normal md:flex-col transition-opacity duration-300 cursor-pointer',
+            hoveredEvent !== null &&
+              hoveredEvent !== item.label &&
+              hoveredEvent !== 'Method'
+              ? 'opacity-30'
+              : 'opacity-100',
+          )}
+          onMouseOver={() => setHoveredEvent(item.label as LabelType)}
+          onMouseOut={() => setHoveredEvent(null)}
+          onClick={() => {
+            if (!item.value) return;
 
-              navigator.clipboard.writeText(String(item.value));
-              addNotification({
-                title: 'Copied to clipboard',
-                message:
-                  item.format !== 'text'
-                    ? formatNumber(Number(item.value), 2)
-                    : item.value,
-                type: 'info',
-              });
-            }}
-          >
-            <p className="font-interMedium text-xs opacity-50">{item.label}</p>
-            <div className="flex items-center gap-1">
-              {item.icon && (
-                <Image
-                  src={item.icon}
-                  alt={item.label}
-                  width={14}
-                  height={14}
-                  className="w-3 h-3 opacity-50"
+            navigator.clipboard.writeText(String(item.value));
+            addNotification({
+              title: 'Copied to clipboard',
+              message:
+                item.format !== 'text'
+                  ? formatNumber(Number(item.value), 2)
+                  : item.value,
+              type: 'info',
+            });
+          }}
+          key={index}
+        >
+          <p className="font-interMedium text-sm sm:text-xs opacity-50">
+            {item.label}
+          </p>
+          <div className="flex items-center gap-1">
+            {item.icon && (
+              <Image
+                src={item.icon}
+                alt={item.label}
+                width={14}
+                height={14}
+                className="w-3 h-3 opacity-50"
+              />
+            )}
+            {item.value !== null && item.value !== undefined ? (
+              item.format === 'text' ? (
+                <p className={twMerge('text-sm font-mono', item.className)}>
+                  {item.value}
+                  {item.suffix && (
+                    <span className="opacity-50">{item.suffix}</span>
+                  )}
+                </p>
+              ) : typeof item.value === 'number' ? (
+                <FormatNumber
+                  nb={item.value}
+                  format={item.format}
+                  suffix={item.suffix}
+                  className={twMerge('text-sm font-mono', item.className)}
+                  precision={item.format === 'currency' ? 2 : 0}
+                  isDecimalDimmed={false}
                 />
-              )}
-              {item.value !== null && item.value !== undefined ? (
-                item.format === 'text' ? (
-                  <p className={twMerge('text-sm font-mono', item.className)}>
-                    {item.value}
-                    {item.suffix && (
-                      <span className="opacity-50">{item.suffix}</span>
-                    )}
-                  </p>
-                ) : typeof item.value === 'number' ? (
-                  <FormatNumber
-                    nb={item.value}
-                    format={item.format}
-                    suffix={item.suffix}
-                    className={twMerge('text-sm font-mono', item.className)}
-                    precision={item.format === 'currency' ? 2 : 0}
-                    isDecimalDimmed={false}
-                  />
-                ) : (
-                  <p className={twMerge('text-sm font-mono', item.className)}>
-                    {item.value}
-                    {item.suffix && (
-                      <span className="opacity-50">{item.suffix}</span>
-                    )}
-                  </p>
-                )
               ) : (
-                <p className="text-sm font-mono opacity-30">-</p>
-              )}
-            </div>
+                <p className={twMerge('text-sm font-mono', item.className)}>
+                  {item.value}
+                  {item.suffix && (
+                    <span className="opacity-50">{item.suffix}</span>
+                  )}
+                </p>
+              )
+            ) : (
+              <p className="text-sm font-mono opacity-30">-</p>
+            )}
           </div>
-          {/* {index < displayData.length - 1 && (
-            <div className="w-[0.0625rem] h-full bg-red my-3 lg:hidden" />
-          )} */}
-        </Fragment>
+        </div>
       ))}
     </div>
   );
