@@ -508,19 +508,19 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       (adapterRef.current as PrivyAdapterExtended)._activeWalletName = currentWalletName;
       (adapterRef.current as PrivyAdapterExtended)._externalWallet = externalWallet;
 
-      // Update connection state - use external wallet's public key if available
-      const currentPublicKey = externalWallet?.address
+      // Update connection state - prioritize Redux wallet address for consistency
+      const currentPublicKey = currentWalletAddress
         ? (() => {
           try {
-            return new PublicKey(externalWallet.address);
+            return new PublicKey(currentWalletAddress);
           } catch {
-            return publicKey; // Fallback to embedded wallet
+            return publicKey; // Fallback to local state
           }
         })()
         : publicKey;
 
-      // Use external wallet address for connection status if available
-      const currentAddress = externalWallet?.address || solanaAddress;
+      // Use Redux wallet address for connection status consistency
+      const currentAddress = currentWalletAddress || solanaAddress;
 
       // Debug connection status
       const shouldBeConnected = authenticated && !!currentAddress;
