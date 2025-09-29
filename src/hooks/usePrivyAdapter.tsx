@@ -17,30 +17,35 @@
 
 import { bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import { usePrivy } from '@privy-io/react-auth';
-import { useCreateWallet, useSignAndSendTransaction, useWallets } from '@privy-io/react-auth/solana';
+import { ConnectedStandardSolanaWallet, useCreateWallet, useSignAndSendTransaction, useWallets } from '@privy-io/react-auth/solana';
 import { WalletReadyState } from '@solana/wallet-adapter-base';
 import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
 import { EventEmitter } from 'events';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useSelector } from '@/store/store';
 import { WalletAdapterExtended } from '@/types';
 import { PrivyAdapterExtended } from '@/types/privy';
+
+import { useWalletAddress } from './useWalletOptimized';
 
 export function usePrivyAdapter(): WalletAdapterExtended | null {
   const { ready, authenticated, login, logout } = usePrivy();
   const { signAndSendTransaction } = useSignAndSendTransaction();
-  const { wallets: connectedStandardWallets, ready: walletsReady } = useWallets();
+  const { wallets: connectedStandardWallets } = useWallets();
   const { createWallet } = useCreateWallet();
 
-  // Get wallet state from Redux - optimized to prevent unnecessary re-renders
-  const wallet = useSelector((s) => s.walletState.wallet);
+  /* Old way to get the wallet address from Redux, now using optimized hook for wallet handling
+   // Get wallet state from Redux - optimized to prevent unnecessary re-renders
+    const wallet = useSelector((s) => s.walletState.wallet);
 
-  // Memoize wallet address to prevent unnecessary recalculations
-  const currentWalletAddress = useMemo(() => wallet?.walletAddress, [wallet?.walletAddress]);
+    // Memoize wallet address to prevent unnecessary recalculations
+    const currentWalletAddress = useMemo(() => wallet?.walletAddress, [wallet?.walletAddress]); */
 
-  // Memoize connected wallets map for faster lookups
-  const walletAddressMap = useMemo(() => {
+  // Current wallet address from optimized hook
+  const currentWalletAddress = useWalletAddress();
+
+  // Memoize external wallets map for faster lookups
+  const externalWalletAddressMap = useMemo(() => {
     const map = new Map();
     connectedStandardWallets.forEach(w => {
       if (!w.standardWallet.name.toLowerCase().includes('privy')) {
@@ -53,7 +58,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   const externalWallet = useMemo(() => {
     if (!currentWalletAddress) return null;
 
-    const adapterName = walletAddressMap.get(currentWalletAddress);
+    const adapterName = externalWalletAddressMap.get(currentWalletAddress);
     if (adapterName) {
       return {
         address: currentWalletAddress,
@@ -62,11 +67,19 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     }
 
     return null;
-  }, [currentWalletAddress, walletAddressMap]);
+  }, [currentWalletAddress, externalWalletAddressMap]);
 
   const [connecting, setConnecting] = useState(false);
-  const [publicKey, setPublicKey] = useState<PublicKey | null>(null);
-  const [solanaAddress, setSolanaAddress] = useState<string | null>(null);
+
+  // Derive publicKey from Redux state instead of managing local state
+  const publicKey = useMemo(() => {
+    if (!currentWalletAddress) return null;
+    try {
+      return new PublicKey(currentWalletAddress);
+    } catch {
+      return null;
+    }
+  }, [currentWalletAddress]);
 
   // Use refs for stable references
   const eventEmitter = useMemo(() => new EventEmitter(), []);
@@ -91,83 +104,8 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     return isDevnet ? 'solana:devnet' : 'solana:mainnet';
   }, []);
 
-  // Find Solana wallet and auto-connect
-  useEffect(() => {
-    if (!ready || !authenticated || !walletsReady) {
-      setPublicKey(null);
-      setSolanaAddress(null);
-      return;
-    }
-
-    // Use Privy's Solana wallets directly
-    if (solanaWallets.length === 0) {
-      setPublicKey(null);
-      setSolanaAddress(null);
-      return;
-    }
-
-    // Priority 1: Use external wallet from Redux if available
-    if (externalWallet) {
-      try {
-        const pubKey = new PublicKey(externalWallet.address);
-        setPublicKey(pubKey);
-        setSolanaAddress(externalWallet.address);
-        return;
-      } catch {
-        console.error('Invalid external wallet address:', externalWallet.address);
-      }
-    }
-
-    // Priority 2: Get saved wallet preference
-    const savedWalletAddress = typeof window !== 'undefined'
-      ? localStorage.getItem('privy:selectedWallet')
-      : null;
-
-    // Select the best wallet using smart selection
-    let selectedWallet = null;
-
-    // 3. Try to use saved preference first
-    if (savedWalletAddress) {
-      const savedWallet = solanaWallets.find(w => w.address === savedWalletAddress);
-      if (savedWallet) {
-        selectedWallet = savedWallet;
-      }
-    }
-
-    // 4. If no saved preference, prefer embedded Solana wallet
-    if (!selectedWallet) {
-      // First try to find embedded wallet (has 'privy' in name or is first Solana wallet)
-      const embeddedWallet = solanaWallets.find(w =>
-        !w.address.startsWith('0x') &&
-        w.standardWallet.name.toLowerCase().includes('privy')
-      );
-
-      if (embeddedWallet) {
-        selectedWallet = embeddedWallet;
-      } else {
-        // Fallback to first Solana wallet (not Ethereum)
-        selectedWallet = solanaWallets.find(w => !w.address.startsWith('0x')) || solanaWallets[0];
-      }
-    }
-
-    // Set the selected wallet
-    if (selectedWallet) {
-      try {
-        const pubKey = new PublicKey(selectedWallet.address);
-        setPublicKey(pubKey);
-        setSolanaAddress(selectedWallet.address);
-        console.log(`🔍 Privy: Selected wallet: ${selectedWallet.standardWallet.name} (${selectedWallet.address.slice(0, 8)}...)`);
-      } catch {
-        console.error('Invalid Solana address:', selectedWallet.address);
-        setPublicKey(null);
-        setSolanaAddress(null);
-      }
-    } else {
-      console.log('🔍 Privy: No suitable Solana wallet found');
-      setPublicKey(null);
-      setSolanaAddress(null);
-    }
-  }, [ready, authenticated, walletsReady, solanaWallets, externalWallet]);
+  // Note: Wallet selection is now handled by Redux state in _app.tsx
+  // The publicKey is derived from currentWalletAddress automatically
 
   // Listen for wallet selection changes from Privy dropdown
   useEffect(() => {
@@ -180,8 +118,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
         if (selectedWallet) {
           try {
             const pubKey = new PublicKey(selectedWallet.address);
-            setPublicKey(pubKey);
-            setSolanaAddress(selectedWallet.address);
 
             // Update the adapter properties
             if (adapterRef.current) {
@@ -202,22 +138,16 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     };
   }, [solanaWallets, eventEmitter]);
 
-  // Auto-connect when Solana address becomes available
+  // Auto-connect when publicKey becomes available
   useEffect(() => {
-    if (publicKey && solanaAddress && authenticated) {
+    if (publicKey && authenticated) {
       // Emit connect event to notify the wallet adapter system
       eventEmitter.emit('connect', publicKey);
-    } else if (!authenticated || !solanaAddress) {
+    } else if (!authenticated || !publicKey) {
       // Emit disconnect event when no longer authenticated
       eventEmitter.emit('disconnect');
-
-      // Clear local state immediately when authentication is lost
-      if (!authenticated) {
-        setPublicKey(null);
-        setSolanaAddress(null);
-      }
     }
-  }, [publicKey, solanaAddress, authenticated, eventEmitter]);
+  }, [publicKey, authenticated, eventEmitter]);
 
   const connect = useCallback(async () => {
     if (!ready) {
@@ -227,12 +157,14 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     setConnecting(true);
     try {
       if (!authenticated) {
-        await login();
+        console.log('🔍 CONNECT: Logging in to Privy');
+        login();
       }
 
-      // If authenticated but no Solana wallet, try to create one
-      if (authenticated && !solanaAddress) {
+      // If authenticated but no publicKey, try to create one
+      if (authenticated && !publicKey) {
         try {
+          console.log('🔍 CONNECT: Creating Privy wallet automatically');
           await createWallet();
         } catch (error) {
           console.warn('Failed to create wallet automatically:', error);
@@ -245,29 +177,11 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     } finally {
       setConnecting(false);
     }
-  }, [ready, authenticated, login, createWallet, solanaAddress]);
+  }, [ready, authenticated, login, createWallet, publicKey]);
 
   const disconnect = useCallback(async () => {
-    try {
-
-      // Clear local state first to prevent race conditions
-      setPublicKey(null);
-      setSolanaAddress(null);
-
-      // Then logout from Privy (this might fail with 400 if already logged out)
-      await logout();
-
-    } catch (error) {
-      // Don't throw on 400 errors - they usually mean already logged out
-      if (error && typeof error === 'object' && 'status' in error && error.status === 400) {
-      } else {
-        console.error('Failed to disconnect from Privy:', error);
-        // Still clear local state even if logout fails
-        setPublicKey(null);
-        setSolanaAddress(null);
-        throw error;
-      }
-    }
+    console.log('🔍 DISCONNECT: Logging out from Privy');
+    await logout();
   }, [logout]);
 
   // Helper function to serialize transactions based on type
@@ -284,9 +198,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
   // Handle versioned transaction signing
   const handleVersionedTransaction = useCallback(async (
-    transaction: VersionedTransaction,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    wallet: any, // ConnectedStandardSolanaWallet from Privy
+    wallet: ConnectedStandardSolanaWallet,
     serializedTransaction: Uint8Array
   ): Promise<VersionedTransaction> => {
     const result = await wallet.signTransaction({
@@ -301,8 +213,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   // Handle legacy transaction signing
   const handleLegacyTransaction = useCallback(async (
     transaction: Transaction,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    wallet: any, // ConnectedStandardSolanaWallet from Privy
+    wallet: ConnectedStandardSolanaWallet,
     serializedTransaction: Uint8Array
   ): Promise<Transaction> => {
     const result = await wallet.signTransaction({
@@ -319,8 +230,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     if (versionedTx.signatures && versionedTx.signatures.length > 0) {
       // AdrenaClient expects raw signature buffers for bs58.encode() compatibility
       // This is a necessary adapter pattern to bridge Privy 3.0 and wallet adapter interface
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (transaction as any).signatures = versionedTx.signatures.map((sig) => Buffer.from(sig));
+      (transaction as unknown as { signatures: Uint8Array[] }).signatures = versionedTx.signatures.map((sig) => new Uint8Array(sig));
     }
 
     return transaction;
@@ -336,25 +246,13 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       throw new Error('No wallet address available for signing');
     }
 
-    console.log('🔍 SIGN: Target wallet address:', targetWalletAddress?.slice(0, 8) + '...');
-    console.log('🔍 SIGN: Available wallets:', solanaWallets.map(w => ({
-      name: w.standardWallet.name,
-      address: w.address.slice(0, 8) + '...',
-      matches: w.address === targetWalletAddress
-    })));
-
     const wallet = solanaWallets.find(w => w.address === targetWalletAddress);
     if (!wallet) {
       throw new Error(`Wallet not found for address: ${targetWalletAddress?.slice(0, 8)}...`);
     }
 
-    const walletName = wallet.standardWallet.name.toLowerCase();
-    const isEmbeddedWallet = walletName.toLowerCase().includes('privy');
-
-    if (isEmbeddedWallet) {
-      // Embedded wallets: Sign first, then send with signAndSendTransaction
-      console.log('🔍 SIGN: Embedded wallet - signing first');
-
+    try {
+      // Just sign the transaction, don't send it yet
       const serializedTransaction = serializeTransaction(transaction);
       let signedTransaction: Transaction | VersionedTransaction;
 
@@ -362,69 +260,19 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       const isVersionedTx = transaction.constructor.name === 'VersionedTransaction' || transaction.constructor.name === '$r';
 
       if (isVersionedTx) {
-        console.log('🔍 SIGN: Detected VersionedTransaction, using handleVersionedTransaction');
-        signedTransaction = await handleVersionedTransaction(transaction as VersionedTransaction, wallet, serializedTransaction);
+        // console.log('🔍 SIGN: Detected VersionedTransaction, using handleVersionedTransaction');
+        signedTransaction = await handleVersionedTransaction(wallet, serializedTransaction);
       } else {
-        console.log('🔍 SIGN: Detected legacy Transaction, using handleLegacyTransaction');
+        // console.log('🔍 SIGN: Detected legacy Transaction, using handleLegacyTransaction');
         signedTransaction = await handleLegacyTransaction(transaction as Transaction, wallet, serializedTransaction);
       }
 
-      console.log('✅ Transaction signed successfully by:', walletName);
-      console.log('🔍 SIGN: Signed transaction has signatures:', signedTransaction.signatures.length);
-
-      // Now send the signed transaction
-      console.log('🚀 SIGN: Embedded wallet - sending with signAndSendTransaction');
-
-      try {
-        const serializedTx = serializeTransaction(signedTransaction);
-        const result = await wallet.signAndSendTransaction({
-          transaction: serializedTx,
-          chain: currentChain,
-        });
-
-        const signature = bs58.encode(result.signature);
-        console.log('✅ SIGN: Embedded wallet transaction sent, signature:', signature);
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (signedTransaction as any)._privySignature = signature;
-
-        return signedTransaction;
-      } catch (error) {
-        console.error('❌ SIGN: Failed to send embedded wallet transaction:', error);
-        throw error;
-      }
-    } else {
-      // External wallets: Just sign the transaction, let Jupiter handle sending
-      console.log('🔍 SIGN: External wallet - signing only (Jupiter will handle sending)');
-      console.log('🆕 NEW CODE RUNNING - TIMESTAMP:', Date.now());
-
-      try {
-        // Just sign the transaction, don't send it yet
-        const serializedTransaction = serializeTransaction(transaction);
-        let signedTransaction: Transaction | VersionedTransaction;
-
-        // Use constructor name for reliable type detection (handles minified classes)
-        const isVersionedTx = transaction.constructor.name === 'VersionedTransaction' || transaction.constructor.name === '$r';
-
-        if (isVersionedTx) {
-          console.log('🔍 SIGN: Detected VersionedTransaction, using handleVersionedTransaction');
-          signedTransaction = await handleVersionedTransaction(transaction as VersionedTransaction, wallet, serializedTransaction);
-        } else {
-          console.log('🔍 SIGN: Detected legacy Transaction, using handleLegacyTransaction');
-          signedTransaction = await handleLegacyTransaction(transaction as Transaction, wallet, serializedTransaction);
-        }
-
-        console.log('✅ Transaction signed successfully by:', walletName);
-        console.log('🔍 SIGN: Signed transaction has signatures:', signedTransaction.signatures.length);
-        console.log('🔍 SIGN: Jupiter will now call sendTransaction to send this signed transaction');
-
-        return signedTransaction;
-      } catch (error) {
-        console.error('❌ SIGN: Failed to sign external wallet transaction:', error);
-        throw error;
-      }
+      return signedTransaction;
+    } catch (error) {
+      console.error('❌ SIGN: Failed to sign external wallet transaction:', error);
+      throw error;
     }
-  }, [externalWallet, currentWalletAddress, solanaWallets, serializeTransaction, handleVersionedTransaction, handleLegacyTransaction, currentChain]);
+  }, [externalWallet, currentWalletAddress, solanaWallets, serializeTransaction, handleVersionedTransaction, handleLegacyTransaction]);
 
   const signAllTransactions = useCallback(async (transactions: (Transaction | VersionedTransaction)[]): Promise<(Transaction | VersionedTransaction)[]> => {
     const signedTransactions: (Transaction | VersionedTransaction)[] = [];
@@ -502,32 +350,15 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       // Dynamically update wallet metadata based on external wallet
       const currentWalletName = externalWallet?.adapterName || 'Privy';
 
-
       // Store the active wallet info without changing the adapter name
       // This allows the adapter to handle different wallets internally
       (adapterRef.current as PrivyAdapterExtended)._activeWalletName = currentWalletName;
       (adapterRef.current as PrivyAdapterExtended)._externalWallet = externalWallet;
 
-      // Update connection state - prioritize Redux wallet address for consistency
-      const currentPublicKey = currentWalletAddress
-        ? (() => {
-          try {
-            return new PublicKey(currentWalletAddress);
-          } catch {
-            return publicKey; // Fallback to local state
-          }
-        })()
-        : publicKey;
-
       // Use Redux wallet address for connection status consistency
-      const currentAddress = currentWalletAddress || solanaAddress;
-
-      // Debug connection status
-      const shouldBeConnected = authenticated && !!currentAddress;
-
-      adapterRef.current.publicKey = currentPublicKey;
+      adapterRef.current.publicKey = publicKey; // Derived from Redux state
       adapterRef.current.connecting = connecting;
-      adapterRef.current.connected = shouldBeConnected;
+      adapterRef.current.connected = authenticated && !!currentWalletAddress;
       adapterRef.current.readyState = (ready ? WalletReadyState.Installed : WalletReadyState.NotDetected) as WalletReadyState;
 
       // Update methods
@@ -544,53 +375,27 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       adapter.signAllTransactions = signAllTransactions;
       adapter.signMessage = signMessage;
 
-      // Unused helper functions (commented out to fix build errors)
-      // const handleVersionedTransactionSend = async (wallet: any, serializedTransaction: Uint8Array): Promise<string> => {
-      //   const result = await wallet.signAndSendTransaction({ transaction: serializedTransaction, chain: currentChain });
-      //   return bs58.encode(result.signature);
-      // };
-      // const handleLegacyTransactionSend = async (wallet: any, serializedTransaction: Uint8Array): Promise<string> => {
-      //   const result = await wallet.signAndSendTransaction({ transaction: serializedTransaction, chain: currentChain });
-      //   return bs58.encode(result.signature);
-      // };
-
       // function not used by adrena client right now, may be used later
-      adapterRef.current.sendTransaction = async (transaction: Transaction | VersionedTransaction, connection: unknown) => {
-        console.log('🚀 [sendTransaction] Jupiter calling sendTransaction');
-        console.log('🔍 [sendTransaction] Transaction type:', transaction.constructor.name);
-        console.log('🔍 [sendTransaction] Connection provided:', !!connection);
-
+      adapterRef.current.sendTransaction = async (transaction: Transaction | VersionedTransaction) => {
         // Check if this transaction was already sent in signTransaction
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const privySignature = (transaction as any)?._privySignature;
+        const privySignature = (transaction as unknown as { _privySignature: string })?._privySignature;
         if (privySignature) {
-          console.log('✅ [sendTransaction] Transaction already sent, returning stored signature:', privySignature);
-          console.log('🎉 [sendTransaction] Jupiter should now show success!');
           return privySignature;
         }
 
-        // This shouldn't happen since we send all transactions in signTransaction
-        console.log('⚠️ [sendTransaction] Transaction not already sent - this is unexpected');
-        console.log('🔍 [sendTransaction] Transaction keys:', Object.keys(transaction));
-        console.log('🔍 [sendTransaction] Transaction has _privySignature:', !!((transaction as unknown) as { _privySignature?: string })?._privySignature);
-
-        if (!solanaAddress) {
+        if (!currentWalletAddress) {
           throw new Error('No Solana wallet connected');
         }
 
         // Find the wallet object for this address
-        const wallet = solanaWallets.find(w => w.address === solanaAddress);
+        const wallet = solanaWallets.find(w => w.address === currentWalletAddress);
         if (!wallet) {
-          throw new Error('Wallet not found for address: ' + solanaAddress);
+          throw new Error('Wallet not found for address: ' + currentWalletAddress);
         }
-
-        console.log('✅ [sendTransaction] Found wallet connector:', wallet.standardWallet.name, wallet.address.slice(0, 8) + '...');
 
         try {
           // Privy wallet connectors don't have sendTransaction, only signAndSendTransaction
           // Since the transaction is already signed, we need to use signAndSendTransaction
-          console.log('🚀 [sendTransaction] Using signAndSendTransaction for signed transaction');
-
           const serializedTransaction = serializeTransaction(transaction);
           const result = await wallet.signAndSendTransaction({
             transaction: serializedTransaction,
@@ -611,7 +416,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     publicKey,
     connecting,
     authenticated,
-    solanaAddress,
+    currentWalletAddress,
     ready,
     connect,
     disconnect,
