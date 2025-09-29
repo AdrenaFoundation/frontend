@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { ChartPreferences } from '@/components/pages/trading/TradingChart/types';
 import {
@@ -24,144 +24,31 @@ import {
 } from '../../public/charting_library/charting_library';
 import useTPSL from './useTPSL';
 
-// Global variable to track temporary lines and cleanup
-/*
-const temporaryLinesCleanup: (() => void) | null = null;
+// Constants for liquidation heatmap configuration
+const LIQUIDATION_LINE_CONFIG = {
+  EXPONENTIAL_POWER: 0.2,
+  TRANSPARENCY: 0.45,
+  LINE_WIDTH: 2,
+  LINE_STYLE: 0,
+  UPDATE_INTERVAL: 60000, // 1 minute
+  FAR_FUTURE_DAYS: 365,
+} as const;
 
- function showTemporaryPositionLines(
-  chart: IChartWidgetApi,
-  position: PositionExtended,
-): void {
-  // Clear any existing temporary lines first
-  if (temporaryLinesCleanup) {
-    temporaryLinesCleanup();
-    temporaryLinesCleanup = null;
-  }
+// Type definitions for liquidation heatmap
+type LiquidationVisualProps = {
+  color: string;
+  linewidth: number;
+  linestyle: number;
+};
 
-  const lineIds: EntityId[] = [];
-  const time = new Date(Number(position.nativeObject.openTime) * 1000);
-
-  try {
-    // Create entry line
-    const entryId = drawHorizontalLine({
-      chart,
-      price: position.price,
-      text: `🟢 WATCHED ${position.side.toUpperCase()} - Entry`,
-      color: position.side === 'long' ? greenColor : redColor,
-      time,
-      linestyle: 0,
-      linewidth: 2,
-      showPrice: true,
-    });
-    if (entryId) lineIds.push(entryId);
-
-    // Create liquidation line
-    if (position.liquidationPrice) {
-      const liquidationId = drawHorizontalLine({
-        chart,
-        price: position.liquidationPrice,
-        text: `🔴 WATCHED ${position.side.toUpperCase()} - Liquidation`,
-        color: orangeColor,
-        time,
-        linestyle: 1,
-        linewidth: 2,
-        showPrice: true,
-      });
-      if (liquidationId) lineIds.push(liquidationId);
-    }
-
-    // Create stop loss line
-    if (position.stopLossLimitPrice) {
-      const stopLossId = drawHorizontalLine({
-        chart,
-        price: position.stopLossLimitPrice,
-        text: `🔵 WATCHED ${position.side.toUpperCase()} - Stop Loss`,
-        color: blueColor,
-        time,
-        linestyle: 1,
-        linewidth: 1,
-        showPrice: true,
-      });
-      if (stopLossId) lineIds.push(stopLossId);
-    }
-
-    // Create take profit line
-    if (position.takeProfitLimitPrice) {
-      const takeProfitId = drawHorizontalLine({
-        chart,
-        price: position.takeProfitLimitPrice,
-        text: `🔵 WATCHED ${position.side.toUpperCase()} - Take Profit`,
-        color: blueColor,
-        time,
-        linestyle: 1,
-        linewidth: 1,
-        showPrice: true,
-      });
-      if (takeProfitId) lineIds.push(takeProfitId);
-    }
-
-    // Create break even line
-    if (position.breakEvenPrice) {
-      console.log(
-        '[Chart]: Creating break even line at price:',
-        position.breakEvenPrice,
-      );
-      const breakEvenId = drawHorizontalLine({
-        chart,
-        price: position.breakEvenPrice,
-        text: `🟣 WATCHED ${position.side.toUpperCase()} - Break Even`,
-        color: `${purpleColor}80`,
-        time,
-        linestyle: 2,
-        linewidth: 1,
-        showPrice: true,
-        horzLabelsAlign: 'left',
-      });
-      if (breakEvenId) {
-        console.log('[Chart]: Break even line created with ID:', breakEvenId);
-        lineIds.push(breakEvenId);
-      } else {
-        console.warn('[Chart]: Failed to create break even line');
-      }
-    } else {
-      console.log('[Chart]: No break even price available for position');
-    }
-
-    console.log('[Chart]: Created temporary lines:', lineIds);
-
-    // Create cleanup function
-    const cleanup = () => {
-      console.log('[Chart]: Cleaning up temporary lines:', lineIds);
-      lineIds.forEach((id, index) => {
-        try {
-          console.log(
-            `[Chart]: Removing line ${index + 1}/${lineIds.length} with ID:`,
-            id,
-          );
-          chart.removeEntity(id);
-          console.log(`[Chart]: Successfully removed line with ID:`, id);
-        } catch (error) {
-          console.warn(`[Chart]: Error removing temporary line ${id}:`, error);
-        }
-      });
-      console.log('[Chart]: Finished cleaning up all temporary lines');
-    };
-
-    // Set global cleanup reference
-    temporaryLinesCleanup = cleanup;
-
-    // Auto-remove after 10 seconds
-    setTimeout(() => {
-      if (temporaryLinesCleanup === cleanup) {
-        cleanup();
-        temporaryLinesCleanup = null;
-        console.log('[Chart]: Auto-removed temporary lines after 10 seconds');
-      }
-    }, 10000);
-  } catch (error) {
-    console.error('[Chart]: Error creating temporary position lines:', error);
-  }
-} */
+type LiquidationLineParams = {
+  chart: IChartWidgetApi;
+  price: number;
+  startTime: Date;
+  color: string;
+  linewidth: number;
+  positionId: string;
+};
 
 export type LineType =
   | 'liquidation'
@@ -658,59 +545,62 @@ function handleLimitOrderLine({
   return positionChartLines;
 }
 
-// Enhanced visual properties function with exponential color distribution
+/**
+ * Creates a liquidation heatmap line with exponential color distribution
+ * @param positionSizeUsd - Position size in USD for color calculation
+ * @param minSizeUsd - Minimum position size for normalization
+ * @param maxSizeUsd - Maximum position size for normalization
+ * @returns Visual properties for the liquidation line
+ */
 const getLiquidationVisualProperties = (
   positionSizeUsd: number,
   minSizeUsd: number,
   maxSizeUsd: number,
-) => {
+): LiquidationVisualProps => {
   // Handle edge case where all positions have the same size
   if (maxSizeUsd === minSizeUsd) {
     return {
       color: '#FFFF0073', // Bright yellow with 45% transparency
-      linewidth: 2,
-      linestyle: 0,
+      linewidth: LIQUIDATION_LINE_CONFIG.LINE_WIDTH,
+      linestyle: LIQUIDATION_LINE_CONFIG.LINE_STYLE,
     };
   }
 
-  // Use more aggressive exponential distribution for better color spread
+  // Use exponential distribution for better color spread
   const normalizedSize =
     (positionSizeUsd - minSizeUsd) / (maxSizeUsd - minSizeUsd);
-  const exponentialSize = Math.pow(normalizedSize, 0.2); // Much more aggressive curve
+  const exponentialSize = Math.pow(
+    normalizedSize,
+    LIQUIDATION_LINE_CONFIG.EXPONENTIAL_POWER,
+  );
 
   // Continuous gradient from dark red (smallest) to bright yellow (biggest)
   // Dark red: rgb(139, 0, 0) -> Bright yellow: rgb(255, 255, 0)
-  const red = Math.round(139 + 116 * exponentialSize); // 139 -> 255
-  const green = Math.round(0 + 255 * exponentialSize); // 0 -> 255
-  const blue = Math.round(0 + 0 * exponentialSize); // 0 -> 0
-  const alpha = Math.round(0.45 * 255); // 45% transparency = 115/255
+  const red = Math.round(139 + 116 * exponentialSize);
+  const green = Math.round(0 + 255 * exponentialSize);
+  const blue = 0;
+  const alpha = Math.round(LIQUIDATION_LINE_CONFIG.TRANSPARENCY * 255);
 
   return {
     color: `#${red.toString(16).padStart(2, '0')}${green.toString(16).padStart(2, '0')}${blue.toString(16).padStart(2, '0')}${alpha.toString(16).padStart(2, '0')}`,
-    linewidth: 2,
-    linestyle: 0,
+    linewidth: LIQUIDATION_LINE_CONFIG.LINE_WIDTH,
+    linestyle: LIQUIDATION_LINE_CONFIG.LINE_STYLE,
   };
 };
 
-// Enhanced drawing function for squared liquidation lines
-function drawLiquidationHeatmapLine({
-  chart,
-  price,
-  startTime,
-  color,
-  linewidth,
-  positionId,
-}: {
-  chart: IChartWidgetApi;
-  price: number;
-  startTime: Date;
-  color: string;
-  linewidth: number;
-  positionId: string;
-}): EntityId | null {
+/**
+ * Creates a liquidation heatmap line with squared appearance
+ * @param params - Parameters for creating the liquidation line
+ * @returns EntityId of the created line or null if failed
+ */
+const createLiquidationLine = (
+  params: LiquidationLineParams,
+): EntityId | null => {
   try {
+    const { chart, price, startTime, color, linewidth, positionId } = params;
     const startTimestamp = startTime.getTime() / 1000;
-    const farFutureTimestamp = startTimestamp + 365 * 24 * 60 * 60;
+    const farFutureTimestamp =
+      startTimestamp + LIQUIDATION_LINE_CONFIG.FAR_FUTURE_DAYS * 24 * 60 * 60;
 
     return chart.createMultipointShape(
       [
@@ -729,7 +619,7 @@ function drawLiquidationHeatmapLine({
         lock: true,
         disableSelection: true,
         overrides: {
-          linestyle: 0,
+          linestyle: LIQUIDATION_LINE_CONFIG.LINE_STYLE,
           linewidth,
           linecolor: color,
           showPrice: false,
@@ -739,11 +629,11 @@ function drawLiquidationHeatmapLine({
         text: `liquidation-heatmap-${positionId}`,
       },
     );
-  } catch (e) {
-    console.error('[HEATMAP] Error creating liquidation line:', e);
+  } catch (error) {
+    console.error('[HEATMAP] Error creating liquidation line:', error);
     return null;
   }
-}
+};
 
 export function useChartDrawing({
   tokenSymbol,
@@ -997,262 +887,6 @@ export function useChartDrawing({
       chartPreferences.showAllActivePositions
     ) {
       widget.activeChart().refreshMarks();
-
-      /* // Subscribe to mark click events
-      widget.subscribe('onMarkClick', (markId) => {
-        console.log('[Chart]: Mark clicked with ID:', markId, typeof markId);
-
-        // Clear any existing temporary lines when clicking any mark
-        if (temporaryLinesCleanup) {
-          temporaryLinesCleanup();
-          temporaryLinesCleanup = null;
-          console.log('[Chart]: Cleared temporary lines due to mark click');
-        }
-
-        let position: EnrichedPositionApi | null = null;
-
-        // Check if we're showing active positions and try to find in allActivePositions first
-        if (chartPreferences.showAllActivePositions && allActivePositions) {
-          console.log(
-            '[Chart]: Searching in active positions (markId is array index)',
-          );
-          const activePosition = allActivePositions[markId as number];
-          if (activePosition) {
-            console.log('[Chart]: Found active position:', activePosition);
-            console.log('[Chart]: Showing temporary lines for active position');
-
-            // Show liquidation, stop loss, take profit, and break even lines for 10 seconds
-            showTemporaryPositionLines(chart, activePosition);
-            return;
-          }
-        }
-
-        // If not found in active positions, try position history
-        if (!position && positionHistory) {
-          console.log('[Chart]: Searching in position history');
-          console.log(
-            '[Chart]: Available history positions:',
-            positionHistory.map((p) => ({
-              positionId: p.positionId,
-              pubkey: p.pubkey.toBase58(),
-              type: typeof p.positionId,
-            })),
-          );
-
-          // Try different ways to find the position in history
-          const foundPosition = positionHistory.find(
-            (p) => p.positionId === markId,
-          );
-          if (foundPosition) {
-            position = foundPosition;
-          } else {
-            // Try with number conversion if markId is a string
-            if (typeof markId === 'string') {
-              const numericMarkId = Number(markId);
-              if (!isNaN(numericMarkId)) {
-                const foundByNumber = positionHistory.find(
-                  (p) => p.positionId === numericMarkId,
-                );
-                if (foundByNumber) {
-                  position = foundByNumber;
-                }
-              }
-            }
-          }
-
-          if (!position) {
-            // Try using pubkey field (convert PublicKey to string for comparison)
-            const markIdStr = String(markId);
-            const foundByPubkey = positionHistory.find(
-              (p) => p.pubkey.toBase58() === markIdStr,
-            );
-            if (foundByPubkey) {
-              position = foundByPubkey;
-            }
-          }
-        }
-
-        if (!position) {
-          console.log('[Chart]: Position not found for mark ID:', markId);
-          console.log(
-            '[Chart]: Tried both active positions and position history',
-          );
-          return;
-        }
-
-        console.log('[Chart]: Found position:', position);
-
-        const { exitDate, entryDate, entryPrice, exitPrice, side } = position;
-
-        if (!exitDate || !entryDate) {
-          console.log(
-            '[Chart]: Missing entry or exit date for position:',
-            position,
-          );
-          return;
-        }
-
-        console.log('[Chart]: Drawing position line for:', {
-          id: markId,
-          side,
-          entryDate,
-          exitDate,
-          entryPrice,
-          exitPrice,
-        });
-
-        try {
-          // Validate required values
-          if (!entryPrice || !exitPrice || !entryDate || !exitDate) {
-            console.error('[Chart]: Missing required values for drawing:', {
-              entryPrice,
-              exitPrice,
-              entryDate,
-              exitDate,
-            });
-            return;
-          }
-
-          // Remove any existing position drawings for this position
-          const existingShapes = chart.getAllShapes();
-          existingShapes.forEach((shape) => {
-            const shapeProps = chart.getShapeById(shape.id).getProperties();
-            if (shapeProps.text && shapeProps.text.includes(`#${markId}`)) {
-              chart.removeEntity(shape.id);
-            }
-          });
-
-          // Calculate profit/loss
-          const pnl =
-            side === 'long' ? exitPrice - entryPrice : entryPrice - exitPrice;
-          const pnlPercentage = ((pnl / entryPrice) * 100).toFixed(2);
-
-          // Use exact times from the position data to align with marks
-          // The marks are placed at these exact times, so our drawing should match
-          const alignedEntryTime = Math.floor(
-            new Date(entryDate).getTime() / 1000,
-          );
-          const alignedExitTime = Math.floor(
-            new Date(exitDate).getTime() / 1000,
-          );
-
-          console.log('[Chart]: Shape data:', {
-            originalEntryTime: Math.floor(new Date(entryDate).getTime() / 1000),
-            originalExitTime: Math.floor(new Date(exitDate).getTime() / 1000),
-            alignedEntryTime,
-            alignedExitTime,
-            entryPrice,
-            exitPrice,
-            side,
-            pnl,
-            pnlPercentage,
-            resolution: chart.resolution(),
-          });
-
-          // First try a simple trend line to test if the basic functionality works
-          console.log('[Chart]: Testing with trend line first...');
-          let shapeId;
-
-          try {
-            // First create trend line (we know this works)
-            shapeId = chart.createMultipointShape(
-              [
-                {
-                  time: alignedEntryTime,
-                  price: entryPrice,
-                },
-                {
-                  time: alignedExitTime,
-                  price: exitPrice,
-                },
-              ],
-              {
-                shape: 'trend_line',
-                zOrder: 'top',
-                showInObjectsTree: true,
-                overrides: {
-                  linecolor: side === 'long' ? greenColor : redColor,
-                  linewidth: 3,
-                  linestyle: 0,
-                },
-                text: `${side.toUpperCase()} #${markId} P&L: ${pnlPercentage}%`,
-              },
-            );
-            console.log('[Chart]: Trend line created successfully:', shapeId);
-
-            // Now try to replace it with a position shape
-            console.log(
-              '[Chart]: Now trying position shape with minimal config...',
-            );
-            try {
-              const positionShapeId = chart.createMultipointShape(
-                [
-                  {
-                    time: alignedEntryTime,
-                    price: entryPrice,
-                  },
-                  {
-                    time: alignedExitTime,
-                    price: exitPrice,
-                  },
-                ],
-                {
-                  shape: side === 'long' ? 'long_position' : 'short_position',
-                  zOrder: 'top',
-                  showInObjectsTree: true,
-                  // No overrides at all - let it use defaults
-                },
-              );
-
-              if (positionShapeId) {
-                console.log(
-                  '[Chart]: Position shape created successfully:',
-                  positionShapeId,
-                );
-                // Remove the trend line since position shape worked
-                if (shapeId) {
-                  chart.removeEntity(shapeId);
-                }
-                shapeId = positionShapeId;
-              }
-            } catch (positionError) {
-              console.error(
-                '[Chart]: Position shape failed, keeping trend line:',
-                positionError,
-              );
-              // Keep the trend line since position shape failed
-            }
-          } catch (trendError) {
-            console.error('[Chart]: Even basic trend line failed:', trendError);
-            throw trendError;
-          }
-
-          console.log('[Chart]: Position drawing created with ID:', shapeId);
-
-          // Optional: Auto-remove the drawing after some time
-          if (shapeId) {
-            setTimeout(() => {
-              try {
-                if (chart.getShapeById(shapeId)) {
-                  chart.removeEntity(shapeId);
-                  console.log(
-                    '[Chart]: Auto-removed position drawing:',
-                    shapeId,
-                  );
-                }
-              } catch (error) {
-                console.log(
-                  '[Chart]: Error auto-removing position drawing:',
-                  error,
-                );
-              }
-            }, 10000); // Remove after 10 seconds
-          }
-        } catch (error) {
-          console.error('[Chart]: Error creating position drawing:', error);
-          drawingErrorCallback();
-        }
-      });*/
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1271,11 +905,39 @@ export function useChartDrawing({
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(Date.now());
-    }, 60000); // Update every minute
+    }, LIQUIDATION_LINE_CONFIG.UPDATE_INTERVAL);
 
     return () => clearInterval(interval);
   }, []);
 
+  // Memoize expensive calculations for liquidation heatmap
+  const { maxSizeUsd, minSizeUsd } = useMemo(() => {
+    if (!allActivePositions?.length) return { maxSizeUsd: 0, minSizeUsd: 0 };
+
+    const sizes = allActivePositions.map((p) => p.sizeUsd ?? 0);
+    return {
+      maxSizeUsd: Math.max(...sizes),
+      minSizeUsd: Math.min(...sizes),
+    };
+  }, [allActivePositions]);
+
+  /**
+   * Cleans up all existing liquidation lines from the chart
+   */
+  const cleanupLiquidationLines = (chart: IChartWidgetApi) => {
+    chart.getAllShapes().forEach((line) => {
+      const shape = chart.getShapeById(line.id).getProperties();
+      if (shape.text?.includes('liquidation-heatmap-')) {
+        try {
+          chart.removeEntity(line.id);
+        } catch (e) {
+          // Line might already be removed
+        }
+      }
+    });
+  };
+
+  // Liquidation heatmap effect
   useEffect(() => {
     if (!chart || !widget || !widgetReady) return;
 
@@ -1283,16 +945,7 @@ export function useChartDrawing({
       const symbol = getChartSymbol(chart);
 
       // Clean up ALL existing liquidation lines first
-      chart.getAllShapes().forEach((line) => {
-        const shape = chart.getShapeById(line.id).getProperties();
-        if (shape.text?.includes('liquidation-heatmap-')) {
-          try {
-            chart.removeEntity(line.id);
-          } catch (e) {
-            // Line might already be removed
-          }
-        }
-      });
+      cleanupLiquidationLines(chart);
 
       let drawnActivePositionLines: PositionChartLine[] = deleteDetachedLines(
         chart,
@@ -1306,7 +959,7 @@ export function useChartDrawing({
         return;
       }
 
-      // Remove all liquidation lines
+      // Remove all liquidation lines when disabled
       if (!chartPreferences.showAllActivePositionsLiquidationLines) {
         widget
           .activeChart()
@@ -1324,13 +977,6 @@ export function useChartDrawing({
         setAllActivePositionChartLines([]);
         return;
       }
-
-      const maxSizeUsd = Math.max(
-        ...allActivePositions.map((p) => p.sizeUsd ?? 0),
-      );
-      const minSizeUsd = Math.min(
-        ...allActivePositions.map((p) => p.sizeUsd ?? 0),
-      );
 
       // Draw liquidation lines for all active positions
       for (const position of allActivePositions) {
@@ -1369,7 +1015,7 @@ export function useChartDrawing({
             Number(position.nativeObject.openTime) * 1000,
           );
 
-          const id = drawLiquidationHeatmapLine({
+          const id = createLiquidationLine({
             chart,
             price: position.liquidationPrice,
             startTime: positionOpenTime,
@@ -1401,7 +1047,9 @@ export function useChartDrawing({
     allActivePositions,
     trickReload,
     chartPreferences.showAllActivePositionsLiquidationLines,
-    currentTime, // Add currentTime dependency
+    currentTime,
+    maxSizeUsd,
+    minSizeUsd,
   ]);
 
   useEffect(() => {
