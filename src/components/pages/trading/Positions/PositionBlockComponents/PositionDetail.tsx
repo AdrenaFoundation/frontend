@@ -76,6 +76,7 @@ export const PositionDetail = ({
                 className={twMerge(
                   'flex items-center',
                   d?.onEditClick &&
+                    !readOnly &&
                     'cursor-pointer hover:bg-[#1A2531] rounded-md transition-colors duration-300',
                 )}
                 onClick={d?.onEditClick}

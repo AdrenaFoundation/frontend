@@ -211,54 +211,56 @@ export default function PositionBlockV2({
             readOnly={readOnly}
           />
         )}
-        <div className="flex flex-row items-center gap-2">
-          <Button
-            title="Edit"
-            size="sm"
-            className={twMerge(
-              'lg:h-auto text-xs px-2 py-1 font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300',
-              !isMobile && 'flex-1',
-            )}
-            onClick={() => triggerEditPositionCollateral?.(position)}
-          />
-          <Button
-            title="TP/SL"
-            size="sm"
-            className={twMerge(
-              'lg:h-auto text-xs px-2 py-1 font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300',
-              !isMobile && 'flex-1',
-            )}
-            onClick={() => triggerStopLossTakeProfit?.(position)}
-          />
-          <Button
-            title={
-              closableIn === 0 || closableIn === null
-                ? 'Close'
-                : `Close (${Math.ceil((closableIn || 0) / 1000)}s)`
-            }
-            size="sm"
-            className={twMerge(
-              'lg:h-auto text-xs px-2 py-1 font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300 disabled:opacity-30 disabled:cursor-not-allowed',
-              !isMobile && 'flex-1',
-            )}
-            disabled={closableIn !== 0 && closableIn !== null}
-            onClick={() => triggerClosePosition?.(position)}
-          />
-          {setShareClosePosition ? (
-            <div
-              className="p-[0.4rem] group rounded-md bg-[#142030] text-white cursor-pointer"
-              onClick={() => setShareClosePosition?.(position)}
-            >
-              <Image
-                src={shareIcon}
-                alt="share"
-                width={16}
-                height={16}
-                className="h-2.5 w-2.5 opacity-50 group-hover:opacity-100 transition-opacity duration-300"
-              />
-            </div>
-          ) : null}
-        </div>
+        {!readOnly ? (
+          <div className="flex flex-row items-center gap-2">
+            <Button
+              title="Edit"
+              size="sm"
+              className={twMerge(
+                'lg:h-auto text-xs px-2 py-1 font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300',
+                !isMobile && 'flex-1',
+              )}
+              onClick={() => triggerEditPositionCollateral?.(position)}
+            />
+            <Button
+              title="TP/SL"
+              size="sm"
+              className={twMerge(
+                'lg:h-auto text-xs px-2 py-1 font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300',
+                !isMobile && 'flex-1',
+              )}
+              onClick={() => triggerStopLossTakeProfit?.(position)}
+            />
+            <Button
+              title={
+                closableIn === 0 || closableIn === null
+                  ? 'Close'
+                  : `Close (${Math.ceil((closableIn || 0) / 1000)}s)`
+              }
+              size="sm"
+              className={twMerge(
+                'lg:h-auto text-xs px-2 py-1 font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300 disabled:opacity-30 disabled:cursor-not-allowed',
+                !isMobile && 'flex-1',
+              )}
+              disabled={closableIn !== 0 && closableIn !== null}
+              onClick={() => triggerClosePosition?.(position)}
+            />
+            {setShareClosePosition ? (
+              <div
+                className="p-[0.4rem] group rounded-md bg-[#142030] text-white cursor-pointer"
+                onClick={() => setShareClosePosition?.(position)}
+              >
+                <Image
+                  src={shareIcon}
+                  alt="share"
+                  width={16}
+                  height={16}
+                  className="h-2.5 w-2.5 opacity-50 group-hover:opacity-100 transition-opacity duration-300"
+                />
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );
