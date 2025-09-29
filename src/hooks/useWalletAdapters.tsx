@@ -7,7 +7,6 @@ import { useStandardWalletAdapters } from '@solana/wallet-standard-wallet-adapte
 import { useMemo } from 'react';
 
 import { ImageRef, WalletAdapterExtended } from "@/types";
-import { debugWallet } from '@/utils/debug';
 
 import backpackLogo from '../../public/images/backpack.png';
 import coinbaseLogo from '../../public/images/coinbase.png';
@@ -89,35 +88,12 @@ export default function useWalletAdapters(): WalletAdapterExtended[] {
   // Remove the adapters that has been added automatically but that we don't want to use
   return useMemo(() => allAdapters.filter(adapter => {
     // Always include the Privy adapter - it handles external wallet validation internally
-    // Check if this is the Privy adapter by comparing with the privyAdapter instance
-    const isPrivyAdapter = adapter === privyAdapter;
-
-    if (isPrivyAdapter) {
-      // Privy adapter is always allowed - it uses native Solana connectors internally
-      // Throttle logging to prevent spam
-      const currentName = adapter.name;
-      const now = Date.now();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const lastLogged = (adapter as any)._lastLoggedTime || 0;
-      if (now - lastLogged > 5000) { // Max once per 5 seconds
-        debugWallet('WALLET ADAPTERS: Including Privy adapter with name:', currentName);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (adapter as any)._lastLoggedTime = now;
-      }
+    if (adapter === privyAdapter) {
       return true;
     }
 
     // For native (non-Privy) adapters, check if they're in our supported list
     const isSupported = SUPPORTED_WALLETS.includes(adapter.name as WalletAdapterName);
-
-    // Debug filtering for external wallets that might be causing issues
-    if (!isSupported && (adapter.name === 'OKX Wallet' || adapter.name.includes('OKX'))) {
-      debugWallet('WALLET ADAPTERS: Filtering out OKX adapter (not Privy):', {
-        name: adapter.name,
-        isPrivyAdapter: false,
-        isSupported: false
-      });
-    }
 
     return isSupported;
   }).map((adapter) => {

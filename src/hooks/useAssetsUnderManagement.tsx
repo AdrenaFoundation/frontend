@@ -22,7 +22,9 @@ export default function useAssetsUnderManagement(): number | null {
 
         return setAum(typeof aum_usd !== 'undefined' ? aum_usd : null);
       }
-
+      if (!window.adrena?.client?.connection) {
+        return;
+      }
       try {
         const aum = await window.adrena.client.getAssetsUnderManagement();
 

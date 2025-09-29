@@ -26,7 +26,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from '@/store/store';
 import { WalletAdapterExtended } from '@/types';
 import { PrivyAdapterExtended } from '@/types/privy';
-import { debugPrivy } from '@/utils/debug';
 
 export function usePrivyAdapter(): WalletAdapterExtended | null {
   const { ready, authenticated, login, logout } = usePrivy();
@@ -34,12 +33,8 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   const { wallets: connectedStandardWallets, ready: walletsReady } = useWallets();
   const { createWallet } = useCreateWallet();
 
-  // Get wallet state from Redux
-  const walletState = useSelector((s) => s.walletState.wallet);
-  const walletAddress = walletState?.walletAddress;
-
-  // Get external wallet state from Redux - optimized
-  const { wallet } = useSelector((s) => s.walletState);
+  // Get wallet state from Redux - optimized to prevent unnecessary re-renders
+  const wallet = useSelector((s) => s.walletState.wallet);
 
   // Memoize wallet address to prevent unnecessary recalculations
   const currentWalletAddress = useMemo(() => wallet?.walletAddress, [wallet?.walletAddress]);
@@ -86,10 +81,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
   const solanaWallets = useMemo(() => {
     // Include all connected Solana wallets (both Privy embedded and external wallets)
-    debugPrivy('All connected wallets:', connectedStandardWallets.map(w => ({
-      name: w.standardWallet.name,
-      address: w.address.slice(0, 8) + '...'
-    })));
 
     return connectedStandardWallets; // Include all wallets, not just Privy ones
   }, [connectedStandardWallets]);
@@ -117,7 +108,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
     // Priority 1: Use external wallet from Redux if available
     if (externalWallet) {
-      debugPrivy(`Using external wallet from Redux: ${externalWallet.adapterName}`);
       try {
         const pubKey = new PublicKey(externalWallet.address);
         setPublicKey(pubKey);
@@ -192,7 +182,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
             const pubKey = new PublicKey(selectedWallet.address);
             setPublicKey(pubKey);
             setSolanaAddress(selectedWallet.address);
-            console.log('Privy adapter updated to new wallet:', selectedWallet.address);
 
             // Update the adapter properties
             if (adapterRef.current) {
@@ -224,7 +213,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
       // Clear local state immediately when authentication is lost
       if (!authenticated) {
-        debugPrivy('🔌 Authentication lost, clearing local state');
         setPublicKey(null);
         setSolanaAddress(null);
       }
@@ -261,7 +249,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
   const disconnect = useCallback(async () => {
     try {
-      debugPrivy('🔌 Starting Privy disconnect...');
 
       // Clear local state first to prevent race conditions
       setPublicKey(null);
@@ -270,11 +257,9 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       // Then logout from Privy (this might fail with 400 if already logged out)
       await logout();
 
-      debugPrivy('✅ Privy disconnect completed successfully');
     } catch (error) {
       // Don't throw on 400 errors - they usually mean already logged out
       if (error && typeof error === 'object' && 'status' in error && error.status === 400) {
-        debugPrivy('⚠️ Privy logout returned 400 (likely already logged out)');
       } else {
         console.error('Failed to disconnect from Privy:', error);
         // Still clear local state even if logout fails
@@ -345,7 +330,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   const signTransaction = useCallback(async (transaction: Transaction | VersionedTransaction): Promise<Transaction | VersionedTransaction> => {
     // Use Redux wallet state as the source of truth for which wallet to sign with
     // This ensures we use the user-selected wallet, not Privy's auto-selected one
-    const targetWalletAddress = externalWallet?.address || walletAddress;
+    const targetWalletAddress = externalWallet?.address || currentWalletAddress;
 
     if (!targetWalletAddress) {
       throw new Error('No wallet address available for signing');
@@ -439,7 +424,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
         throw error;
       }
     }
-  }, [externalWallet, walletAddress, solanaWallets, serializeTransaction, handleVersionedTransaction, handleLegacyTransaction, currentChain]);
+  }, [externalWallet, currentWalletAddress, solanaWallets, serializeTransaction, handleVersionedTransaction, handleLegacyTransaction, currentChain]);
 
   const signAllTransactions = useCallback(async (transactions: (Transaction | VersionedTransaction)[]): Promise<(Transaction | VersionedTransaction)[]> => {
     const signedTransactions: (Transaction | VersionedTransaction)[] = [];
@@ -454,7 +439,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
   const signMessage = useCallback(async (message: Uint8Array): Promise<Uint8Array> => {
     // Use Redux wallet state as the source of truth for which wallet to sign with
-    const targetWalletAddress = externalWallet?.address || walletAddress;
+    const targetWalletAddress = externalWallet?.address || currentWalletAddress;
 
     if (!targetWalletAddress) {
       throw new Error('No wallet address available for signing');
@@ -474,7 +459,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     // Use Privy 3.0 direct wallet method (new approach)
     const { signature } = await wallet.signMessage({ message });
     return signature;
-  }, [externalWallet, walletAddress, solanaWallets]);
+  }, [externalWallet, currentWalletAddress, solanaWallets]);
 
   // Create adapter instance once and update its properties
   useEffect(() => {
@@ -517,50 +502,11 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       // Dynamically update wallet metadata based on external wallet
       const currentWalletName = externalWallet?.adapterName || 'Privy';
 
-      // Only log when there's a meaningful state change (with throttling)
-      const needsUpdate = adapterRef.current.name !== currentWalletName;
-      if (needsUpdate) {
-        // Throttle logging to prevent spam
-        const now = Date.now();
-        const lastLog = (adapterRef.current as PrivyAdapterExtended)._lastNameUpdate || 0;
-        if (now - lastLog > 2000) { // Max once per 2 seconds
-          debugPrivy('PRIVY ADAPTER: State change detected:', {
-            currentAdapterName: adapterRef.current.name,
-            expectedWalletName: currentWalletName,
-            externalWallet: externalWallet ? {
-              adapterName: externalWallet.adapterName,
-              address: externalWallet.address
-            } : null
-          });
-          (adapterRef.current as PrivyAdapterExtended)._lastNameUpdate = now;
-        }
-      }
 
-      // Store the current wallet info without mutating the adapter name
-      // This prevents infinite loops while still tracking the active wallet
-      if (adapterRef.current.name !== currentWalletName) {
-        // Throttled logging for wallet changes
-        const now = Date.now();
-        const lastChangeLog = (adapterRef.current as PrivyAdapterExtended)._lastNameUpdate || 0;
-        if (now - lastChangeLog > 2000) { // Max once per 2 seconds
-          debugPrivy('PRIVY ADAPTER: Wallet changed, but keeping stable adapter name:', {
-            adapterName: 'Privy', // Keep stable
-            activeWallet: currentWalletName,
-            externalWallet: externalWallet ? {
-              adapterName: externalWallet.adapterName,
-              address: externalWallet.address
-            } : null
-          });
-        }
-
-        // Store the active wallet info without changing the adapter name
-        // This allows the adapter to handle different wallets internally
-        (adapterRef.current as PrivyAdapterExtended)._activeWalletName = currentWalletName;
-        (adapterRef.current as PrivyAdapterExtended)._externalWallet = externalWallet;
-
-        // Keep the adapter name as 'Privy' to prevent infinite loops
-        // The adapter will handle routing to the correct wallet internally
-      }
+      // Store the active wallet info without changing the adapter name
+      // This allows the adapter to handle different wallets internally
+      (adapterRef.current as PrivyAdapterExtended)._activeWalletName = currentWalletName;
+      (adapterRef.current as PrivyAdapterExtended)._externalWallet = externalWallet;
 
       // Update connection state - use external wallet's public key if available
       const currentPublicKey = externalWallet?.address
@@ -578,16 +524,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
       // Debug connection status
       const shouldBeConnected = authenticated && !!currentAddress;
-      if (adapterRef.current.connected !== shouldBeConnected) {
-        console.log('🔄 PRIVY ADAPTER: Connection status changing:', {
-          from: adapterRef.current.connected,
-          to: shouldBeConnected,
-          authenticated,
-          currentAddress: currentAddress?.slice(0, 8) + '...',
-          externalWallet: externalWallet?.address?.slice(0, 8) + '...',
-          solanaAddress: solanaAddress?.slice(0, 8) + '...'
-        });
-      }
 
       adapterRef.current.publicKey = currentPublicKey;
       adapterRef.current.connecting = connecting;
@@ -697,20 +633,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   const shouldReturnAdapter = ready && adapterRef.current;
   const result = shouldReturnAdapter ? (adapterRef.current || null) : null;
 
-  // Only log when there's a meaningful state change (throttled)
-  const now = Date.now();
-  const lastLogTime = useRef<number>(0);
-  if (now - lastLogTime.current > 2000) { // Max once per 2 seconds
-    console.log('🔍 usePrivyAdapter: Returning adapter:', {
-      ready,
-      authenticated,
-      hasAdapter: !!adapterRef.current,
-      adapterName: adapterRef.current?.name,
-      shouldReturnAdapter,
-      result: !!result
-    });
-    lastLogTime.current = now;
-  }
 
   return result;
 }

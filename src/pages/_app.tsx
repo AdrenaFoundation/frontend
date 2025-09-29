@@ -11,7 +11,7 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import { Provider } from 'react-redux';
 
@@ -251,6 +251,7 @@ function AppComponent({
   // Track logout to prevent immediate auto-reconnect
   const [lastLogoutTime, setLastLogoutTime] = useState<number>(0);
   const [hasAutoConnected, setHasAutoConnected] = useState<boolean>(false);
+  const disconnectInProgressRef = useRef<boolean>(false);
 
   // Track when user logs out to prevent immediate auto-reconnect
   useEffect(() => {
@@ -258,9 +259,9 @@ function AppComponent({
     const privyLogoutDetected = privyReady && !privyAuthenticated && hasAutoConnected;
     const manualDisconnectDetected = localStorage.getItem('lastConnectionSource') === 'manual-disconnect' && walletState?.isPrivy;
 
-    if (privyLogoutDetected || manualDisconnectDetected) {
+    if ((privyLogoutDetected || manualDisconnectDetected) && !disconnectInProgressRef.current) {
       // User just logged out - immediately clear UI to prevent flicker
-      console.log('🔌 Logout detected, immediately clearing state', { privyLogoutDetected, manualDisconnectDetected });
+      disconnectInProgressRef.current = true;
       setLastLogoutTime(Date.now());
       setHasAutoConnected(false);
 
@@ -268,7 +269,6 @@ function AppComponent({
       setConnected(false);
 
       // Clear Redux wallet state - this will trigger other cleanup effects
-      console.log('🔌 Dispatching disconnect action');
       dispatch({
         type: 'disconnect',
       });
@@ -276,6 +276,16 @@ function AppComponent({
       // Clear any Privy-related localStorage to prevent auto-reconnect
       localStorage.removeItem('privy:selectedWallet');
       localStorage.setItem('lastConnectionSource', 'manual-disconnect');
+
+      // Set a longer cooldown for manual logout to prevent auto-reconnect
+      if (manualDisconnectDetected) {
+        localStorage.setItem('manualLogoutTime', Date.now().toString());
+      }
+
+      // Reset disconnect flag after a short delay
+      setTimeout(() => {
+        disconnectInProgressRef.current = false;
+      }, 1000);
     }
   }, [privyReady, privyAuthenticated, hasAutoConnected, walletState?.isPrivy, dispatch]);
 
@@ -303,20 +313,28 @@ function AppComponent({
       return;
     }
 
+    // Check for manual logout with extended cooldown
+    const manualLogoutTime = localStorage.getItem('manualLogoutTime');
+    if (manualLogoutTime) {
+      const timeSinceManualLogout = Date.now() - parseInt(manualLogoutTime);
+      if (timeSinceManualLogout < 30000) { // 30 seconds cooldown for manual logout
+        console.log('🔌 Skipping auto-connect due to recent manual logout');
+        return;
+      } else {
+        // Clear the manual logout flag after cooldown
+        localStorage.removeItem('manualLogoutTime');
+      }
+    }
+
     // Additional check: don't auto-connect if we just cleared wallet state
     if (!walletState && timeSinceLogout < 10000) {
       console.log('🔌 Skipping auto-connect - wallet state was just cleared');
       return;
     }
 
-    console.log('Auto-connecting Privy');
-
     // Find the Privy adapter
     const privyAdapter = adapters.find(adapter => adapter.name === 'Privy');
     if (!privyAdapter) return;
-
-    console.log('Privy adapter found:', privyAdapter);
-    console.log('Wallet state:', walletState);
 
     // Get wallet address from localStorage (for selected wallet) or Privy user data (embedded wallet)
     let walletAddress = null;
@@ -324,11 +342,8 @@ function AppComponent({
     // First try to get from localStorage (for selected wallet)
     if (typeof window !== 'undefined') {
       const savedWallet = localStorage.getItem('privy:selectedWallet');
-      console.log('Raw localStorage value:', savedWallet, typeof savedWallet);
       walletAddress = savedWallet;
     }
-
-    console.log('user', user)
 
     // If no localStorage preference, try Privy user data (embedded wallet)
     if (!walletAddress && user && user?.linkedAccounts?.length > 0) {
@@ -339,11 +354,8 @@ function AppComponent({
       );
       if (embeddedWallet && embeddedWallet.type === 'wallet') {
         walletAddress = embeddedWallet.address;
-        console.log('Using Privy embedded wallet:', walletAddress);
       }
     }
-
-    console.log('Final wallet address:', walletAddress, typeof walletAddress);
 
     // Validate wallet address more strictly
     if (walletAddress &&
@@ -353,8 +365,6 @@ function AppComponent({
       walletAddress !== 'undefined' &&
       !walletAddress.includes('{') &&
       !walletAddress.includes('}')) {
-
-      console.log('Auto-connecting Privy adapter with address:', walletAddress);
 
       // Mark this as a Privy connection to prevent native auto-connect
       localStorage.setItem('lastConnectionSource', 'privy');
@@ -427,18 +437,12 @@ function AppComponent({
   }, [cookies]);
 
   useEffect(() => {
-
-    console.log('Checcking wallet to see if connected');
-    console.log('wallet', wallet);
-    console.log('walletAddress', walletAddress);
     // Use wallet address from Redux state for more reliable connection detection
     const isWalletConnected = !!(wallet && walletAddress);
 
-    console.log('isWalletConnected', isWalletConnected);
 
     if (!isWalletConnected) {
       setConnected(false);
-      console.log('No wallet connected, setting Adrena program to null');
 
       window.adrena.client.setAdrenaProgram(null);
       return;
@@ -447,7 +451,6 @@ function AppComponent({
     dispatch(setVerifiedWalletAddresses());
 
     setConnected(true);
-    console.log('Setting connected to true', true);
     window.adrena.client.setAdrenaProgram(
       new Program(
         ADRENA_IDL,

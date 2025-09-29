@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from '@/store/store';
 import { WalletAdapterExtended } from '@/types';
 import { addFailedTxNotification, addSuccessTxNotification } from '@/utils';
-import { debugJupiter, logSuccess } from '@/utils/debug';
 
 /**
  * Props for the Jupiter swap widget component
@@ -65,27 +64,7 @@ export default function JupiterWidget({
             });
 
             if (privyAdapter) {
-                console.log('🔄 JUPITER: Found Privy adapter:', {
-                    expectedName: appWalletState.adapterName,
-                    actualName: privyAdapter.name,
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    walletName: (privyAdapter as any).walletName,
-                    connected: privyAdapter.connected,
-                    publicKey: privyAdapter.publicKey?.toBase58()
-                });
-
                 return privyAdapter;
-            } else {
-                // Debug: Show what adapters are available
-                console.log('🔍 JUPITER: Available adapters for Privy search:', {
-                    looking_for: appWalletState.adapterName,
-                    available: adapters.map(a => ({
-                        name: a.name,
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        walletName: (a as any).walletName,
-                        connected: a.connected
-                    }))
-                });
             }
         } else {
             // For native wallet connections
@@ -94,34 +73,12 @@ export default function JupiterWidget({
             );
 
             if (nativeAdapter) {
-                console.log('🔄 JUPITER: Found native adapter:', {
-                    name: nativeAdapter.name,
-                    connected: nativeAdapter.connected,
-                    publicKey: nativeAdapter.publicKey?.toBase58()
-                });
                 return nativeAdapter;
             }
         }
 
-        console.log('❌ JUPITER: No adapter found for:', appWalletState.adapterName);
         return null;
     }, [adapters, appWalletState]);
-
-    // Only log when adapter state actually changes
-    React.useEffect(() => {
-        if (connectedAdapter) {
-            console.log('🔍 JUPITER: Wallet state changed:', {
-                appWalletState: appWalletState?.adapterName,
-                appWalletAddress: appWalletState?.walletAddress,
-                isPrivy: appWalletState?.isPrivy,
-                connectedAdapter: {
-                    name: connectedAdapter.name,
-                    connected: connectedAdapter.connected,
-                    publicKey: connectedAdapter.publicKey?.toBase58()
-                }
-            });
-        }
-    }, [connectedAdapter, appWalletState?.adapterName, appWalletState?.walletAddress, appWalletState?.isPrivy]);
 
     // Set Jupiter CSS custom properties for theming
     useEffect(() => {
@@ -186,42 +143,29 @@ export default function JupiterWidget({
     // Stabilize wallet context methods to prevent unnecessary re-renders
     const stableConnect = useCallback(async () => {
         if (connectedAdapter) {
-            console.log('🔌 STANDARD: Jupiter requesting wallet connection');
             try {
                 await connectedAdapter.connect();
-                console.log('✅ STANDARD: Wallet connected via Jupiter request');
             } catch (error) {
                 console.error('❌ STANDARD: Failed to connect wallet:', error);
             }
-        } else {
-            console.log('⚠️ STANDARD: No adapter available for connection');
         }
     }, [connectedAdapter]);
 
     const stableDisconnect = useCallback(async () => {
         if (connectedAdapter) {
-            console.log('🔌 STANDARD: Jupiter requesting wallet disconnection');
             try {
                 await connectedAdapter.disconnect();
-                console.log('✅ STANDARD: Wallet disconnected via Jupiter request');
             } catch (error) {
                 console.error('❌ STANDARD: Failed to disconnect wallet:', error);
             }
-        } else {
-            console.log('⚠️ STANDARD: No adapter available for disconnection');
         }
     }, [connectedAdapter]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const stableSignTransaction = useCallback(async (transaction: any) => {
-        console.log('🔍 JUPITER: stableSignTransaction called for:', connectedAdapter?.name);
-        console.log('🔍 JUPITER: Transaction type:', transaction?.constructor?.name);
-
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const signedTx = await (connectedAdapter as any)?.signTransaction?.(transaction);
-            console.log('✅ JUPITER: Transaction signed successfully, type:', signedTx?.constructor?.name);
-            console.log('🔍 JUPITER: Signed transaction signatures:', signedTx?.signatures?.length);
 
             // Transaction signed successfully - Jupiter will handle sending
 
@@ -246,13 +190,6 @@ export default function JupiterWidget({
     // Create wallet context object that matches Jupiter's expected format
     // Based on @solana/wallet-adapter-react useWallet() return type
     const walletContext = useMemo(() => {
-        debugJupiter('walletContext useMemo triggered:', {
-            hasConnectedAdapter: !!connectedAdapter,
-            hasAppWalletState: !!appWalletState,
-            appWalletAddress: appWalletState?.walletAddress,
-            adapterName: connectedAdapter?.name,
-            adapterPublicKey: connectedAdapter?.publicKey?.toBase58()
-        });
         if (connectedAdapter && appWalletState) {
             // Use the app wallet address as the source of truth for the public key
             // This ensures Jupiter uses the correct wallet address for balance queries
@@ -267,18 +204,6 @@ export default function JupiterWidget({
             // Debug the connected state at the moment of walletContext creation
             // Use app wallet state for connection status instead of adapter.connected
             const isConnected = !!(appWalletState.walletAddress && jupiterPublicKey);
-
-            console.log('🔍 JUPITER: Creating walletContext with:', {
-                adapterName: connectedAdapter.name,
-                adapterConnected: connectedAdapter.connected,
-                appWalletState: appWalletState.adapterName,
-                appWalletAddress: appWalletState.walletAddress,
-                derivedConnected: isConnected,
-                hasPublicKey: !!jupiterPublicKey,
-                usingAppWalletAddress: !!jupiterPublicKey,
-                adapterPublicKey: connectedAdapter.publicKey?.toBase58(),
-                jupiterPublicKey: jupiterPublicKey?.toBase58()
-            });
 
             // Create a proxy adapter with the correct public key for Jupiter
             const proxyAdapter = {
@@ -302,14 +227,8 @@ export default function JupiterWidget({
                 connect: stableConnect,
                 disconnect: stableDisconnect,
                 sendTransaction: async (transaction: Transaction | VersionedTransaction, connection: Connection) => {
-                    console.log('🚀🚀🚀 JUPITER: sendTransaction WRAPPER called for:', connectedAdapter?.name);
-                    console.log('🔍 JUPITER: Transaction type:', transaction?.constructor?.name);
-                    console.log('🔍 JUPITER: Connection provided by Jupiter:', !!connection);
-                    console.log('🔍 JUPITER: Transaction has _privySignature:', !!((transaction as unknown) as { _privySignature?: string })?._privySignature);
-
                     try {
                         const result = await connectedAdapter.sendTransaction?.(transaction, connection);
-                        console.log('✅ JUPITER: Transaction sent successfully via sendTransaction wrapper, result:', result);
                         return result;
                     } catch (error) {
                         console.error('❌ JUPITER: sendTransaction wrapper failed:', error);
@@ -328,13 +247,6 @@ export default function JupiterWidget({
                 wallets: [connectedAdapter],
                 select: async () => connectedAdapter
             };
-
-            console.log('🔍 JUPITER: Created walletContext with methods:', {
-                hasSendTransaction: typeof walletContext.sendTransaction === 'function',
-                hasSignTransaction: typeof walletContext.signTransaction === 'function',
-                adapterMethods: Object.keys(walletContext.wallet?.adapter || {}),
-                sendTransactionName: walletContext.sendTransaction?.name
-            });
 
             return walletContext;
         }
@@ -362,45 +274,12 @@ export default function JupiterWidget({
         stableSignMessage
     ]);
 
-    // Debug walletContext changes
-    React.useEffect(() => {
-        if (connectedAdapter) {
-            console.log('🔍 JUPITER: WalletContext updated:', {
-                walletContext: {
-                    connected: walletContext.connected,
-                    publicKey: walletContext.publicKey?.toBase58(),
-                    walletName: walletContext.wallet?.adapter?.name
-                },
-                connectedAdapter: {
-                    name: connectedAdapter.name,
-                    connected: connectedAdapter.connected,
-                    publicKey: connectedAdapter.publicKey?.toBase58()
-                },
-                appWalletState: {
-                    adapterName: appWalletState?.adapterName,
-                    walletAddress: appWalletState?.walletAddress,
-                    isPrivy: appWalletState?.isPrivy
-                }
-            });
-        }
-    }, [connectedAdapter, walletContext, appWalletState?.adapterName, appWalletState?.isPrivy, appWalletState?.walletAddress]);
-
     // Official Jupiter example - init once, sync on wallet changes
     useEffect(() => {
         if (!window.Jupiter) {
             console.error('❌ Jupiter script not loaded');
             return;
         }
-
-        console.log('🚀 STANDARD: Initializing Jupiter widget (official example):', {
-            id,
-            endpoint: rpcEndpoint,
-            appWallet: appWalletState?.adapterName,
-            appWalletAddress: appWalletState?.walletAddress,
-            connectedAdapter: connectedAdapter?.name,
-            walletConnected: walletContext.connected,
-            walletPublicKey: walletContext.publicKey?.toBase58()
-        });
 
         window.Jupiter.init({
             displayMode: 'integrated',
@@ -426,7 +305,6 @@ export default function JupiterWidget({
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onRequestSignMessage: (walletContext as any).signMessage || (async () => { throw new Error('Wallet not connected'); }),
             onSuccess: ({ txid }: { txid: string }) => {
-                logSuccess('STANDARD: Swap completed', txid);
                 return addSuccessTxNotification({
                     title: 'Successful Transaction',
                     txHash: txid,
@@ -441,7 +319,6 @@ export default function JupiterWidget({
             },
         });
 
-        console.log('✅ STANDARD: Jupiter widget initialized');
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         id,
@@ -455,7 +332,6 @@ export default function JupiterWidget({
 
     useEffect(() => {
         if (!window.Jupiter?.syncProps) {
-            debugJupiter('Jupiter.syncProps not available');
             return;
         }
 
@@ -469,50 +345,22 @@ export default function JupiterWidget({
 
         lastSyncRef.current = syncKey;
 
-        debugJupiter('Syncing wallet state to Jupiter:', {
-            connected: walletContext.connected,
-            wallet: walletContext.wallet?.adapter.name,
-            publicKey: walletContext.publicKey?.toBase58(),
-        });
-
         try {
             // Small delay to ensure Jupiter is fully ready
             setTimeout(() => {
                 try {
-                    console.log('🔄 STANDARD: About to sync with context:', {
-                        hasWallet: !!walletContext.wallet,
-                        hasPublicKey: !!walletContext.publicKey,
-                        connected: walletContext.connected,
-                        walletStructure: walletContext.wallet ? {
-                            hasAdapter: !!walletContext.wallet.adapter,
-                            adapterName: walletContext.wallet.adapter?.name,
-                            adapterConnected: walletContext.wallet.adapter?.connected,
-                            adapterPublicKey: walletContext.wallet.adapter?.publicKey?.toBase58(),
-                            adapterReadyState: walletContext.wallet.adapter?.readyState
-                        } : null,
-                        fullWalletContext: {
-                            connected: walletContext.connected,
-                            publicKey: walletContext.publicKey?.toBase58(),
-                            walletName: walletContext.wallet?.adapter?.name
-                        }
-                    });
-
                     // Official Jupiter syncProps call
                     window.Jupiter.syncProps({
                         passthroughWalletContextState: walletContext
                     });
 
-                    console.log('✅ STANDARD: Wallet state synced successfully (delayed)');
-
                     // Force a second sync after a short delay (sometimes needed for UI update)
                     setTimeout(() => {
                         if (window.Jupiter?.syncProps && walletContext.connected) {
                             try {
-                                console.log('🔄 STANDARD: Second sync attempt for UI refresh');
                                 window.Jupiter.syncProps({
                                     passthroughWalletContextState: walletContext
                                 });
-                                console.log('✅ STANDARD: Second sync completed');
                             } catch (secondSyncError) {
                                 console.error('❌ STANDARD: Second sync failed:', secondSyncError);
                             }

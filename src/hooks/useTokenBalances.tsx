@@ -47,7 +47,6 @@ async function fetchJupiterTokensGlobal(): Promise<Record<string, JupiterToken>>
     // Create new fetch promise
     globalJupiterTokensPromise = (async () => {
         try {
-            console.log('🪙 Fetching Jupiter token registry (global cache)...');
             const response = await fetch('https://token.jup.ag/strict');
             const tokens: JupiterToken[] = await response.json();
 
@@ -59,7 +58,6 @@ async function fetchJupiterTokensGlobal(): Promise<Record<string, JupiterToken>>
 
             globalJupiterTokens = tokenMap;
             isGlobalJupiterTokensLoaded = true;
-            console.log(`✅ Jupiter registry loaded globally (${tokens.length} tokens)`);
 
             return globalJupiterTokens;
         } catch (error) {
@@ -79,7 +77,6 @@ export function clearJupiterTokensCache() {
     globalJupiterTokens = {};
     globalJupiterTokensPromise = null;
     isGlobalJupiterTokensLoaded = false;
-    console.log('🗑️ Jupiter tokens cache cleared');
 }
 
 
@@ -197,8 +194,7 @@ export function useTokenBalances(walletAddress?: string) {
 
     // Fetch token balances for a given wallet address
     const fetchTokenBalances = useCallback(async (address: string) => {
-        if (!connection) {
-            console.warn('Connection not available for fetching token balances');
+        if (!connection || !window.adrena?.client?.connection) {
             return;
         }
 
@@ -276,7 +272,8 @@ export function useTokenBalances(walletAddress?: string) {
         } finally {
             setIsLoadingBalances(false);
         }
-    }, [connection, getTokenInfo, selectedToken]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [getTokenInfo, selectedToken]);
 
     // Fetch balances when wallet address changes
     useEffect(() => {

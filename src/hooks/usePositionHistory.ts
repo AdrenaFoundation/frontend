@@ -126,11 +126,6 @@ export default function usePositionsHistory({
   // Clear cache when wallet changes
   useEffect(() => {
     if (walletAddressRef.current !== walletAddress) {
-      console.log('🔌 Wallet changed, clearing positions history cache', {
-        from: walletAddressRef.current,
-        to: walletAddress,
-      });
-
       // Clear cache for the previous wallet
       if (walletAddressRef.current) {
         delete apiResponseCache[walletAddressRef.current];
@@ -223,10 +218,6 @@ export default function usePositionsHistory({
           previousTotalCount !== 0 &&
           previousTotalCount !== result.totalCount
         ) {
-          console.log(
-            `DEBUG SHIFT: Total count changed from ${previousTotalCount} to ${result.totalCount}, difference: ${result.totalCount - previousTotalCount}`,
-          );
-
           // Calculate how many new items have been added
           const countDifference = result.totalCount - previousTotalCount;
 
@@ -315,12 +306,6 @@ export default function usePositionsHistory({
                 }
               });
             });
-
-            if (duplicates.length > 0) {
-              console.error(
-                `DEBUG SHIFT: Found ${duplicates.length} duplicates across batches: ${duplicates.join(', ')}`,
-              );
-            }
 
             // Replace the old cache with the new one
             apiResponseCache[walletKey] = newCache;

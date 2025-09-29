@@ -20,10 +20,6 @@ export interface PrivyAdapterState {
   _activeWalletName?: string;
   /** Internal tracking of external wallet info */
   _externalWallet?: ExternalWallet | null;
-  /** Timestamp of last name update (for debouncing) */
-  _lastNameUpdate?: number;
-  /** Last logged name (to prevent duplicate logs) */
-  _lastLoggedName?: string;
 }
 
 /**
