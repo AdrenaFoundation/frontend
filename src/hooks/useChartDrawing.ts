@@ -132,79 +132,6 @@ function drawHorizontalLine({
   }
 }
 
-function drawHorizontalLineFromTradeStart({
-  chart,
-  price,
-  text,
-  color,
-  startTime,
-  title,
-  showPrice = true,
-  linestyle = 0,
-  linewidth = 1,
-  horzLabelsAlign = 'right',
-  lock = true,
-}: {
-  chart: IChartWidgetApi | null;
-  price: number;
-  text: string;
-  showPrice?: boolean;
-  color: string;
-  startTime: Date;
-  title?: string;
-  linestyle?: number;
-  linewidth?: number;
-  horzLabelsAlign?: 'left' | 'middle ' | 'right';
-  lock?: boolean;
-}): EntityId | null {
-  if (chart === null) {
-    throw new Error('Chart is not ready');
-  }
-
-  try {
-    // Create a trend line that starts from trade open time and extends far into the future
-    const startTimestamp = startTime.getTime() / 1000;
-    const farFutureTimestamp = startTimestamp + 365 * 24 * 60 * 60; // 1 year in the future
-
-    return chart.createMultipointShape(
-      [
-        {
-          time: startTimestamp,
-          price,
-        },
-        {
-          time: farFutureTimestamp,
-          price,
-        },
-      ],
-      {
-        zOrder: 'top',
-        shape: 'trend_line',
-        lock,
-        disableSelection: true,
-        overrides: {
-          linestyle,
-          linewidth,
-          title,
-          showPrice: showPrice === false ? false : true,
-          bold: true,
-          linecolor: color,
-          horzLabelsAlign,
-          vertLabelsAlign: 'bottom',
-          showLabel: true,
-          fontsize: 10,
-          textcolor: color,
-          showInObjectsTree: true,
-        },
-        text,
-      },
-    );
-  } catch (e) {
-    console.error('[CHART] ERROR CREATING TIME-BASED LINE', e);
-    throw new Error(`Error drawing time-based line: ${e}`);
-  }
-}
-
 function getChartSymbol(chart: IChartWidgetApi): TokenSymbol {
   return chart.symbol().split('.')[1].split('/')[0];
 }
@@ -930,7 +857,7 @@ export function useChartDrawing({
       if (shape.text?.includes('liquidation-heatmap-')) {
         try {
           chart.removeEntity(line.id);
-        } catch (e) {
+        } catch {
           // Line might already be removed
         }
       }
@@ -947,7 +874,7 @@ export function useChartDrawing({
       // Clean up ALL existing liquidation lines first
       cleanupLiquidationLines(chart);
 
-      let drawnActivePositionLines: PositionChartLine[] = deleteDetachedLines(
+      const drawnActivePositionLines: PositionChartLine[] = deleteDetachedLines(
         chart,
         allActivePositionChartLines,
         allActivePositions ?? [],
@@ -997,7 +924,7 @@ export function useChartDrawing({
               chart.removeEntity(
                 drawnActivePositionLines[existingLineIndex].id,
               );
-            } catch (e) {
+            } catch {
               // Line might already be removed
             }
             drawnActivePositionLines.splice(existingLineIndex, 1);
