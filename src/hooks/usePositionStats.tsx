@@ -80,6 +80,18 @@ export default function usePositionStats(
 
     const activity = data.positionActivity;
 
+    // Filter out invalid/ghost data
+    const validActivity = activity.filter((item) => {
+      return (
+        item.dateDay &&
+        item.exitCount > 0 &&
+        item.totalExitSize > 0 &&
+        item.totalVolume > 0 && 
+        !isNaN(item.totalExitPnl) &&
+        new Date(item.dateDay) <= new Date()
+      );
+    });
+
     const getColor = (value: number, avg: number) => {
       if (value < 0) return '#AC2E41';
       if (value > 0 && value < avg) return '#BD773F';
@@ -107,7 +119,7 @@ export default function usePositionStats(
       fees: 'totalFees',
     };
 
-    const formattedActivity = activity.reduce(
+    const formattedActivity = validActivity.reduce(
       (acc, activity) => {
         const date = new Date(activity.dateDay);
         const dateKey = date.toISOString().split('T')[0] + 'T00:00:00.000Z';
