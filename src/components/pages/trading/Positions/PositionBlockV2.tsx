@@ -239,7 +239,7 @@ export default function PositionBlockV2({
               }
               size="sm"
               className={twMerge(
-                'lg:h-auto text-xs px-2 py-1 font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300 disabled:opacity-30 disabled:cursor-not-allowed',
+                'lg:h-auto text-xs px-2 py-1 text-nowrap font-normal rounded-md bg-[#142030] text-white text-opacity-50 hover:text-opacity-100 duration-300 disabled:opacity-30 disabled:cursor-not-allowed',
                 !isMobile && 'flex-1',
               )}
               disabled={closableIn !== 0 && closableIn !== null}
@@ -247,7 +247,7 @@ export default function PositionBlockV2({
             />
             {setShareClosePosition ? (
               <div
-                className="p-[0.4rem] group rounded-md bg-[#142030] text-white cursor-pointer"
+                className="p-[0.4rem] group rounded-md bg-[#142030] text-white cursor-pointer shadow-md"
                 onClick={() => setShareClosePosition?.(position)}
               >
                 <Image

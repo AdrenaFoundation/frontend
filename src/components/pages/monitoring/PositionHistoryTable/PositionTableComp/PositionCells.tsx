@@ -4,9 +4,34 @@ import { twMerge } from 'tailwind-merge';
 import downloadIcon from '@/../public/images/download.png';
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { normalize } from '@/constant';
-import { Token } from '@/types';
-import { getTokenImage, getTokenSymbol } from '@/utils';
+import { normalize, PROFILE_PICTURES } from '@/constant';
+import { Token, UserProfileExtended } from '@/types';
+import { getAbbrevWalletAddress, getTokenImage, getTokenSymbol } from '@/utils';
+
+export const OwnerCell = ({
+  userProfile,
+  walletAddress,
+}: {
+  userProfile: UserProfileExtended | null;
+  walletAddress: string;
+}) => {
+  return (
+    <div className="flex items-center gap-2" key={walletAddress}>
+      <Image
+        src={PROFILE_PICTURES[userProfile ? userProfile.profilePicture : 0]}
+        alt="profile pic"
+        width={16}
+        height={16}
+        className="w-4 h-4 rounded-full border border-inputcolor"
+      />
+      <span className="font-mono text-xs underline-dashed max-w-24 truncate">
+        {userProfile
+          ? userProfile.nickname
+          : getAbbrevWalletAddress(walletAddress)}
+      </span>
+    </div>
+  );
+};
 
 export const TokenCell = ({
   token,

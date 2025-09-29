@@ -1,5 +1,4 @@
 import { AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 import { useMemo, useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
@@ -7,16 +6,16 @@ import {
   CurrencyCell,
   DateCell,
   LeverageCell,
+  OwnerCell,
   PnlCell,
   SideCell,
   TokenCell,
 } from '@/components/pages/monitoring/PositionHistoryTable/PositionTableComp/PositionCells';
 import Table, { TableHeaderType } from '@/components/pages/monitoring/Table';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import { PROFILE_PICTURES } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { PositionExtended, UserProfileExtended } from '@/types';
-import { getAbbrevWalletAddress, getNonUserProfile } from '@/utils';
+import { PositionExtended } from '@/types';
+import { getNonUserProfile } from '@/utils';
 
 export default function AllPositionTable({
   paginatedPositions,
@@ -164,27 +163,3 @@ export default function AllPositionTable({
     </>
   );
 }
-const OwnerCell = ({
-  userProfile,
-  walletAddress,
-}: {
-  userProfile: UserProfileExtended | null;
-  walletAddress: string;
-}) => {
-  return (
-    <div className="flex items-center gap-2" key={walletAddress}>
-      <Image
-        src={PROFILE_PICTURES[userProfile ? userProfile.profilePicture : 0]}
-        alt="profile pic"
-        width={16}
-        height={16}
-        className="w-4 h-4 rounded-full border border-inputcolor"
-      />
-      <span className="font-mono text-xs underline-dashed max-w-24 truncate">
-        {userProfile
-          ? userProfile.nickname
-          : getAbbrevWalletAddress(walletAddress)}
-      </span>
-    </div>
-  );
-};
