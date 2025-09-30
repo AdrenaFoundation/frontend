@@ -139,7 +139,7 @@ export default function PositionBlockV2({
         title: 'Net Value',
         value: position.collateralUsd + (position.pnl ?? 0),
         format: 'currency',
-        className: 'md:hidden',
+        className: !(isMedium || isMini) ? 'hidden' : undefined,
       },
       {
         title: 'Cur. Lev',
@@ -272,7 +272,9 @@ export default function PositionBlockV2({
           showAfterFees={isPnlWithFees}
           setIsPnlWithFees={setIsPnlWithFees}
         />
-        <NetValue position={position} showAfterFees={isPnlWithFees} />
+        {isMedium || isMini ? null : (
+          <NetValue position={position} showAfterFees={isPnlWithFees} />
+        )}
       </div>
       <div
         className={twMerge(
@@ -396,13 +398,13 @@ const NetValue = ({
   const fees = -(position.exitFeeUsd + (position.borrowFeeUsd ?? 0));
 
   return (
-    <div className="hidden md:flex flex-col justify-end items-end">
+    <div className="flex flex-col justify-end items-end">
       <p className="text-xs opacity-50 text-right md:text-center font-semibold mb-1">
         Net Value
       </p>
 
       <NetValueTooltip position={position}>
-        <div className="hidden md:flex underline-dashed">
+        <div className="flex underline-dashed">
           <FormatNumber
             nb={
               position.collateralUsd +
