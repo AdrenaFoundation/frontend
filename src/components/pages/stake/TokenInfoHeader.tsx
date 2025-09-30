@@ -2,9 +2,9 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
+import useStakingRanking from '@/hooks/useStakingRanking';
 import { formatNumber } from '@/utils';
 
-import useStakingRanking from '@/hooks/useStakingRanking';
 import adxLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import StakingRanking from './StakingRanking';
 
@@ -80,8 +80,8 @@ export default function TokenInfoHeader({
 
         <div className="p-3">
           <p className="opacity-75 text-base">
-            Align with the protocol's long term success: the longer the period,
-            the higher the rewards.
+            Align with the protocol&apos;s long term success: the longer the
+            period, the higher the rewards.
             <br />
             20% of protocol fees are distributed to ADX stakers.
           </p>
