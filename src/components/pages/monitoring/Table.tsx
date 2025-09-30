@@ -38,6 +38,7 @@ export default function Table({
   viewMode = 'table',
   onViewModeChange,
   blockViewComponent,
+  blockWrapperClassname,
   // Sort-related props
   sortBy,
   sortDirection,
@@ -60,6 +61,7 @@ export default function Table({
   viewMode?: ViewMode;
   onViewModeChange?: (mode: ViewMode) => void;
   blockViewComponent?: (item: TableRowType, index: number) => React.ReactNode;
+  blockWrapperClassname?: string;
   // Sort-related props
   sortBy?: string;
   sortDirection?: 'asc' | 'desc';
@@ -67,13 +69,14 @@ export default function Table({
   // Pagination-related return values
   currentPage?: number;
   totalPages?: number;
-  setCurrentPage?: (page: number) => void;
-  loadPageData?: (page: number) => Promise<void>;
+  loadPageData?: (page: number) => Promise<void> | void;
   isLoading?: boolean;
 }) {
   // All hooks must be at the very top before any other logic
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
+  const [isHorizontalScrolling, setIsHorizontalScrolling] = useState(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout>();
 
   const handleScroll = () => {
     const container = scrollContainerRef.current;
@@ -85,24 +88,50 @@ export default function Table({
     setIsScrolledToBottom(isAtBottom);
   };
 
+  const handleWheel = (e: WheelEvent) => {
+    if (!isSticky) return;
+
+    // Detect horizontal scrolling (more horizontal delta than vertical, or shift key)
+    const isHorizontalScroll =
+      Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey;
+
+    if (isHorizontalScroll) {
+      // Set horizontal scrolling state
+      setIsHorizontalScrolling(true);
+
+      // Clear existing timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      // Reset horizontal scrolling state after scrolling stops
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsHorizontalScrolling(false);
+      }, 100);
+    }
+  };
+
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
     container.addEventListener('scroll', handleScroll);
+    container.addEventListener('wheel', handleWheel);
     handleScroll();
 
     return () => {
       container.removeEventListener('scroll', handleScroll);
+      container.removeEventListener('wheel', handleWheel);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
     };
-  }, []);
+  }, [isSticky]);
 
   // Memoized calculations for sticky columns and table layout
   const { cumulativeLeft, cumulativeRight, minTableWidthPx } = useMemo(() => {
     // Parse width to rem when possible (number or '<num>rem'). Returns null otherwise
-    const parseWidthPx = (
-      width?: TableHeaderType['width'],
-    ): number | null => {
+    const parseWidthPx = (width?: TableHeaderType['width']): number | null => {
       if (typeof width === 'number') return width;
       if (typeof width === 'string') {
         const trimmed = width.trim();
@@ -202,10 +231,13 @@ export default function Table({
   const defaultBlockComponent = (item: TableRowType, index: number) => (
     <div
       key={`block-${index}`}
-      className={twMerge("p-4 bg-main border border-inputcolor rounded-md hover:bg-third transition-colors",
+      className={twMerge(
+        'p-4 bg-main border border-inputcolor rounded-md hover:bg-third transition-colors',
         onRowClick ? 'cursor-pointer' : '',
       )}
-      onClick={() => { if (onRowClick) onRowClick(item.id as string | number); }}
+      onClick={() => {
+        if (onRowClick) onRowClick(item.id as string | number);
+      }}
     >
       <div className="grid grid-cols-2 gap-2">
         {headers.map((header) => {
@@ -281,7 +313,12 @@ export default function Table({
               height: typeof height === 'number' ? `${height}px` : height,
             }}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div
+              className={twMerge(
+                'grid grid-cols-1 gap-3',
+                blockWrapperClassname,
+              )}
+            >
               {data.map((item, index) => BlockComponent(item, index))}
             </div>
           </div>
@@ -332,7 +369,11 @@ export default function Table({
           ref={scrollContainerRef}
           className={twMerge(
             'custom-chat-scrollbar overscroll-contain',
-            isSticky ? 'overflow-auto' : 'overflow-y-auto',
+            isSticky
+              ? isHorizontalScrolling
+                ? 'overflow-x-auto overflow-y-hidden'
+                : 'overflow-auto'
+              : 'overflow-y-auto',
           )}
           style={{
             height: typeof height === 'number' ? `${height}px` : height,

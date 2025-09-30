@@ -40,7 +40,7 @@ interface PositionBlockProps {
   triggerEditPositionCollateral?: (p: PositionExtended) => void;
   readOnly?: boolean;
   userProfileMetadata?: UserProfileMetadata;
-  setTokenB: (token: Token) => void;
+  setTokenB?: (token: Token) => void;
 }
 
 export function PositionBlock({
@@ -310,7 +310,7 @@ export function PositionBlock({
                   className={twMerge(
                     'flex rounded w-fit',
                     !readOnly &&
-                      'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
+                    'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
                   )}
                   onClick={
                     !readOnly
@@ -381,7 +381,7 @@ export function PositionBlock({
                   className={twMerge(
                     'flex rounded w-fit',
                     !readOnly &&
-                      'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
+                    'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
                   )}
                   onClick={
                     !readOnly
@@ -427,7 +427,7 @@ export function PositionBlock({
                   className={twMerge(
                     'flex rounded w-fit',
                     !readOnly &&
-                      'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
+                    'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
                   )}
                   onClick={
                     !readOnly
@@ -436,8 +436,8 @@ export function PositionBlock({
                   }
                 >
                   {position.takeProfitIsSet &&
-                  position.takeProfitLimitPrice &&
-                  position.takeProfitLimitPrice > 0 ? (
+                    position.takeProfitLimitPrice &&
+                    position.takeProfitLimitPrice > 0 ? (
                     <>
                       <FormatNumber
                         nb={position.takeProfitLimitPrice}
@@ -475,7 +475,7 @@ export function PositionBlock({
                   className={twMerge(
                     'flex rounded w-fit',
                     !readOnly &&
-                      'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
+                    'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
                   )}
                   onClick={
                     !readOnly
@@ -484,8 +484,8 @@ export function PositionBlock({
                   }
                 >
                   {position.stopLossIsSet &&
-                  position.stopLossLimitPrice &&
-                  position.stopLossLimitPrice > 0 ? (
+                    position.stopLossLimitPrice &&
+                    position.stopLossLimitPrice > 0 ? (
                     <>
                       <FormatNumber
                         nb={position.stopLossLimitPrice}
