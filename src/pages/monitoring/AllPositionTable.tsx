@@ -78,47 +78,53 @@ export default function AllPositionTable({
     );
   }, [paginatedPositions, isPnlWithFees]);
 
-  const formattedData = paginatedPositions.map((position) => ({
-    token: <TokenCell token={position.token} />,
-    owner: (
-      <OwnerCell
-        userProfile={position.userProfile ?? null}
-        walletAddress={position.owner.toBase58()}
-      />
-    ),
-    side: <SideCell side={position.side} />,
-    leverage: (
-      <LeverageCell
-        leverage={position.currentLeverage || position.initialLeverage}
-        precision={2}
-      />
-    ),
-    pnl: (
-      <PnlCell
-        pnl={isPnlWithFees ? position.pnl || 0 : position.pnlMinusFees || 0}
-        maxPnl={maxPnl}
-        minPnl={minPnl}
-      />
-    ),
-    size: (
-      <CurrencyCell
-        value={isNative ? position.size : position.sizeUsd}
-        isCurrency={!isNative}
-      />
-    ),
-    collateral: (
-      <CurrencyCell
-        value={isNative ? position.collateralAmount : position.collateralUsd}
-        isCurrency={!isNative}
-      />
-    ),
-    entryPrice: <CurrencyCell value={position.price} />,
-    liquidationPrice: (
-      <CurrencyCell value={position.liquidationPrice ?? null} />
-    ),
-    openDate: <DateCell date={position.openDate} />,
-    id: position.owner.toBase58(),
-  }));
+  const formattedData = useMemo(
+    () =>
+      paginatedPositions.map((position) => ({
+        token: <TokenCell token={position.token} />,
+        owner: (
+          <OwnerCell
+            userProfile={position.userProfile ?? null}
+            walletAddress={position.owner.toBase58()}
+          />
+        ),
+        side: <SideCell side={position.side} />,
+        leverage: (
+          <LeverageCell
+            leverage={position.currentLeverage || position.initialLeverage}
+            precision={2}
+          />
+        ),
+        pnl: (
+          <PnlCell
+            pnl={isPnlWithFees ? position.pnl || 0 : position.pnlMinusFees || 0}
+            maxPnl={maxPnl}
+            minPnl={minPnl}
+          />
+        ),
+        size: (
+          <CurrencyCell
+            value={isNative ? position.size : position.sizeUsd}
+            isCurrency={!isNative}
+          />
+        ),
+        collateral: (
+          <CurrencyCell
+            value={
+              isNative ? position.collateralAmount : position.collateralUsd
+            }
+            isCurrency={!isNative}
+          />
+        ),
+        entryPrice: <CurrencyCell value={position.price} />,
+        liquidationPrice: (
+          <CurrencyCell value={position.liquidationPrice ?? null} />
+        ),
+        openDate: <DateCell date={position.openDate} />,
+        id: position.owner.toBase58(),
+      })),
+    [paginatedPositions, isPnlWithFees, isNative, maxPnl, minPnl],
+  );
 
   return (
     <>

@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import addCollateralIcon from '@/../public/images/Icons/add-collateral-icon.svg';
@@ -14,7 +14,7 @@ import removeCollateralIcon from '@/../public/images/Icons/remove-collateral-ico
 import FormatNumber from '@/components/Number/FormatNumber';
 import DataApiClient from '@/DataApiClient';
 import { ImageRef, PositionTransaction } from '@/types';
-import { addNotification, formatNumber } from '@/utils';
+import { formatNumber } from '@/utils';
 
 export type FormattedEventsType = {
   className?: string;
@@ -77,173 +77,176 @@ export default function EventBlocks({
     }
   };
 
-  const formatData = (event: PositionTransaction): FormattedEventsType[] => {
-    const data = [
-      {
-        label: 'transactionDate',
-        value: event.transactionDate,
-        format: 'text',
-      },
-      {
-        label: 'PnL',
-        value: event.additionalInfos.pnl,
-        format: 'currency',
-      },
-      {
-        label: 'Fees',
-        value: event.additionalInfos.fees,
-        format: 'currency',
-      },
-      {
-        label: 'Leverage',
-        value: event.additionalInfos.leverage,
-        format: 'number',
-        suffix: 'x',
-      },
-      {
-        label: 'Size',
-        value: event.additionalInfos.size,
-        format: 'currency',
-      },
-      {
-        label: 'Price',
-        value: event.additionalInfos.price,
-        format: 'currency',
-      },
-      {
-        label: 'Exit Fees',
-        value: event.additionalInfos.exitFees,
-        format: 'currency',
-      },
-      {
-        label: 'Borrow Fees',
-        value: event.additionalInfos.borrowFees,
-        format: 'currency',
-      },
-      {
-        label: 'Collateral',
-        value: event.additionalInfos.collateralAmountUsd,
-        format: 'currency',
-      },
-      {
-        label: 'Collateral Native',
-        value: event.additionalInfos.collateralAmountNative,
-        format: 'number',
-      },
-      {
-        label: 'Exit Amount Native',
-        value: event.additionalInfos.exitAmountNative,
-        format: 'number',
-      },
-    ].filter(
-      (item) => item.value !== null && item.value !== undefined,
-    ) as FormattedEventsType[];
+  const formatData = useCallback(
+    (event: PositionTransaction): FormattedEventsType[] => {
+      const data = [
+        {
+          label: 'transactionDate',
+          value: event.transactionDate,
+          format: 'text',
+        },
+        {
+          label: 'PnL',
+          value: event.additionalInfos.pnl,
+          format: 'currency',
+        },
+        {
+          label: 'Fees',
+          value: event.additionalInfos.fees,
+          format: 'currency',
+        },
+        {
+          label: 'Leverage',
+          value: event.additionalInfos.leverage,
+          format: 'number',
+          suffix: 'x',
+        },
+        {
+          label: 'Size',
+          value: event.additionalInfos.size,
+          format: 'currency',
+        },
+        {
+          label: 'Price',
+          value: event.additionalInfos.price,
+          format: 'currency',
+        },
+        {
+          label: 'Exit Fees',
+          value: event.additionalInfos.exitFees,
+          format: 'currency',
+        },
+        {
+          label: 'Borrow Fees',
+          value: event.additionalInfos.borrowFees,
+          format: 'currency',
+        },
+        {
+          label: 'Collateral',
+          value: event.additionalInfos.collateralAmountUsd,
+          format: 'currency',
+        },
+        {
+          label: 'Collateral Native',
+          value: event.additionalInfos.collateralAmountNative,
+          format: 'number',
+        },
+        {
+          label: 'Exit Amount Native',
+          value: event.additionalInfos.exitAmountNative,
+          format: 'number',
+        },
+      ].filter(
+        (item) => item.value !== null && item.value !== undefined,
+      ) as FormattedEventsType[];
 
-    switch (event.method) {
-      case 'closePositionShort':
-      case 'closePositionLong':
-        if (
-          event.additionalInfos.percentage === 100 ||
-          event.additionalInfos.percentage === null
-        ) {
+      switch (event.method) {
+        case 'closePositionShort':
+        case 'closePositionLong':
+          if (
+            event.additionalInfos.percentage === 100 ||
+            event.additionalInfos.percentage === null
+          ) {
+            return [
+              {
+                className: 'text-[#ff344e] font-interSemibold',
+                dotClassName: '#ff344e',
+                label: 'Method',
+                value: 'Close Position',
+                icon: closeIcon,
+                format: 'text',
+              },
+              ...data,
+            ];
+          }
+
           return [
             {
-              className: 'text-[#ff344e] font-interSemibold',
-              dotClassName: '#ff344e',
+              className: 'text-[#FE7B47] font-interSemibold',
+              dotClassName: '#FE7B47',
               label: 'Method',
-              value: 'Close Position',
-              icon: closeIcon,
+              value: `Partial Close (${formatNumber(event.additionalInfos.percentage, 2)}%)`,
+              icon: partialCloseIcon,
               format: 'text',
             },
             ...data,
           ];
-        }
+        case 'addCollateral':
+        case 'addCollateralLong':
+        case 'addCollateralShort':
+          return [
+            {
+              className: 'text-[#35C469] font-interSemibold',
+              dotClassName: '#35C469',
+              label: 'Method',
+              value: 'Add Collateral',
+              icon: addCollateralIcon,
+              format: 'text',
+            },
+            ...data,
+          ];
 
-        return [
-          {
-            className: 'text-[#FE7B47] font-interSemibold',
-            dotClassName: '#FE7B47',
-            label: 'Method',
-            value: `Partial Close (${formatNumber(event.additionalInfos.percentage, 2)}%)`,
-            icon: partialCloseIcon,
-            format: 'text',
-          },
-          ...data,
-        ];
-      case 'addCollateral':
-      case 'addCollateralLong':
-      case 'addCollateralShort':
-        return [
-          {
-            className: 'text-[#35C469] font-interSemibold',
-            dotClassName: '#35C469',
-            label: 'Method',
-            value: 'Add Collateral',
-            icon: addCollateralIcon,
-            format: 'text',
-          },
-          ...data,
-        ];
+        case 'removeCollateralLong':
+        case 'removeCollateralShort':
+          return [
+            {
+              className: 'text-[#FEB14C] font-interSemibold',
+              dotClassName: '#FEB14C',
+              label: 'Method',
+              value: 'Remove Collateral',
+              icon: removeCollateralIcon,
+              format: 'text',
+            },
+            ...data,
+          ];
 
-      case 'removeCollateralLong':
-      case 'removeCollateralShort':
-        return [
-          {
-            className: 'text-[#FEB14C] font-interSemibold',
-            dotClassName: '#FEB14C',
-            label: 'Method',
-            value: 'Remove Collateral',
-            icon: removeCollateralIcon,
-            format: 'text',
-          },
-          ...data,
-        ];
+        case 'increasePositionLong':
+        case 'increasePositionShort':
+          return [
+            {
+              className: 'text-[#3FD5A5] font-interSemibold',
+              dotClassName: '#3FD5A5',
+              label: 'Method',
+              value: 'Increase Position',
+              icon: increaseCollateralIcon,
+              format: 'text',
+            },
+            ...data,
+          ];
 
-      case 'increasePositionLong':
-      case 'increasePositionShort':
-        return [
-          {
-            className: 'text-[#3FD5A5] font-interSemibold',
-            dotClassName: '#3FD5A5',
-            label: 'Method',
-            value: 'Increase Position',
-            icon: increaseCollateralIcon,
-            format: 'text',
-          },
-          ...data,
-        ];
+        case 'liquidateLong':
+        case 'liquidateShort':
+          return [
+            {
+              className: 'text-orange font-interSemibold',
+              dotClassName: '#FFA500',
+              label: 'Method',
+              value: 'Liquidated',
+              icon: liquidatedIcon,
+              format: 'text',
+            },
+            ...data,
+          ];
 
-      case 'liquidateLong':
-      case 'liquidateShort':
-        return [
-          {
-            className: 'text-orange font-interSemibold',
-            dotClassName: '#FFA500',
-            label: 'Method',
-            value: 'Liquidated',
-            icon: liquidatedIcon,
-            format: 'text',
-          },
-          ...data,
-        ];
-
-      case 'openPositionShort':
-      case 'openPositionLong':
-        return [
-          {
-            className: 'text-[#7DAFF4] font-interSemibold',
-            dotClassName: '#7DAFF4',
-            label: 'Method',
-            value: 'Open Position',
-            icon: openPositionIcon,
-            format: 'text',
-          },
-          ...data,
-        ];
-      default:
-        return data;
-    }
-  };
+        case 'openPositionShort':
+        case 'openPositionLong':
+          return [
+            {
+              className: 'text-[#7DAFF4] font-interSemibold',
+              dotClassName: '#7DAFF4',
+              label: 'Method',
+              value: 'Open Position',
+              icon: openPositionIcon,
+              format: 'text',
+            },
+            ...data,
+          ];
+        default:
+          return data;
+      }
+    },
+    [],
+  );
 
   return (
     <motion.div
@@ -334,7 +337,7 @@ export default function EventBlocks({
                           className="w-[0.625rem] h-[0.625rem]"
                         />
 
-                        <p className="text-xs font-interMedium">
+                        <p className="text-xs font-semibold">
                           {new Date(
                             event.find((e) => e.label === 'transactionDate')
                               ?.value as string,
@@ -379,8 +382,9 @@ const EventBlock = ({
   setHoveredEvent: (event: LabelType | null) => void;
 }) => {
   // Filter out transactionDate since it's displayed in the header
-  const displayData = formattedData.filter(
-    (item) => item.label !== 'transactionDate',
+  const displayData = useMemo(
+    () => formattedData.filter((item) => item.label !== 'transactionDate'),
+    [formattedData],
   );
 
   return (
@@ -388,7 +392,7 @@ const EventBlock = ({
       {displayData.map((item, index) => (
         <div
           className={twMerge(
-            'flex flex-row justify-between md:justify-normal md:flex-col transition-opacity duration-300 cursor-pointer',
+            'flex flex-row justify-between md:justify-normal md:flex-col transition-opacity duration-300',
             hoveredEvent !== null &&
               hoveredEvent !== item.label &&
               hoveredEvent !== 'Method'
@@ -397,19 +401,6 @@ const EventBlock = ({
           )}
           onMouseOver={() => setHoveredEvent(item.label as LabelType)}
           onMouseOut={() => setHoveredEvent(null)}
-          onClick={() => {
-            if (!item.value) return;
-
-            navigator.clipboard.writeText(String(item.value));
-            addNotification({
-              title: 'Copied to clipboard',
-              message:
-                item.format !== 'text'
-                  ? formatNumber(Number(item.value), 2)
-                  : item.value,
-              type: 'info',
-            });
-          }}
           key={index}
         >
           <p className="font-semibold text-sm sm:text-xs opacity-50">

@@ -1,4 +1,4 @@
-import { Fragment, useRef } from 'react';
+import { Fragment } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -16,14 +16,12 @@ export type PositionDetailType = {
 };
 export const PositionDetail = ({
   data,
-  className,
   itemClassName,
   titleClassName,
   showDivider = false,
   readOnly = false,
 }: {
   data: PositionDetailType[];
-  className?: string;
   itemClassName?: string;
   titleClassName?: string;
   showDivider?: boolean;
@@ -41,12 +39,8 @@ export const PositionDetail = ({
     </svg>
   ) : null;
 
-  const ref = useRef<HTMLDivElement>(null);
   return (
-    <div
-      className={twMerge('flex flex-row items-center px-2 py-2', className)}
-      ref={ref}
-    >
+    <>
       {data.map((d, i) => (
         <Fragment key={i}>
           {showDivider && i !== 0 ? (
@@ -57,15 +51,14 @@ export const PositionDetail = ({
           <div
             key={i}
             className={twMerge(
-              'flex flex-col',
-              data.length - 1 === i && '!px-0',
+              'flex flex-col min-w-[5em]',
               d?.className,
               itemClassName,
             )}
           >
             <p
               className={twMerge(
-                'text-sm sm:text-xs opacity-50 whitespace-nowrap font-interMedium',
+                'text-sm sm:text-xs opacity-50 whitespace-nowrap font-semibold',
                 titleClassName,
               )}
             >
@@ -77,7 +70,7 @@ export const PositionDetail = ({
                   'flex items-center',
                   d?.onEditClick &&
                     !readOnly &&
-                    'cursor-pointer hover:bg-[#1A2531] rounded-md transition-colors duration-300',
+                    'cursor-pointer hover:bg-[#1A2531] rounded-md transition-colors duration-300 w-fit',
                 )}
                 onClick={d?.onEditClick}
               >
@@ -116,6 +109,6 @@ export const PositionDetail = ({
           </div>
         </Fragment>
       ))}
-    </div>
+    </>
   );
 };

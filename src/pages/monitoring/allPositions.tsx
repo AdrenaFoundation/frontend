@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import chartIcon from '@/../public/images/Icons/chart-icon.svg';
@@ -310,17 +310,6 @@ export default function AllPositions({
                     ],
                   },
                 ]}
-                sortOptions={{
-                  handleChange: toggleSortOrder as React.Dispatch<
-                    React.SetStateAction<string>
-                  >,
-                  optionItems: [
-                    { label: 'pnl', order: sortConfigs.pnl },
-                    { label: 'size', order: sortConfigs.size },
-                    { label: 'leverage', order: sortConfigs.leverage },
-                  ],
-                  disabled: viewPage === 'Chart view',
-                }}
               />
               <div className="flex flex-col gap-3 w-full p-4 min-w-0">
                 {viewPage === 'Chart view' ? (

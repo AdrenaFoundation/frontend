@@ -683,7 +683,7 @@ const TokenDetails = ({
               isDecimalDimmed={false}
             />
           </div>
-          <p className="text-xs opacity-50 font-boldy">
+          <p className="text-xs opacity-50 font-semibold">
             {positionHistory.entryDate.toLocaleDateString('en-US', {
               day: '2-digit',
               month: 'short',
