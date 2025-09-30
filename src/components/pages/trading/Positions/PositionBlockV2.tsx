@@ -154,11 +154,35 @@ export default function PositionBlockV2({
         value: position.collateralUsd,
         format: 'currency',
         onEditClick: () => triggerEditPositionCollateral?.(position),
+        tooltip: (
+          <FormatNumber
+            nb={position.collateralAmount}
+            format="number"
+            className={POSITION_BLOCK_STYLES.text.white}
+            precision={position.collateralToken.displayAmountDecimalsPrecision}
+            suffix={`${getTokenSymbol(
+              position.collateralToken.symbol,
+            )} (at init.)`}
+          />
+        ),
       },
       {
         title: 'Size',
         value: position.sizeUsd,
         format: 'currency',
+        tooltip: (
+          <FormatNumber
+            nb={
+              position.side === 'long'
+                ? position.size
+                : position.sizeUsd / position.price
+            }
+            format="number"
+            className={POSITION_BLOCK_STYLES.text.white}
+            precision={position.token.displayAmountDecimalsPrecision}
+            suffix={getTokenSymbol(position.token.symbol)}
+          />
+        ),
       },
       {
         title: 'Entry',

@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import { Fragment } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -13,6 +14,7 @@ export type PositionDetailType = {
   isDecimalDimmed?: boolean;
   className?: string;
   onEditClick?: () => void;
+  tooltip?: React.ReactNode;
 };
 export const PositionDetail = ({
   data,
@@ -74,23 +76,47 @@ export const PositionDetail = ({
                 )}
                 onClick={d?.onEditClick}
               >
-                <FormatNumber
-                  nb={d.value}
-                  format={d.format}
-                  precision={d.precision}
-                  suffix={d.suffix}
-                  className={twMerge(
-                    'text-sm sm:text-xs flex',
-                    d.value && d.color,
-                  )}
-                  suffixClassName="text-sm sm:text-xs"
-                  isDecimalDimmed={
-                    typeof d.isDecimalDimmed === 'undefined'
-                      ? true
-                      : d.isDecimalDimmed
-                  }
-                  minimumFractionDigits={2}
-                />
+                {d.tooltip ? (
+                  <Tippy content={d.tooltip} placement="auto">
+                    <div className="underline-dashed">
+                      <FormatNumber
+                        nb={d.value}
+                        format={d.format}
+                        precision={d.precision}
+                        suffix={d.suffix}
+                        className={twMerge(
+                          'text-sm sm:text-xs flex',
+                          d.value && d.color,
+                        )}
+                        suffixClassName="text-sm sm:text-xs"
+                        isDecimalDimmed={
+                          typeof d.isDecimalDimmed === 'undefined'
+                            ? true
+                            : d.isDecimalDimmed
+                        }
+                        minimumFractionDigits={2}
+                      />
+                    </div>
+                  </Tippy>
+                ) : (
+                  <FormatNumber
+                    nb={d.value}
+                    format={d.format}
+                    precision={d.precision}
+                    suffix={d.suffix}
+                    className={twMerge(
+                      'text-sm sm:text-xs flex',
+                      d.value && d.color,
+                    )}
+                    suffixClassName="text-sm sm:text-xs"
+                    isDecimalDimmed={
+                      typeof d.isDecimalDimmed === 'undefined'
+                        ? true
+                        : d.isDecimalDimmed
+                    }
+                    minimumFractionDigits={2}
+                  />
+                )}
                 {d?.onEditClick && editIcon}
               </div>
             ) : (
@@ -102,7 +128,15 @@ export const PositionDetail = ({
                 )}
                 onClick={d?.onEditClick}
               >
-                <p className="text-sm sm:text-xs font-mono">{d.value}</p>
+                {d.tooltip ? (
+                  <Tippy content={d.tooltip} placement="auto">
+                    <span className="underline-dashed">
+                      <p className="text-sm sm:text-xs font-mono">{d.value}</p>
+                    </span>
+                  </Tippy>
+                ) : (
+                  <p className="text-sm sm:text-xs font-mono">{d.value}</p>
+                )}
                 {d?.onEditClick && editIcon}
               </div>
             )}

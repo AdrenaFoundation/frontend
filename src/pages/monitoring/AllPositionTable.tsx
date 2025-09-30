@@ -1,7 +1,9 @@
 import { AnimatePresence } from 'framer-motion';
 import { useMemo, useState } from 'react';
 
+import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import {
   CurrencyCell,
   DateCell,
@@ -40,6 +42,24 @@ export default function AllPositionTable({
 
   const isMobile = useBetterMediaQuery(`(max-width: 1400px)`);
 
+  const borrowResolve = (position: PositionExtended) => {
+    try {
+      const notification = MultiStepNotification.newForRegularTransaction(
+        'Position Borrow Resolve',
+      ).fire();
+
+      window.adrena.client.positionBorrowResolve({
+        notification,
+        targetPosition: position.pubkey,
+      });
+    } catch {
+      // Ignore error
+    }
+  };
+
+  const positionBorrowFeesShouldBeResolved = (position: PositionExtended) =>
+    (position.borrowFeeUsd ?? 0) - (position.paidInterestUsd ?? 0) > 50;
+
   const headers: TableHeaderType[] = [
     { title: 'Owner', key: 'owner', sticky: 'left' },
     { title: 'Token', key: 'token', width: 5, sticky: 'left' },
@@ -61,6 +81,7 @@ export default function AllPositionTable({
     { title: 'Entry Price', key: 'entryPrice', align: 'right' },
     { title: 'Liq. Price', key: 'liquidationPrice', align: 'right' },
     { title: 'Open Date', key: 'openDate', align: 'right' },
+    { title: 'Action', key: 'resolve', align: 'right' },
   ];
 
   const { maxPnl, minPnl } = useMemo(() => {
@@ -121,6 +142,17 @@ export default function AllPositionTable({
           <CurrencyCell value={position.liquidationPrice ?? null} />
         ),
         openDate: <DateCell date={position.openDate} />,
+        resolve: positionBorrowFeesShouldBeResolved(position) ? (
+          <Button
+            size="sm"
+            variant="lightbg"
+            title="Resolve Borrow Fees"
+            onClick={() => borrowResolve(position)}
+            className="text-xxs text-nowrap"
+          />
+        ) : (
+          <span className="text-xs opacity-30">-</span>
+        ),
         id: position.owner.toBase58(),
       })),
     [paginatedPositions, isPnlWithFees, isNative, maxPnl, minPnl],
@@ -128,7 +160,7 @@ export default function AllPositionTable({
 
   return (
     <>
-      <div className="p-3 overflow-hidden">
+      <div className="overflow-hidden">
         <Table
           title="All Positions"
           headers={headers}

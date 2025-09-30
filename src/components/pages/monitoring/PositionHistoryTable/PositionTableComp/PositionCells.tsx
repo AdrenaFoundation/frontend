@@ -24,7 +24,7 @@ export const OwnerCell = ({
         height={16}
         className="w-4 h-4 rounded-full border border-inputcolor"
       />
-      <span className="font-mono text-xs underline-dashed max-w-24 truncate">
+      <span className="font-mono text-xs underline-dashed  sm:max-w-24 truncate">
         {userProfile
           ? userProfile.nickname
           : getAbbrevWalletAddress(walletAddress)}
