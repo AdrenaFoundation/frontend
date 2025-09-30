@@ -404,7 +404,7 @@ const PnLDetails = ({
   showAfterFees: boolean;
   setIsPnlWithFees: (value: boolean) => void;
 }) => {
-  if (!position.pnl || !position.collateralUsd || position.collateralUsd !== 0)
+  if (!position.pnl || !position.collateralUsd || position.collateralUsd === 0)
     return null;
 
   const fees = -(position.exitFeeUsd + (position.borrowFeeUsd ?? 0));
