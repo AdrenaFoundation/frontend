@@ -393,7 +393,6 @@ export default function FullyLiquidALPStaking({
                     {/* Claims history section */}
                     {/* ok to do double call to the data here since it should not be used anymore */}
                     <ClaimHistorySection
-                        token="ALP"
                         walletAddress={walletAddress}
                     />
 

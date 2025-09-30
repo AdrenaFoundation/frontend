@@ -9,7 +9,6 @@ import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Loader from '@/components/Loader/Loader';
 import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
-import ALPStakingRecap from '@/components/pages/stake/ALPStakingRecap';
 import FullyLiquidALPStaking from '@/components/pages/stake/FullyLiquidALPStaking';
 import StakeApr from '@/components/pages/stake/StakeApr';
 import StakeLanding from '@/components/pages/stake/StakeLanding';
@@ -843,7 +842,6 @@ export default function Stake({ connected }: PageProps) {
               <StakeApr token="ADX" className="mb-2" />
 
               <StakeOverview
-                token="ADX"
                 totalLockedStake={adxDetails.totalLockedStake}
                 totalLiquidStaked={adxDetails.totalLiquidStaked}
                 totalRedeemableLockedStake={getTotalRedeemableLockedStake(
@@ -918,8 +916,6 @@ export default function Stake({ connected }: PageProps) {
             </AnimatePresence>
           </>
         </div>
-
-        <ALPStakingRecap walletAddress={wallet?.walletAddress ?? null} />
       </div>
     </div>
   );
