@@ -74,7 +74,7 @@ export const NotificationsList = ({
       <div className="space-y-3">
         {[...Array(3)].map((_, i) => (
           <div key={i} className="animate-pulse">
-            <div className="flex gap-3 p-3 rounded-lg bg-secondary/60">
+            <div className="flex gap-3 p-3 rounded-md bg-secondary/60">
               <div className="w-8 h-8 bg-white/10 rounded-full" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 bg-white/10 rounded w-3/4" />

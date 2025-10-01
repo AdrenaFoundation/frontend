@@ -66,8 +66,8 @@ export default function ChartControlsDesktop({
   };
 
   return (
-    <div className="hidden sm:flex w-full rounded-lg justify-end items-center p-3">
-      <div className="rounded-lg flex justify-center items-center gap-3">
+    <div className="hidden sm:flex w-full rounded-md justify-end items-center p-3">
+      <div className="rounded-md flex justify-center items-center gap-3">
         <ChartToggleButton
           isActive={chartPreferences.updateTPSLByDrag}
           onClick={handleUpdateTPSLByDragToggle}

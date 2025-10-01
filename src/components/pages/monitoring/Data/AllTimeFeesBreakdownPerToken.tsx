@@ -16,7 +16,7 @@ export default function AllTimeFeesBreakdownPerToken({
   const attributes = Object.keys(custodies[0].nativeObject.collectedFees);
 
   return (
-    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+    <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
         <p className={titleClassName}>All time Fees Breakdown</p>
       </div>

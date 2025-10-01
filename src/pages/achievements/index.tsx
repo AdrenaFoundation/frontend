@@ -132,30 +132,30 @@ export default function Achievements({
                     <div className="z-10 text-center flex flex-col items-center justify-center gap-4 pt-8">
                         <h1
                             className={twMerge(
-                                'text-[1em] sm:text-[1.5em] md:text-[2em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
+                                'text-[1em] sm:text-[1.5em] md:text-[2em] font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                                 'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
                             )}
                         >
                             Book of Achievements
                         </h1>
 
-                        <h4 className='font-archivo text-white/80 tracking-widest uppercase text-md'>
+                        <h4 className='text-white/80 tracking-widest uppercase text-md'>
                             Collect them all
                         </h4>
 
-                        <h4 className='font-archivo text-white/80 tracking-widest uppercase text-md'>
+                        <h4 className='text-white/80 tracking-widest uppercase text-md'>
                             {totalCollected} / {ACHIEVEMENTS.length}
                         </h4>
                     </div>
                 </div>
 
-                {/* <h4 className='font-archivo text-white/80 tracking-widest uppercase text-md'>
+                {/* <h4 className='text-white/80 tracking-widest uppercase text-md'>
                     I HAVE {totalPoints} ACHIEVEMENT POINTS
                 </h4> */}
 
                 <div className='flex w-full items-center justify-center gap-2 flex-col sm:flex-row sm:gap-10'>
                     <div className='flex flex-col gap-2 items-center'>
-                        <div className='font-archivo text-white/80 tracking-widest uppercase text-xs'>sort by</div>
+                        <div className='text-white/80 tracking-widest uppercase text-xs'>sort by</div>
 
                         <div className='flex gap-2'>
                             <div
@@ -184,7 +184,7 @@ export default function Achievements({
                     <div className='h-full w-[1px] bg-bcolor' />
 
                     <div className='flex flex-col gap-2 items-center'>
-                        <div className='font-archivo text-white/80 tracking-widest uppercase text-xs'>show</div>
+                        <div className='text-white/80 tracking-widest uppercase text-xs'>show</div>
 
                         <div className='flex gap-2 items-center'>
                             <Checkbox onChange={setShowOwned} checked={showOwned} className={twMerge('h-4 w-4')} variant='white' />
@@ -207,7 +207,7 @@ export default function Achievements({
                         key={`achievement-${achievement.index}`}
                     />)}
 
-                    {filteredAchievements.length === 0 ? <div className='font-archivo text-white/50 tracking-widest uppercase text-md pt-12 pb-12'>
+                    {filteredAchievements.length === 0 ? <div className='text-white/50 tracking-widest uppercase text-md pt-12 pb-12'>
                         NO ACHIEVEMENT FOUND
                     </div> : null}
                 </div>

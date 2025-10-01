@@ -465,7 +465,7 @@ export default function TradingChartHeaderStats({
                 Long:{numberLong}
               </Link>
             </div>
-            <div className="px-2 py-1 bg-red/10 rounded-lg inline-flex justify-center items-center gap-2">
+            <div className="px-2 py-1 bg-red/10 rounded-md inline-flex justify-center items-center gap-2">
               <Link
                 href="/monitoring?view=livePositions"
                 className="text-center justify-start text-redSide text-xxs font-mono"

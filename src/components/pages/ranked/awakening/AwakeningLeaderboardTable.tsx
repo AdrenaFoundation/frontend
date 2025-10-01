@@ -39,16 +39,16 @@ export default function AwakeningLeaderboardTable({
             /> : null}
 
             <div className="flex flex-row items-center gap-3 mt-3">
-                <h3 className={twMerge("font-boldy capitalize", division === 'No Division' ? 'ml-auto mr-auto' : '')}>{DIVISIONS[division].title}</h3>
+                <h3 className={twMerge("font-semibold capitalize", division === 'No Division' ? 'ml-auto mr-auto' : '')}>{DIVISIONS[division].title}</h3>
 
                 <Tippy content={`Top ${DIVISIONS[division].topTradersPercentage} percentile of traders by traded VOLUME, minus the ones on previous divisions.`} arrow>
-                    <div className={twMerge(`capitalize text-sm tracking-widest font-boldy ${division === 'No Division' ? 'hidden' : ''}`, DIVISIONS[division].color)}>
+                    <div className={twMerge(`capitalize text-sm tracking-widest font-semibold ${division === 'No Division' ? 'hidden' : ''}`, DIVISIONS[division].color)}>
                         TIER {index}
                         <div className={`border-b-2 border-dotted border-gray-400 mt-0`}></div>
                     </div>
                 </Tippy>
 
-                {myDivision ? <div className='font-boldy text-xs bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 pt-1 pr-2 pl-2 pb-1 w-20 text-center'>Your division</div> : null}
+                {myDivision ? <div className='font-semibold text-xs bg-yellow-900 bg-opacity-40 rounded-md border border-yellow-900 pt-1 pr-2 pl-2 pb-1 w-20 text-center'>Your division</div> : null}
             </div>
 
             <div className="mt-3">
@@ -99,18 +99,18 @@ export default function AwakeningLeaderboardTable({
 
                                 d.username
                                     ? isValidPublicKey(d.username)
-                                        ? <p key={`trader-${i}`} className={twMerge('text-xs font-boldy opacity-50', d.connected ? 'text-yellow-600' : '')}>{getAbbrevWalletAddress(d.username)}</p>
-                                        : <p key={`trader-${i}`} className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer', d.connected ? 'text-yellow-600 ' : '')} onClick={() => handleProfileView(d.username)}>
+                                        ? <p key={`trader-${i}`} className={twMerge('text-xs font-semibold opacity-50', d.connected ? 'text-yellow-600' : '')}>{getAbbrevWalletAddress(d.username)}</p>
+                                        : <p key={`trader-${i}`} className={twMerge('text-xs font-semibold hover:underline transition duration-300 cursor-pointer', d.connected ? 'text-yellow-600 ' : '')} onClick={() => handleProfileView(d.username)}>
                                             {d.username.length > 16 ? `${d.username.substring(0, 16)}...` : d.username}
                                         </p>
-                                    : <p key={`trader-${i}`} className='text-xs font-boldy'>-</p>
+                                    : <p key={`trader-${i}`} className='text-xs font-semibold'>-</p>
                                 ,
 
                                 <div className='flex items-center justify-end md:justify-center grow' key={`pnl-${i}`}>
                                     <FormatNumber
                                         nb={d.pnl}
                                         format="currency"
-                                        className={twMerge('text-xs font-boldy', d.pnl && (d.pnl >= 0) ? 'text-green' : 'text-red')}
+                                        className={twMerge('text-xs font-semibold', d.pnl && (d.pnl >= 0) ? 'text-green' : 'text-red')}
                                         precision={d.pnl && (d.pnl >= 50) ? 0 : 2}
                                         isDecimalDimmed={false}
                                         minimumFractionDigits={d.pnl && (d.pnl >= 50) ? 0 : 2}
@@ -133,25 +133,25 @@ export default function AwakeningLeaderboardTable({
                                     {d.adxRewards ? <div className='flex'>
                                         <FormatNumber
                                             nb={d.adxRewards}
-                                            className="text-green text-xs font-boldy"
+                                            className="text-green text-xs font-semibold"
                                             prefix='+'
                                             suffixClassName="text-green"
                                             isDecimalDimmed={false}
                                         />
 
-                                        <span className='flex text-green font-boldy text-xs ml-1'>ADX</span>
+                                        <span className='flex text-green font-semibold text-xs ml-1'>ADX</span>
                                     </div> : null}
 
                                     {d.adxRewards ? <div className='flex'>
                                         <FormatNumber
                                             nb={d.jtoRewards}
-                                            className="text-green text-xs font-boldy"
+                                            className="text-green text-xs font-semibold"
                                             suffix=""
                                             prefix='+'
                                             suffixClassName="text-green"
                                             isDecimalDimmed={false}
                                         />
-                                        <span className='flex text-green font-boldy text-xs ml-1'>JTO</span>
+                                        <span className='flex text-green font-semibold text-xs ml-1'>JTO</span>
                                     </div> : null}
 
                                     {d.adxRewards === 0 && d.jtoRewards === 0 ? <span className='h-[2.64em]'>--</span> : null}

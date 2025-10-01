@@ -52,16 +52,16 @@ function TokenList({
       {/* Column headers */}
       <div className="px-2 py-1.5 bg-third/20 border-b border-bcolor">
         <div className="grid grid-cols-10 gap-1.5 sm:gap-2 text-sm">
-          <div className="col-span-4 sm:col-span-3 font-boldy text-white/50">
+          <div className="col-span-4 sm:col-span-3 font-semibold text-white/50">
             Ticker
           </div>
-          <div className="col-span-4 sm:col-span-3 font-boldy text-white/50">
+          <div className="col-span-4 sm:col-span-3 font-semibold text-white/50">
             Price
           </div>
-          <div className="hidden sm:block col-span-2 font-boldy text-white/50">
+          <div className="hidden sm:block col-span-2 font-semibold text-white/50">
             24h%
           </div>
-          <div className="col-span-2 font-boldy text-white/50">Avail. Liq.</div>
+          <div className="col-span-2 font-semibold text-white/50">Avail. Liq.</div>
         </div>
       </div>
 
@@ -118,7 +118,7 @@ function TokenList({
                   width={20}
                   height={20}
                 />
-                <span className="text-base font-boldy text-white">
+                <span className="text-base font-semibold text-white">
                   {item.symbol}
                 </span>
               </div>
@@ -271,7 +271,7 @@ export default function TokenSelector({
               className="flex flex-col overflow-hidden max-w-2xl w-full mx-4"
             >
               <div className="p-4 text-center text-white/50">
-                <span className="text-base font-boldy">Loading...</span>
+                <span className="text-base font-semibold">Loading...</span>
               </div>
             </Modal>
           )}
@@ -281,8 +281,8 @@ export default function TokenSelector({
 
     return (
       <div className={twMerge('relative', className)}>
-        <div className="flex flex-row items-center gap-2 border rounded-lg p-2 px-3 bg-main opacity-50">
-          <span className="text-base font-boldy text-white">Loading...</span>
+        <div className="flex flex-row items-center gap-2 border rounded-md p-2 px-3 bg-main opacity-50">
+          <span className="text-base font-semibold text-white">Loading...</span>
         </div>
       </div>
     );
@@ -298,7 +298,7 @@ export default function TokenSelector({
             close={handleClose}
             className="flex flex-col overflow-hidden max-w-2xl w-full mx-4"
           >
-            <div className="w-full bg-main border border-bcolor rounded-lg shadow-2xl overflow-hidden">
+            <div className="w-full bg-main border border-bcolor rounded-md shadow-2xl overflow-hidden">
               {/* Search bar */}
               <div className="p-2 border-b border-bcolor">
                 <input
@@ -306,7 +306,7 @@ export default function TokenSelector({
                   placeholder="Search token"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-3 py-2 bg-inputcolor border border-white/10 rounded-lg text-white font-mono placeholder-white/30 text-sm"
+                  className="w-full px-3 py-2 bg-inputcolor border border-white/10 rounded-md text-white font-mono placeholder-white/30 text-sm"
                 />
               </div>
 
@@ -331,7 +331,7 @@ export default function TokenSelector({
       {/* Token selector button */}
       <div className="flex-shrink-0">
         <div
-          className="flex flex-row items-center gap-2 border rounded-lg p-2 cursor-pointer hover:bg-third transition duration-300 bg-main"
+          className="flex flex-row items-center gap-2 border rounded-md p-2 cursor-pointer hover:bg-third transition duration-300 bg-main"
           onClick={() => setInternalIsOpen(!internalIsOpen)}
         >
           <Image
@@ -340,7 +340,7 @@ export default function TokenSelector({
             width={20}
             height={20}
           />
-          <span className="text-lg font-boldy text-white">
+          <span className="text-lg font-semibold text-white">
             {getTokenSymbol(selected.symbol)}
           </span>
           <Image
@@ -358,7 +358,7 @@ export default function TokenSelector({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-[94vw] min-w-[21rem] sm:w-[28rem] bg-main border border-bcolor rounded-lg shadow-2xl z-50 overflow-hidden">
+        <div className="absolute top-full left-0 mt-1 w-[94vw] min-w-[21rem] sm:w-[28rem] bg-main border border-bcolor rounded-md shadow-2xl z-50 overflow-hidden">
           {/* Search bar */}
           <div className="p-2 border-b border-bcolor">
             <input
@@ -366,7 +366,7 @@ export default function TokenSelector({
               placeholder="Search token"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 bg-inputcolor border border-white/10 rounded-lg text-white font-mono placeholder-white/30 text-sm"
+              className="w-full px-3 py-2 bg-inputcolor border border-white/10 rounded-md text-white font-mono placeholder-white/30 text-sm"
             />
           </div>
 

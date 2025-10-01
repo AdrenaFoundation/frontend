@@ -36,7 +36,7 @@ export default function LoaderWrapper({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
           className={twMerge(
-            'bg-[#050D14] animate-loader rounded-lg border border-white/10',
+            'bg-[#050D14] animate-loader rounded-md border border-white/10',
             loaderClassName,
           )}
           style={{ height }}

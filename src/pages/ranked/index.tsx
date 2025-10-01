@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import CompetitionBanner from '@/components/pages/ranked/CompetitionBanner';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
@@ -6,6 +7,7 @@ import { PageProps } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import SeasonNavigator from '../../components/pages/ranked/SeasonNavigator';
+import Anniversary from './Anniversary';
 import Competition from './Awakening';
 import Expanse from './Expanse';
 import Factions from './Factions';
@@ -19,7 +21,7 @@ export default function Ranked({
     // Ignore following for inter-season
     //
     const [activeSeason, setActiveSeason] =
-        useState<keyof typeof TRADING_COMPETITION_SEASONS>('interseason3');
+        useState<keyof typeof TRADING_COMPETITION_SEASONS>('anniversary1');
     const [jtoPrice, setJTOPrice] = useState<number | null>(null);
 
     const data = useMemo(
@@ -74,11 +76,12 @@ export default function Ranked({
                 adxRewards={data.adxRewards}
                 jtoRewards={data.jtoRewards}
                 bonkRewards={data.bonkRewards}
+                usdcRewards={data.usdcRewards}
                 bannerClassName={data.bannerClassName}
                 jtoPrice={jtoPrice}
             />
 
-            <div className="sm:px-8 mx-auto w-full mt-10">
+            <div className={twMerge(activeSeason !== 'anniversary1' ? "sm:px-8 mx-auto w-full mt-10" : "mx-auto w-full")}>
                 {activeSeason === 'awakening' ? <Competition /> : null}
                 {activeSeason === 'expanse' ? <Expanse /> : null}
                 {activeSeason === 'factions' ? (
@@ -90,6 +93,9 @@ export default function Ranked({
                 ) : null}
                 {activeSeason === 'interseason3' ? (
                     <Interseason3 jtoPrice={jtoPrice} />
+                ) : null}
+                {activeSeason === 'anniversary1' ? (
+                    <Anniversary />
                 ) : null}
             </div>
         </div>

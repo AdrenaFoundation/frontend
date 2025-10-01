@@ -94,7 +94,7 @@ function ChatContainer({
         );
         acc[profile.owner.toBase58()].profilePictureUrl =
           PROFILE_PICTURES[
-            profile.profilePicture as keyof typeof PROFILE_PICTURES
+          profile.profilePicture as keyof typeof PROFILE_PICTURES
           ];
         acc[profile.owner.toBase58()].team =
           acc[profile.owner.toBase58()]?.team || 0;
@@ -316,7 +316,7 @@ function ChatTitle({
             />
           </div>
         ) : null}
-        <p className="text-base font-boldy capitalize">
+        <p className="text-base font-semibold capitalize">
           <span className="opacity-50 text-base">
             # {!isChatOpen && !isLoading ? 'Chat:' : null}
           </span>
@@ -326,8 +326,8 @@ function ChatTitle({
 
       <div className="flex flex-row items-center gap-2">
         {totalNotifications !== null &&
-        totalNotifications > 0 &&
-        !isChatOpen ? (
+          totalNotifications > 0 &&
+          !isChatOpen ? (
           <div className="flex items-center justify-center bg-redbright min-w-2 h-2 rounded-full" />
         ) : null}
         <div
@@ -390,7 +390,7 @@ function ChatContainerWrapper({
           animate={{ opacity: 1, y: '-2.5rem' }}
           exit={{ opacity: 0, y: '-2rem' }}
           transition={{ duration: 0.3 }}
-          className="fixed bottom-0 right-4 z-20 flex flex-row bg-secondary border-2 rounded-lg w-[32rem] overflow-hidden"
+          className="fixed bottom-0 right-4 z-20 flex flex-row bg-secondary border-2 rounded-md w-[32rem] overflow-hidden"
           style={{
             userSelect: isDragging ? 'none' : 'auto',
             height: height || 'auto',

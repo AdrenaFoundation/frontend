@@ -124,7 +124,7 @@ export default function FavoritesBar({
             <div
               key={token.symbol}
               className={twMerge(
-                'flex flex-row items-center gap-2 border rounded-lg p-1 px-3 cursor-pointer opacity-50 hover:opacity-100 hover:bg-third transition duration-300 flex-shrink-0 min-w-0',
+                'flex flex-row items-center gap-2 border rounded-md p-1 px-3 cursor-pointer opacity-50 hover:opacity-100 hover:bg-third transition duration-300 flex-shrink-0 min-w-0',
                 isSelected && 'opacity-100 bg-third',
               )}
               onClick={() => onChange(token)}
@@ -137,8 +137,8 @@ export default function FavoritesBar({
               />
               <p
                 className={twMerge(
-                  'text-base font-boldy min-w-0 truncate',
-                  isSelected && 'font-interBold',
+                  'text-base font-semibold min-w-0 truncate',
+                  isSelected && 'font-bold',
                 )}
               >
                 {symbol}

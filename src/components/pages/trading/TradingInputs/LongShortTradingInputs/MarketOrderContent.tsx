@@ -67,9 +67,9 @@ export const MarketOrderContent = ({
 
   return (
     <div className="flex flex-col transition-opacity duration-500 mt-4">
-      <h5 className="flex items-center text-sm font-interMedium">Size</h5>
+      <h5 className="flex items-center text-sm font-regular">Size</h5>
 
-      <div className="flex items-center h-[3.5rem] pr-3 bg-third mt-1 border rounded-lg z-40">
+      <div className="flex items-center h-[3.5rem] pr-3 bg-third mt-1 border rounded-md z-40">
         {/* Token selector button */}
         <div className="flex items-center pl-3">
           <button
@@ -86,7 +86,7 @@ export const MarketOrderContent = ({
               width={20}
               height={20}
             />
-            <span className="text-lg font-boldy text-white">
+            <span className="text-lg font-semibold text-white">
               {getTokenSymbol(tokenB.symbol)}
             </span>
             {/* Show chevron only on mobile */}
@@ -170,7 +170,7 @@ export const MarketOrderContent = ({
           </div>
         ) : (
           <div className="flex ml-auto">
-            <div className="w-[150px] h-[40px] bg-bcolor rounded-xl" />
+            <div className="w-[150px] h-[40px] bg-bcolor rounded-md" />
           </div>
         )}
       </div>
@@ -199,17 +199,17 @@ export const MarketOrderContent = ({
             nb={
               side === 'long'
                 ? custody &&
-                  tokenPriceB &&
-                  custodyLiquidity &&
-                  custodyLiquidity * tokenPriceB
+                tokenPriceB &&
+                custodyLiquidity &&
+                custodyLiquidity * tokenPriceB
                 : usdcPrice &&
-                  usdcCustody &&
-                  custody &&
-                  custodyLiquidity &&
-                  Math.min(
-                    custodyLiquidity * usdcPrice,
-                    availableLiquidityShort,
-                  )
+                usdcCustody &&
+                custody &&
+                custodyLiquidity &&
+                Math.min(
+                  custodyLiquidity * usdcPrice,
+                  availableLiquidityShort,
+                )
             }
             format="currency"
             precision={0}
@@ -229,8 +229,8 @@ export const MarketOrderContent = ({
       <Button
         className={twMerge(
           'w-full justify-center mt-2 mb-1 sm:mb-2',
-          side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
         )}
+        variant={side === 'short' ? 'danger' : 'success'}
         size="lg"
         title={buttonTitle}
         disabled={errorMessage != null || insufficientAmount}

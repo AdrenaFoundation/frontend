@@ -55,7 +55,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       return (
         <div
           className={twMerge(
-            'top-0 left-0 h-full w-[100px] p-3 bg-third rounded-lg z-10 transition-opacity duration-300',
+            'top-0 left-0 h-full w-[100px] p-3 bg-third rounded-md z-10 transition-opacity duration-300',
             isLoading ? 'animate-pulse opacity-100' : 'opacity-0',
           )}
         />

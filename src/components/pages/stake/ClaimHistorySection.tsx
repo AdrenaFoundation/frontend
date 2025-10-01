@@ -327,46 +327,44 @@ export default function ClaimHistorySection({
     }
   };
 
-  return (
-    <div className="flex flex-col text-sm py-0 px-5 w-full">
-      {/* Export Modal */}
-      {showExportModal && (
-        <Modal
-          title={`Export Claim History - ${token}`}
-          close={() => {
-            setExportWarning(''); // Clear warning when closing modal
-            setShowExportModal(false);
-          }}
-        >
-          <div className="flex flex-col gap-6 p-6 min-w-[400px] sm:min-w-[500px]">
-            {/* Year Option */}
-            <div className="flex flex-col gap-3">
-              <h3 className="text-xl font-medium text-white">Export by Year</h3>
-              <div className="flex items-center gap-3">
-                <label className="text-xs text-white/60">Year:</label>
-                <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
-                  <Select
-                    selected={String(exportOptions.year || getCurrentYear())}
-                    onSelect={(value: string) => {
-                      setExportWarning(''); // Clear warning when changing options
-                      setExportOptions({
-                        type: 'year',
-                        year: parseInt(value),
-                        startDate: '',
-                        endDate: '',
-                      });
+    return (
+        <div className="flex flex-col text-sm py-0 px-5 w-full">
+            {/* Export Modal */}
+            {showExportModal && (
+                <Modal
+                    title={`Export Claim History - ${token}`}
+                    close={() => {
+                        setExportWarning(''); // Clear warning when closing modal
+                        setShowExportModal(false);
                     }}
-                    options={getYearOptions().map((year) => ({
-                      title: String(year),
-                    }))}
-                    reversed={true}
-                    className="h-8 flex items-center px-2"
-                    selectedTextClassName="text-xs font-medium flex-1 text-left"
-                    menuTextClassName="text-xs"
-                  />
-                </div>
-              </div>
-            </div>
+                >
+                    <div className="flex flex-col gap-6 p-6 min-w-[400px] sm:min-w-[500px]">
+                        {/* Year Option */}
+                        <div className="flex flex-col gap-3">
+                            <h3 className="text-xl text-white">Export by Year</h3>
+                            <div className="flex items-center gap-3">
+                                <label className="text-xs text-white/60">Year:</label>
+                                <div className="relative flex items-center bg-[#0A1117] rounded-md border border-gray-800/50">
+                                    <Select
+                                        selected={String(exportOptions.year || getCurrentYear())}
+                                        onSelect={(value: string) => {
+                                            setExportWarning(''); // Clear warning when changing options
+                                            setExportOptions({
+                                                type: 'year',
+                                                year: parseInt(value),
+                                                startDate: '',
+                                                endDate: ''
+                                            });
+                                        }}
+                                        options={getYearOptions().map(year => ({ title: String(year) }))}
+                                        reversed={true}
+                                        className="h-8 flex items-center px-2"
+                                        selectedTextClassName="text-xs flex-1 text-left"
+                                        menuTextClassName="text-xs"
+                                    />
+                                </div>
+                            </div>
+                        </div>
 
             {/* Divider */}
             <div className="flex items-center gap-4">
@@ -375,45 +373,33 @@ export default function ClaimHistorySection({
               <div className="flex-1 h-px bg-white/10"></div>
             </div>
 
-            {/* Date Range Option */}
-            <div className="flex flex-col gap-3">
-              <h3 className="text-xl font-medium text-white">
-                Export by Date Range
-              </h3>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex flex-col gap-2 flex-1">
-                  <label className="text-xs text-white/60">From:</label>
-                  <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
-                    <DatePicker
-                      selected={
-                        exportOptions.startDate
-                          ? new Date(exportOptions.startDate)
-                          : null
-                      }
-                      onChange={(date) => {
-                        setExportWarning(''); // Clear warning when changing options
-                        setExportOptions({
-                          ...exportOptions,
-                          type: 'dateRange',
-                          startDate: date
-                            ? date.toISOString().split('T')[0]
-                            : '',
-                        });
-                      }}
-                      className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
-                      placeholderText="Select start date"
-                      dateFormat="yyyy-MM-dd"
-                      minDate={new Date('2024-09-25')}
-                      maxDate={
-                        exportOptions.endDate
-                          ? new Date(exportOptions.endDate)
-                          : new Date()
-                      }
-                      popperClassName="z-[200]"
-                      popperPlacement="bottom-start"
-                    />
-                  </div>
-                </div>
+                        {/* Date Range Option */}
+                        <div className="flex flex-col gap-3">
+                            <h3 className="text-xl text-white">Export by Date Range</h3>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <div className="flex flex-col gap-2 flex-1">
+                                    <label className="text-xs text-white/60">From:</label>
+                                    <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
+                                        <DatePicker
+                                            selected={exportOptions.startDate ? new Date(exportOptions.startDate) : null}
+                                            onChange={(date) => {
+                                                setExportWarning(''); // Clear warning when changing options
+                                                setExportOptions({
+                                                    ...exportOptions,
+                                                    type: 'dateRange',
+                                                    startDate: date ? date.toISOString().split('T')[0] : ''
+                                                });
+                                            }}
+                                            className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
+                                            placeholderText="Select start date"
+                                            dateFormat="yyyy-MM-dd"
+                                            minDate={new Date('2024-09-25')}
+                                            maxDate={exportOptions.endDate ? new Date(exportOptions.endDate) : new Date()}
+                                            popperClassName="z-[200]"
+                                            popperPlacement="bottom-start"
+                                        />
+                                    </div>
+                                </div>
 
                 <div className="flex flex-col gap-2 flex-1">
                   <label className="text-xs text-white/60">To:</label>
@@ -449,12 +435,12 @@ export default function ClaimHistorySection({
               </div>
             </div>
 
-            {/* Warning Message */}
-            {exportWarning && (
-              <div className="text-xs text-orange font-boldy">
-                {exportWarning}
-              </div>
-            )}
+                        {/* Warning Message */}
+                        {exportWarning && (
+                            <div className='text-xs text-orange font-semibold'>
+                                {exportWarning}
+                            </div>
+                        )}
 
             {/* Export Button */}
             <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
@@ -478,13 +464,13 @@ export default function ClaimHistorySection({
         </Modal>
       )}
 
-      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between w-full text-white rounded-lg transition-colors duration-200">
-        <div className="flex flex-col">
-          <div className="flex flex-row gap-2 items-center select-none">
-            <div className="flex items-center justify-between">
-              <div className="mr-2">
-                <h3 className="md:text-lg font-semibold">Claim History</h3>
-              </div>
+            <div className="flex flex-col sm:flex-row gap-3 items-center justify-between w-full text-white rounded-md transition-colors duration-200">
+                <div className='flex flex-col'>
+                    <div className='flex flex-row gap-2 items-center select-none'>
+                        <div className="flex items-center justify-between">
+                            <div className='mr-2'>
+                                <h3 className="md:text-lg font-semibold">Claim History</h3>
+                            </div>
 
               <h3 className="text-lg font-semibold text-txtfade">
                 {totalItems && totalItems != claimsHistory?.allTimeCountClaims
@@ -516,63 +502,70 @@ export default function ClaimHistorySection({
           <p className="text-xs text-txtfade">Subject to 30s delay</p>
         </div>
 
-        {/* TOTALs */}
-        <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-lg border border-bcolor pt-1 pb-1 pl-2 pr-2">
-          <div className="flex flex-row items-center">
-            <p className="text-txtfade">All time claimed amounts:</p>
-          </div>
-          <div className="flex flex-row space-x-4 text-xs">
-            <div className="flex items-center">
-              <FormatNumber
-                nb={allTimeClaimedUsdc}
-                precisionIfPriceDecimalsBelow={
-                  isMediumUsdcAllTimeClaimAmount ? 0 : 2
-                }
-                minimumFractionDigits={isMediumUsdcAllTimeClaimAmount ? 0 : 2}
-                precision={isMediumUsdcAllTimeClaimAmount ? 0 : 2}
-                isAbbreviate={isBigUsdcAllTimeClaimAmount}
-                info={
-                  isBigUsdcAllTimeClaimAmount
-                    ? formatNumber(allTimeClaimedUsdc, 2, 2)
-                    : undefined
-                }
-                className="text-txtfade text-xs"
-              />
-              <Image
-                src={usdcTokenLogo}
-                width={16}
-                height={16}
-                alt="USDC logo"
-                className="ml-1 opacity-50"
-              />
+                {/* TOTALs */}
+                <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-md border border-bcolor pt-1 pb-1 pl-2 pr-2">
+                    <div className="flex flex-row items-center">
+                        <p className="text-txtfade">
+                            All time claimed amounts:
+                        </p>
+                    </div>
+                    <div className="flex flex-row space-x-4 text-xs">
+                        <div className="flex items-center">
+                            <FormatNumber
+                                nb={allTimeClaimedUsdc}
+                                precisionIfPriceDecimalsBelow={
+                                    isMediumUsdcAllTimeClaimAmount ? 0 : 2
+                                }
+                                minimumFractionDigits={
+                                    isMediumUsdcAllTimeClaimAmount ? 0 : 2
+                                }
+                                precision={isMediumUsdcAllTimeClaimAmount ? 0 : 2}
+                                isAbbreviate={isBigUsdcAllTimeClaimAmount}
+                                info={
+                                    isBigUsdcAllTimeClaimAmount
+                                        ? formatNumber(allTimeClaimedUsdc, 2, 2)
+                                        : undefined
+                                }
+                                className="text-txtfade text-xs"
+                            />
+                            <Image
+                                src={usdcTokenLogo}
+                                width={16}
+                                height={16}
+                                alt="USDC logo"
+                                className="ml-1 opacity-50"
+                            />
+                        </div>
+                        <div className="flex items-center">
+                            <FormatNumber
+                                nb={allTimeClaimedAdx}
+                                precisionIfPriceDecimalsBelow={
+                                    isMediumAdxAllTimeClaimAmount ? 0 : 2
+                                }
+                                minimumFractionDigits={
+                                    isMediumAdxAllTimeClaimAmount ? 0 : 2
+                                }
+                                precision={isMediumAdxAllTimeClaimAmount ? 0 : 2}
+                                isAbbreviate={isBigAdxAllTimeClaimAmount}
+                                info={
+                                    isBigAdxAllTimeClaimAmount
+                                        ? formatNumber(allTimeClaimedAdx, 2, 2)
+                                        : undefined
+                                }
+                                className="text-txtfade text-xs"
+                            />
+                            <Image
+                                src={adxTokenLogo}
+                                width={16}
+                                height={16}
+                                alt="ADX logo"
+                                className="ml-1 opacity-50"
+                            />
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <div className="flex items-center">
-              <FormatNumber
-                nb={allTimeClaimedAdx}
-                precisionIfPriceDecimalsBelow={
-                  isMediumAdxAllTimeClaimAmount ? 0 : 2
-                }
-                minimumFractionDigits={isMediumAdxAllTimeClaimAmount ? 0 : 2}
-                precision={isMediumAdxAllTimeClaimAmount ? 0 : 2}
-                isAbbreviate={isBigAdxAllTimeClaimAmount}
-                info={
-                  isBigAdxAllTimeClaimAmount
-                    ? formatNumber(allTimeClaimedAdx, 2, 2)
-                    : undefined
-                }
-                className="text-txtfade text-xs"
-              />
-              <Image
-                src={adxTokenLogo}
-                width={16}
-                height={16}
-                alt="ADX logo"
-                className="ml-1 opacity-50"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Claim History Section */}
       <CSSTransition
