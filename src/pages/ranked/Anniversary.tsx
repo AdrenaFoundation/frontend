@@ -349,7 +349,7 @@ function RaffleAdditionalPrize({
           </div>
 
           <div className="text-sm mb-2">
-            <div className="text-yellow-400 font-semibold">
+            <div className="font-semibold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]">
               Current Leader: {formatValue(record.value, title)}
               {getValueUnit(title)}
             </div>
@@ -357,11 +357,7 @@ function RaffleAdditionalPrize({
 
           {getUserComparison && getUserComparison(title, record.value)}
 
-          {onClickProfile && (
-            <div className="text-xs text-gray-300 mt-2">
-              🖱️ Click to view profile
-            </div>
-          )}
+          {onClickProfile && <div className="text-xs text-gray-300 mt-2"></div>}
         </div>
       </div>
     );
