@@ -274,7 +274,7 @@ export default function PositionHistoryTable({
     leverage: <LeverageCell leverage={p.entryLeverage} />,
     pnl: (
       <PnlCell
-        pnl={isPnlWithFees ? p.pnl : p.pnl - p.fees}
+        pnl={isPnlWithFees ? p.pnl : p.pnl + p.fees}
         maxPnl={maxPnl}
         minPnl={minPnl}
       />
@@ -419,7 +419,7 @@ export default function PositionHistoryTable({
 
             {/* Warning Message */}
             {exportWarning && (
-              <div className='text-xs text-orange font-semibold'>
+              <div className="text-xs text-orange font-semibold">
                 {exportWarning}
               </div>
             )}
