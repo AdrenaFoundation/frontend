@@ -50,15 +50,10 @@ export default function ALPSwapSell({
 
     return (
       collateralTokenCustodyLiquidity[
-      collateralTokenCustody.pubkey.toBase58()
+        collateralTokenCustody.pubkey.toBase58()
       ] * tokenPrice
     );
-  }, [
-    tokenPrices,
-    collateralToken.symbol,
-    collateralTokenCustodyLiquidity,
-    collateralTokenCustody.pubkey,
-  ]);
+  }, [tokenPrices, collateralToken.symbol, collateralTokenCustodyLiquidity]);
 
   const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
   const [collateralInputUsd, setCollateralInputUsd] = useState<number | null>(

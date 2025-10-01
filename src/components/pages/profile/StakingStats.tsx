@@ -403,7 +403,7 @@ export default function StakingStats({
 
             {/* Warning Message */}
             {exportWarning && (
-              <div className='text-xs text-orange font-semibold'>
+              <div className="text-xs text-orange font-semibold">
                 {exportWarning}
               </div>
             )}
