@@ -23,7 +23,6 @@ export const useStakingClaimableRewards = (tokenSymbol: 'ADX' | 'ALP') => {
   });
   const wallet = useSelector((s) => s.walletState.wallet);
 
-
   const fetchRewards = useCallback(async () => {
     const walletAddress = wallet ? new PublicKey(wallet.walletAddress) : null;
 
@@ -36,16 +35,34 @@ export const useStakingClaimableRewards = (tokenSymbol: 'ADX' | 'ALP') => {
     }
 
     try {
-      const stakedTokenMint = tokenSymbol === 'ALP'
-        ? window.adrena.client.lpTokenMint
-        : window.adrena.client.lmTokenMint;
+      const stakedTokenMint =
+        tokenSymbol === 'ALP'
+          ? window.adrena.client.lpTokenMint
+          : window.adrena.client.lmTokenMint;
+
+      // First check if user has a staking account for this token
+      const userStakingAccount =
+        await window.adrena.client.getUserStakingAccount({
+          owner: walletAddress,
+          stakedTokenMint,
+        });
+
+      if (!userStakingAccount) {
+        // User doesn't have a staking account for this token, skip simulation
+        setRewards(defaultRewardsData);
+        return;
+      }
+
       const simulatedRewards = await window.adrena.client.simulateClaimStakes({
         owner: walletAddress,
         stakedTokenMint,
         // TODO: replace this with a proper system allowing the user to claim on a TA instead of the ATA, but pretty niche usecase tbh
         // Special override for a user that has a different reward token account following a hack
-        overrideRewardTokenAccount: walletAddress.toBase58() === '5aBuBWGxkyHMDE6kqLLA1sKJjd2emdoKJWm8hhMTSKEs' ?
-          new PublicKey('654FfF8WWJ7BTLdWtpAo4F3AiY2pRAPU8LEfLdMFwNK9') : undefined
+        overrideRewardTokenAccount:
+          walletAddress.toBase58() ===
+          '5aBuBWGxkyHMDE6kqLLA1sKJjd2emdoKJWm8hhMTSKEs'
+            ? new PublicKey('654FfF8WWJ7BTLdWtpAo4F3AiY2pRAPU8LEfLdMFwNK9')
+            : undefined,
       });
 
       setRewards(simulatedRewards);

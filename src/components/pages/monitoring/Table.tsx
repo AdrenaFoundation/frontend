@@ -38,6 +38,7 @@ export default function Table({
   viewMode = 'table',
   onViewModeChange,
   blockViewComponent,
+  blockWrapperClassname,
   // Sort-related props
   sortBy,
   sortDirection,
@@ -60,6 +61,7 @@ export default function Table({
   viewMode?: ViewMode;
   onViewModeChange?: (mode: ViewMode) => void;
   blockViewComponent?: (item: TableRowType, index: number) => React.ReactNode;
+  blockWrapperClassname?: string;
   // Sort-related props
   sortBy?: string;
   sortDirection?: 'asc' | 'desc';
@@ -67,13 +69,15 @@ export default function Table({
   // Pagination-related return values
   currentPage?: number;
   totalPages?: number;
-  setCurrentPage?: (page: number) => void;
-  loadPageData?: (page: number) => Promise<void>;
+  loadPageData?: (page: number) => Promise<void> | void;
   isLoading?: boolean;
 }) {
   // All hooks must be at the very top before any other logic
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
+  const [isHorizontalScrolling, setIsHorizontalScrolling] = useState(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout>();
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const handleScroll = () => {
     const container = scrollContainerRef.current;
@@ -85,24 +89,95 @@ export default function Table({
     setIsScrolledToBottom(isAtBottom);
   };
 
+  const handleWheel = (e: WheelEvent) => {
+    if (!isSticky) return;
+
+    // Detect horizontal scrolling (more horizontal delta than vertical, or shift key)
+    const isHorizontalScroll =
+      Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey;
+
+    if (isHorizontalScroll) {
+      // Set horizontal scrolling state
+      setIsHorizontalScrolling(true);
+
+      // Clear existing timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      // Reset horizontal scrolling state after scrolling stops
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsHorizontalScrolling(false);
+      }, 100);
+    }
+  };
+
+  const handleTouchStart = (e: TouchEvent) => {
+    if (!isSticky) return;
+
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchMove = (e: TouchEvent) => {
+    if (!isSticky || !touchStartRef.current) return;
+
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
+    const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
+
+    // Detect horizontal scrolling (more horizontal movement than vertical)
+    const isHorizontalScroll = deltaX > deltaY && deltaX > 10; // 10px threshold
+
+    if (isHorizontalScroll) {
+      setIsHorizontalScrolling(true);
+
+      // Clear existing timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      // Reset horizontal scrolling state after scrolling stops
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsHorizontalScrolling(false);
+      }, 150);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    touchStartRef.current = null;
+  };
+
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
     container.addEventListener('scroll', handleScroll);
+    container.addEventListener('wheel', handleWheel);
+    container.addEventListener('touchstart', handleTouchStart, {
+      passive: true,
+    });
+    container.addEventListener('touchmove', handleTouchMove, { passive: true });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
     handleScroll();
 
     return () => {
       container.removeEventListener('scroll', handleScroll);
+      container.removeEventListener('wheel', handleWheel);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSticky]);
 
   // Memoized calculations for sticky columns and table layout
   const { cumulativeLeft, cumulativeRight, minTableWidthPx } = useMemo(() => {
     // Parse width to rem when possible (number or '<num>rem'). Returns null otherwise
-    const parseWidthPx = (
-      width?: TableHeaderType['width'],
-    ): number | null => {
+    const parseWidthPx = (width?: TableHeaderType['width']): number | null => {
       if (typeof width === 'number') return width;
       if (typeof width === 'string') {
         const trimmed = width.trim();
@@ -202,10 +277,13 @@ export default function Table({
   const defaultBlockComponent = (item: TableRowType, index: number) => (
     <div
       key={`block-${index}`}
-      className={twMerge("p-4 bg-main border border-inputcolor rounded-md hover:bg-third transition-colors",
+      className={twMerge(
+        'p-4 bg-main border border-inputcolor rounded-md hover:bg-third transition-colors',
         onRowClick ? 'cursor-pointer' : '',
       )}
-      onClick={() => { if (onRowClick) onRowClick(item.id as string | number); }}
+      onClick={() => {
+        if (onRowClick) onRowClick(item.id as string | number);
+      }}
     >
       <div className="grid grid-cols-2 gap-2">
         {headers.map((header) => {
@@ -281,7 +359,12 @@ export default function Table({
               height: typeof height === 'number' ? `${height}px` : height,
             }}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div
+              className={twMerge(
+                'grid grid-cols-1 gap-3',
+                blockWrapperClassname,
+              )}
+            >
               {data.map((item, index) => BlockComponent(item, index))}
             </div>
           </div>
@@ -332,7 +415,11 @@ export default function Table({
           ref={scrollContainerRef}
           className={twMerge(
             'custom-chat-scrollbar overscroll-contain',
-            isSticky ? 'overflow-auto' : 'overflow-y-auto',
+            isSticky
+              ? isHorizontalScrolling
+                ? 'overflow-x-auto overflow-y-hidden'
+                : 'overflow-auto'
+              : 'overflow-y-auto',
           )}
           style={{
             height: typeof height === 'number' ? `${height}px` : height,
@@ -399,61 +486,61 @@ export default function Table({
               <AnimatePresence mode="wait">
                 {isLoading
                   ? Array.from({ length: 10 }).map((_, rowIdx) => (
-                    <motion.tr
-                      key={`loader-row-${rowIdx}`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      {headers.map((_, colIdx) => (
-                        <td
-                          key={`loader-cell-${rowIdx}-${colIdx}`}
-                          className="p-4 h-[2.351875rem] bg-[#050D14] animate-loader border border-white/10"
-                        />
-                      ))}
-                    </motion.tr>
-                  ))
-                  : data.map((row, rowIndex) => (
-                    <motion.tr
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      key={`row-${rowIndex}`}
-                      className={twMerge(
-                        'group border-b border-bcolor hover:bg-third transition-colors',
-                        onRowClick ? 'cursor-pointer' : '',
-                        data.length > 7 ? 'last:border-b-0' : '',
-                      )}
-                      onClick={() => {
-                        if (onRowClick) onRowClick(row.id as string | number);
-                      }}
-                    >
-                      {headers.map((header, colIndex) => {
-                        const key = header.key ?? header.title;
-                        const sticky = getStickyProps(colIndex, false);
-                        return (
+                      <motion.tr
+                        key={`loader-row-${rowIdx}`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        {headers.map((_, colIdx) => (
                           <td
-                            key={`cell-${rowIndex}-${colIndex}`}
-                            className={twMerge(
-                              'relative p-2 px-2 text-sm sm:text-base border-r border-bcolor last:border-r-0',
-                              alignClass(header.align),
-                              sticky.className,
-                            )}
-                            style={sticky.style}
-                            onMouseOver={() => {
-                              if (setActiveCol)
-                                setActiveCol(header.key ?? header.title);
-                            }}
-                            onMouseOut={() => {
-                              if (setActiveCol) setActiveCol(null);
-                            }}
-                          >
-                            {row[key]}
-                          </td>
-                        );
-                      })}
-                    </motion.tr>
-                  ))}
+                            key={`loader-cell-${rowIdx}-${colIdx}`}
+                            className="p-4 h-[2.351875rem] bg-[#050D14] animate-loader border border-white/10"
+                          />
+                        ))}
+                      </motion.tr>
+                    ))
+                  : data.map((row, rowIndex) => (
+                      <motion.tr
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        key={`row-${rowIndex}`}
+                        className={twMerge(
+                          'group border-b border-bcolor hover:bg-third transition-colors',
+                          onRowClick ? 'cursor-pointer' : '',
+                          data.length > 7 ? 'last:border-b-0' : '',
+                        )}
+                        onClick={() => {
+                          if (onRowClick) onRowClick(row.id as string | number);
+                        }}
+                      >
+                        {headers.map((header, colIndex) => {
+                          const key = header.key ?? header.title;
+                          const sticky = getStickyProps(colIndex, false);
+                          return (
+                            <td
+                              key={`cell-${rowIndex}-${colIndex}`}
+                              className={twMerge(
+                                'relative p-2 px-2 text-sm sm:text-base border-r border-bcolor last:border-r-0',
+                                alignClass(header.align),
+                                sticky.className,
+                              )}
+                              style={sticky.style}
+                              onMouseOver={() => {
+                                if (setActiveCol)
+                                  setActiveCol(header.key ?? header.title);
+                              }}
+                              onMouseOut={() => {
+                                if (setActiveCol) setActiveCol(null);
+                              }}
+                            >
+                              {row[key]}
+                            </td>
+                          );
+                        })}
+                      </motion.tr>
+                    ))}
               </AnimatePresence>
             </tbody>
           </table>

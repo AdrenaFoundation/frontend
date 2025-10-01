@@ -55,10 +55,11 @@ export default function Positions({
               <div className="ml-2 flex flex-row gap-2 items-center">
                 <h2 className="font-semibold">Close</h2>
                 <p
-                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToClose.side === 'long'
-                    ? 'text-green bg-green/20'
-                    : 'text-red bg-red/20'
-                    }`}
+                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${
+                    positionToClose.side === 'long'
+                      ? 'text-green bg-green/20'
+                      : 'text-red bg-red/20'
+                  }`}
                 >
                   {positionToClose.side}
                 </p>
@@ -95,10 +96,11 @@ export default function Positions({
               <div className="ml-2 flex flex-row gap-2 items-center">
                 <h2 className="font-semibold">Edit</h2>
                 <p
-                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToEdit.side === 'long'
-                    ? 'text-green bg-green/20'
-                    : 'text-red bg-red/20'
-                    }`}
+                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${
+                    positionToEdit.side === 'long'
+                      ? 'text-green bg-green/20'
+                      : 'text-red bg-red/20'
+                  }`}
                 >
                   {positionToEdit.side}
                 </p>
@@ -134,10 +136,11 @@ export default function Positions({
               <div className="ml-2 flex flex-row gap-2 items-center">
                 <h2 className="font-semibold">TP/SL</h2>
                 <p
-                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToStopLossTakeProfit.side === 'long'
-                    ? 'text-green bg-green/20'
-                    : 'text-red bg-red/20'
-                    }`}
+                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${
+                    positionToStopLossTakeProfit.side === 'long'
+                      ? 'text-green bg-green/20'
+                      : 'text-red bg-red/20'
+                  }`}
                 >
                   {positionToStopLossTakeProfit.side}
                 </p>
@@ -156,7 +159,6 @@ export default function Positions({
             }
             close={() => setPositionToStopLossTakeProfit(null)}
             className="flex flex-col items-center min-w-[25em] w-[25em] max-w-full justify-center overflow-y-auto"
-
           >
             <StopLossTakeProfit
               position={positionToStopLossTakeProfit}
@@ -205,6 +207,7 @@ export default function Positions({
         triggerStopLossTakeProfit={setPositionToStopLossTakeProfit}
         triggerClosePosition={setPositionToClose}
         triggerEditPositionCollateral={setPositionToEdit}
+        setShareClosePosition={setShareClosePosition}
         setTokenB={setTokenB}
       />
     </>

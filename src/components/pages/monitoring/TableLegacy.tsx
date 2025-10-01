@@ -7,7 +7,7 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 import Block from './Block';
 
-/** @deprecated use TableV2 instead **/
+/** @deprecated use Table instead **/
 
 export default function TableLegacy({
   breakpoint,

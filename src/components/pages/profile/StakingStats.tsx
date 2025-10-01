@@ -35,7 +35,7 @@ import {
   nativeToUi,
 } from '@/utils';
 
-import TableV2, { TableHeaderType } from '../monitoring/Table';
+import Table, { TableHeaderType } from '../monitoring/Table';
 import { BottomBar, TotalRewardsCell } from './StakingStatsComp/StakingCells';
 
 interface ExportOptions {
@@ -697,7 +697,7 @@ const StatsTable = ({
 
   return (
     <div className="flex flex-col gap-3">
-      <TableV2
+      <Table
         headers={headers}
         data={data}
         bottomBar={
