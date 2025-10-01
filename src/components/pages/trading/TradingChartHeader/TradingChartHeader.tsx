@@ -144,7 +144,7 @@ export default function TradingChartHeader({
       </Head>
       <div
         className={twMerge(
-          'flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 lg:gap-2 z-30 bg-main border-b p-3 lg:p-1',
+          'flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 lg:gap-2 z-30 bg-secondary border-b p-3 lg:p-1',
           className,
         )}
       >
@@ -178,7 +178,7 @@ export default function TradingChartHeader({
                 content="Long positions"
                 className="flex flex-col items-center"
               >
-                <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
+                <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-md px-2 py-1.5">
                   {numberLong}
                 </span>
               </Tippy>
@@ -186,7 +186,7 @@ export default function TradingChartHeader({
                 content="Short positions"
                 className="flex flex-col items-center"
               >
-                <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
+                <span className="text-redSide text-xxs leading-none bg-red/10 rounded-md px-2 py-1.5">
                   {numberShort}
                 </span>
               </Tippy>

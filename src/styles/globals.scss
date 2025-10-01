@@ -65,13 +65,6 @@
   }
 
   @font-face {
-    font-family: 'Archivo Regular';
-    font-weight: 400;
-    font-style: normal;
-    src: url('/fonts/Archivo-Regular.ttf') format('truetype');
-  }
-
-  @font-face {
     font-family: 'Roboto Mono';
     font-weight: 400;
     font-style: normal;
@@ -79,21 +72,7 @@
   }
 
   @font-face {
-    font-family: 'Roboto Mono';
-    font-weight: 500;
-    font-style: normal;
-    src: url('/fonts/Roboto-mono/RobotoMono-Medium.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Roboto Mono';
-    font-weight: 600;
-    font-style: normal;
-    src: url('/fonts/Roboto-mono/RobotoMono-SemiBold.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Roboto Mono';
+    font-family: 'Roboto Mono Bold';
     font-weight: 700;
     font-style: normal;
     src: url('/fonts/Roboto-mono/RobotoMono-Bold.ttf') format('truetype');
@@ -105,28 +84,28 @@
   }
 
   @font-face {
+    font-family: thin;
+    src: url('/fonts/Nunito-Thin.ttf');
+  }
+
+  @font-face {
     font-family: regular;
-    src: url('/fonts/Inter_18pt-Light.ttf');
+    src: url('/fonts/Nunito-Regular.ttf');
   }
 
   @font-face {
-    font-family: boldy;
-    src: url('/fonts/Inter_18pt-Regular.ttf');
+    font-family: semibold;
+    src: url('/fonts/Nunito-SemiBold.ttf');
   }
 
   @font-face {
-    font-family: interSemibold;
-    src: url('/fonts/Inter_18pt-SemiBold.ttf');
+    font-family: bold;
+    src: url('/fonts/Nunito-Bold.ttf');
   }
 
   @font-face {
-    font-family: interMedium;
-    src: url('/fonts/Inter_18pt-Medium.ttf');
-  }
-
-  @font-face {
-    font-family: interBold;
-    src: url('/fonts/Inter_18pt-Bold.ttf');
+    font-family: black;
+    src: url('/fonts/Nunito-Black.ttf');
   }
 
   div {
@@ -142,30 +121,30 @@
 
   h1 {
     @apply text-4xl;
-    @apply font-interSemibold;
+    @apply font-semibold;
     text-transform: uppercase;
   }
 
   h2 {
     @apply text-2xl;
-    @apply font-interSemibold;
+    @apply font-semibold;
     text-transform: uppercase;
   }
 
   h3 {
     @apply text-xl;
-    @apply font-interSemibold;
+    @apply font-semibold;
     text-transform: uppercase;
   }
 
   h4 {
     @apply text-lg;
-    @apply font-boldy;
+    @apply font-regular;
   }
 
   h5 {
     @apply text-sm;
-    @apply font-boldy;
+    @apply font-regular;
   }
 
   button:focus,
@@ -393,11 +372,6 @@ input[type='checkbox']:checked {
 
 .Toastify__toast-theme--light {
   background-color: #162a3d;
-}
-
-.archivo-black {
-  font-family: 'Archivo Black', sans-serif;
-  font-weight: 600;
 }
 
 img {

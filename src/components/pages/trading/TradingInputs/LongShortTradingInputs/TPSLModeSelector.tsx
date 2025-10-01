@@ -48,7 +48,7 @@ export default function TPSLModeSelector({
   };
 
   return (
-    <div className={"relative flex flex-col gap-3 w-full border bg-third rounded-lg mt-4"}>
+    <div className={"relative flex flex-col gap-3 w-full border bg-third rounded-md mt-4"}>
       {(!isTPSL || !isConnected) ? <div
         className="flex flex-row justify-between gap-3 py-3 px-4 cursor-pointer select-none"
         onClick={() => {
@@ -58,7 +58,7 @@ export default function TPSLModeSelector({
           setStopLossInput(null);
         }}
       >
-        <h5 className='font-interBold'>{(!isTPSL || !isConnected) ? 'Take Profit / Stop Loss' : ''}</h5>
+        <h5>{(!isTPSL || !isConnected) ? 'Take Profit / Stop Loss' : ''}</h5>
         <label className={twMerge("flex items-center ml-1 cursor-pointer", !isConnected ? "opacity-50" : "")}>
           <Switch
             className={twMerge("mr-0.5", isTPSL ? "bg-green" : "bg-inputcolor")}

@@ -44,7 +44,7 @@ function CustomRechartsToolTip({
     const payloadChunks = chunkArray(payload, 15);
 
     return (
-      <div className="bg-third p-3 border border-white rounded-lg min-w-[10em] grow">
+      <div className="bg-third p-3 border border-white rounded-md min-w-[10em] grow">
         {label && <p className="text-lg mb-2 font-mono">{labelCustomization ? labelCustomization(label) : label}</p>}
 
         <div className='flex h-auto gap-4'>
@@ -53,9 +53,9 @@ function CustomRechartsToolTip({
           {payloadChunks.map((payload, i) => <table className='w-full table-auto h-10' key={`table-cohort-${i}`}>
             <thead>
               <tr>
-                <th className='text-xs font-boldy'>Name</th>
+                <th className='text-xs font-semibold'>Name</th>
 
-                <th className='text-xs font-boldy'>
+                <th className='text-xs font-semibold'>
                   {{
                     users: 'Users',
                     volumes: 'Volume',
@@ -63,7 +63,7 @@ function CustomRechartsToolTip({
                   }[type]}
                 </th>
 
-                {type === 'users' ? <th className='text-xs font-boldy'>
+                {type === 'users' ? <th className='text-xs font-semibold'>
                   {{
                     users: 'Retention',
                     volumes: 'Change',

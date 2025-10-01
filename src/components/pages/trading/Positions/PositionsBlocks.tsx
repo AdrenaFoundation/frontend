@@ -5,7 +5,7 @@ import Button from '@/components/common/Button/Button';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { PositionExtended, Token } from '@/types';
 
-import PositionBlock from './PositionBlock';
+import PositionBlockV2 from './PositionBlockV2';
 
 export function PositionsBlocks({
   connected,
@@ -14,6 +14,7 @@ export function PositionsBlocks({
   triggerStopLossTakeProfit,
   triggerClosePosition,
   triggerEditPositionCollateral,
+  setShareClosePosition,
   setTokenB,
 }: {
   bodyClassName?: string;
@@ -26,10 +27,11 @@ export function PositionsBlocks({
   triggerEditPositionCollateral: (p: PositionExtended) => void;
   wrapped?: boolean;
   setTokenB: (token: Token) => void;
+  setShareClosePosition: (p: PositionExtended) => void;
 }) {
   if (positions === null && !connected) {
     return (
-      <div className="flex overflow-hidden bg-main/90 w-full border rounded-lg mt-4 h-[15em] items-center justify-center">
+      <div className="flex overflow-hidden bg-main/90 w-full border rounded-md mt-4 h-[15em] items-center justify-center">
         <WalletConnection connected={connected} />
       </div>
     );
@@ -40,13 +42,13 @@ export function PositionsBlocks({
       {positions === null && connected ? (
         <>
           {window.location.pathname === '/trade' ? (
-            <div className="flex overflow-hidden bg-main/90 grow border rounded-lg h-[15em] items-center justify-center">
-              <div className="text-sm opacity-50 font-normal mt-5 font-boldy">
+            <div className="flex overflow-hidden bg-main/90 grow border rounded-md h-[15em] items-center justify-center">
+              <div className="text-sm opacity-50 font-normal mt-5 font-semibold">
                 Loading ...
               </div>
             </div>
           ) : (
-            <div className="text-sm opacity-50 font-normal mt-5 mb-5 ml-auto mr-auto font-boldy grow">
+            <div className="text-sm opacity-50 font-normal mt-5 mb-5 ml-auto mr-auto font-semibold grow">
               Loading ...
             </div>
           )}
@@ -56,14 +58,19 @@ export function PositionsBlocks({
       {positions !== null && !positions.length ? (
         <>
           {window.location.pathname === '/trade' ? (
-            <div className="flex overflow-hidden bg-main/90 grow border rounded-lg h-[15em] items-center justify-center">
-              <div className="text-sm opacity-50 font-normal mt-5 font-boldy">
+            <div className="flex overflow-hidden bg-main/90 grow border rounded-md h-[15em] items-center justify-center">
+              <div className="text-sm opacity-50 font-normal mt-5 font-semibold">
                 No opened position
               </div>
             </div>
           ) : (
             <div className="flex justify-center items-center">
-              <Button title="Open a position" href="/trade" size="lg" className='my-4' />
+              <Button
+                title="Open a position"
+                href="/trade"
+                size="lg"
+                className="my-4"
+              />
             </div>
           )}
         </>
@@ -77,12 +84,13 @@ export function PositionsBlocks({
           )}
         >
           {positions.map((position) => (
-            <PositionBlock
+            <PositionBlockV2
               key={position.pubkey.toBase58()}
               position={position}
               triggerStopLossTakeProfit={triggerStopLossTakeProfit}
               triggerClosePosition={triggerClosePosition}
               triggerEditPositionCollateral={triggerEditPositionCollateral}
+              setShareClosePosition={setShareClosePosition}
               setTokenB={setTokenB}
             />
           ))}

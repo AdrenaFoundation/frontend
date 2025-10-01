@@ -14,7 +14,7 @@ export default function GovernanceAccounts({
   titleClassName?: string;
 }) {
   return (
-    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+    <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
         <p className={titleClassName}>Governance Accounts</p>
         <p className="text-base opacity-50">
@@ -30,7 +30,7 @@ export default function GovernanceAccounts({
         data={[
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-semibold">
                 <CopyButton
                   textToCopy={cortex.governanceProgram.toBase58()}
                   notificationTitle="Governance Program address copied to clipboard"
@@ -52,7 +52,7 @@ export default function GovernanceAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center font-boldy">
+              <div className="flex items-center font-semibold">
                 <CopyButton
                   textToCopy={cortex.governanceRealm.toBase58()}
                   notificationTitle="Governance Realm PDA address copied to clipboard"

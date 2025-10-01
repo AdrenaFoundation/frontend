@@ -11,7 +11,7 @@ import useTraderInfo from '@/hooks/useTraderInfo';
 import { UserProfileExtended } from '@/types';
 
 import ActivityCalendar from '../monitoring/ActivityCalendar';
-import PositionBlock from '../trading/Positions/PositionBlock';
+import PositionBlockV2 from '../trading/Positions/PositionBlockV2';
 import FavAchievements from './FavAchievements';
 import OwnerBlock from './OwnerBlock';
 import RankingStats from './RankingStats';
@@ -145,16 +145,15 @@ export default function ViewProfileModal({
 
         <div className="flex flex-col gap-3 p-4">
           <div className="flex flex-col gap-3">
-            <h4 className="capitalize font-interSemibold">Active Positions</h4>
+            <h4 className="capitalize font-semibold">Active Positions</h4>
             <div className="flex flex-wrap justify-between gap-2">
               {positions !== null && positions.length ? (
                 <div className="flex flex-col w-full gap-2">
                   {positions.map((position) => (
-                    <PositionBlock
+                    <PositionBlockV2
                       key={position.pubkey.toBase58()}
                       position={position}
                       readOnly={true}
-                      setTokenB={() => { }}
                     />
                   ))}
                 </div>

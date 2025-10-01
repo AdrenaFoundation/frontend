@@ -152,7 +152,7 @@ export default function ALPSwapBuy({
 
         setCollateralInputUsd(
           (tokenPrices[usdcToken.symbol] ?? 1) *
-            nativeToUi(amountUsd, usdcToken.decimals),
+          nativeToUi(amountUsd, usdcToken.decimals),
         );
 
         amountAndFee = await window.adrena.client.getAddLiquidityAmountAndFee({
@@ -348,7 +348,7 @@ export default function ALPSwapBuy({
 
           <div
             className={twMerge(
-              'flex flex-col border bg-[#040D14] rounded-lg gap-0',
+              'flex flex-col border bg-[#040D14] rounded-md gap-0',
               className,
             )}
           >
@@ -361,7 +361,7 @@ export default function ALPSwapBuy({
                   className="w-4 h-4"
                   alt="token logo"
                 />
-                <p className="text-base font-boldy">
+                <p className="text-base font-semibold">
                   {useSwaplessRoute
                     ? collateralToken.symbol
                     : usdcToken?.symbol}
@@ -386,7 +386,7 @@ export default function ALPSwapBuy({
                   </div>
                 </div>
               ) : (
-                <div className="w-[9em] h-6 bg-gray-800 rounded-xl" />
+                <div className="w-[9em] h-6 bg-gray-800 rounded-md" />
               )}
             </div>
           </div>
@@ -404,6 +404,7 @@ export default function ALPSwapBuy({
         <Button
           title="Mint ALP"
           size="lg"
+          variant="info"
           disabled={
             errorMessage !== null ||
             isMainDataLoading ||

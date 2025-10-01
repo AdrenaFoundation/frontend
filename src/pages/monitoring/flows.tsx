@@ -45,14 +45,14 @@ export default function Flow({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <StyledContainer className="rounded-lg overflow-hidden p-5">
+        <StyledContainer className="rounded-md overflow-hidden p-5">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
             className="flex items-center gap-2"
           >
-            <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+            <div className="relative flex items-center bg-[#0A1117] rounded-md border border-gray-800/50">
               <Select
                 onSelect={(value) => {
                   setSelectedRange(value);
@@ -88,7 +88,7 @@ export default function Flow({
                 }}
                 reversed={true}
                 className="h-8 w-28 flex items-center px-2"
-                selectedTextClassName="text-xs font-medium flex-1 text-left"
+                selectedTextClassName="text-xs flex-1 text-left"
                 menuTextClassName="text-xs"
                 menuClassName="w-28"
                 options={[
@@ -111,7 +111,7 @@ export default function Flow({
                   transition={{ duration: 0.3 }}
                   className="flex items-center gap-2"
                 >
-                  <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+                  <div className="relative flex items-center bg-[#0A1117] rounded-md border border-gray-800/50">
                     <DatePicker
                       selected={new Date(startDate)}
                       onChange={(date: Date | null) => {
@@ -119,13 +119,13 @@ export default function Flow({
                           setStartDate(date.toISOString());
                         }
                       }}
-                      className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-medium"
+                      className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-regular"
                       minDate={new Date('2023-09-25')}
                       maxDate={new Date()}
                     />
                   </div>
                   <span className="text-xs text-gray-500">to</span>
-                  <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+                  <div className="relative flex items-center bg-[#0A1117] rounded-md border border-gray-800/50">
                     <DatePicker
                       selected={new Date(endDate)}
                       onChange={(date: Date | null) => {
@@ -133,7 +133,7 @@ export default function Flow({
                           setEndDate(date.toISOString());
                         }
                       }}
-                      className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-medium"
+                      className="h-8 w-[6.5rem] px-2 bg-transparent text-xs font-regular"
                       minDate={new Date('2023-09-25')}
                       maxDate={new Date()}
                     />
@@ -159,7 +159,7 @@ export default function Flow({
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="flex-none lg:flex-1 w-full h-[27.4375rem] animate-loader rounded-lg"
+                    className="flex-none lg:flex-1 w-full h-[27.4375rem] animate-loader rounded-md"
                   />
                 ))
                 : groupedStats
@@ -213,7 +213,7 @@ export default function Flow({
                 >
                   <Button
                     onClick={() => setShowTopTraders(true)}
-                    className="font-boldy rounded-lg ml-auto mr-auto"
+                    className="font-semibold rounded-md ml-auto mr-auto"
                     title="Show Top 100 Traders"
                     variant="outline"
                     size="lg"

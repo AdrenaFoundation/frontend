@@ -175,7 +175,7 @@ export default function OwnerBloc({
             !updatingMetadata.favoriteAchievements?.includes(achievement.index),
         ) ||
         currentFavoriteAchievements.length !==
-          (updatingMetadata.favoriteAchievements?.length ?? 0);
+        (updatingMetadata.favoriteAchievements?.length ?? 0);
 
       if (isNewChanges) {
         updateFavoriteAchievements?.(
@@ -497,9 +497,9 @@ export default function OwnerBloc({
                   ACHIEVEMENTS.find(
                     (achievement) => achievement.titleUnlock === index,
                   ) &&
-                  ACHIEVEMENTS.find(
-                    (achievement) => achievement.titleUnlock === index,
-                  )?.title
+                    ACHIEVEMENTS.find(
+                      (achievement) => achievement.titleUnlock === index,
+                    )?.title
                     ? `Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index)?.title}"`
                     : 'Unlocked by default'
                 }
@@ -638,7 +638,7 @@ export default function OwnerBloc({
                 <>
                   <div className="h-full w-full absolute z-10 backdrop-blur-2xl"></div>
                   <div className="h-full w-full absolute z-20 items-center justify-center flex flex-col">
-                    <div className="font-archivoblack tracking-widest opacity-70 text-sm text-center">
+                    <div className="font-bold tracking-widest opacity-70 text-sm text-center">
                       Change Profile Picture
                     </div>
                   </div>
@@ -653,7 +653,7 @@ export default function OwnerBloc({
             {walletPubkey ? (
               <Tippy
                 content={
-                  <p className="!text-xs !font-boldy">
+                  <p className="!text-xs !font-semibold">
                     <span className="text-xs opacity-50 mr-1">
                       Wallet Address
                     </span>{' '}
@@ -671,7 +671,7 @@ export default function OwnerBloc({
 
             <Tippy
               content="Share Profile"
-              className="!text-xs !font-boldy"
+              className="!text-xs !font-semibold"
               placement="top"
             >
               <Image
@@ -695,7 +695,7 @@ export default function OwnerBloc({
             {canUpdateNickname && userProfile.version > 1 ? (
               <Tippy
                 content="Edit Nickname"
-                className="!text-xs !font-boldy"
+                className="!text-xs !font-semibold"
                 placement="top"
               >
                 <Image
@@ -712,7 +712,7 @@ export default function OwnerBloc({
             {snsDomain ? (
               <Tippy
                 content="Registered Domain through Solana Name Service (SNS)"
-                className="!text-xs !font-boldy"
+                className="!text-xs !font-semibold"
                 placement="top"
               >
                 <div className="flex flex-row gap-1 items-center sm:pr-4">
@@ -730,7 +730,7 @@ export default function OwnerBloc({
           </div>
 
           <div className="flex mt-1">
-            <p className="font-interSemibold text-3xl relative">
+            <p className="font-semibold text-3xl relative">
               {userProfile.nickname}
             </p>
           </div>
@@ -756,7 +756,7 @@ export default function OwnerBloc({
               <span className="text-lg font-cursive relative top-1">
                 &quot;
               </span>
-              <span className="text-sm font-boldy">{title}</span>
+              <span className="text-sm font-semibold">{title}</span>
               <span className="text-lg font-cursive relative bottom-1 -scale-x-100 -scale-y-100">
                 &quot;
               </span>
@@ -815,7 +815,7 @@ export default function OwnerBloc({
               </div>
 
               <InputString
-                className="font-boldy text-xl relative p-3 border rounded-lg text-center"
+                className="font-semibold text-xl relative p-3 border rounded-md text-center"
                 value={updatedNickname ?? ''}
                 onChange={setUpdatedNickname}
                 placeholder="The Great Trader"
@@ -826,31 +826,31 @@ export default function OwnerBloc({
               <div className="h-[1em]">
                 {(trimmedUpdatedNickname &&
                   trimmedUpdatedNickname.length < 3) ||
-                !trimmedUpdatedNickname ? (
-                  <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">
+                  !trimmedUpdatedNickname ? (
+                  <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-semibold">
                     Nickname must be at least 3 characters
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                typeof alreadyTakenNicknames[trimmedUpdatedNickname] ===
+                  typeof alreadyTakenNicknames[trimmedUpdatedNickname] ===
                   'undefined' &&
-                trimmedUpdatedNickname.length > 3 ? (
-                  <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-boldy">
+                  trimmedUpdatedNickname.length > 3 ? (
+                  <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-semibold">
                     Checking nickname availability...
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                alreadyTakenNicknames[trimmedUpdatedNickname] === true ? (
-                  <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-boldy">
+                  alreadyTakenNicknames[trimmedUpdatedNickname] === true ? (
+                  <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-semibold">
                     Nickname is already taken
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                alreadyTakenNicknames[trimmedUpdatedNickname] === false ? (
-                  <div className="text-red-500 text-xs text-center mb-4 text-green font-boldy">
+                  alreadyTakenNicknames[trimmedUpdatedNickname] === false ? (
+                  <div className="text-red-500 text-xs text-center mb-4 text-green font-semibold">
                     Nickname is available
                   </div>
                 ) : null}
@@ -928,7 +928,7 @@ export default function OwnerBloc({
                           alt="settings icon"
                           className="w-[0.7em] h-[0.7em]"
                         />
-                        <p className="text-nowrap font-boldy text-sm">{name}</p>
+                        <p className="text-nowrap font-semibold text-sm">{name}</p>
                       </div>
                     </li>
                   ))}
@@ -956,11 +956,11 @@ export default function OwnerBloc({
                   {activeUpdateTab === 'achievements' ? (
                     <div className="flex flex-col gap-3 p-3">
                       <div>
-                        <h4 className="font-boldy">
+                        <h4 className="font-semibold">
                           Select your favorite achievements
                         </h4>
 
-                        <p className="text-sm font-boldy opacity-50">
+                        <p className="text-sm font-semibold opacity-50">
                           Selected{' '}
                           {updatingMetadata.favoriteAchievements?.length
                             ? updatingMetadata.favoriteAchievements.length
@@ -973,18 +973,18 @@ export default function OwnerBloc({
                         {currentAchievements.map((achievement) => (
                           <div
                             className={twMerge(
-                              'relative flex flex-row gap-3 items-center border-4 p-3 rounded-lg cursor-pointer transition duration-200 overflow-hidden',
+                              'relative flex flex-row gap-3 items-center border-4 p-3 rounded-md cursor-pointer transition duration-200 overflow-hidden',
                               updatingMetadata.favoriteAchievements?.includes(
                                 achievement.index,
                               )
                                 ? 'border-yellow-400/80'
                                 : 'border-[#ffffff20] grayscale',
                               updatingMetadata.favoriteAchievements?.length ===
-                                3 &&
-                                !updatingMetadata.favoriteAchievements.includes(
-                                  achievement.index,
-                                ) &&
-                                'opacity-20 hover:opacity-20 cursor-disabled',
+                              3 &&
+                              !updatingMetadata.favoriteAchievements.includes(
+                                achievement.index,
+                              ) &&
+                              'opacity-20 hover:opacity-20 cursor-disabled',
                             )}
                             onClick={() => {
                               if (
@@ -1001,15 +1001,15 @@ export default function OwnerBloc({
                                 favoriteAchievements:
                                   u.favoriteAchievements !== null
                                     ? u.favoriteAchievements.includes(
-                                        achievement.index,
-                                      )
+                                      achievement.index,
+                                    )
                                       ? u.favoriteAchievements?.filter(
-                                          (a) => a !== achievement.index,
-                                        )
+                                        (a) => a !== achievement.index,
+                                      )
                                       : [
-                                          ...u.favoriteAchievements,
-                                          achievement.index,
-                                        ]
+                                        ...u.favoriteAchievements,
+                                        achievement.index,
+                                      ]
                                     : null,
                               }));
                             }}
@@ -1020,11 +1020,11 @@ export default function OwnerBloc({
                               achievement={
                                 achievement as AchievementInfoExtended
                               }
-                              className="absolute -top-9 scale-[1.5] w-full rounded-lg opacity-20"
+                              className="absolute -top-9 scale-[1.5] w-full rounded-md opacity-20"
                               key={`achievement-${achievement.index}`}
                             />
                             <div className="relative z-20">
-                              <p className="text-base font-boldy">
+                              <p className="text-base font-semibold">
                                 {achievement.title}
                               </p>
                               <p className="opacity-75 text-xs">

@@ -35,7 +35,7 @@ import {
   nativeToUi,
 } from '@/utils';
 
-import TableV2, { TableHeaderType } from '../monitoring/Table';
+import Table, { TableHeaderType } from '../monitoring/Table';
 import { BottomBar, TotalRewardsCell } from './StakingStatsComp/StakingCells';
 
 interface ExportOptions {
@@ -284,10 +284,10 @@ export default function StakingStats({
           <div className="flex flex-col gap-6 p-6 min-w-[400px] sm:min-w-[500px]">
             {/* Year Option */}
             <div className="flex flex-col gap-3">
-              <h3 className="text-xl font-medium text-white">Export by Year</h3>
+              <h3 className="text-xl text-white">Export by Year</h3>
               <div className="flex items-center gap-3">
                 <label className="text-xs text-white/60">Year:</label>
-                <div className="relative flex items-center bg-[#0A1117] rounded-lg border border-gray-800/50">
+                <div className="relative flex items-center bg-[#0A1117] rounded-md border border-gray-800/50">
                   <Select
                     selected={String(exportOptions.year || getCurrentYear())}
                     onSelect={(value: string) => {
@@ -302,7 +302,7 @@ export default function StakingStats({
                     options={getYearOptions().map(year => ({ title: String(year) }))}
                     reversed={true}
                     className="h-8 flex items-center px-2"
-                    selectedTextClassName="text-xs font-medium flex-1 text-left"
+                    selectedTextClassName="text-xs flex-1 text-left"
                     menuTextClassName="text-xs"
                   />
                 </div>
@@ -318,7 +318,7 @@ export default function StakingStats({
 
             {/* Date Range Option */}
             <div className="flex flex-col gap-3">
-              <h3 className="text-xl font-medium text-white">Export by Date Range</h3>
+              <h3 className="text-xl text-white">Export by Date Range</h3>
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex flex-col gap-2 flex-1">
                   <label className="text-xs text-white/60">From:</label>
@@ -372,7 +372,7 @@ export default function StakingStats({
 
             {/* Warning Message */}
             {exportWarning && (
-              <div className='text-xs text-orange font-boldy'>
+              <div className='text-xs text-orange font-semibold'>
                 {exportWarning}
               </div>
             )}
@@ -401,7 +401,7 @@ export default function StakingStats({
 
       <div
         className={twMerge(
-          'm-3 rounded-lg border border-bcolor overflow-hidden bg-[#040D14]',
+          'm-3 rounded-md border border-bcolor overflow-hidden bg-[#040D14]',
           className,
         )}
       >
@@ -413,7 +413,7 @@ export default function StakingStats({
             height={24}
             className="w-4 h-4 opacity-50"
           />
-          <p className="text-lg font-interSemibold">Staked ADX</p>
+          <p className="text-lg font-semibold">Staked ADX</p>
         </div>
         <div className="flex flex-col lg:flex-row">
           <div className="p-3 border-r border-bcolor h-44 lg:h-auto lg:basis-1/3">
@@ -495,7 +495,7 @@ export default function StakingStats({
           </div>
           <div className="flex flex-col gap-4 p-3 sm:basis-2/3">
             <div className="flex flex-row items-center gap-2">
-              <div className="flex flex-col sm:flex-row sm:items-center bg-third border border-inputcolor justify-between rounded-lg p-2 flex-1 gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center bg-third border border-inputcolor justify-between rounded-md p-2 flex-1 gap-2">
                 <p className="opacity-50 text-sm">Liquid Staked</p>{' '}
                 <FormatNumber
                   nb={liquidStakedADX}
@@ -508,7 +508,7 @@ export default function StakingStats({
                   }
                 />
               </div>
-              <div className="flex flex-col sm:flex-row sm:items-center bg-third border border-inputcolor justify-between rounded-lg p-2 flex-1 gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center bg-third border border-inputcolor justify-between rounded-md p-2 flex-1 gap-2">
                 <p className="opacity-50 text-sm">Locked Staked ADX</p>{' '}
                 <FormatNumber
                   nb={lockedStakedADX}
@@ -662,7 +662,7 @@ const StatsTable = ({
 
   return (
     <div className="flex flex-col gap-3">
-      <TableV2
+      <Table
         headers={headers}
         data={data}
         bottomBar={<BottomBar stats={stats} onDownloadClick={onDownloadClick} />}

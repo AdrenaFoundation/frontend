@@ -65,7 +65,7 @@ export default function TradeComp({
   return (
     <div
       className={twMerge(
-        'sm:flex w-full sm:bg-main flex-col sm:flex-row lg:flex-col sm:border sm:rounded-lg',
+        'sm:flex w-full sm:bg-main flex-col sm:flex-row lg:flex-col sm:border sm:rounded-md',
         isBigScreen ? 'mt-0 w-[30em]' : 'mt-4',
         className,
       )}
@@ -74,8 +74,8 @@ export default function TradeComp({
         <TabSelect
           selected={selectedAction}
           tabs={[
-            { title: 'long', activeColor: 'border-b-green text-green' },
-            { title: 'short', activeColor: 'border-b-red text-red' },
+            { title: 'long', activeColor: 'border-transparent [border-image:linear-gradient(to_right,#10b981,#22c55e,#14b8a6)_1]' },
+            { title: 'short', activeColor: 'border-transparent [border-image:linear-gradient(to_right,#ef4444,#e11d48,#db2777)_1]' },
             { title: 'swap', activeColor: 'border-white' },
           ]}
           onClick={(title) => {
@@ -138,7 +138,7 @@ export default function TradeComp({
                   <div className="flex items-center justify-evenly w-[14em] ml-auto mr-auto">
                     <span
                       className={twMerge(
-                        'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                        'font-semibold uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
                         isJupSwap ? 'opacity-100' : '',
                       )}
                       onClick={() => {
@@ -152,7 +152,7 @@ export default function TradeComp({
 
                     <span
                       className={twMerge(
-                        'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                        'font-semibold uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
                         !isJupSwap ? 'opacity-100' : '',
                       )}
                       onClick={() => {

@@ -75,10 +75,15 @@ export default function WalletDigger({
     walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
   });
 
-  const { traderInfo, expanseRanking, factionRanking, awakeningRanking, isTraderInfoLoading } =
-    useTraderInfo({
-      walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
-    });
+  const {
+    traderInfo,
+    expanseRanking,
+    factionRanking,
+    awakeningRanking,
+    isTraderInfoLoading,
+  } = useTraderInfo({
+    walletAddress: targetWalletPubkey ? targetWalletPubkey.toBase58() : null,
+  });
 
   //
   // Staking
@@ -280,7 +285,7 @@ export default function WalletDigger({
             {snsDomain ? (
               <Tippy
                 content="Registered Domain through Solana Name Service (SNS)"
-                className="!text-xs !font-boldy"
+                className="!text-xs !font-semibold"
                 placement="auto"
               >
                 <div className="absolute left-2 top-2 flex flex-row gap-1 items-center">
@@ -310,7 +315,7 @@ export default function WalletDigger({
               value={targetWallet ?? ''}
               onChange={setTargetWallet}
               placeholder="i.e 9zXR1TckFZRt6aVnJZfJ4JrG6WQFr4YZ3ouAgz9AcfST"
-              className="text-center w-[40em] max-w-full bg-inputcolor border rounded-xl p-2"
+              className="text-center w-[40em] max-w-full bg-inputcolor border rounded-md p-2"
               inputFontSize="0.7em"
             />
 
@@ -342,7 +347,7 @@ export default function WalletDigger({
         {targetWalletPubkey ? (
           <StyledContainer className="p-2 w-full" bodyClassName="gap-1">
             <UserRelatedAdrenaAccounts
-              className="h-auto flex mt-auto rounded-lg"
+              className="h-auto flex mt-auto rounded-md"
               userProfile={userProfile ?? false}
               userVest={userVest ? userVest : null}
               positions={positions}
@@ -417,10 +422,10 @@ export default function WalletDigger({
 
               {isLoadingClaimHistoryAdx && isLoadingClaimHistoryAlp ? (
                 <>
-                  <div className="flex-col w-full rounded-lg p-3 z-20 relative flex items-center flex-1 min-h-[2em] bg-transparent border-0 min-w-[12em]">
+                  <div className="flex-col w-full rounded-md p-3 z-20 relative flex items-center flex-1 min-h-[2em] bg-transparent border-0 min-w-[12em]">
                     <Loader />
                   </div>
-                  <div className="flex-col w-full rounded-lg p-3 z-20 relative flex items-center flex-1 min-h-[2em] bg-transparent border-0 min-w-[12em]">
+                  <div className="flex-col w-full rounded-md p-3 z-20 relative flex items-center flex-1 min-h-[2em] bg-transparent border-0 min-w-[12em]">
                     <Loader />
                   </div>
                 </>
@@ -596,7 +601,6 @@ export default function WalletDigger({
                             readOnly={true}
                             key={position.pubkey.toBase58()}
                             position={position}
-                            setTokenB={() => { }}
                           />
                         ))}
                       </div>
@@ -614,7 +618,6 @@ export default function WalletDigger({
                   <PositionsHistory
                     walletAddress={targetWalletPubkey?.toBase58() ?? null}
                     connected={true}
-                    exportButtonPosition="bottom"
                   />
                 </div>
               </>
@@ -717,7 +720,7 @@ export default function WalletDigger({
 
               {allRefereesProfiles !== null &&
                 allRefereesProfiles.length === 0 ? (
-                <div className="w-full items-center justify-center flex font-archivo text-sm opacity-80 pt-8 pb-8">
+                <div className="w-full items-center justify-center flex text-sm opacity-80 pt-8 pb-8">
                   No referee yet.
                 </div>
               ) : null}

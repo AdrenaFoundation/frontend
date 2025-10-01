@@ -7,7 +7,7 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 import Block from './Block';
 
-/** @deprecated use TableV2 instead **/
+/** @deprecated use Table instead **/
 
 export default function TableLegacy({
   breakpoint,
@@ -127,7 +127,7 @@ export default function TableLegacy({
           <div
             key={`columns-${title}-${i}`}
             className={twMerge(
-              'text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade',
+              'text-lg font-semibold overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade',
               columnTitlesClassName,
             )}
             style={{
@@ -145,7 +145,7 @@ export default function TableLegacy({
           className={twMerge(
             'flex w-full border border-transparent text-base pl-1 relative',
             rowHovering
-              ? 'hover:bg-secondary hover:border-bcolor rounded-lg transition duration-300'
+              ? 'hover:bg-secondary hover:border-bcolor rounded-md transition duration-300'
               : '',
             rowClassName,
             specificRowClassName,

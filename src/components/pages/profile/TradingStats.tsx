@@ -87,7 +87,7 @@ export default function TradingStats({
       title: 'Positions',
       nb: traderInfo?.totalNumberPositions ?? 0,
       suffix: `/${livePositionsNb}`,
-      suffixClassName: 'text-sm font-boldy opacity-50',
+      suffixClassName: 'text-sm font-semibold opacity-50',
       icon: <LiveIcon />,
       precision: 0,
       format: 'number',
@@ -139,14 +139,14 @@ export default function TradingStats({
             stat.nb ? (
               <li
                 key={stat.title}
-                className={twMerge("flex flex-row items-center justify-between border border-bcolor bg-third flex-1 p-2 px-3 rounded-lg",
+                className={twMerge("flex flex-row items-center justify-between border border-bcolor bg-third flex-1 p-2 px-3 rounded-md",
                   stat?.onClick && "cursor-pointer"
                 )}
                 onClick={stat?.onClick}
               >
                 <div>
                   <div className='flex flex-row items-center gap-1'>
-                    <p className="text-sm font-boldy opacity-50">
+                    <p className="text-sm font-semibold opacity-50">
                       {stat.title}
                     </p>{' '}
                     {stat.title == 'Total PnL' ? (

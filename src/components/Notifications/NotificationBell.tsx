@@ -141,7 +141,7 @@ export const NotificationBell = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute right-0 mt-2 w-[25rem] bg-secondary rounded-lg overflow-hidden shadow-lg border z-50"
+            className="absolute right-0 mt-2 w-[25rem] bg-secondary rounded-md overflow-hidden shadow-lg border z-50"
             onMouseEnter={() => !isPinned && setIsOpen(true)}
             onMouseLeave={() => !isPinned && setIsOpen(false)}
           >

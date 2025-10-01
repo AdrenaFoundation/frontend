@@ -188,7 +188,7 @@ export default function FactionsLeaderboards({
           <div className="flex flex-col sm:flex-row w-full items-center justify-center relative">
             <Select
               selectedClassName="pr-2"
-              selectedTextClassName="font-boldy text-lg tracking-[0.2rem] uppercase"
+              selectedTextClassName="font-semibold text-lg tracking-[0.2rem] uppercase"
               menuTextClassName="uppercase text-lg"
               menuItemClassName="h-8"
               selected={week}
@@ -202,7 +202,7 @@ export default function FactionsLeaderboards({
               }}
             />
 
-            <div className="font-boldy text-lg tracking-[0.2rem] uppercase text-center sm:text-left">
+            <div className="font-semibold text-lg tracking-[0.2rem] uppercase text-center sm:text-left">
               Boss : {S2_BOSSES_NAME[weekIndex]}
             </div>
           </div>
@@ -231,7 +231,7 @@ export default function FactionsLeaderboards({
                   }}
                 />
 
-                <div className="font-archivo tracking-widest text-center uppercase text-2xl opacity-50">
+                <div className="tracking-widest text-center uppercase text-2xl opacity-50">
                   DEFEATED
                 </div>
               </div>
@@ -266,7 +266,7 @@ export default function FactionsLeaderboards({
         <HealthBar leaderboardData={leaderboardData} weekIndex={weekIndex} />
 
         <div className="w-full flex justify-center items-center flex-col gap-6">
-          <div className="text-xxs font-archivo tracking-widest text-txtfade w-1/2 text-center uppercase">
+          <div className="text-xxs tracking-widest text-txtfade w-1/2 text-center uppercase">
             DAMAGE THE BOSS AND UNLOCK ADX, BONK AND JTO REWARDS
           </div>
 
@@ -455,7 +455,7 @@ export default function FactionsLeaderboards({
 
         <div className="w-full h-[1px] bg-bcolor" />
 
-        <div className="font-boldy text-sm tracking-[0.2rem] uppercase">
+        <div className="font-semibold text-sm tracking-[0.2rem] uppercase">
           DAMAGE METER
         </div>
 

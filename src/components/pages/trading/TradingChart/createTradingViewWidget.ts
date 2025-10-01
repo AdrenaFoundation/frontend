@@ -100,6 +100,15 @@ export function createTradingViewWidget({
       setWidgetReady(true);
       setIsLoading(false);
 
+      widget.applyOverrides({
+        'paneProperties.horzGridProperties.style': 2,
+        'paneProperties.vertGridProperties.style': 2,
+        'paneProperties.vertGridProperties.color': '#15202C',
+        'paneProperties.horzGridProperties.color': '#15202C',
+        'paneProperties.background': CHART_BACKGROUND,
+        'paneProperties.backgroundType': 'solid',
+      });
+
       // Configure the chart and subscribe to events
       configureChartOnReady(widget, savedTimezone);
     });

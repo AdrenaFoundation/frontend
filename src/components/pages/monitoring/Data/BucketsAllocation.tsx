@@ -25,7 +25,7 @@ export default function BucketsAllocation({
   const bucketColors = ['#9F8CAE', '#EB6672', '#7FD7C1'];
 
   return (
-    <div className="bg-[#050D14] border rounded-lg lg:flex-1 shadow-xl h-[400px]">
+    <div className="bg-[#050D14] border rounded-md lg:flex-1 shadow-xl h-[400px]">
       <div className="w-full border-b p-3 mb-6">
         <p className={titleClassName}>ADX Buckets Allocation</p>
       </div>
