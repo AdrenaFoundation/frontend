@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
-import { usePrivyAdapter } from '@/hooks/usePrivyAdapter';
 import { useTokenBalances } from '@/hooks/useTokenBalances';
 import { useSelector } from '@/store/store';
 
@@ -17,7 +16,6 @@ interface PrivySendSOLProps {
 export function PrivySendSOL({ onClose }: PrivySendSOLProps) {
     const { authenticated } = usePrivy();
     const { wallets: connectedStandardWallets } = useWallets();
-    const privyAdapter = usePrivyAdapter();
     const wallet = useSelector((s) => s.walletState.wallet);
 
     // Get the current wallet's public key
@@ -100,15 +98,15 @@ export function PrivySendSOL({ onClose }: PrivySendSOLProps) {
             return 'error';
         }
 
-        if (privyAdapter && privyAdapter.connected && privyAdapter.sendTransaction) {
-            setTransactionMethod('Privy Adapter');
-            const signature = await privyAdapter.sendTransaction(transaction, connection);
-            return signature;
-        }
+        /*  if (privyAdapter && privyAdapter.connected && privyAdapter.sendTransaction) {
+             setTransactionMethod('Privy Adapter');
+             const signature = await privyAdapter.sendTransaction(transaction, connection);
+             return signature;
+         } */
 
         console.error('Privy not available or not connected');
         return 'error';
-    }, [currentWallet, connection, privyAdapter]);
+    }, [currentWallet, connection]);
 
     const handleSend = async () => {
         if (!authenticated || !currentWallet || !selectedToken) {

@@ -2,7 +2,6 @@ import { Wallet } from '@coral-xyz/anchor';
 import { PublicKey, Transaction } from '@solana/web3.js';
 import { useMemo } from 'react';
 
-import { usePrivyAdapter } from '@/hooks/usePrivyAdapter';
 import { useSelector } from '@/store/store';
 import { WalletAdapterExtended } from '@/types';
 
@@ -17,24 +16,16 @@ import { WalletAdapterExtended } from '@/types';
  */
 export default function useWallet(adapters: WalletAdapterExtended[]) {
   const walletState = useSelector((s) => s.walletState.wallet);
-  const privyAdapter = usePrivyAdapter();
 
   return useMemo(() => {
     if (walletState) {
       if (walletState.isPrivy) {
         // This connection came through Privy - always use Privy's adapters
         // Find Privy adapter - it always has name 'Privy' but handles external wallets internally
-        const privyAdapterInList = adapters.find(
-          (x) => x === privyAdapter || x.name === 'Privy',
-        );
+        const privyAdapterInList = adapters.find((x) => x.name === 'Privy');
 
         if (privyAdapterInList) {
-          if (walletState.adapterName === 'Privy') {
-            return privyAdapterInList as unknown as Wallet;
-          } else {
-            // Return the Privy adapter directly - it handles external wallets internally
-            return privyAdapterInList as unknown as Wallet;
-          }
+          return privyAdapterInList as unknown as Wallet;
         } else {
           console.error('useWallet: Privy adapter not found in adapters list');
         }
@@ -42,7 +33,7 @@ export default function useWallet(adapters: WalletAdapterExtended[]) {
         // This connection came through native adapter - use native adapter
         // Exclude the Privy adapter to prevent confusion
         const nativeAdapter = adapters.find(
-          (x) => x.name === walletState.adapterName && x !== privyAdapter,
+          (x) => x.name === walletState.adapterName && x.name !== 'Privy',
         );
 
         if (nativeAdapter) {
@@ -80,5 +71,5 @@ export default function useWallet(adapters: WalletAdapterExtended[]) {
 
     // No wallet state - this is normal during app initialization
     return null;
-  }, [walletState, adapters, privyAdapter]);
+  }, [walletState, adapters]);
 }

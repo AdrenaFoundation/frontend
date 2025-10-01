@@ -10,6 +10,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { usePrivySidebar } from '@/contexts/PrivySidebarContext';
 import { useTokenBalances } from '@/hooks/useTokenBalances';
+import { selectWallet } from '@/selectors/walletSelectors';
 import { useDispatch, useSelector } from '@/store/store';
 
 import { PrivySendSOL } from './PrivySendSOL';
@@ -23,8 +24,11 @@ export function PrivyGlobalSidebar() {
 
     const dispatch = useDispatch();
 
-    // Get external wallet state from Redux store
-    const { wallet } = useSelector((s) => s.walletState);
+    // Get external wallet state from Redux store old way (many subscriptions)
+    // const { wallet } = useSelector((s) => s.walletState);
+
+    // new way to retrieve wallet
+    const wallet = useSelector(selectWallet);
 
     // State for wallet selection and balance with persistence
     const [selectedWalletIndex, setSelectedWalletIndex] = useState(0);
@@ -154,48 +158,49 @@ export function PrivyGlobalSidebar() {
 
     // Persist wallet selection when it changes
     const handleWalletSelection = (index: number, walletType?: 'privy' | 'external') => {
+        // Guard against duplicate selections
         if (walletType === 'external') {
             // External wallet selection is handled by handleExternalWalletSelection
             return;
         }
 
         setSelectedWalletIndex(index);
-        const wallet = solanaWallets[index];
-        if (wallet) {
-            console.log('Selected Privy wallet:', wallet.address.slice(0, 8) + '...');
-
-            // Mark this as a Privy connection to prevent native auto-connect
-            localStorage.setItem('lastConnectionSource', 'privy');
+        const newWallet = solanaWallets[index];
+        if (newWallet.address !== wallet?.walletAddress) {
+            console.log('Selected Privy wallet:', newWallet.address.slice(0, 8) + '...');
 
             // Update global wallet state
             dispatch({
                 type: 'connect',
                 payload: {
                     adapterName: 'Privy',
-                    walletAddress: wallet.address,
+                    walletAddress: newWallet.address,
                     isPrivy: true,
                 },
             });
         }
     };
 
-    // Handle external wallet selection
+    // Handle external wallet selection with debouncing
     const handleExternalWalletSelection = useCallback(async (address: string, adapterName: string) => {
-        console.log('Selected external wallet:', address, 'Adapter:', adapterName);
+        // Guard against duplicate selections
+        if (wallet?.walletAddress === address) {
+            return;
+        }
 
-        // Mark this as a Privy connection to prevent native auto-connect
-        localStorage.setItem('lastConnectionSource', 'privy');
+        console.log('Selected external wallet in PirvyGlobalSidebar:', address, 'Adapter:', adapterName);
 
         // Update global wallet state to use external wallet
         dispatch({
             type: 'connect',
             payload: {
-                adapterName: adapterName,
+                //adapterName: adapterName,
+                adapterName: 'Privy',
                 walletAddress: address,
                 isPrivy: true,
             },
         });
-    }, [dispatch]);
+    }, [dispatch, wallet?.walletAddress]);
 
     // Auto-open sidebar when wallet connects
     useEffect(() => {
@@ -285,7 +290,7 @@ export function PrivyGlobalSidebar() {
         } finally {
             setIsLoadingBalance(false);
         }
-};*/
+    };*/
 
 
 

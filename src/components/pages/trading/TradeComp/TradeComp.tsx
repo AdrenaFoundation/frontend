@@ -120,6 +120,7 @@ export default function TradeComp({
                 )}>
                   <div className={!connected ? 'blur-sm' : ''}>
                     <JupiterWidget
+                      connected={connected}
                       adapters={adapters}
                       activeRpc={activeRpc}
                       id={terminalId}

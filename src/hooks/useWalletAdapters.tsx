@@ -49,29 +49,28 @@ export const WALLET_COLORS = {
   Privy: '#6A59FF',
 } as const satisfies Record<WalletAdapterName, string>;
 
-export default function useWalletAdapters(): WalletAdapterExtended[] {
-
-  const standardAdapters = useStandardWalletAdapters([
-    // Add specialized wallet adapters here
-    //
-    // Wallets compatible with the @solana/wallet-adapter-wallets package will be added automatically
-    new PhantomWalletAdapter(),
-    new CoinbaseWalletAdapter(),
-    new SolflareWalletAdapter(),
-    new WalletConnectWalletAdapter({
-      network: WalletAdapterNetwork.Mainnet,
-      options: {
-        projectId: '549f49d83c4bc0a5c405d8ef6db7972a',
-        relayUrl: 'wss://relay.walletconnect.org',
-        metadata: {
-          name: 'Adrena',
-          description: 'Perpetuals DEX for the Solana community',
-          url: 'https://app.adrena.xyz',
-          icons: ['https://avatars.githubusercontent.com/u/179229932'],
-        },
+// Memoize adapter instances to prevent new objects on every render
+const walletAdapterInstances = [
+  new PhantomWalletAdapter(),
+  new CoinbaseWalletAdapter(),
+  new SolflareWalletAdapter(),
+  new WalletConnectWalletAdapter({
+    network: WalletAdapterNetwork.Mainnet,
+    options: {
+      projectId: '549f49d83c4bc0a5c405d8ef6db7972a',
+      relayUrl: 'wss://relay.walletconnect.org',
+      metadata: {
+        name: 'Adrena',
+        description: 'Perpetuals DEX for the Solana community',
+        url: 'https://app.adrena.xyz',
+        icons: ['https://avatars.githubusercontent.com/u/179229932'],
       },
-    }),
-  ]);
+    },
+  }),
+];
+
+export default function useWalletAdapters(): WalletAdapterExtended[] {
+  const standardAdapters = useStandardWalletAdapters(walletAdapterInstances);
 
   // Use pure Privy adapter for all Privy-based connections (including external wallets)
   const privyAdapter = usePrivyAdapter();
@@ -85,10 +84,9 @@ export default function useWalletAdapters(): WalletAdapterExtended[] {
     return combinedAdapters;
   }, [standardAdapters, privyAdapter]);
 
-  // Remove the adapters that has been added automatically but that we don't want to use
-  return useMemo(() => allAdapters.filter(adapter => {
-    // Always include the Privy adapter - it handles external wallet validation internally
-    if (adapter === privyAdapter) {
+  const filteredAdapters = allAdapters.filter(adapter => {
+    // Always include the Privy adapter - identify by name to avoid reference issues
+    if (adapter.name === 'Privy') {
       return true;
     }
 
@@ -96,15 +94,25 @@ export default function useWalletAdapters(): WalletAdapterExtended[] {
     const isSupported = SUPPORTED_WALLETS.includes(adapter.name as WalletAdapterName);
 
     return isSupported;
-  }).map((adapter) => {
+  });
+
+  return filteredAdapters.map((adapter) => {
     const name = adapter.name as WalletAdapterName;
 
-    (adapter as WalletAdapterExtended).color = WALLET_COLORS[name] ?? '#444444';
-    (adapter as WalletAdapterExtended).iconOverride = WALLET_ICONS[name];
-    (adapter as WalletAdapterExtended).recommended = adapter.name === 'Phantom';
-    (adapter as WalletAdapterExtended).beta = adapter.name === 'WalletConnect' || adapter.name === 'SquadsX';
-    (adapter as WalletAdapterExtended).walletName = name;
+    // Check if adapter already has extended properties to avoid unnecessary mutations
+    const extendedAdapter = adapter as WalletAdapterExtended;
+    if (extendedAdapter.color && extendedAdapter.walletName) {
+      return extendedAdapter; // Already enhanced, return as-is
+    }
 
-    return adapter as WalletAdapterExtended;
-  }), [allAdapters, privyAdapter]);
+    // Safely mutate the adapter by adding only the UI properties
+    // This preserves all the wallet functionality while adding our custom properties
+    extendedAdapter.color = WALLET_COLORS[name] ?? '#444444';
+    extendedAdapter.iconOverride = WALLET_ICONS[name];
+    extendedAdapter.recommended = adapter.name === 'Phantom';
+    extendedAdapter.beta = adapter.name === 'WalletConnect' || adapter.name === 'SquadsX';
+    extendedAdapter.walletName = name;
+
+    return extendedAdapter;
+  });
 }

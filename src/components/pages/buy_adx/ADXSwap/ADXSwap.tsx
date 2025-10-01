@@ -5,7 +5,7 @@ import JupiterWidget from '@/components/JupiterWidget/JupiterWidget';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { WalletAdapterExtended } from '@/types';
 
-export default function ADXSwap({
+function ADXSwap({
   className,
   connected,
   adapters,
@@ -17,8 +17,6 @@ export default function ADXSwap({
   activeRpc: { name: string; connection: Connection };
 }) {
   const adxMint = window.adrena.client.adxToken.mint.toBase58();
-
-  console.log('connected', connected);
 
   return (
     <div
@@ -32,6 +30,7 @@ export default function ADXSwap({
         <JupiterWidget
           adapters={adapters}
           activeRpc={activeRpc}
+          connected={connected}
           id="adx-swap-widget"
           className="bg-transparent border-transparent min-w-[300px] w-full min-h-[550px]"
           defaultOutputMint={adxMint}
@@ -46,3 +45,5 @@ export default function ADXSwap({
     </div>
   );
 }
+
+export default ADXSwap;

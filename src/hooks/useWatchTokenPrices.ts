@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import {
   setTokenPricesWebSocketLoading,
@@ -10,14 +10,15 @@ import { useDispatch } from '@/store/store';
 import { ChaosLabsPricesExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
-let chaosLabsPriceInterval: NodeJS.Timeout | null = null;
-let pricesAlpAdxInterval: NodeJS.Timeout | null = null;
-
 const CHAOS_LABS_PRICE_LOADING_INTERVAL_IN_MS = 5_000;
 const PRICES_ALP_ADX_LOADING_INTERVAL_IN_MS = 10_000;
 
 export default function useWatchTokenPrices() {
   const dispatch = useDispatch();
+
+  // Use refs to properly manage intervals in React
+  const chaosLabsPriceIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pricesAlpAdxIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const loadChaosLabsPrices = useCallback(async () => {
     if (!dispatch) return;
@@ -58,19 +59,17 @@ export default function useWatchTokenPrices() {
       console.error('error happened loading oracle prices', e),
     );
 
-    chaosLabsPriceInterval = setInterval(() => {
+    chaosLabsPriceIntervalRef.current = setInterval(() => {
       loadChaosLabsPrices().catch((e) =>
         console.error('error happened loading oracle prices', e),
       );
     }, CHAOS_LABS_PRICE_LOADING_INTERVAL_IN_MS);
 
     return () => {
-      if (!chaosLabsPriceInterval) {
-        return;
+      if (chaosLabsPriceIntervalRef.current) {
+        clearInterval(chaosLabsPriceIntervalRef.current);
+        chaosLabsPriceIntervalRef.current = null;
       }
-
-      clearInterval(chaosLabsPriceInterval);
-      chaosLabsPriceInterval = null;
     };
 
     // Manually handle dependencies to avoid unwanted refresh
@@ -112,17 +111,15 @@ export default function useWatchTokenPrices() {
 
     loadAlpAdxPrices();
 
-    pricesAlpAdxInterval = setInterval(() => {
+    pricesAlpAdxIntervalRef.current = setInterval(() => {
       loadAlpAdxPrices();
     }, PRICES_ALP_ADX_LOADING_INTERVAL_IN_MS);
 
     return () => {
-      if (!pricesAlpAdxInterval) {
-        return;
+      if (pricesAlpAdxIntervalRef.current) {
+        clearInterval(pricesAlpAdxIntervalRef.current);
+        pricesAlpAdxIntervalRef.current = null;
       }
-
-      clearInterval(pricesAlpAdxInterval);
-      pricesAlpAdxInterval = null;
     };
     // Manually handle dependencies to avoid unwanted refresh
     // eslint-disable-next-line react-hooks/exhaustive-deps

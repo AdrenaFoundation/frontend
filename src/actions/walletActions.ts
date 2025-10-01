@@ -65,7 +65,6 @@ export const autoConnectWalletAction =
       adapter.removeListener('connect', connectFn);
 
       localStorage.setItem('lastConnectedWallet', adapter.name);
-      localStorage.setItem('lastConnectionSource', 'native');
     } catch (err) {
       localStorage.setItem('autoConnectAuthorized', 'false');
 
@@ -98,20 +97,15 @@ export const connectWalletAction =
       });
     };
 
-    adapter.once('connect', connectFn);
+    if (adapter.name !== 'Privy') {
+      // Privy handles its own connection, so we don't need to listen for it
+      adapter.once('connect', connectFn);
+    }
 
     try {
       await adapter.connect();
       localStorage.setItem('autoConnectAuthorized', 'true');
-
       localStorage.setItem('lastConnectedWallet', adapter.name);
-
-      // Clear manual disconnect flag when user manually connects
-      if (adapter.name === 'Privy') {
-        localStorage.setItem('lastConnectionSource', 'privy');
-      } else {
-        localStorage.setItem('lastConnectionSource', 'native');
-      }
     } catch (err: unknown) {
       localStorage.setItem('autoConnectAuthorized', 'false');
 
@@ -147,9 +141,6 @@ export const disconnectWalletAction =
     try {
       await adapter.disconnect();
       localStorage.setItem('autoConnectAuthorized', 'false');
-
-      // Set manual disconnect flag to prevent auto-reconnect
-      localStorage.setItem('lastConnectionSource', 'manual-disconnect');
     } catch (err) {
       localStorage.setItem('autoConnectAuthorized', 'true');
       console.log(

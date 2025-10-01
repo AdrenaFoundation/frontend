@@ -1,17 +1,18 @@
 import { PublicKey } from '@solana/web3.js';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { setBorrowRatesAction } from '@/actions/borrowRatesActions';
 import { RATE_DECIMALS } from '@/constant';
 import { useDispatch } from '@/store/store';
 import { nativeToUi } from '@/utils';
 
-let borrowRateInterval: NodeJS.Timeout | null = null;
-
 const BORROW_RATE_LOADING_INTERVAL_IN_MS = 20_000;
 
 export default function useWatchBorrowRates() {
   const dispatch = useDispatch();
+
+  // Use ref to properly manage interval in React
+  const borrowRateIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const loadBorrowRates = useCallback(async () => {
     if (!dispatch) return;
@@ -53,19 +54,17 @@ export default function useWatchBorrowRates() {
       console.error('error happened loading borrow rates', e),
     );
 
-    borrowRateInterval = setInterval(() => {
+    borrowRateIntervalRef.current = setInterval(() => {
       loadBorrowRates().catch((e) =>
         console.error('error happened loading borrow rates', e),
       );
     }, BORROW_RATE_LOADING_INTERVAL_IN_MS);
 
     return () => {
-      if (!borrowRateInterval) {
-        return;
+      if (borrowRateIntervalRef.current) {
+        clearInterval(borrowRateIntervalRef.current);
+        borrowRateIntervalRef.current = null;
       }
-
-      clearInterval(borrowRateInterval);
-      borrowRateInterval = null;
     };
 
     // Manually handle dependencies to avoid unwanted refresh

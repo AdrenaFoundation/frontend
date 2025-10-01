@@ -17,20 +17,28 @@
 
 import { bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import { usePrivy } from '@privy-io/react-auth';
-import { ConnectedStandardSolanaWallet, useCreateWallet, useSignAndSendTransaction, useWallets } from '@privy-io/react-auth/solana';
+import { ConnectedStandardSolanaWallet, useCreateWallet, useWallets } from '@privy-io/react-auth/solana';
 import { WalletReadyState } from '@solana/wallet-adapter-base';
 import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
 import { EventEmitter } from 'events';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { useDispatch } from '@/store/store';
 import { WalletAdapterExtended } from '@/types';
 import { PrivyAdapterExtended } from '@/types/privy';
 
+import { WalletAdapterName } from './useWalletAdapters';
 import { useWalletAddress } from './useWalletOptimized';
 
 export function usePrivyAdapter(): WalletAdapterExtended | null {
-  const { ready, authenticated, login, logout } = usePrivy();
-  const { signAndSendTransaction } = useSignAndSendTransaction();
+  const { ready, authenticated, user, login, logout } = usePrivy();
+
+  const dispatch = useDispatch();
+
+  // Track disconnect state to prevent race conditions
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
+
   const { wallets: connectedStandardWallets } = useWallets();
   const { createWallet } = useCreateWallet();
 
@@ -41,7 +49,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     // Memoize wallet address to prevent unnecessary recalculations
     const currentWalletAddress = useMemo(() => wallet?.walletAddress, [wallet?.walletAddress]); */
 
-  // Current wallet address from optimized hook
+  // Current wallet address from optimized hook getting redux state from useSelector
   const currentWalletAddress = useWalletAddress();
 
   // Memoize external wallets map for faster lookups
@@ -69,7 +77,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     return null;
   }, [currentWalletAddress, externalWalletAddressMap]);
 
-  const [connecting, setConnecting] = useState(false);
 
   // Derive publicKey from Redux state instead of managing local state
   const publicKey = useMemo(() => {
@@ -92,97 +99,233 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     };
   }, [eventEmitter]);
 
+  // Memoize all wallets (embedded from Privy + external wallets)
   const solanaWallets = useMemo(() => {
-    // Include all connected Solana wallets (both Privy embedded and external wallets)
-
-    return connectedStandardWallets; // Include all wallets, not just Privy ones
+    return connectedStandardWallets;
   }, [connectedStandardWallets]);
 
-  // Dynamic chain detection based on environment
   const currentChain = useMemo(() => {
-    const isDevnet = process.env.NEXT_PUBLIC_DEV_CLUSTER === 'devnet';
-    return isDevnet ? 'solana:devnet' : 'solana:mainnet';
+    return process.env.NEXT_PUBLIC_DEV_CLUSTER === 'devnet' ? 'solana:devnet' : 'solana:mainnet';
   }, []);
 
   // Note: Wallet selection is now handled by Redux state in _app.tsx
   // The publicKey is derived from currentWalletAddress automatically
 
-  // Listen for wallet selection changes from Privy dropdown
+  // Auto-connect when publicKey becomes available, and propagate to walletAdapter system when change of wallet happens
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    console.log('🔌 PRIVY USE EFFECT: firing useEffect');
 
-    const handleWalletSelection = () => {
-      const savedWalletAddress = localStorage.getItem('privy:selectedWallet');
-      if (savedWalletAddress && solanaWallets.length > 0) {
-        const selectedWallet = solanaWallets.find(w => w.address === savedWalletAddress);
-        if (selectedWallet) {
-          try {
-            const pubKey = new PublicKey(selectedWallet.address);
+    // Skip if not ready yet
+    if (!ready) {
+      return;
+    }
+    // Skip if we're in the middle of connecting / disconnecting
+    if (isDisconnecting) {
+      console.log('🔌 PRIVY USE EFFECT: Skipping auto-connect - disconnect  in progress');
+      return;
+    }
 
-            // Update the adapter properties
-            if (adapterRef.current) {
-              adapterRef.current.publicKey = pubKey;
-              // Emit change event to notify listeners
-              eventEmitter.emit('change', { publicKey: pubKey });
-            }
-          } catch {
-            console.error('Invalid Solana address:', selectedWallet.address);
-          }
+    if (isConnecting) {
+      console.log('🔌 PRIVY USE EFFECT: Skipping auto-connect - connect in progress');
+      return;
+    }
+
+    if (publicKey === null && authenticated === true && adapterRef.current) {
+      console.log('🔌 PRIVY USE EFFECT: first connection, trying to connect first wallet');
+      setIsConnecting(true);
+
+      // Get wallet address from localStorage (for selected wallet) or Privy user data (embedded wallet)
+      let walletAddress = null;
+
+      // First try to get from localStorage (for selected wallet)
+      if (typeof window !== 'undefined') {
+        const savedWallet = localStorage.getItem('privy:selectedWallet');
+        walletAddress = savedWallet;
+      }
+
+      // If no localStorage preference, try Privy user data (embedded wallet)
+      if (!walletAddress && user && user?.linkedAccounts?.length > 0) {
+        const embeddedWallet = user.linkedAccounts.find(account =>
+          account.type === 'wallet' &&
+          account.chainType === 'solana' &&
+          account.connectorType === "embedded"
+        );
+        if (embeddedWallet && embeddedWallet.type === 'wallet') {
+          walletAddress = embeddedWallet.address;
         }
       }
-    };
 
-    window.addEventListener('privyWalletSelected', handleWalletSelection);
-    return () => {
-      window.removeEventListener('privyWalletSelected', handleWalletSelection);
-    };
-  }, [solanaWallets, eventEmitter]);
+      // Validate wallet address more strictly
+      if (walletAddress &&
+        typeof walletAddress === 'string' &&
+        walletAddress.length > 0 &&
+        walletAddress !== 'null' &&
+        walletAddress !== 'undefined' &&
+        !walletAddress.includes('{') &&
+        !walletAddress.includes('}')) {
 
-  // Auto-connect when publicKey becomes available
-  useEffect(() => {
-    if (publicKey && authenticated) {
-      // Emit connect event to notify the wallet adapter system
-      eventEmitter.emit('connect', publicKey);
-    } else if (!authenticated || !publicKey) {
-      // Emit disconnect event when no longer authenticated
-      eventEmitter.emit('disconnect');
+        console.log('🔍 PRIVY USE EFFECT: Dispatching FIRST connect action for wallet address:', walletAddress);
+
+        dispatch({
+          type: 'connect',
+          payload: {
+            adapterName: adapterRef.current.name as WalletAdapterName,
+            walletAddress: walletAddress,
+            isPrivy: true,
+          },
+        });
+        setIsConnecting(false);
+      } else if (walletAddress) {
+        console.error('🔌 PRIVY USE EFFECT: Invalid wallet address type or value:', walletAddress, typeof walletAddress);
+        // Clear invalid localStorage value
+        localStorage.removeItem('privy:selectedWallet');
+      }
     }
-  }, [publicKey, authenticated, eventEmitter]);
 
+    // subsequent connections - when publicKey changes (wallet switch)
+    /* if (publicKey && authenticated && adapterRef.current && adapterRef.current.connected) {
+      if (adapterRef.current.publicKey?.toBase58() === publicKey.toBase58() && adapterRef.current.connected) {
+        console.log('🔌 PRIVY USE EFFECT: Wallet switch detected - publicKey changed but it is the same wallet');
+        return;
+      }
+
+      console.log('🔌 PRIVY USE EFFECT: Wallet switch detected - publicKey changed');
+      console.log('🔌 PRIVY USE EFFECT: adapterRef.current.connected - ', adapterRef.current.connected);
+      console.log('🔌 PRIVY USE EFFECT: adapterRef.current.publicKey - ', adapterRef.current.publicKey?.toBase58());
+      console.log('🔌 PRIVY USE EFFECT: publicKey - ', publicKey?.toBase58());
+      console.log('🔍 PRIVY USE EFFECT: Dispatching CHANGED connect action for wallet address:', publicKey.toBase58());
+
+      // Dispatch connect action to update Redux state
+       dispatch({
+        type: 'connect',
+        payload: {
+          adapterName: adapterRef.current.name as WalletAdapterName,
+          walletAddress: publicKey.toBase58(),
+          isPrivy: true,
+        },
+      });
+  } */
+
+    // Clear disconnect flag when authentication is restored
+    if (authenticated && isDisconnecting) {
+      console.log('🔌 PRIVY USE EFFECT: Privy reconnected - clearing disconnect flag');
+      setIsDisconnecting(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [publicKey, authenticated, ready, isDisconnecting, isConnecting, user, dispatch, eventEmitter, adapterRef.current]);
+
+  // called from function connectWalletAction in walletActions.ts
   const connect = useCallback(async () => {
     if (!ready) {
       throw new Error('Privy not ready');
     }
 
-    setConnecting(true);
+    if (isConnecting) {
+      console.log('🔌 Connect already in progress');
+      return;
+    }
+
+    if (isDisconnecting) {
+      console.log('🔌 Disconnect in progress, cannot connect');
+      return;
+    }
+
+    setIsConnecting(true);
     try {
       if (!authenticated) {
-        console.log('🔍 CONNECT: Logging in to Privy');
+        console.log('🔍 CONNECT: Not authenticated, logging in to Privy');
         login();
+        // After login, the useEffect will handle the connection
+        return;
       }
 
-      // If authenticated but no publicKey, try to create one
-      if (authenticated && !publicKey) {
-        try {
-          console.log('🔍 CONNECT: Creating Privy wallet automatically');
-          await createWallet();
-        } catch (error) {
-          console.warn('Failed to create wallet automatically:', error);
-          // Don't throw here, let the user handle wallet creation through the modal
+      console.log('🔍 CONNECT: Already authenticated');
+
+      // Get wallet address from localStorage (for selected wallet) or Privy user data (embedded wallet)
+      let walletAddress = null;
+
+      // First try to get from localStorage (for selected wallet)
+      if (typeof window !== 'undefined') {
+        const savedWallet = localStorage.getItem('privy:selectedWallet');
+        walletAddress = savedWallet;
+      }
+
+      // If no localStorage preference, try Privy user data (embedded wallet)
+      if (!walletAddress && user && user?.linkedAccounts?.length > 0) {
+        const embeddedWallet = user.linkedAccounts.find(account =>
+          account.type === 'wallet' &&
+          account.chainType === 'solana' &&
+          account.connectorType === "embedded"
+        );
+        if (embeddedWallet && embeddedWallet.type === 'wallet') {
+          walletAddress = embeddedWallet.address;
         }
       }
+
+      if (!walletAddress && publicKey) {
+        walletAddress = publicKey.toBase58();
+      }
+
+      if (walletAddress) {
+        console.log('🔍 CONNECT: Dispatching connect action for wallet address:', walletAddress);
+
+        dispatch({
+          type: 'connect',
+          payload: {
+            adapterName: 'Privy',
+            walletAddress: walletAddress,
+            isPrivy: true,
+          },
+        });
+      } else {
+        console.log('🔍 CONNECT: No valid wallet address found, creating new wallet');
+        const newWallet = await createWallet();
+        const newWalletAddress = newWallet.wallet.address;
+
+        console.log('🔍 CONNECT: Created new wallet:', newWalletAddress, 'now connecting to it');
+
+        dispatch({
+          type: 'connect',
+          payload: {
+            adapterName: 'Privy',
+            walletAddress: newWalletAddress,
+            isPrivy: true,
+          },
+        });
+      }
+
     } catch (error) {
       console.error('Failed to connect to Privy:', error);
       throw error;
     } finally {
-      setConnecting(false);
+      setIsConnecting(false);
     }
-  }, [ready, authenticated, login, createWallet, publicKey]);
+  }, [ready, authenticated, login, isConnecting, isDisconnecting, publicKey, user, dispatch, createWallet]);
 
   const disconnect = useCallback(async () => {
-    console.log('🔍 DISCONNECT: Logging out from Privy');
-    await logout();
-  }, [logout]);
+    if (isDisconnecting) {
+      console.log('🔍 DISCONNECT: Already disconnecting');
+      return;
+    }
+
+    // Set disconnect flag to prevent race condition auto-connects
+    setIsDisconnecting(true);
+
+    try {
+      await logout();
+
+      // Clear Redux wallet state immediately to prevent UI flicker
+      dispatch({
+        type: 'disconnect',
+      });
+
+      setIsDisconnecting(false);
+    } catch (error) {
+      console.error('🔍 DISCONNECT: Error during logout:', error);
+      // Still clear the flag even if logout fails
+      setIsDisconnecting(false);
+    }
+  }, [logout, dispatch, isDisconnecting]);
 
   // Helper function to serialize transactions based on type
   const serializeTransaction = useCallback((transaction: Transaction | VersionedTransaction): Uint8Array => {
@@ -312,6 +455,9 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   // Create adapter instance once and update its properties
   useEffect(() => {
     if (!adapterRef.current && ready) {
+
+      console.log('🔌 ADAPTER REF: Creating adapter instance');
+
       // Create the adapter only once
       adapterRef.current = {
         name: 'Privy',
@@ -357,7 +503,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
       // Use Redux wallet address for connection status consistency
       adapterRef.current.publicKey = publicKey; // Derived from Redux state
-      adapterRef.current.connecting = connecting;
+      adapterRef.current.connecting = isConnecting;
       adapterRef.current.connected = authenticated && !!currentWalletAddress;
       adapterRef.current.readyState = (ready ? WalletReadyState.Installed : WalletReadyState.NotDetected) as WalletReadyState;
 
@@ -411,33 +557,10 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
         }
       };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    publicKey,
-    connecting,
-    authenticated,
-    currentWalletAddress,
-    ready,
-    connect,
-    disconnect,
-    signTransaction,
-    signAllTransactions,
-    signMessage,
-    signAndSendTransaction,
-    solanaWallets,
-    eventEmitter,
-    currentChain,
-    serializeTransaction,
-    externalWallet,
-    // Note: 'wallet' is a local variable inside useEffect, not a dependency
-  ]);
+  }, [publicKey, isConnecting, authenticated, currentWalletAddress, ready, connect, disconnect, signTransaction, signAllTransactions, signMessage, solanaWallets, currentChain, serializeTransaction, externalWallet, eventEmitter]);
 
   // Return the adapter if Privy is ready
   // For wallet selection, we need the adapter available even when not authenticated
   // The adapter's connected state will reflect the actual authentication status
-  const shouldReturnAdapter = ready && adapterRef.current;
-  const result = shouldReturnAdapter ? (adapterRef.current || null) : null;
-
-
-  return result;
+  return ready && adapterRef.current ? (adapterRef.current || null) : null;
 }

@@ -1,5 +1,3 @@
-import { usePrivy } from '@privy-io/react-auth';
-import { useWallets } from '@privy-io/react-auth/solana';
 import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -55,9 +53,7 @@ export default function WalletAdapter({
   const { wallet } = useSelector((s) => s.walletState);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
-  const { authenticated: privyAuthenticated, logout: privyLogout } = usePrivy();
   const { isSidebarOpen, openSidebar, closeSidebar } = usePrivySidebar();
-  const { ready: walletsReady } = useWallets();
 
   const connectedAdapter = useMemo(
     () => wallet && adapters.find((x) => x.name === wallet.adapterName),
@@ -65,10 +61,14 @@ export default function WalletAdapter({
   );
 
   // Check if any adapter is currently connecting
-  const isConnecting = useMemo(
-    () => adapters.some((adapter) => adapter.connecting),
-    [adapters],
+  const isConnecting = useMemo(() => {
+    return adapters.some((adapter) => adapter.connecting)
+  }, [adapters],
   );
+
+  const isConnected = useMemo(() => {
+    return adapters.some((adapter) => adapter.connected);
+  }, [adapters]);
 
   // We use a ref in order to avoid getting item from local storage unnecessarily on every render.
   const autoConnectAuthorizedRef = useRef<null | boolean>(null);
@@ -92,8 +92,7 @@ export default function WalletAdapter({
 
   const connectedWalletAdapterName = wallet?.adapterName;
 
-  // handle Privy connected stay to be actually authenticated, not just connected
-  const connected = !!connectedWalletAdapterName || (privyAuthenticated && walletsReady);
+  const connected = !!connectedWalletAdapterName && isConnected;
 
   const isBreak = useBetterMediaQuery('(min-width: 640px)');
 
@@ -101,7 +100,7 @@ export default function WalletAdapter({
   useEffect(() => {
     if (autoConnectAuthorizedRef.current && lastConnectedWalletRef.current) {
       // Check if the last connection was via Privy - if so, skip native auto-connect
-      const wasPrivyConnection = localStorage.getItem('lastConnectionSource') === 'privy';
+      const wasPrivyConnection = lastConnectedWalletRef.current === 'Privy';
 
       if (wasPrivyConnection) {
         console.log('🚫 Skipping native auto-connect - last connection was via Privy');
@@ -132,20 +131,31 @@ export default function WalletAdapter({
 
     if (!adapter) return;
 
-    adapter.on('connect', (walletPubkey: PublicKey) => {
-      dispatch({
-        type: 'connect',
-        payload: {
-          adapterName: connectedWalletAdapterName,
-          walletAddress: walletPubkey.toBase58(),
-        },
-      });
-    });
+    // Only listen for account changes, not initial connections
+    // Initial connections are handled by walletActions.ts
+    const handleAccountChange = (walletPubkey: PublicKey) => {
+      const currentWalletAddress = wallet?.walletAddress;
+      const newWalletAddress = walletPubkey.toBase58();
+
+      // Only dispatch if the wallet address actually changed (account switch)
+      if (currentWalletAddress && currentWalletAddress !== newWalletAddress) {
+        console.log('🔄 Account changed from', currentWalletAddress.slice(0, 8), 'to', newWalletAddress.slice(0, 8));
+        dispatch({
+          type: 'connect',
+          payload: {
+            adapterName: connectedWalletAdapterName,
+            walletAddress: newWalletAddress,
+          },
+        });
+      }
+    };
+
+    adapter.on('connect', handleAccountChange);
 
     return () => {
       adapter.removeAllListeners('connect');
     };
-  }, [dispatch, connectedWalletAdapterName, adapters]);
+  }, [dispatch, connectedWalletAdapterName, adapters, wallet?.walletAddress]);
 
   return (
     <div className="relative">
@@ -196,8 +206,7 @@ export default function WalletAdapter({
                     return;
                   }
 
-                  if (privyAuthenticated) {
-                    // For Privy wallets, open/close the sidebar instead of opening profile page
+                  if (isConnected) { // adapt for nativer wallets aswell
                     if (isSidebarOpen) {
                       closeSidebar();
                     } else {
@@ -217,32 +226,10 @@ export default function WalletAdapter({
 
                   if (!connected || !connectedAdapter) return;
 
-                  // Check if current connection is through Privy
                   if (wallet?.isPrivy) {
-                    // This is a Privy connection - logout from Privy
-                    if (privyAuthenticated) {
-                      console.log('🔌 Logging out from Privy');
-
-                      // Clear Redux state FIRST to prevent auto-reconnect during logout
-                      dispatch(disconnectWalletAction(connectedAdapter));
-
-                      // Clear localStorage to prevent auto-reconnect
-                      localStorage.removeItem('privy:selectedWallet');
-                      localStorage.setItem('lastConnectionSource', 'manual-disconnect');
-
-                      // Then logout from Privy (async, don't wait for it)
-                      privyLogout().catch((error) => {
-                        // Don't throw on logout errors - they're often harmless (400 = already logged out)
-                        console.warn('🔌 Privy logout warning (likely harmless):', error);
-                      });
-
-                      console.log('🔌 Privy logout initiated and state cleared');
-                    }
+                    dispatch(disconnectWalletAction(adapters.find((x) => x.name === 'Privy')!));
                   } else {
-                    // This is a native connection - disconnect the native adapter
-                    if (connectedAdapter) {
-                      dispatch(disconnectWalletAction(connectedAdapter));
-                    }
+                    dispatch(disconnectWalletAction(connectedAdapter));
                   }
                 }}
               >
@@ -358,21 +345,12 @@ export default function WalletAdapter({
                 <MenuItem
                   className="sm:hidden py-2"
                   onClick={() => {
-                    if (!connected) return;
+                    if (!connected || !connectedAdapter) return;
 
-                    // Check if current connection is through Privy
                     if (wallet?.isPrivy) {
-                      // This is a Privy connection - logout from Privy
-                      if (privyAuthenticated) {
-                        privyLogout();
-                      }
-                      // Also clear Redux state immediately
-                      dispatch({ type: 'disconnect' });
+                      dispatch(disconnectWalletAction(adapters.find((x) => x.name === 'Privy')!));
                     } else {
-                      // This is a native connection - disconnect the native adapter
-                      if (connectedAdapter) {
-                        dispatch(disconnectWalletAction(connectedAdapter));
-                      }
+                      dispatch(disconnectWalletAction(connectedAdapter));
                     }
                   }}
                 >
@@ -402,10 +380,11 @@ export default function WalletAdapter({
             }
           }}
         />
-      )}
+      )
+      }
 
       <WalletSelectionModal adapters={adapters} />
       <SignMessageModal adapters={adapters} />
-    </div>
+    </div >
   );
 }

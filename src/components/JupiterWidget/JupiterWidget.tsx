@@ -40,44 +40,17 @@ export default function JupiterWidget({
 }: JupiterWidgetProps) {
     const appWalletState = useSelector((s) => s.walletState.wallet);
 
-    // Memoize RPC endpoint to prevent unnecessary re-renders
     const rpcEndpoint = useMemo(() => activeRpc.connection.rpcEndpoint, [activeRpc.connection.rpcEndpoint]);
 
     // Find the connected adapter from the app's adapters
-    // For Privy external wallets, we need to find the Privy adapter and check if it's connected
     const connectedAdapter = useMemo(() => {
         if (!appWalletState?.adapterName) return null;
 
-        // For Privy connections (both embedded and external wallets)
-        if (appWalletState.isPrivy) {
-            // Find the Privy adapter by looking for any adapter that:
-            // 1. Has the expected name, OR
-            // 2. Is named 'Privy' (original name), OR
-            // 3. Has a walletName property that matches (our custom property)
-            const privyAdapter = adapters.find(adapter => {
-                const isNameMatch = adapter.name === appWalletState.adapterName;
-                const isPrivyAdapter = adapter.name === 'Privy';
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const isWalletNameMatch = (adapter as any).walletName === appWalletState.adapterName;
-
-                return (isNameMatch || isPrivyAdapter || isWalletNameMatch) && adapter.connected;
-            });
-
-            if (privyAdapter) {
-                return privyAdapter;
-            }
-        } else {
-            // For native wallet connections
-            const nativeAdapter = adapters.find(adapter =>
-                adapter.name === appWalletState.adapterName && adapter.connected
-            );
-
-            if (nativeAdapter) {
-                return nativeAdapter;
-            }
-        }
-
-        return null;
+        // Use Redux state as source of truth instead of adapter.connected
+        // This prevents losing connection during rebuilds when adapter.connected is temporarily false
+        return adapters.find(adapter =>
+            adapter.name === appWalletState.adapterName && adapter.connected
+        ) || null;
     }, [adapters, appWalletState]);
 
     // Set Jupiter CSS custom properties for theming
@@ -191,29 +164,15 @@ export default function JupiterWidget({
     // Based on @solana/wallet-adapter-react useWallet() return type
     const walletContext = useMemo(() => {
         if (connectedAdapter && appWalletState) {
-            // Use the app wallet address as the source of truth for the public key
-            // This ensures Jupiter uses the correct wallet address for balance queries
-            let jupiterPublicKey: PublicKey | null = null;
-            try {
-                jupiterPublicKey = appWalletState.walletAddress ? new PublicKey(appWalletState.walletAddress) : null;
-            } catch (error) {
-                console.error('❌ JUPITER: Invalid wallet address:', appWalletState.walletAddress, error);
-                jupiterPublicKey = connectedAdapter.publicKey; // Fallback to adapter's public key
-            }
-
-            // Debug the connected state at the moment of walletContext creation
-            // Use app wallet state for connection status instead of adapter.connected
-            const isConnected = !!(appWalletState.walletAddress && jupiterPublicKey);
-
             // Create a proxy adapter with the correct public key for Jupiter
             const proxyAdapter = {
                 ...connectedAdapter,
-                publicKey: jupiterPublicKey, // Override with the correct public key
-                connected: isConnected
+                publicKey: new PublicKey(appWalletState.walletAddress), // Override with the correct public key
+                connected: connectedAdapter.connected
             };
 
             const walletContext = {
-                connected: isConnected,
+                connected: connectedAdapter.connected,
                 connecting: false,
                 disconnecting: false,
                 // Jupiter expects wallet.adapter, not just wallet
@@ -221,7 +180,7 @@ export default function JupiterWidget({
                     adapter: proxyAdapter,
                     readyState: connectedAdapter.readyState
                 },
-                publicKey: jupiterPublicKey,
+                publicKey: new PublicKey(appWalletState.walletAddress),
                 autoConnect: false,
                 // Standard wallet adapter methods - using stable callbacks
                 connect: stableConnect,
@@ -264,15 +223,7 @@ export default function JupiterWidget({
             wallets: [],
             select: async () => null
         };
-    }, [
-        connectedAdapter,
-        appWalletState,
-        stableConnect,
-        stableDisconnect,
-        stableSignTransaction,
-        stableSignAllTransactions,
-        stableSignMessage
-    ]);
+    }, [connectedAdapter, appWalletState, stableConnect, stableDisconnect, stableSignTransaction, stableSignAllTransactions, stableSignMessage]);
 
     // Official Jupiter example - init once, sync on wallet changes
     useEffect(() => {
@@ -319,6 +270,10 @@ export default function JupiterWidget({
             },
         });
 
+        window.Jupiter.syncProps({
+            passthroughWalletContextState: walletContext
+        });
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         id,
@@ -346,34 +301,20 @@ export default function JupiterWidget({
         lastSyncRef.current = syncKey;
 
         try {
-            // Small delay to ensure Jupiter is fully ready
+            // Single sync with minimal delay - avoid double syncs that cause extra re-renders
             setTimeout(() => {
                 try {
-                    // Official Jupiter syncProps call
+                    console.log('🔍 JUPITER: Syncing props');
                     window.Jupiter.syncProps({
                         passthroughWalletContextState: walletContext
                     });
-
-                    // Force a second sync after a short delay (sometimes needed for UI update)
-                    setTimeout(() => {
-                        if (window.Jupiter?.syncProps && walletContext.connected) {
-                            try {
-                                window.Jupiter.syncProps({
-                                    passthroughWalletContextState: walletContext
-                                });
-                            } catch (secondSyncError) {
-                                console.error('❌ STANDARD: Second sync failed:', secondSyncError);
-                            }
-                        }
-                    }, 200);
-
                 } catch (syncError) {
-                    console.error('❌ STANDARD: Sync operation failed:', syncError);
+                    console.error('❌ STANDARD: Jupiter sync failed:', syncError);
                 }
-            }, 50);
+            }, 500); // Slightly longer delay but only one sync
 
         } catch (error) {
-            console.error('❌ STANDARD: Failed to setup sync:', error);
+            console.error('❌ STANDARD: Failed to setup Jupiter sync:', error);
         }
     }, [
         walletContext.connected,
