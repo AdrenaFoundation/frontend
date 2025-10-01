@@ -210,7 +210,7 @@ export const BottomBar = ({
             // handle toggle in parent div
           }}
         />
-        <p className="text-sm opacity-50">PnL w/o fees</p>
+        <p className="text-sm opacity-50">PnL w/ fees</p>
       </div>
 
       <div

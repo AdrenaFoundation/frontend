@@ -77,6 +77,7 @@ export default function Table({
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
   const [isHorizontalScrolling, setIsHorizontalScrolling] = useState(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout>();
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const handleScroll = () => {
     const container = scrollContainerRef.current;
@@ -111,21 +112,66 @@ export default function Table({
     }
   };
 
+  const handleTouchStart = (e: TouchEvent) => {
+    if (!isSticky) return;
+
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchMove = (e: TouchEvent) => {
+    if (!isSticky || !touchStartRef.current) return;
+
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
+    const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
+
+    // Detect horizontal scrolling (more horizontal movement than vertical)
+    const isHorizontalScroll = deltaX > deltaY && deltaX > 10; // 10px threshold
+
+    if (isHorizontalScroll) {
+      setIsHorizontalScrolling(true);
+
+      // Clear existing timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      // Reset horizontal scrolling state after scrolling stops
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsHorizontalScrolling(false);
+      }, 150);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    touchStartRef.current = null;
+  };
+
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
     container.addEventListener('scroll', handleScroll);
     container.addEventListener('wheel', handleWheel);
+    container.addEventListener('touchstart', handleTouchStart, {
+      passive: true,
+    });
+    container.addEventListener('touchmove', handleTouchMove, { passive: true });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
     handleScroll();
 
     return () => {
       container.removeEventListener('scroll', handleScroll);
       container.removeEventListener('wheel', handleWheel);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSticky]);
 
   // Memoized calculations for sticky columns and table layout
@@ -440,61 +486,61 @@ export default function Table({
               <AnimatePresence mode="wait">
                 {isLoading
                   ? Array.from({ length: 10 }).map((_, rowIdx) => (
-                    <motion.tr
-                      key={`loader-row-${rowIdx}`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      {headers.map((_, colIdx) => (
-                        <td
-                          key={`loader-cell-${rowIdx}-${colIdx}`}
-                          className="p-4 h-[2.351875rem] bg-[#050D14] animate-loader border border-white/10"
-                        />
-                      ))}
-                    </motion.tr>
-                  ))
-                  : data.map((row, rowIndex) => (
-                    <motion.tr
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      key={`row-${rowIndex}`}
-                      className={twMerge(
-                        'group border-b border-bcolor hover:bg-third transition-colors',
-                        onRowClick ? 'cursor-pointer' : '',
-                        data.length > 7 ? 'last:border-b-0' : '',
-                      )}
-                      onClick={() => {
-                        if (onRowClick) onRowClick(row.id as string | number);
-                      }}
-                    >
-                      {headers.map((header, colIndex) => {
-                        const key = header.key ?? header.title;
-                        const sticky = getStickyProps(colIndex, false);
-                        return (
+                      <motion.tr
+                        key={`loader-row-${rowIdx}`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        {headers.map((_, colIdx) => (
                           <td
-                            key={`cell-${rowIndex}-${colIndex}`}
-                            className={twMerge(
-                              'relative p-2 px-2 text-sm sm:text-base border-r border-bcolor last:border-r-0',
-                              alignClass(header.align),
-                              sticky.className,
-                            )}
-                            style={sticky.style}
-                            onMouseOver={() => {
-                              if (setActiveCol)
-                                setActiveCol(header.key ?? header.title);
-                            }}
-                            onMouseOut={() => {
-                              if (setActiveCol) setActiveCol(null);
-                            }}
-                          >
-                            {row[key]}
-                          </td>
-                        );
-                      })}
-                    </motion.tr>
-                  ))}
+                            key={`loader-cell-${rowIdx}-${colIdx}`}
+                            className="p-4 h-[2.351875rem] bg-[#050D14] animate-loader border border-white/10"
+                          />
+                        ))}
+                      </motion.tr>
+                    ))
+                  : data.map((row, rowIndex) => (
+                      <motion.tr
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        key={`row-${rowIndex}`}
+                        className={twMerge(
+                          'group border-b border-bcolor hover:bg-third transition-colors',
+                          onRowClick ? 'cursor-pointer' : '',
+                          data.length > 7 ? 'last:border-b-0' : '',
+                        )}
+                        onClick={() => {
+                          if (onRowClick) onRowClick(row.id as string | number);
+                        }}
+                      >
+                        {headers.map((header, colIndex) => {
+                          const key = header.key ?? header.title;
+                          const sticky = getStickyProps(colIndex, false);
+                          return (
+                            <td
+                              key={`cell-${rowIndex}-${colIndex}`}
+                              className={twMerge(
+                                'relative p-2 px-2 text-sm sm:text-base border-r border-bcolor last:border-r-0',
+                                alignClass(header.align),
+                                sticky.className,
+                              )}
+                              style={sticky.style}
+                              onMouseOver={() => {
+                                if (setActiveCol)
+                                  setActiveCol(header.key ?? header.title);
+                              }}
+                              onMouseOut={() => {
+                                if (setActiveCol) setActiveCol(null);
+                              }}
+                            >
+                              {row[key]}
+                            </td>
+                          );
+                        })}
+                      </motion.tr>
+                    ))}
               </AnimatePresence>
             </tbody>
           </table>

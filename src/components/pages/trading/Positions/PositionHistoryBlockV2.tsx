@@ -214,7 +214,9 @@ export default function PositionHistoryBlockV2({
                     // handle toggle in parent div
                   }}
                 />
-                <p className="text-sm font-semibold opacity-50">PnL w/ fees</p>
+                <p className="text-sm font-semibold opacity-50">
+                  PnL {showAfterFees ? 'w/ fees' : 'w/o fees'}
+                </p>
               </div>
 
               {showShareButton && (

@@ -81,7 +81,7 @@ export default function AllPositionTable({
     { title: 'Entry Price', key: 'entryPrice', align: 'right' },
     { title: 'Liq. Price', key: 'liquidationPrice', align: 'right' },
     { title: 'Open Date', key: 'openDate', align: 'right' },
-    { title: 'Action', key: 'resolve', align: 'right' },
+    { title: 'Action', key: 'resolve', width: 8.75, align: 'right' },
   ];
 
   const { maxPnl, minPnl } = useMemo(() => {

@@ -71,6 +71,7 @@ export default function PositionBlockV2({
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const tradeTokenPrice = useSelector((s) =>
