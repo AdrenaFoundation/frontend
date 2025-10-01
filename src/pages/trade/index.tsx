@@ -434,6 +434,14 @@ export default function Trade({
     ? allPositions.filter((p) => p.token.mint.equals(tokenB.mint))
     : null;
 
+  // Calculate position counts for the selected token
+  const numberLong = allActivePositions?.filter(
+    (p) => p.side === 'long',
+  ).length;
+  const numberShort = allActivePositions?.filter(
+    (p) => p.side === 'short',
+  ).length;
+
   const totalStats =
     positions && positions.length > 0
       ? positions.reduce(
@@ -768,11 +776,18 @@ export default function Trade({
                   activePositionModal.slice(1)
                   } Position`}
                 close={() => setActivePositionModal(null)}
-                className="flex flex-col overflow-y-auto"
+                className="flex flex-col overflow-y-auto w-full"
               >
-                {tokenB && <TradingChartMini token={tokenB} />}
+                {tokenB && (
+                  <TradingChartMini
+                    token={tokenB}
+                    selectedAction={selectedAction}
+                    numberLong={numberLong}
+                    numberShort={numberShort}
+                  />
+                )}
                 <div className="bg-bcolor w-full h-[1px] my-3" />
-                <div className="flex w-full px-4">
+                <div className="flex w-full">
                   <TradeComp
                     selectedAction={selectedAction}
                     setSelectedAction={setSelectedAction}
@@ -790,7 +805,7 @@ export default function Trade({
                     }}
                     setTokenB={setTokenB}
                     openedPosition={openedPosition}
-                    className="p-0 m-0"
+                    className="p-0 m-0 w-full px-4"
                     wallet={wallet}
                     connected={connected}
                     activeRpc={activeRpc}

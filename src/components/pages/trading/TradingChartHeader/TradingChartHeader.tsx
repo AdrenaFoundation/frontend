@@ -1,4 +1,3 @@
-import Tippy from '@tippyjs/react';
 import Head from 'next/head';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -41,6 +40,7 @@ export default function TradingChartHeader({
   ).length;
 
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [isStatsExpanded, setIsStatsExpanded] = useState(false);
 
   useEffect(() => {
     try {
@@ -131,7 +131,7 @@ export default function TradingChartHeader({
   );
 
   const favoritesBarClasses =
-    'min-w-0 flex-1 overflow-hidden lg:min-w-0 lg:overflow-hidden lg:w-auto lg:flex-1';
+    'min-w-0 flex-1 overflow-hidden sm:min-w-0 sm:overflow-hidden sm:w-auto sm:flex-1';
 
   return (
     <>
@@ -144,12 +144,53 @@ export default function TradingChartHeader({
       </Head>
       <div
         className={twMerge(
-          'flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 lg:gap-2 z-30 bg-secondary border-b p-3 lg:p-1',
+          'flex flex-col sm:flex-row sm:items-center sm:justify-between sm:gap-2 z-30 bg-main border-b px-3 py-1',
           className,
         )}
       >
-        {/* Left side: Token Selector + Favorites */}
-        <div className="flex items-center justify-between w-full lg:w-auto lg:flex-1 gap-3 lg:gap-3 min-w-0">
+        {/* Mobile: Wrapping layout */}
+        <div className="flex sm:hidden flex-row items-center justify-between flex-wrap gap-2">
+          {/* Left side: Token Selector + Favorites */}
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Token Selector */}
+            <div className="flex-shrink-0">
+              <TokenSelector
+                tokenList={tokenList}
+                selected={selected}
+                onChange={onChange}
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+                selectedAction={selectedAction}
+              />
+            </div>
+
+            {/* Favorites Bar*/}
+            <div className="min-w-0 overflow-hidden">
+              <FavoritesBar
+                favoriteTokens={favoriteTokens}
+                selected={selected}
+                onChange={onChange}
+              />
+            </div>
+          </div>
+
+          {/* Right side: 24h% + Price + Expand Button */}
+          <div className="flex items-center gap-3 ml-auto">
+            <TradingChartHeaderStats
+              selected={selected}
+              numberLong={numberLong}
+              numberShort={numberShort}
+              selectedAction={selectedAction}
+              compact={true}
+              showMainLineOnly={true}
+              isStatsExpanded={isStatsExpanded}
+              setIsStatsExpanded={setIsStatsExpanded}
+            />
+          </div>
+        </div>
+
+        {/* Desktop: Original layout */}
+        <div className="hidden sm:flex items-center justify-between w-full sm:w-auto sm:flex-1 gap-3 sm:gap-3 min-w-0">
           {/* Token Selector */}
           <div className="flex-shrink-0">
             <TokenSelector
@@ -170,39 +211,27 @@ export default function TradingChartHeader({
               onChange={onChange}
             />
           </div>
-
-          {/* Long/Short positions */}
-          {numberLong && numberShort ? (
-            <div className="flex md:hidden gap-0.5 flex-shrink-0">
-              <Tippy
-                content="Long positions"
-                className="flex flex-col items-center"
-              >
-                <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-md px-2 py-1.5">
-                  {numberLong}
-                </span>
-              </Tippy>
-              <Tippy
-                content="Short positions"
-                className="flex flex-col items-center"
-              >
-                <span className="text-redSide text-xxs leading-none bg-red/10 rounded-md px-2 py-1.5">
-                  {numberShort}
-                </span>
-              </Tippy>
-            </div>
-          ) : null}
         </div>
 
-        {/* Right side: Stats */}
-        <div className="flex-shrink-0 w-full md:w-auto md:justify-end lg:self-center">
+        {/* Desktop Stats */}
+        <div className="hidden sm:block flex-shrink-0 sm:self-center">
           <TradingChartHeaderStats
             selected={selected}
             numberLong={numberLong}
             numberShort={numberShort}
-            className="p-1"
+            selectedAction={selectedAction}
           />
         </div>
+
+        {/* Mobile: Expandable stats section */}
+        <TradingChartHeaderStats
+          selected={selected}
+          numberLong={numberLong}
+          numberShort={numberShort}
+          selectedAction={selectedAction}
+          showExpandedStatsOnly={true}
+          isStatsExpanded={isStatsExpanded}
+        />
       </div>
     </>
   );

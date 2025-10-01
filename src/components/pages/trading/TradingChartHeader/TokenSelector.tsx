@@ -196,15 +196,19 @@ export default function TokenSelector({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const isOpen = asModal ? (controlledIsOpen ?? false) : internalIsOpen;
-  const handleClose = asModal
-    ? () => {
-      onClose?.();
-      setSearchTerm('');
-    }
-    : () => {
-      setInternalIsOpen(false);
-      setSearchTerm('');
-    };
+  const handleClose = useMemo(
+    () =>
+      asModal
+        ? () => {
+            onClose?.();
+            setSearchTerm('');
+          }
+        : () => {
+            setInternalIsOpen(false);
+            setSearchTerm('');
+          },
+    [asModal, onClose],
+  );
 
   const tokenData = useTokenSelectorData(tokenList, selectedAction, favorites);
 

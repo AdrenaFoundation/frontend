@@ -84,105 +84,114 @@ export default function StakingStats({
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportOptions, setExportOptions] = useState<ExportOptions>({
     type: 'year',
-    year: new Date().getFullYear()
+    year: new Date().getFullYear(),
   });
   const [exportWarning, setExportWarning] = useState<string>('');
 
-  const downloadClaimHistory = useCallback(async (options: ExportOptions): Promise<boolean> => {
-    if (!walletAddress || isDownloading) {
-      return false;
-    }
-
-    setIsDownloading(true);
-    setExportWarning(''); // Clear any previous warnings
-
-    try {
-      // Server uses large default page size (500,000), so most users get everything in one request
-      const exportParams: Parameters<typeof DataApiClient.exportClaims>[0] = {
-        userWallet: walletAddress,
-        symbol: 'ADX', // ADX staking claims
-      };
-
-      if (options.type === 'year' && options.year) {
-        exportParams.year = options.year;
-      } else if (options.type === 'dateRange') {
-        if (options.startDate) {
-          exportParams.startDate = new Date(options.startDate);
-        }
-        if (options.endDate) {
-          const endDate = new Date(options.endDate);
-          endDate.setUTCHours(23, 59, 59, 999);
-          exportParams.endDate = endDate;
-        }
-      }
-
-      const firstPageResult = await DataApiClient.exportClaims(exportParams);
-
-      if (!firstPageResult) {
-        setExportWarning('Failed to export claims. Please try again.');
+  const downloadClaimHistory = useCallback(
+    async (options: ExportOptions): Promise<boolean> => {
+      if (!walletAddress || isDownloading) {
         return false;
       }
 
-      const { csvData, metadata } = firstPageResult;
+      setIsDownloading(true);
+      setExportWarning(''); // Clear any previous warnings
 
-      if (!csvData || csvData.trim().length === 0 || metadata.totalClaims === 0) {
-        setExportWarning(`No claims available for ${options.type === 'year' ? `year ${options.year}` : `date range ${options.startDate} to ${options.endDate}`}`);
-        return false;
-      }
+      try {
+        // Server uses large default page size (500,000), so most users get everything in one request
+        const exportParams: Parameters<typeof DataApiClient.exportClaims>[0] = {
+          userWallet: walletAddress,
+          symbol: 'ADX', // ADX staking claims
+        };
 
-      let allCsvData = csvData;
+        if (options.type === 'year' && options.year) {
+          exportParams.year = options.year;
+        } else if (options.type === 'dateRange') {
+          if (options.startDate) {
+            exportParams.startDate = new Date(options.startDate);
+          }
+          if (options.endDate) {
+            const endDate = new Date(options.endDate);
+            endDate.setUTCHours(23, 59, 59, 999);
+            exportParams.endDate = endDate;
+          }
+        }
 
-      // Handle rare case where data spans multiple pages (very large datasets +500k claims)
-      if (metadata.totalPages > 1) {
-        for (let page = 2; page <= metadata.totalPages; page++) {
-          const pageResult = await DataApiClient.exportClaims({
-            ...exportParams,
-            page,
-          });
+        const firstPageResult = await DataApiClient.exportClaims(exportParams);
 
-          if (pageResult && pageResult.csvData) {
-            const lines = pageResult.csvData.split('\n');
-            const dataWithoutHeader = lines.slice(1).join('\n');
-            if (dataWithoutHeader.trim()) {
-              allCsvData += '\n' + dataWithoutHeader;
+        if (!firstPageResult) {
+          setExportWarning('Failed to export claims. Please try again.');
+          return false;
+        }
+
+        const { csvData, metadata } = firstPageResult;
+
+        if (
+          !csvData ||
+          csvData.trim().length === 0 ||
+          metadata.totalClaims === 0
+        ) {
+          setExportWarning(
+            `No claims available for ${options.type === 'year' ? `year ${options.year}` : `date range ${options.startDate} to ${options.endDate}`}`,
+          );
+          return false;
+        }
+
+        let allCsvData = csvData;
+
+        // Handle rare case where data spans multiple pages (very large datasets +500k claims)
+        if (metadata.totalPages > 1) {
+          for (let page = 2; page <= metadata.totalPages; page++) {
+            const pageResult = await DataApiClient.exportClaims({
+              ...exportParams,
+              page,
+            });
+
+            if (pageResult && pageResult.csvData) {
+              const lines = pageResult.csvData.split('\n');
+              const dataWithoutHeader = lines.slice(1).join('\n');
+              if (dataWithoutHeader.trim()) {
+                allCsvData += '\n' + dataWithoutHeader;
+              }
+            }
+
+            if (page < metadata.totalPages) {
+              await new Promise((resolve) => setTimeout(resolve, 100));
             }
           }
-
-          if (page < metadata.totalPages) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-          }
         }
+
+        // Create filename based on options
+        let filename = `claims-adx-${walletAddress.slice(0, 8)}`;
+        if (options.type === 'year' && options.year) {
+          filename += `-${options.year}`;
+        } else if (options.type === 'dateRange') {
+          if (options.startDate) filename += `-from-${options.startDate}`;
+          if (options.endDate) filename += `-to-${options.endDate}`;
+        }
+        filename += `-${new Date().toISOString().split('T')[0]}.csv`;
+
+        // Create and download the CSV file
+        const dataUrl = `data:text/csv;charset=utf-8,${encodeURIComponent(allCsvData)}`;
+
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        return true; // Success
+      } catch (error) {
+        console.error('Error downloading claim history:', error);
+        setExportWarning('Failed to export claims. Please try again.');
+        return false;
+      } finally {
+        setIsDownloading(false);
       }
-
-      // Create filename based on options
-      let filename = `claims-adx-${walletAddress.slice(0, 8)}`;
-      if (options.type === 'year' && options.year) {
-        filename += `-${options.year}`;
-      } else if (options.type === 'dateRange') {
-        if (options.startDate) filename += `-from-${options.startDate}`;
-        if (options.endDate) filename += `-to-${options.endDate}`;
-      }
-      filename += `-${new Date().toISOString().split('T')[0]}.csv`;
-
-      // Create and download the CSV file
-      const dataUrl = `data:text/csv;charset=utf-8,${encodeURIComponent(allCsvData)}`;
-
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-      return true; // Success
-    } catch (error) {
-      console.error('Error downloading claim history:', error);
-      setExportWarning('Failed to export claims. Please try again.');
-      return false;
-    } finally {
-      setIsDownloading(false);
-    }
-  }, [walletAddress, isDownloading]);
+    },
+    [walletAddress, isDownloading],
+  );
 
   const handleExportSubmit = async () => {
     const success = await downloadClaimHistory(exportOptions);
@@ -202,7 +211,9 @@ export default function StakingStats({
     return years;
   };
 
-  const hasDateFields = Boolean(exportOptions.startDate || exportOptions.endDate);
+  const hasDateFields = Boolean(
+    exportOptions.startDate || exportOptions.endDate,
+  );
 
   const isExportValid = () => {
     if (!hasDateFields) {
@@ -230,9 +241,9 @@ export default function StakingStats({
     const liquidStakedADX =
       typeof stakingAccounts.ADX?.liquidStake.amount !== 'undefined'
         ? nativeToUi(
-          stakingAccounts.ADX.liquidStake.amount,
-          window.adrena.client.adxToken.decimals,
-        )
+            stakingAccounts.ADX.liquidStake.amount,
+            window.adrena.client.adxToken.decimals,
+          )
         : null;
 
     const lockedStakedADX = adxLockedStakes.reduce((acc, stake) => {
@@ -265,7 +276,7 @@ export default function StakingStats({
 
   const claimData = claimsHistory
     ? (claimsHistory.symbols.find((symbol) => symbol.symbol === 'ADX')
-      ?.claims ?? null)
+        ?.claims ?? null)
     : null;
 
   if (!claimData) return null;
@@ -296,10 +307,12 @@ export default function StakingStats({
                         type: 'year',
                         year: parseInt(value),
                         startDate: '',
-                        endDate: ''
+                        endDate: '',
                       });
                     }}
-                    options={getYearOptions().map(year => ({ title: String(year) }))}
+                    options={getYearOptions().map((year) => ({
+                      title: String(year),
+                    }))}
                     reversed={true}
                     className="h-8 flex items-center px-2"
                     selectedTextClassName="text-xs flex-1 text-left"
@@ -324,20 +337,30 @@ export default function StakingStats({
                   <label className="text-xs text-white/60">From:</label>
                   <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
                     <DatePicker
-                      selected={exportOptions.startDate ? new Date(exportOptions.startDate) : null}
+                      selected={
+                        exportOptions.startDate
+                          ? new Date(exportOptions.startDate)
+                          : null
+                      }
                       onChange={(date) => {
                         setExportWarning(''); // Clear warning when changing options
                         setExportOptions({
                           ...exportOptions,
                           type: 'dateRange',
-                          startDate: date ? date.toISOString().split('T')[0] : ''
+                          startDate: date
+                            ? date.toISOString().split('T')[0]
+                            : '',
                         });
                       }}
                       className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
                       placeholderText="Select start date"
                       dateFormat="yyyy-MM-dd"
                       minDate={new Date('2024-09-25')}
-                      maxDate={exportOptions.endDate ? new Date(exportOptions.endDate) : new Date()}
+                      maxDate={
+                        exportOptions.endDate
+                          ? new Date(exportOptions.endDate)
+                          : new Date()
+                      }
                       popperClassName="z-[200]"
                       popperPlacement="bottom-start"
                     />
@@ -348,19 +371,27 @@ export default function StakingStats({
                   <label className="text-xs text-white/60">To:</label>
                   <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
                     <DatePicker
-                      selected={exportOptions.endDate ? new Date(exportOptions.endDate) : null}
+                      selected={
+                        exportOptions.endDate
+                          ? new Date(exportOptions.endDate)
+                          : null
+                      }
                       onChange={(date) => {
                         setExportWarning(''); // Clear warning when changing options
                         setExportOptions({
                           ...exportOptions,
                           type: 'dateRange',
-                          endDate: date ? date.toISOString().split('T')[0] : ''
+                          endDate: date ? date.toISOString().split('T')[0] : '',
                         });
                       }}
                       className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
                       placeholderText="Select end date"
                       dateFormat="yyyy-MM-dd"
-                      minDate={exportOptions.startDate ? new Date(exportOptions.startDate) : new Date('2024-09-25')}
+                      minDate={
+                        exportOptions.startDate
+                          ? new Date(exportOptions.startDate)
+                          : new Date('2024-09-25')
+                      }
                       maxDate={new Date()}
                       popperClassName="z-[200]"
                       popperPlacement="bottom-start"
@@ -372,7 +403,7 @@ export default function StakingStats({
 
             {/* Warning Message */}
             {exportWarning && (
-              <div className='text-xs text-orange font-semibold'>
+              <div className="text-xs text-orange font-semibold">
                 {exportWarning}
               </div>
             )}
@@ -593,7 +624,8 @@ const StatsTable = ({
   const { maxTotalRewards, minTotalRewards } = useMemo(() => {
     return paginatedClaims.reduce(
       (acc, claim) => {
-        const totalReward = claim.rewards_usdc + claim.rewards_adx * (tokenPrice ?? 0);
+        const totalReward =
+          claim.rewards_usdc + claim.rewards_adx * (tokenPrice ?? 0);
         acc.maxTotalRewards = Math.max(acc.maxTotalRewards, totalReward);
         acc.minTotalRewards = Math.min(acc.minTotalRewards, totalReward);
         return acc;
@@ -605,67 +637,72 @@ const StatsTable = ({
     );
   }, [paginatedClaims, tokenPrice]);
 
-
-  const data = useMemo(() => paginatedClaims.map((claim) => ({
-    claimedOn: (
-      <p className="font-mono text-sm">
-        {new Date(claim.transaction_date).toLocaleDateString('en-US', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        })}
-      </p>
-    ),
-    source: (
-      <p
-        className={twMerge(
-          'font-mono text-sm',
-          claim.source === 'auto' ? 'text-blue' : 'text-orange',
-        )}
-      >
-        {claim.source}
-      </p>
-    ),
-    usdcReward: (
-      <FormatNumber
-        nb={claim.rewards_usdc}
-        precision={2}
-        isDecimalDimmed={false}
-        suffix=" USDC"
-        suffixClassName="text-sm"
-        className="text-sm"
-        isAbbreviate={claim.rewards_usdc > 1_000}
-      />
-    ),
-    adxReward: (
-      <FormatNumber
-        nb={claim.rewards_adx}
-        precision={2}
-        isDecimalDimmed={false}
-        suffix=" ADX"
-        suffixClassName="text-sm"
-        className="text-sm"
-        isAbbreviate={claim.rewards_adx > 1_000}
-      />
-    ),
-    totalReward: (
-      <TotalRewardsCell
-        totalRewards={
-          claim.rewards_usdc + claim.rewards_adx * (tokenPrice ?? 0)
-        }
-        maxValue={maxTotalRewards}
-        minValue={minTotalRewards}
-        isIndicator={viewMode === 'table'}
-      />
-    ),
-  })), [paginatedClaims, tokenPrice, maxTotalRewards, minTotalRewards, viewMode]);
+  const data = useMemo(
+    () =>
+      paginatedClaims.map((claim) => ({
+        claimedOn: (
+          <p className="font-mono text-sm">
+            {new Date(claim.transaction_date).toLocaleDateString('en-US', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            })}
+          </p>
+        ),
+        source: (
+          <p
+            className={twMerge(
+              'font-mono text-sm',
+              claim.source === 'auto' ? 'text-blue' : 'text-orange',
+            )}
+          >
+            {claim.source}
+          </p>
+        ),
+        usdcReward: (
+          <FormatNumber
+            nb={claim.rewards_usdc}
+            precision={2}
+            isDecimalDimmed={false}
+            suffix=" USDC"
+            suffixClassName="text-sm"
+            className="text-sm"
+            isAbbreviate={claim.rewards_usdc > 1_000}
+          />
+        ),
+        adxReward: (
+          <FormatNumber
+            nb={claim.rewards_adx}
+            precision={2}
+            isDecimalDimmed={false}
+            suffix=" ADX"
+            suffixClassName="text-sm"
+            className="text-sm"
+            isAbbreviate={claim.rewards_adx > 1_000}
+          />
+        ),
+        totalReward: (
+          <TotalRewardsCell
+            totalRewards={
+              claim.rewards_usdc + claim.rewards_adx * (tokenPrice ?? 0)
+            }
+            maxValue={maxTotalRewards}
+            minValue={minTotalRewards}
+            isIndicator={viewMode === 'table'}
+          />
+        ),
+      })),
+    [paginatedClaims, tokenPrice, maxTotalRewards, minTotalRewards, viewMode],
+  );
 
   return (
     <div className="flex flex-col gap-3">
       <Table
         headers={headers}
         data={data}
-        bottomBar={<BottomBar stats={stats} onDownloadClick={onDownloadClick} />}
+        bottomBar={
+          <BottomBar stats={stats} onDownloadClick={onDownloadClick} />
+        }
         height={'16rem'}
         isSticky={!!isMobile}
         viewMode={viewMode}

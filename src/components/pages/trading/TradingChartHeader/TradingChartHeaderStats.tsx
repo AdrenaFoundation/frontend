@@ -1,12 +1,16 @@
+import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import chevronDownIcon from '@/../public/images/chevron-down.svg';
 import FormatNumber from '@/components/Number/FormatNumber';
+import useCustodyVolume from '@/hooks/useCustodyVolume';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
-import { getTokenSymbol } from '@/utils';
+import { getTokenImage, getTokenSymbol } from '@/utils';
 
 export default function TradingChartHeaderStats({
   className,
@@ -15,6 +19,13 @@ export default function TradingChartHeaderStats({
   statsClassName,
   numberLong,
   numberShort,
+  selectedAction,
+  compact = false,
+  showIcon = false,
+  showMainLineOnly = false,
+  showExpandedStatsOnly = false,
+  isStatsExpanded,
+  setIsStatsExpanded,
 }: {
   className?: string;
   selected: Token;
@@ -22,141 +33,431 @@ export default function TradingChartHeaderStats({
   statsClassName?: string;
   numberLong?: number;
   numberShort?: number;
+  selectedAction: 'long' | 'short' | 'swap';
+  compact?: boolean;
+  showIcon?: boolean;
+  showMainLineOnly?: boolean;
+  showExpandedStatsOnly?: boolean;
+  isStatsExpanded?: boolean;
+  setIsStatsExpanded?: (expanded: boolean) => void;
 }) {
   const selectedTokenPrice = useSelector(
     (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
   );
+  const borrowRates = useSelector((s) => s.borrowRates);
   const stats = useDailyStats();
+  const { volumeStats } = useCustodyVolume();
   const [previousTokenPrice, setPreviousTokenPrice] = useState<number | null>(
     null,
   );
   const [tokenColor, setTokenColor] = useState<
     'text-white' | 'text-green' | 'text-redbright'
   >('text-white');
+  const [localIsStatsExpanded, setLocalIsStatsExpanded] = useState(false);
+  const statsExpanded =
+    isStatsExpanded !== undefined ? isStatsExpanded : localIsStatsExpanded;
+  const setStatsExpanded = setIsStatsExpanded || setLocalIsStatsExpanded;
 
-  if (selectedTokenPrice !== null) {
-    if (previousTokenPrice !== null) {
-      const newTokenColor =
-        selectedTokenPrice > previousTokenPrice
-          ? 'text-green'
-          : selectedTokenPrice < previousTokenPrice
-            ? 'text-redbright'
-            : tokenColor;
-      if (newTokenColor !== tokenColor) {
-        setTokenColor(newTokenColor);
+  const borrowingRate = useMemo(() => {
+    if (!window.adrena?.client) return null;
+
+    try {
+      if (selectedAction === 'short') {
+        const usdcToken = window.adrena.client.getUsdcToken();
+        const usdcCustody = window.adrena.client.getCustodyByMint(
+          usdcToken.mint,
+        );
+        if (!usdcCustody) return null;
+        return borrowRates[usdcCustody.pubkey.toBase58()] ?? null;
+      } else {
+        const custody = window.adrena.client.getCustodyByMint(selected.mint);
+        if (!custody) return null;
+        return borrowRates[custody.pubkey.toBase58()] ?? null;
+      }
+    } catch (error) {
+      console.warn('Error getting borrowing rate:', error);
+      return null;
+    }
+  }, [selectedAction, selected.mint, borrowRates]);
+
+  const platformDailyVolume = useMemo(() => {
+    if (!window.adrena?.client) return null;
+
+    try {
+      const custody = window.adrena.client.getCustodyByMint(selected.mint);
+      if (!custody) return null;
+
+      const custodyKey = custody.pubkey.toBase58();
+      return volumeStats[custodyKey]?.dailyVolume ?? null;
+    } catch (error) {
+      console.warn('Error getting platform daily volume:', error);
+      return null;
+    }
+  }, [selected.mint, volumeStats]);
+
+  useEffect(() => {
+    if (selectedTokenPrice !== null && previousTokenPrice !== null) {
+      if (selectedTokenPrice > previousTokenPrice) {
+        setTokenColor('text-green');
+      } else if (selectedTokenPrice < previousTokenPrice) {
+        setTokenColor('text-redbright');
       }
     }
-
-    if (selectedTokenPrice !== previousTokenPrice) {
+    if (selectedTokenPrice !== null) {
       setPreviousTokenPrice(selectedTokenPrice);
     }
-  }
+  }, [selectedTokenPrice, previousTokenPrice]);
 
   const dailyChange = stats?.[selected.symbol]?.dailyChange ?? null;
-  const dailyVolume = stats?.[selected.symbol]?.dailyVolume ?? null;
-  const lastDayHigh = stats?.[selected.symbol]?.lastDayHigh ?? null;
-  const lastDayLow = stats?.[selected.symbol]?.lastDayLow ?? null;
 
-  return (
-    <div
-      className={twMerge(
-        'flex w-full flex-row sm:flex-row justify-between sm:justify-end lg:gap-6 items-center sm:items-center sm:pr-5',
-        className,
-      )}
-    >
-      {/* Mobile: Price on left */}
-      <div className="flex sm:hidden items-center ml-2">
+  if (showExpandedStatsOnly) {
+    return (
+      <div className="sm:hidden">
+        {statsExpanded && (
+          <div className="flex items-center justify-between w-full mt-2 text-xs font-mono">
+            {/* Left side: Position counts */}
+            {numberLong && numberShort ? (
+              <div className="flex gap-0.5">
+                <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
+                  Long: {numberLong}
+                </span>
+                <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
+                  Short: {numberShort}
+                </span>
+              </div>
+            ) : (
+              <div></div>
+            )}
+
+            {/* Right side: Volume and Borrow Rate */}
+            <div className="flex items-center gap-4">
+              <span className="text-txtfade">
+                24h Vol.{' '}
+                {platformDailyVolume !== null && platformDailyVolume > 0 ? (
+                  <FormatNumber
+                    nb={platformDailyVolume}
+                    format="currency"
+                    isAbbreviate={true}
+                    isDecimalDimmed={false}
+                    className="text-white font-mono ml-1"
+                  />
+                ) : (
+                  '-'
+                )}
+              </span>
+              <Tippy
+                content={
+                  <div className="text-sm">
+                    Hourly borrow rate in % of position size
+                  </div>
+                }
+                placement="bottom"
+              >
+                <span className="text-txtfade cursor-help">
+                  B.Rate{' '}
+                  <span className="text-white font-mono ml-1">
+                    {borrowingRate !== null
+                      ? `${(borrowingRate * 100).toFixed(4)}%/h`
+                      : '-'}
+                  </span>
+                </span>
+              </Tippy>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (showMainLineOnly) {
+    return (
+      <div className="flex items-center gap-3 sm:hidden">
+        <span className="text-xs font-mono text-txtfade">
+          <span
+            className={`${
+              dailyChange
+                ? dailyChange > 0
+                  ? 'text-green'
+                  : 'text-redbright'
+                : 'text-white'
+            } font-mono`}
+          >
+            {dailyChange
+              ? `${dailyChange > 0 ? '+' : ''}${dailyChange.toFixed(2)}%`
+              : '-'}
+          </span>
+        </span>
         <FormatNumber
           nb={selectedTokenPrice}
           format="currency"
           minimumFractionDigits={2}
           precision={selected.displayPriceDecimalsPrecision}
-          className={twMerge('text-xl font-bold', tokenColor, priceClassName)}
+          className={twMerge('text-2xl font-bold', tokenColor, priceClassName)}
         />
+        <button
+          onClick={() => setStatsExpanded(!statsExpanded)}
+          className="p-1 bg-third rounded transition-colors"
+        >
+          <Image
+            src={chevronDownIcon}
+            alt="Toggle stats"
+            width={16}
+            height={16}
+            className={twMerge(
+              'transition-transform duration-200',
+              statsExpanded ? 'rotate-180' : '',
+            )}
+          />
+        </button>
       </div>
+    );
+  }
 
-      {/* Mobile: Compact stats on right - labels above values */}
-      <div className="flex sm:hidden items-center justify-center gap-2 text-xxs font-mono mt-1">
-        {/* 24h Change */}
-        <div className="flex flex-col items-center justify-center">
-          <span className="text-txtfade text-xxs leading-none mb-0.5">
-            24h Change
-          </span>
-          <span
-            className={`font-mono leading-none text-xxs ${dailyChange
-                ? dailyChange > 0
-                  ? 'text-green'
-                  : 'text-redbright'
-                : 'text-white'
-              }`}
+  return (
+    <div
+      className={twMerge(
+        'flex w-full flex-row sm:flex-row justify-between sm:justify-end lg:gap-6 items-center sm:items-center sm:pr-1',
+        className,
+      )}
+    >
+      {/* Mobile: Expandable stats layout */}
+      <div
+        className={twMerge(
+          'flex flex-col w-full',
+          compact ? 'hidden' : 'flex sm:hidden',
+        )}
+      >
+        {/* Main line with price and expand button */}
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-mono text-txtfade ml-2">
+              <span
+                className={`${
+                  dailyChange
+                    ? dailyChange > 0
+                      ? 'text-green'
+                      : 'text-redbright'
+                    : 'text-white'
+                } font-mono`}
+              >
+                {dailyChange
+                  ? `${dailyChange > 0 ? '+' : ''}${dailyChange.toFixed(2)}%`
+                  : '-'}
+              </span>
+            </span>
+            <FormatNumber
+              nb={selectedTokenPrice}
+              format="currency"
+              minimumFractionDigits={2}
+              precision={selected.displayPriceDecimalsPrecision}
+              className={twMerge(
+                'text-2xl font-bold mr-2',
+                tokenColor,
+                priceClassName,
+              )}
+            />
+          </div>
+
+          {/* Expand button */}
+          <button
+            onClick={() => setStatsExpanded(!statsExpanded)}
+            className="p-1 bg-third rounded transition-colors"
           >
-            {dailyChange ? `${dailyChange.toFixed(2)}%` : '-'}
-          </span>
+            <Image
+              src={chevronDownIcon}
+              alt="Toggle stats"
+              width={16}
+              height={16}
+              className={twMerge(
+                'transition-transform duration-200',
+                statsExpanded ? 'rotate-180' : '',
+              )}
+            />
+          </button>
         </div>
 
-        {/* Volume */}
-        <div className="flex flex-col items-center justify-center">
-          <span className="text-txtfade text-xxs leading-none mb-0.5">
-            24h Vol
-          </span>
-          <span className="text-white text-xxs font-mono leading-none">
-            {dailyVolume ? (
-              <FormatNumber
-                nb={dailyVolume}
-                format="currency"
-                isAbbreviate={true}
-                isDecimalDimmed={false}
-                className="font-mono text-xxs"
-              />
+        {/* Expandable stats row */}
+        {statsExpanded && (
+          <div className="flex items-center justify-between w-full mt-1 mb-1 text-xs font-mono">
+            {/* Left side: Position counts */}
+            {numberLong && numberShort ? (
+              <div className="flex gap-0.5">
+                <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
+                  Long: {numberLong}
+                </span>
+                <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
+                  Short: {numberShort}
+                </span>
+              </div>
             ) : (
-              '-'
+              <div></div>
             )}
-          </span>
-        </div>
 
-        {/* 24h High */}
-        <div className="flex flex-col items-center justify-center">
-          <span className="text-txtfade text-xxs leading-none mb-0.5">
-            24h Hi
-          </span>
-          <span className="text-white text-xxs font-mono leading-none">
-            {lastDayHigh ? (
-              <FormatNumber
-                nb={lastDayHigh}
-                format="currency"
-                className="font-mono text-xxs"
-              />
-            ) : (
-              '-'
-            )}
-          </span>
-        </div>
-
-        {/* 24h Low */}
-        <div className="flex flex-col items-center justify-center">
-          <span className="text-txtfade text-xxs leading-none mb-0.5">
-            24h Lo
-          </span>
-          <span className="text-white text-xxs font-mono leading-none">
-            {lastDayLow ? (
-              <FormatNumber
-                nb={lastDayLow}
-                format="currency"
-                className="font-mono text-xxs"
-              />
-            ) : (
-              '-'
-            )}
-          </span>
-        </div>
+            {/* Right side: Volume and Borrow Rate */}
+            <div className="flex items-center gap-4">
+              <span className="text-txtfade">
+                24h Vol.{' '}
+                {platformDailyVolume !== null && platformDailyVolume > 0 ? (
+                  <FormatNumber
+                    nb={platformDailyVolume}
+                    format="currency"
+                    isAbbreviate={true}
+                    isDecimalDimmed={false}
+                    className="text-white font-mono ml-1"
+                  />
+                ) : (
+                  '-'
+                )}
+              </span>
+              <Tippy
+                content={
+                  <div className="text-sm">
+                    Hourly borrow rate in % of position size
+                  </div>
+                }
+                placement="bottom"
+              >
+                <span className="text-txtfade cursor-help">
+                  B.Rate{' '}
+                  <span className="text-white font-mono ml-1">
+                    {borrowingRate !== null
+                      ? `${(borrowingRate * 100).toFixed(4)}%/h`
+                      : '-'}
+                  </span>
+                </span>
+              </Tippy>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Desktop layout */}
-      <div className="hidden sm:flex w-auto justify-start gap-3 lg:gap-6 items-center">
-        {/* Desktop: Long/Short first, Mobile: Price first */}
+      {/* Compact single-line layout - show only when compact */}
+      {compact && (
+        <div className="flex flex-col w-full">
+          {/* Main line */}
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              {showIcon && (
+                <Image
+                  src={getTokenImage(selected)}
+                  alt={selected.symbol}
+                  className="w-[20px] h-[20px]"
+                />
+              )}
+              <span className="text-lg font-boldy">
+                {getTokenSymbol(selected.symbol)} / USD
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono text-txtfade">
+                <span
+                  className={`${
+                    dailyChange
+                      ? dailyChange > 0
+                        ? 'text-green'
+                        : 'text-redbright'
+                      : 'text-white'
+                  } font-mono`}
+                >
+                  {dailyChange ? `${dailyChange.toFixed(2)}%` : '-'}
+                </span>
+              </span>
+              <FormatNumber
+                nb={selectedTokenPrice}
+                format="currency"
+                minimumFractionDigits={2}
+                precision={selected.displayPriceDecimalsPrecision}
+                className={twMerge(
+                  'text-2xl font-bold',
+                  tokenColor,
+                  priceClassName,
+                )}
+              />
+              <button
+                onClick={() => setStatsExpanded(!statsExpanded)}
+                className="p-1 bg-third rounded transition-colors"
+              >
+                <Image
+                  src={chevronDownIcon}
+                  alt="Toggle stats"
+                  width={16}
+                  height={16}
+                  className={twMerge(
+                    'transition-transform duration-200',
+                    statsExpanded ? 'rotate-180' : '',
+                  )}
+                />
+              </button>
+            </div>
+          </div>
+
+          {/* Expandable stats row for compact mode */}
+          {statsExpanded && (
+            <div className="flex items-center justify-between w-full mt-2 text-xs font-mono">
+              {/* Left side: Position counts */}
+              {numberLong && numberShort ? (
+                <div className="flex gap-0.5">
+                  <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
+                    Long: {numberLong}
+                  </span>
+                  <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
+                    Short: {numberShort}
+                  </span>
+                </div>
+              ) : (
+                <div></div>
+              )}
+
+              {/* Right side: Volume and Borrow Rate */}
+              <div className="flex items-center gap-4">
+                <span className="text-txtfade">
+                  24h Vol.{' '}
+                  {platformDailyVolume !== null && platformDailyVolume > 0 ? (
+                    <FormatNumber
+                      nb={platformDailyVolume}
+                      format="currency"
+                      isAbbreviate={true}
+                      isDecimalDimmed={false}
+                      className="text-white font-mono ml-1"
+                    />
+                  ) : (
+                    '-'
+                  )}
+                </span>
+                <Tippy
+                  content={
+                    <div className="text-sm">
+                      Hourly borrow rate in % of position size
+                    </div>
+                  }
+                  placement="bottom"
+                >
+                  <span className="text-txtfade cursor-help">
+                    B.Rate{' '}
+                    <span className="text-white font-mono ml-1">
+                      {borrowingRate !== null
+                        ? `${(borrowingRate * 100).toFixed(4)}%/h`
+                        : '-'}
+                    </span>
+                  </span>
+                </Tippy>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Desktop layout - hide when compact */}
+      <div
+        className={twMerge(
+          'w-auto justify-start gap-3 lg:gap-6 items-center',
+          compact ? 'hidden' : 'hidden sm:flex',
+        )}
+      >
         {numberLong && numberShort ? (
-          <div className="flex-row gap-2 mr-0 xl:mr-4 hidden md:flex">
-            <div className="px-2 py-1 bg-green/10 rounded-md inline-flex justify-center items-center gap-2">
+          <div className="flex-row gap-2 mr-0 xl:mr-2 hidden lg:flex">
+            <div className="px-2 py-1 bg-green/10 rounded-lg inline-flex justify-center items-center gap-2">
               <Link
                 href="/monitoring?view=livePositions"
                 className="text-center justify-start text-greenSide text-xxs font-mono"
@@ -180,29 +481,30 @@ export default function TradingChartHeaderStats({
           format="currency"
           minimumFractionDigits={2}
           precision={selected.displayPriceDecimalsPrecision}
-          className={twMerge('text-lg font-bold', tokenColor, priceClassName)}
+          className={twMerge(
+            'text-lg font-bold -mr-1',
+            tokenColor,
+            priceClassName,
+          )}
         />
 
-        {/* Desktop stats section */}
         <div className="flex flex-row gap-3">
           <div className="flex items-center rounded-full flex-wrap">
-            <span className="flex font-mono sm:text-xxs text-txtfade text-right">
-              24h:
-            </span>
+            <span className="flex font-mono sm:text-xxs text-txtfade text-right"></span>
           </div>
 
           <div
             className={twMerge(
-              'flex items-center sm:gap-1 rounded-full flex-wrap',
+              'flex items-center sm:gap-2 rounded-full flex-wrap',
               statsClassName,
             )}
           >
-            <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
-              Ch.
+            <span className="font-mono text-sm sm:text-xs text-txtfade">
+              24h Ch.
             </span>
             <span
               className={twMerge(
-                'font-mono text-xs sm:text-xxs',
+                'font-mono text-sm sm:text-xs',
                 dailyChange
                   ? dailyChange > 0
                     ? 'text-green'
@@ -220,16 +522,16 @@ export default function TradingChartHeaderStats({
               statsClassName,
             )}
           >
-            <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
+            <span className="font-mono text-sm sm:text-xxs text-txtfade text-right">
               Vol.
             </span>
-            <span className="font-mono text-xs sm:text-xxs">
+            <span className="font-mono text-sm sm:text-xs">
               <FormatNumber
-                nb={dailyVolume}
+                nb={platformDailyVolume}
                 format="currency"
                 isAbbreviate={true}
                 isDecimalDimmed={false}
-                className="font-mono text-xxs"
+                className="font-mono text-sm sm:text-xs"
               />
             </span>
           </div>
@@ -240,33 +542,22 @@ export default function TradingChartHeaderStats({
               statsClassName,
             )}
           >
-            <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
-              Hi
-            </span>
-            <span className="font-mono text-xs sm:text-xxs">
-              <FormatNumber
-                nb={lastDayHigh}
-                format="currency"
-                className="font-mono text-xxs"
-              />
-            </span>
-          </div>
-
-          <div
-            className={twMerge(
-              'flex items-center sm:gap-1 rounded-full flex-wrap',
-              statsClassName,
-            )}
-          >
-            <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
-              Lo
-            </span>
-            <span className="font-mono text-xxs sm:text-xs">
-              <FormatNumber
-                nb={lastDayLow}
-                format="currency"
-                className="font-mono text-xxs"
-              />
+            <Tippy
+              content={
+                <div className="text-sm">
+                  Hourly borrow rate in % of position size
+                </div>
+              }
+              placement="bottom"
+            >
+              <span className="font-mono text-sm sm:text-xs text-txtfade text-right cursor-help">
+                B.Rate
+              </span>
+            </Tippy>
+            <span className="font-mono text-sm sm:text-xs text-white mr-1">
+              {borrowingRate !== null
+                ? `${(borrowingRate * 100).toFixed(4)}%/h`
+                : '-'}
             </span>
           </div>
         </div>
