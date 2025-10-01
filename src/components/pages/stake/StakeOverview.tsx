@@ -1,6 +1,6 @@
 import '../../../styles/Animation.css';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import useStakingAccount from '@/hooks/useStakingAccount';
@@ -10,7 +10,6 @@ import {
 } from '@/pages/stake';
 import {
   AdxLockPeriod,
-  AlpLockPeriod,
   ClaimHistoryExtended,
   LockedStakeExtended,
 } from '@/types';
@@ -24,7 +23,6 @@ import TokenInfoHeader from './TokenInfoHeader';
 import { SortConfig } from './types';
 
 export default function StakeOverview({
-  token,
   totalLockedStake,
   totalLiquidStaked,
   lockedStakes,
@@ -41,13 +39,12 @@ export default function StakeOverview({
   optimisticClaim,
   setOptimisticClaim,
 }: {
-  token: 'ADX' | 'ALP';
   totalLockedStake: number | null;
   totalLiquidStaked?: number | null;
   totalRedeemableLockedStake: number | null;
   lockedStakes: LockedStakeExtended[] | null;
   handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
-  handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod | AdxLockPeriod) => void;
+  handleClickOnStakeMore: (initialLockPeriod: AdxLockPeriod) => void;
   handleClickOnClaimRewards: () => Promise<void>;
   handleClickOnClaimRewardsAndBuyAdx: () => Promise<void>;
   handleClickOnRedeem?: () => void;
@@ -61,23 +58,23 @@ export default function StakeOverview({
   optimisticClaim: ClaimHistoryExtended | null;
   setOptimisticClaim: (claim: ClaimHistoryExtended | null) => void;
 }) {
-  const isALP = token === 'ALP';
-  const storageKey = isALP ? 'alpStakeSortConfig' : 'adxStakeSortConfig';
+  const storageKey = 'adxStakeSortConfig';
   const { stakingAccount, triggerReload } = useStakingAccount(
-    isALP ? window.adrena.client.lpTokenMint : window.adrena.client.lmTokenMint,
+    window.adrena.client.lmTokenMint,
   );
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
-  const [isClaimingAndBuyAdxRewards, setIsClaimingAndBuyAdxRewards] = useState(false);
+  const [isClaimingAndBuyAdxRewards, setIsClaimingAndBuyAdxRewards] =
+    useState(false);
 
   const [sortConfig, setSortConfig] = useState<SortConfig>(() => {
     const savedConfig = localStorage.getItem(storageKey);
     return savedConfig
       ? JSON.parse(savedConfig)
       : {
-        size: 'desc',
-        duration: 'asc',
-        lastClicked: 'duration',
-      };
+          size: 'desc',
+          duration: 'asc',
+          lastClicked: 'duration',
+        };
   });
 
   const [roundPassed, setRoundPassed] = useState<boolean>(false);
@@ -92,7 +89,7 @@ export default function StakeOverview({
         stakingAccount.currentStakingRound.startTime,
       ).getTime();
 
-      if ((nextRound - Date.now()) < 0) {
+      if (nextRound - Date.now() < 0) {
         setRoundPassed(true);
       } else if (roundPassed) {
         setRoundPassed(false);
@@ -138,14 +135,12 @@ export default function StakeOverview({
 
   const triggerResolveStakingRound = async () => {
     const notification = MultiStepNotification.newForRegularTransaction(
-      `Resolve ${isALP ? 'ALP' : 'ADX'} Staking Round`,
+      'Resolve ADX Staking Round',
     ).fire();
 
     try {
       await window.adrena.client.resolveStakingRound({
-        stakedTokenMint: isALP
-          ? window.adrena.client.lpTokenMint
-          : window.adrena.client.lmTokenMint,
+        stakedTokenMint: window.adrena.client.lmTokenMint,
         notification,
       });
 
@@ -159,23 +154,20 @@ export default function StakeOverview({
 
   // Calculate the total stake amount
   const totalStakeAmount =
-    (isALP
-      ? totalLockedStake
-      : (Number(totalLockedStake) || 0) + (Number(totalLiquidStaked) || 0)) ?? 0;
+    (Number(totalLockedStake) || 0) + (Number(totalLiquidStaked) || 0);
 
   return (
     <div className="flex flex-col bg-main rounded-md border">
       {/* Token info header */}
       <TokenInfoHeader
-        token={token}
         totalStakeAmount={totalStakeAmount}
+        walletAddress={walletAddress}
       />
 
       <div className="flex flex-col h-full">
         <div className="h-[1px] bg-bcolor w-full my-3" />
 
         <PendingRewardsSection
-          token={token}
           userPendingUsdcRewards={userPendingUsdcRewards}
           userPendingAdxRewards={userPendingAdxRewards}
           pendingGenesisAdxRewards={pendingGenesisAdxRewards}
@@ -190,7 +182,6 @@ export default function StakeOverview({
         <div className="h-[1px] bg-bcolor w-full my-4" />
 
         <ClaimHistorySection
-          token={token}
           walletAddress={walletAddress}
           optimisticClaim={optimisticClaim}
           setOptimisticClaim={setOptimisticClaim}
@@ -208,15 +199,13 @@ export default function StakeOverview({
           defaultLockPeriod={DEFAULT_LOCKED_STAKE_LOCK_DURATION}
         />
 
-        {!isALP && (
-          <LiquidStakeSection
-            totalLiquidStaked={totalLiquidStaked ?? 0}
-            onRedeem={handleClickOnRedeem}
-            onStake={handleClickOnStakeMore}
-            liquidStakeLockDuration={LIQUID_STAKE_LOCK_DURATION}
-          />
-        )}
+        <LiquidStakeSection
+          totalLiquidStaked={totalLiquidStaked ?? 0}
+          onRedeem={handleClickOnRedeem}
+          onStake={handleClickOnStakeMore}
+          liquidStakeLockDuration={LIQUID_STAKE_LOCK_DURATION}
+        />
       </div>
-    </div >
+    </div>
   );
 }
