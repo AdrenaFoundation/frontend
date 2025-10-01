@@ -28,13 +28,30 @@ export default function StakingRanking({
   const { userRank, totalStakers, userVirtualAmount } = stakingRanking;
 
   // Special logic for top 50 stakers
-  let rankDisplay: string;
+  let rankDisplay: React.ReactNode;
   if (userRank <= 50) {
-    rankDisplay = `${userRank}${getOrdinalSuffix(userRank)}`;
+    rankDisplay = (
+      <span className="font-mono text-base sm:text-2xl">
+        {userRank}
+        {getOrdinalSuffix(userRank)}
+      </span>
+    );
   } else {
     const rankPercentage = ((userRank - 1) / totalStakers) * 100;
     const topPercentage = Math.round(rankPercentage);
-    rankDisplay = topPercentage === 0 ? 'Top 1%' : `Top ${topPercentage + 1}%`;
+    // "Top" is not mono, number is mono
+    rankDisplay =
+      topPercentage === 0 ? (
+        <>
+          <span className="text-base sm:text-2xl">Top </span>
+          <span className="font-mono text-base sm:text-2xl">1%</span>
+        </>
+      ) : (
+        <>
+          <span className="text-base sm:text-2xl">Top </span>
+          <span className="font-mono text-base sm:text-2xl">{topPercentage + 1}%</span>
+        </>
+      );
   }
 
   return (
@@ -59,7 +76,7 @@ export default function StakingRanking({
         placement="auto"
         interactive={true}
       >
-        <span className="text-base sm:text-2xl font-mono cursor-help">{rankDisplay}</span>
+        <span className="text-base sm:text-2xl cursor-help">{rankDisplay}</span>
       </Tippy>
     </div>
   );

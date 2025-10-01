@@ -15,10 +15,6 @@ export default function TokenInfoHeader({
   walletAddress,
 }: TokenInfoHeaderProps) {
 
-  // Test with very big number - remove this line when done testing
-  const testTotalStakeAmount = 1234567890; // 1.2 billion ADX
-  const actualTotalStakeAmount = testTotalStakeAmount || totalStakeAmount;
-
   return (
     <div className="p-5 pb-0">
       <div className="flex flex-col w-full bg-gradient-to-br from-[#07111A] to-[#0B1722] border rounded-md shadow-lg">
@@ -28,7 +24,7 @@ export default function TokenInfoHeader({
               <p className="opacity-50 text-base">Total staked</p>
               <div className="text-base sm:text-2xl">
                 <FormatNumber
-                  nb={actualTotalStakeAmount}
+                  nb={totalStakeAmount}
                   minimumFractionDigits={0}
                   precision={0}
                   precisionIfPriceDecimalsBelow={0}
