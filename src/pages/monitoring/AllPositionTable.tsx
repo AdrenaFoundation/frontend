@@ -142,7 +142,7 @@ export default function AllPositionTable({
           <CurrencyCell value={position.liquidationPrice ?? null} />
         ),
         openDate: <DateCell date={position.openDate} />,
-        resolve: !positionBorrowFeesShouldBeResolved(position) ? (
+        resolve: positionBorrowFeesShouldBeResolved(position) ? (
           <Button
             size="sm"
             variant="lightbg"
