@@ -5,20 +5,16 @@ import {
   ChartingLibraryFeatureset,
   IDatafeedChartApi,
   ResolutionString,
-  Timezone,
 } from '../../../../../public/charting_library/charting_library';
 import { configureChartOnReady } from './configureChartOnReady';
 import {
   CHART_BACKGROUND,
-  CHART_PRICE_LINE_COLOR,
-  CHART_TEXT_COLOR,
   DISABLED_FEATURES,
   ENABLED_FEATURES,
   FAVORITE_CHART_TYPES,
   FAVORITE_INTERVALS,
 } from './constants';
 import datafeed from './datafeed';
-// import datafeed from './datafeed';
 import { isSupportedResolution } from './subscriptions/resolutionSubscription';
 
 /**
@@ -66,20 +62,7 @@ export function createTradingViewWidget({
       disabled_features: [...DISABLED_FEATURES] as ChartingLibraryFeatureset[],
       enabled_features: [...ENABLED_FEATURES] as ChartingLibraryFeatureset[],
       settings_adapter: {
-        initialSettings: {
-          'paneProperties.backgroundType': 'solid',
-          'paneProperties.background': CHART_BACKGROUND,
-          'paneProperties.legendProperties.showStudyArguments': 'true',
-          'paneProperties.legendProperties.showStudyTitles': 'true',
-          'paneProperties.legendProperties.showStudyValues': 'false',
-          'paneProperties.legendProperties.showSeriesTitle': 'false',
-          'paneProperties.legendProperties.showBarChange': 'false',
-          'paneProperties.legendProperties.showSeriesOHLC': 'true',
-          'mainSeriesProperties.priceLineColor': CHART_PRICE_LINE_COLOR,
-          'scalesProperties.textColor': CHART_TEXT_COLOR,
-          timezone: savedTimezone as Timezone,
-          'paneProperties.legendProperties.showVisibilityButton': 'true',
-        },
+        initialSettings: {},
         setValue: function (key, value) {
           if (key === 'chartproperties') {
             const chartprops = JSON.parse(value);

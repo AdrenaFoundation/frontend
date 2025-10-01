@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { ChartPreferences } from '@/components/pages/trading/TradingChart/types';
 import {
@@ -22,33 +22,8 @@ import {
   IChartingLibraryWidget,
   IChartWidgetApi,
 } from '../../public/charting_library/charting_library';
+import { useLiquidationLines } from './useLiquidationLines';
 import useTPSL from './useTPSL';
-
-// Constants for liquidation heatmap configuration
-const LIQUIDATION_LINE_CONFIG = {
-  EXPONENTIAL_POWER: 0.2,
-  TRANSPARENCY: 0.45,
-  LINE_WIDTH: 2,
-  LINE_STYLE: 0,
-  UPDATE_INTERVAL: 60000, // 1 minute
-  FAR_FUTURE_DAYS: 365,
-} as const;
-
-// Type definitions for liquidation heatmap
-type LiquidationVisualProps = {
-  color: string;
-  linewidth: number;
-  linestyle: number;
-};
-
-type LiquidationLineParams = {
-  chart: IChartWidgetApi;
-  price: number;
-  startTime: Date;
-  color: string;
-  linewidth: number;
-  positionId: string;
-};
 
 export type LineType =
   | 'liquidation'
@@ -472,96 +447,6 @@ function handleLimitOrderLine({
   return positionChartLines;
 }
 
-/**
- * Creates a liquidation heatmap line with exponential color distribution
- * @param positionSizeUsd - Position size in USD for color calculation
- * @param minSizeUsd - Minimum position size for normalization
- * @param maxSizeUsd - Maximum position size for normalization
- * @returns Visual properties for the liquidation line
- */
-const getLiquidationVisualProperties = (
-  positionSizeUsd: number,
-  minSizeUsd: number,
-  maxSizeUsd: number,
-): LiquidationVisualProps => {
-  // Handle edge case where all positions have the same size
-  if (maxSizeUsd === minSizeUsd) {
-    return {
-      color: '#FFFF0073', // Bright yellow with 45% transparency
-      linewidth: LIQUIDATION_LINE_CONFIG.LINE_WIDTH,
-      linestyle: LIQUIDATION_LINE_CONFIG.LINE_STYLE,
-    };
-  }
-
-  // Use exponential distribution for better color spread
-  const normalizedSize =
-    (positionSizeUsd - minSizeUsd) / (maxSizeUsd - minSizeUsd);
-  const exponentialSize = Math.pow(
-    normalizedSize,
-    LIQUIDATION_LINE_CONFIG.EXPONENTIAL_POWER,
-  );
-
-  // Continuous gradient from dark red (smallest) to bright yellow (biggest)
-  // Dark red: rgb(139, 0, 0) -> Bright yellow: rgb(255, 255, 0)
-  const red = Math.round(139 + 116 * exponentialSize);
-  const green = Math.round(0 + 255 * exponentialSize);
-  const blue = 0;
-  const alpha = Math.round(LIQUIDATION_LINE_CONFIG.TRANSPARENCY * 255);
-
-  return {
-    color: `#${red.toString(16).padStart(2, '0')}${green.toString(16).padStart(2, '0')}${blue.toString(16).padStart(2, '0')}${alpha.toString(16).padStart(2, '0')}`,
-    linewidth: LIQUIDATION_LINE_CONFIG.LINE_WIDTH,
-    linestyle: LIQUIDATION_LINE_CONFIG.LINE_STYLE,
-  };
-};
-
-/**
- * Creates a liquidation heatmap line with squared appearance
- * @param params - Parameters for creating the liquidation line
- * @returns EntityId of the created line or null if failed
- */
-const createLiquidationLine = (
-  params: LiquidationLineParams,
-): EntityId | null => {
-  try {
-    const { chart, price, startTime, color, linewidth, positionId } = params;
-    const startTimestamp = startTime.getTime() / 1000;
-    const farFutureTimestamp =
-      startTimestamp + LIQUIDATION_LINE_CONFIG.FAR_FUTURE_DAYS * 24 * 60 * 60;
-
-    return chart.createMultipointShape(
-      [
-        {
-          time: startTimestamp,
-          price,
-        },
-        {
-          time: farFutureTimestamp,
-          price,
-        },
-      ],
-      {
-        zOrder: 'top',
-        shape: 'trend_line',
-        lock: true,
-        disableSelection: true,
-        overrides: {
-          linestyle: LIQUIDATION_LINE_CONFIG.LINE_STYLE,
-          linewidth,
-          linecolor: color,
-          showPrice: false,
-          showLabel: false,
-          showInObjectsTree: false,
-        },
-        text: `liquidation-heatmap-${positionId}`,
-      },
-    );
-  } catch (error) {
-    console.error('[HEATMAP] Error creating liquidation line:', error);
-    return null;
-  }
-};
-
 export function useChartDrawing({
   tokenSymbol,
   widget,
@@ -592,9 +477,6 @@ export function useChartDrawing({
     PositionChartLine[]
   >([]);
 
-  const [allActivePositionChartLines, setAllActivePositionChartLines] =
-    useState<PositionChartLine[]>([]);
-
   const [trickReload, setTrickReload] = useState<number>(0);
   const chart = widget && widgetReady ? widget.activeChart() : null;
 
@@ -615,7 +497,6 @@ export function useChartDrawing({
       // Means chart got reset
       if (!widgetReady) {
         setPositionChartLines([]);
-        setAllActivePositionChartLines([]);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -825,183 +706,24 @@ export function useChartDrawing({
     // allActivePositions, // disabled
   ]);
 
-  // Add a time-based state to trigger updates
-  const [currentTime, setCurrentTime] = useState<number>(Date.now());
-
-  // Update current time every minute to refresh liquidation lines
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(Date.now());
-    }, LIQUIDATION_LINE_CONFIG.UPDATE_INTERVAL);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // Memoize expensive calculations for liquidation heatmap
-  const { maxSizeUsd, minSizeUsd } = useMemo(() => {
-    if (!allActivePositions?.length) return { maxSizeUsd: 0, minSizeUsd: 0 };
-
-    const sizes = allActivePositions.map((p) => p.sizeUsd ?? 0);
-    return {
-      maxSizeUsd: Math.max(...sizes),
-      minSizeUsd: Math.min(...sizes),
-    };
-  }, [allActivePositions]);
-
-  /**
-   * Cleans up all existing liquidation lines from the chart
-   */
-  const cleanupLiquidationLines = (chart: IChartWidgetApi) => {
-    chart.getAllShapes().forEach((line) => {
-      const shape = chart.getShapeById(line.id).getProperties();
-      if (shape.text?.includes('liquidation-heatmap-')) {
-        try {
-          chart.removeEntity(line.id);
-        } catch {
-          // Line might already be removed
-        }
-      }
-    });
-  };
-
-  // Liquidation heatmap effect
-  useEffect(() => {
-    if (!chart || !widget || !widgetReady) return;
-
-    try {
-      const symbol = getChartSymbol(chart);
-
-      // Clean up ALL existing liquidation lines first
-      cleanupLiquidationLines(chart);
-
-      const drawnActivePositionLines: PositionChartLine[] = deleteDetachedLines(
-        chart,
-        allActivePositionChartLines,
-        allActivePositions ?? [],
-        [],
-      );
-
-      if (!allActivePositions) {
-        setAllActivePositionChartLines(drawnActivePositionLines);
-        return;
-      }
-
-      // Remove all liquidation lines when disabled
-      if (!chartPreferences.showAllActivePositionsLiquidationLines) {
-        widget
-          .activeChart()
-          .getAllShapes()
-          .forEach((line) => {
-            const shape = chart.getShapeById(line.id).getProperties();
-            // Check for both old and new liquidation line patterns
-            if (
-              shape.title === 'all-active-positions-liquidation-line' ||
-              shape.text?.includes('liquidation-heatmap-')
-            ) {
-              chart.removeEntity(line.id);
-            }
-          });
-        setAllActivePositionChartLines([]);
-        return;
-      }
-
-      // Draw liquidation lines for all active positions
-      for (const position of allActivePositions) {
-        if (
-          chartPreferences.showAllActivePositionsLiquidationLines &&
-          position.liquidationPrice
-        ) {
-          // Remove existing line for this position first
-          const existingLineIndex = drawnActivePositionLines.findIndex(
-            (line) =>
-              line.position === position.pubkey.toBase58() &&
-              line.type === 'liquidation',
-          );
-
-          if (existingLineIndex !== -1) {
-            // Remove the existing line from chart and state
-            try {
-              chart.removeEntity(
-                drawnActivePositionLines[existingLineIndex].id,
-              );
-            } catch {
-              // Line might already be removed
-            }
-            drawnActivePositionLines.splice(existingLineIndex, 1);
-          }
-
-          // Get visual properties based on position size USD (post-leverage)
-          const visualProps = getLiquidationVisualProperties(
-            position.sizeUsd ?? 0,
-            minSizeUsd,
-            maxSizeUsd,
-          );
-
-          // Create time-based liquidation line starting from trade open
-          const positionOpenTime = new Date(
-            Number(position.nativeObject.openTime) * 1000,
-          );
-
-          const id = createLiquidationLine({
-            chart,
-            price: position.liquidationPrice,
-            startTime: positionOpenTime,
-            color: visualProps.color,
-            linewidth: visualProps.linewidth,
-            positionId: position.pubkey.toBase58(),
-          });
-
-          if (id) {
-            drawnActivePositionLines.push({
-              id,
-              type: 'liquidation',
-              symbol,
-              position: position.pubkey.toBase58(),
-              value: position.liquidationPrice,
-            });
-          }
-        }
-      }
-
-      setAllActivePositionChartLines(drawnActivePositionLines);
-    } catch (e) {
-      console.log('CATCH ERROR', e);
-      drawingErrorCallback();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    chart,
+  // Call the new liquidation lines hook
+  useLiquidationLines({
+    tokenSymbol,
+    widget,
+    widgetReady,
     allActivePositions,
-    trickReload,
-    chartPreferences.showAllActivePositionsLiquidationLines,
-    currentTime,
-    maxSizeUsd,
-    minSizeUsd,
-  ]);
+    chartPreferences,
+  });
 
   useEffect(() => {
     if (!chart) return;
 
     // Delete all lines to be redrawn
     deleteDetachedLines(chart, positionChartLines, [], []);
-    deleteDetachedLines(chart, allActivePositionChartLines, [], []);
-
     // clear all marks
     chart.clearMarks(1);
 
     setPositionChartLines([]);
-    chart.getAllShapes().forEach((line) => {
-      const shape = chart.getShapeById(line.id).getProperties();
-      // Clean up both old and new liquidation line patterns
-      if (
-        shape.title === 'all-active-positions-liquidation-line' ||
-        shape.text?.includes('liquidation-heatmap-')
-      ) {
-        chart.removeEntity(line.id);
-      }
-    });
-    setAllActivePositionChartLines([]);
-
     setTrickReload((prev) => prev + 1);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1009,8 +731,6 @@ export function useChartDrawing({
 
   useEffect(() => {
     if (!chart) return;
-    // Delete all lines to be redrawn
-    deleteDetachedLines(chart, positionChartLines, [], []);
     setPositionChartLines([]);
     setTrickReload((prev) => prev + 1);
 
@@ -1029,7 +749,15 @@ export function useChartDrawing({
             // Check if drag handling is enabled (using current ref value)
             if (!chartPreferencesRef.current.updateTPSLByDrag) return;
 
-            const line = chart?.getShapeById(id);
+            // Check if the shape still exists before accessing it
+            let line;
+            try {
+              line = chart?.getShapeById(id);
+            } catch {
+              // Shape no longer exists, ignore this event
+              return;
+            }
+
             if (!line) return;
 
             const [points] = line.getPoints();
@@ -1065,22 +793,26 @@ export function useChartDrawing({
               .then((isSuccess) => {
                 if (!isSuccess && position) {
                   // If update failed, revert the line to the original position
-                  line.setPoints([
-                    {
-                      time: Number(position.nativeObject.openTime) * 1000,
-                      price:
-                        type === 'stopLoss'
-                          ? position.stopLossLimitPrice!
-                          : position.takeProfitLimitPrice!,
-                    },
-                  ]);
+                  try {
+                    line.setPoints([
+                      {
+                        time: Number(position.nativeObject.openTime) * 1000,
+                        price:
+                          type === 'stopLoss'
+                            ? position.stopLossLimitPrice!
+                            : position.takeProfitLimitPrice!,
+                      },
+                    ]);
+                  } catch {
+                    // Line might have been deleted, ignore
+                  }
                 }
               })
               .finally(() => {
                 ongoingUpdatesRef.current.delete(updateKey);
               });
-          } catch (error) {
-            console.log('Error handling drawing event:', error);
+          } catch {
+            // Silently ignore all errors - they're usually harmless race conditions
           }
         }, 200);
       };

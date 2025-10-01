@@ -8,7 +8,7 @@ export const DEFAULT_TIMEZONE =
   Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 export const CHART_BACKGROUND = '#0d1118';
-export const CHART_PRICE_LINE_COLOR = '#FFFF05';
+export const CHART_PRICE_LINE_COLOR = '#10e1a3';
 export const CHART_TEXT_COLOR = '#B3B5BE';
 
 export const FAVORITE_INTERVALS = [
