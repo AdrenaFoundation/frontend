@@ -155,7 +155,7 @@ export default function TradingChartHeaderStats({
               >
                 <span className="text-txtfade cursor-help">
                   B.Rate{' '}
-                  <span className="text-white font-mono ml-1">
+                  <span className="text-white font-mono ml-1 cursor-help">
                     {borrowingRate !== null
                       ? `${(borrowingRate * 100).toFixed(4)}%/h`
                       : '-'}
@@ -319,7 +319,7 @@ export default function TradingChartHeaderStats({
               >
                 <span className="text-txtfade cursor-help">
                   B.Rate{' '}
-                  <span className="text-white font-mono ml-1">
+                  <span className="text-white font-mono ml-1 cursor-help">
                     {borrowingRate !== null
                       ? `${(borrowingRate * 100).toFixed(4)}%/h`
                       : '-'}
@@ -433,14 +433,16 @@ export default function TradingChartHeaderStats({
                   }
                   placement="bottom"
                 >
-                  <span className="text-txtfade cursor-help">
-                    B.Rate{' '}
-                    <span className="text-white font-mono ml-1">
+                  <div className="flex items-center">
+                    <span className="font-mono text-sm sm:text-xs text-txtfade text-right cursor-help">
+                      B.Rate
+                    </span>
+                    <span className="font-mono text-sm sm:text-xs text-white ml-1 cursor-help">
                       {borrowingRate !== null
                         ? `${(borrowingRate * 100).toFixed(4)}%/h`
                         : '-'}
                     </span>
-                  </span>
+                  </div>
                 </Tippy>
               </div>
             </div>
@@ -550,15 +552,17 @@ export default function TradingChartHeaderStats({
               }
               placement="bottom"
             >
-              <span className="font-mono text-sm sm:text-xs text-txtfade text-right cursor-help">
-                B.Rate
-              </span>
+              <div className="flex items-center">
+                <span className="font-mono text-sm sm:text-xs text-txtfade text-right cursor-help">
+                  B.Rate
+                </span>
+                <span className="font-mono text-sm sm:text-xs text-white ml-1 cursor-help">
+                  {borrowingRate !== null
+                    ? `${(borrowingRate * 100).toFixed(4)}%/h`
+                    : '-'}
+                </span>
+              </div>
             </Tippy>
-            <span className="font-mono text-sm sm:text-xs text-white mr-1">
-              {borrowingRate !== null
-                ? `${(borrowingRate * 100).toFixed(4)}%/h`
-                : '-'}
-            </span>
           </div>
         </div>
       </div>
