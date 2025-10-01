@@ -1723,7 +1723,6 @@ export type TraderByVolumeInfo = {
   totalVolume: number;
 };
 
-// Update PoolInfoResponse to match what getPoolInfo returns (just the data part)
 export type PoolInfoResponse = {
   aum_usd?: number[];
   lp_apr?: number[];
@@ -1951,3 +1950,38 @@ export type AdrenaNotificationData = {
   is_read?: boolean;
   read_at?: string;
 };
+
+export interface AnniversaryRecord {
+  wallet: string;
+  value: number;
+  date?: Date;
+}
+
+export interface AnniversaryRecords {
+  best_pnl_percentage: AnniversaryRecord;
+  biggest_liquidation: AnniversaryRecord;
+  biggest_borrow_fees: AnniversaryRecord;
+  biggest_exit_fees: AnniversaryRecord;
+  most_trades: AnniversaryRecord;
+  most_consecutive_wins: AnniversaryRecord;
+  most_consecutive_losses: AnniversaryRecord;
+  most_consecutive_liquidations: AnniversaryRecord;
+  first_trader: AnniversaryRecord;
+  last_trader: AnniversaryRecord;
+}
+
+export interface UserAnniversaryStats {
+  best_pnl_percentage: number;
+  biggest_liquidation: number;
+  biggest_borrow_fees: number;
+  biggest_exit_fees: number;
+  most_trades: number;
+  most_consecutive_wins: number;
+  most_consecutive_losses: number;
+  most_consecutive_liquidations: number;
+}
+
+export interface AnniversaryResponse {
+  records: AnniversaryRecords;
+  user_stats: UserAnniversaryStats | null;
+}

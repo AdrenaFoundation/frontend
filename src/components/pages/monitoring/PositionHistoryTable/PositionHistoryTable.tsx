@@ -1,9 +1,8 @@
 import 'react-datepicker/dist/react-datepicker.css';
 
 import { AnimatePresence } from 'framer-motion';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import DatePicker from 'react-datepicker';
-import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -14,8 +13,8 @@ import { PositionSortOption } from '@/hooks/usePositionHistory';
 import { useSelector } from '@/store/store';
 import { EnrichedPositionApi, EnrichedPositionApiV2 } from '@/types';
 
-import PositionHistoryBlock from '../../trading/Positions/PositionHistoryBlock';
-import TableV2, { TableHeaderType, TableRowType } from '../Table';
+import PositionHistoryBlockV2 from '../../trading/Positions/PositionHistoryBlockV2';
+import Table, { TableHeaderType } from '../Table';
 import {
   BottomBar,
   CurrencyCell,
@@ -44,6 +43,7 @@ export default function PositionHistoryTable({
   totalPages,
   loadPageData,
   walletAddress,
+  breakpoint = '1280px',
 }: {
   positionsData: EnrichedPositionApiV2 | null;
   isLoadingPositionsHistory: boolean;
@@ -54,8 +54,9 @@ export default function PositionHistoryTable({
   totalPages: number;
   loadPageData: (page: number) => Promise<void>;
   walletAddress: string | null;
+  breakpoint?: string;
 }) {
-  const isMobile = useBetterMediaQuery('(max-width: 1280px)');
+  const isMobile = useBetterMediaQuery(`(max-width: ${breakpoint})`);
 
   const [activePosition, setActivePosition] =
     useState<EnrichedPositionApi | null>(null);
@@ -64,112 +65,122 @@ export default function PositionHistoryTable({
 
   const [isNative, setIsNative] = useState<boolean>(false);
   const [isPnlWithFees, setIsPnlWithFees] = useState<boolean>(showPnlWithFees);
-  const [viewMode, setViewMode] = useState<'table' | 'block'>('table');
 
   // Export modal state
   const [isDownloading, setIsDownloading] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportOptions, setExportOptions] = useState<ExportOptions>({
     type: 'year',
-    year: new Date().getFullYear()
+    year: new Date().getFullYear(),
   });
   const [exportWarning, setExportWarning] = useState<string>('');
 
-  const downloadPositionHistory = useCallback(async (options: ExportOptions): Promise<boolean> => {
-    if (!walletAddress || isDownloading) {
-      return false;
-    }
-
-    setIsDownloading(true);
-    setExportWarning(''); // Clear any previous warnings
-
-    try {
-      // Server uses large default page size (500,000), so most if not all users get everything in one request
-      const exportParams: Parameters<typeof DataApiClient.exportPositions>[0] = {
-        userWallet: walletAddress,
-      };
-
-      if (options.type === 'year' && options.year) {
-        exportParams.year = options.year;
-      } else if (options.type === 'dateRange') {
-        if (options.entryDate) {
-          exportParams.entryDate = new Date(options.entryDate);
-        }
-        if (options.exitDate) {
-          const exitDate = new Date(options.exitDate);
-          exitDate.setUTCHours(23, 59, 59, 999);
-          exportParams.exitDate = exitDate;
-        }
-      }
-
-      const firstPageResult = await DataApiClient.exportPositions(exportParams);
-
-      if (!firstPageResult) {
-        setExportWarning('Failed to export positions. Please try again.');
+  const downloadPositionHistory = useCallback(
+    async (options: ExportOptions): Promise<boolean> => {
+      if (!walletAddress || isDownloading) {
         return false;
       }
 
-      const { csvData, metadata } = firstPageResult;
+      setIsDownloading(true);
+      setExportWarning(''); // Clear any previous warnings
 
-      if (!csvData || csvData.trim().length === 0 || metadata.totalPositions === 0) {
-        setExportWarning(`No positions available for ${options.type === 'year' ? `year ${options.year}` : `date range ${options.entryDate} to ${options.exitDate}`}`);
-        return false;
-      }
+      try {
+        // Server uses large default page size (500,000), so most if not all users get everything in one request
+        const exportParams: Parameters<
+          typeof DataApiClient.exportPositions
+        >[0] = {
+          userWallet: walletAddress,
+        };
 
-      let allCsvData = csvData;
+        if (options.type === 'year' && options.year) {
+          exportParams.year = options.year;
+        } else if (options.type === 'dateRange') {
+          if (options.entryDate) {
+            exportParams.entryDate = new Date(options.entryDate);
+          }
+          if (options.exitDate) {
+            const exitDate = new Date(options.exitDate);
+            exitDate.setUTCHours(23, 59, 59, 999);
+            exportParams.exitDate = exitDate;
+          }
+        }
 
-      // Handle rare case where data spans multiple pages (very large datasets +500k position events)
-      if (metadata.totalPages > 1) {
-        for (let page = 2; page <= metadata.totalPages; page++) {
-          const pageResult = await DataApiClient.exportPositions({
-            ...exportParams,
-            page,
-          });
+        const firstPageResult =
+          await DataApiClient.exportPositions(exportParams);
 
-          if (pageResult && pageResult.csvData) {
-            const lines = pageResult.csvData.split('\n');
-            const dataWithoutHeader = lines.slice(1).join('\n');
-            if (dataWithoutHeader.trim()) {
-              allCsvData += '\n' + dataWithoutHeader;
+        if (!firstPageResult) {
+          setExportWarning('Failed to export positions. Please try again.');
+          return false;
+        }
+
+        const { csvData, metadata } = firstPageResult;
+
+        if (
+          !csvData ||
+          csvData.trim().length === 0 ||
+          metadata.totalPositions === 0
+        ) {
+          setExportWarning(
+            `No positions available for ${options.type === 'year' ? `year ${options.year}` : `date range ${options.entryDate} to ${options.exitDate}`}`,
+          );
+          return false;
+        }
+
+        let allCsvData = csvData;
+
+        // Handle rare case where data spans multiple pages (very large datasets +500k position events)
+        if (metadata.totalPages > 1) {
+          for (let page = 2; page <= metadata.totalPages; page++) {
+            const pageResult = await DataApiClient.exportPositions({
+              ...exportParams,
+              page,
+            });
+
+            if (pageResult && pageResult.csvData) {
+              const lines = pageResult.csvData.split('\n');
+              const dataWithoutHeader = lines.slice(1).join('\n');
+              if (dataWithoutHeader.trim()) {
+                allCsvData += '\n' + dataWithoutHeader;
+              }
+            }
+
+            if (page < metadata.totalPages) {
+              await new Promise((resolve) => setTimeout(resolve, 100));
             }
           }
-
-          if (page < metadata.totalPages) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-          }
         }
+
+        // Create filename based on options
+        let filename = `positions-${walletAddress.slice(0, 8)}`;
+        if (options.type === 'year' && options.year) {
+          filename += `-${options.year}`;
+        } else if (options.type === 'dateRange') {
+          if (options.entryDate) filename += `-from-${options.entryDate}`;
+          if (options.exitDate) filename += `-to-${options.exitDate}`;
+        }
+        filename += `-${new Date().toISOString().split('T')[0]}.csv`;
+
+        // Create and download the CSV file
+        const dataUrl = `data:text/csv;charset=utf-8,${encodeURIComponent(allCsvData)}`;
+
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        return true; // Success
+      } catch (error) {
+        console.error('Error downloading position history:', error);
+        setExportWarning('Failed to export positions. Please try again.');
+        return false;
+      } finally {
+        setIsDownloading(false);
       }
-
-      // Create filename based on options
-      let filename = `positions-${walletAddress.slice(0, 8)}`;
-      if (options.type === 'year' && options.year) {
-        filename += `-${options.year}`;
-      } else if (options.type === 'dateRange') {
-        if (options.entryDate) filename += `-from-${options.entryDate}`;
-        if (options.exitDate) filename += `-to-${options.exitDate}`;
-      }
-      filename += `-${new Date().toISOString().split('T')[0]}.csv`;
-
-      // Create and download the CSV file
-      const dataUrl = `data:text/csv;charset=utf-8,${encodeURIComponent(allCsvData)}`;
-
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-      return true; // Success
-
-    } catch (error) {
-      console.error('Error downloading position history:', error);
-      setExportWarning('Failed to export positions. Please try again.');
-      return false;
-    } finally {
-      setIsDownloading(false);
-    }
-  }, [walletAddress, isDownloading]);
+    },
+    [walletAddress, isDownloading],
+  );
 
   const handleExportSubmit = async () => {
     const success = await downloadPositionHistory(exportOptions);
@@ -189,7 +200,9 @@ export default function PositionHistoryTable({
     return years;
   };
 
-  const hasDateFields = Boolean(exportOptions.entryDate || exportOptions.exitDate);
+  const hasDateFields = Boolean(
+    exportOptions.entryDate || exportOptions.exitDate,
+  );
 
   const isExportValid = () => {
     if (!hasDateFields) {
@@ -261,10 +274,9 @@ export default function PositionHistoryTable({
     leverage: <LeverageCell leverage={p.entryLeverage} />,
     pnl: (
       <PnlCell
-        pnl={isPnlWithFees ? p.pnl : p.pnl - p.fees}
+        pnl={isPnlWithFees ? p.pnl : p.pnl + p.fees}
         maxPnl={maxPnl}
         minPnl={minPnl}
-        isIndicator={viewMode === 'table'}
       />
     ),
     volume: <CurrencyCell value={p.volume} />,
@@ -284,59 +296,6 @@ export default function PositionHistoryTable({
     id: p.positionId,
   }));
 
-  const PositionBlockComponent = (item: TableRowType, index: number) => {
-    const position = positionsData.positions[index];
-
-    return (
-      <div
-        key={`position-block-${index}`}
-        className="bg-main border border-inputcolor rounded-md hover:bg-third transition-colors cursor-pointer relative"
-        onClick={() => {
-          setActivePosition(position);
-        }}
-      >
-        {item.status === 'liquidate' && (
-          <div className="absolute left-0 top-0 h-full w-[0.0625rem] bg-orange" />
-        )}
-
-        <div className="flex justify-between items-center mb-3 border-b border-inputcolor p-2 px-4">
-          <div className="flex items-center gap-2">
-            {item.token}
-            <div
-              className={twMerge(
-                'text-xs p-0.5 px-2 rounded-md',
-                position.side === 'long' ? 'bg-green/10' : 'bg-red/10',
-              )}
-            >
-              {item.side}
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="text-right text-xs opacity-50 font-regular">
-              PnL
-            </p>
-            {item.pnl}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 text-sm pb-2 px-4">
-          {headers.map((header) => {
-            const value = item[header.key];
-            if (['token', 'pnl', 'side'].includes(header.key)) return null;
-            return (
-              <div key={header.title}>
-                <div className="opacity-50 text-xs font-regular">
-                  {header.title}
-                </div>
-                <div className="text-sm">{value}</div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <>
       {showExportModal ? (
@@ -347,7 +306,7 @@ export default function PositionHistoryTable({
             setShowExportModal(false);
           }}
         >
-          <div className="flex flex-col gap-6 p-6 min-w-[400px] sm:min-w-[500px]">
+          <div className="flex flex-col gap-6 p-6 min-w-[25rem] sm:min-w-[31.25rem]">
             {/* Year Option */}
             <div className="flex flex-col gap-3">
               <h3 className="text-xl text-white">Export by Year</h3>
@@ -362,10 +321,12 @@ export default function PositionHistoryTable({
                         type: 'year',
                         year: parseInt(value),
                         entryDate: '',
-                        exitDate: ''
+                        exitDate: '',
                       });
                     }}
-                    options={getYearOptions().map(year => ({ title: String(year) }))}
+                    options={getYearOptions().map((year) => ({
+                      title: String(year),
+                    }))}
                     reversed={true}
                     className="h-8 flex items-center px-2"
                     selectedTextClassName="text-xs flex-1 text-left"
@@ -390,20 +351,30 @@ export default function PositionHistoryTable({
                   <label className="text-xs text-white/60">From:</label>
                   <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
                     <DatePicker
-                      selected={exportOptions.entryDate ? new Date(exportOptions.entryDate) : null}
+                      selected={
+                        exportOptions.entryDate
+                          ? new Date(exportOptions.entryDate)
+                          : null
+                      }
                       onChange={(date) => {
                         setExportWarning(''); // Clear warning when changing options
                         setExportOptions({
                           ...exportOptions,
                           type: 'dateRange',
-                          entryDate: date ? date.toISOString().split('T')[0] : ''
+                          entryDate: date
+                            ? date.toISOString().split('T')[0]
+                            : '',
                         });
                       }}
                       className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
                       placeholderText="Select start date"
                       dateFormat="yyyy-MM-dd"
                       minDate={new Date('2024-09-25')}
-                      maxDate={exportOptions.exitDate ? new Date(exportOptions.exitDate) : new Date()}
+                      maxDate={
+                        exportOptions.exitDate
+                          ? new Date(exportOptions.exitDate)
+                          : new Date()
+                      }
                       popperClassName="z-[200]"
                       popperPlacement="bottom-start"
                     />
@@ -414,19 +385,29 @@ export default function PositionHistoryTable({
                   <label className="text-xs text-white/60">To:</label>
                   <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
                     <DatePicker
-                      selected={exportOptions.exitDate ? new Date(exportOptions.exitDate) : null}
+                      selected={
+                        exportOptions.exitDate
+                          ? new Date(exportOptions.exitDate)
+                          : null
+                      }
                       onChange={(date) => {
                         setExportWarning(''); // Clear warning when changing options
                         setExportOptions({
                           ...exportOptions,
                           type: 'dateRange',
-                          exitDate: date ? date.toISOString().split('T')[0] : ''
+                          exitDate: date
+                            ? date.toISOString().split('T')[0]
+                            : '',
                         });
                       }}
                       className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
                       placeholderText="Select end date"
                       dateFormat="yyyy-MM-dd"
-                      minDate={exportOptions.entryDate ? new Date(exportOptions.entryDate) : new Date('2024-09-25')}
+                      minDate={
+                        exportOptions.entryDate
+                          ? new Date(exportOptions.entryDate)
+                          : new Date('2024-09-25')
+                      }
                       maxDate={new Date()}
                       popperClassName="z-[200]"
                       popperPlacement="bottom-start"
@@ -438,7 +419,7 @@ export default function PositionHistoryTable({
 
             {/* Warning Message */}
             {exportWarning && (
-              <div className='text-xs text-orange font-semibold'>
+              <div className="text-xs text-orange font-semibold">
                 {exportWarning}
               </div>
             )}
@@ -465,8 +446,8 @@ export default function PositionHistoryTable({
         </Modal>
       ) : null}
 
-      <div className="border-t p-3">
-        <TableV2
+      <div className="border-t p-3 overflow-hidden">
+        <Table
           title="Position History"
           headers={headers}
           data={formattedData}
@@ -478,9 +459,6 @@ export default function PositionHistoryTable({
           totalPages={totalPages}
           height="20rem"
           isSticky={!!isMobile}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          blockViewComponent={PositionBlockComponent}
           onRowClick={(id) => {
             const position =
               positionsData.positions.find((p) => p.positionId === id) ?? null;
@@ -506,12 +484,13 @@ export default function PositionHistoryTable({
           <Modal
             close={() => setActivePosition(null)}
             className="p-5 w-full"
-            wrapperClassName="w-full max-w-[75rem]"
+            wrapperClassName="w-full md:max-w-[75rem] md:mt-0"
           >
-            <PositionHistoryBlock
+            <PositionHistoryBlockV2
               positionHistory={activePosition}
               showShareButton={true}
               showExpanded={true}
+              showChart={true}
             />
           </Modal>
         ) : null}

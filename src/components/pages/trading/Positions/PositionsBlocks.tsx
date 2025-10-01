@@ -5,7 +5,7 @@ import Button from '@/components/common/Button/Button';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { PositionExtended, Token } from '@/types';
 
-import PositionBlock from './PositionBlock';
+import PositionBlockV2 from './PositionBlockV2';
 
 export function PositionsBlocks({
   connected,
@@ -14,6 +14,7 @@ export function PositionsBlocks({
   triggerStopLossTakeProfit,
   triggerClosePosition,
   triggerEditPositionCollateral,
+  setShareClosePosition,
   setTokenB,
 }: {
   bodyClassName?: string;
@@ -26,6 +27,7 @@ export function PositionsBlocks({
   triggerEditPositionCollateral: (p: PositionExtended) => void;
   wrapped?: boolean;
   setTokenB: (token: Token) => void;
+  setShareClosePosition: (p: PositionExtended) => void;
 }) {
   if (positions === null && !connected) {
     return (
@@ -63,7 +65,12 @@ export function PositionsBlocks({
             </div>
           ) : (
             <div className="flex justify-center items-center">
-              <Button title="Open a position" href="/trade" size="lg" className='my-4' />
+              <Button
+                title="Open a position"
+                href="/trade"
+                size="lg"
+                className="my-4"
+              />
             </div>
           )}
         </>
@@ -77,12 +84,13 @@ export function PositionsBlocks({
           )}
         >
           {positions.map((position) => (
-            <PositionBlock
+            <PositionBlockV2
               key={position.pubkey.toBase58()}
               position={position}
               triggerStopLossTakeProfit={triggerStopLossTakeProfit}
               triggerClosePosition={triggerClosePosition}
               triggerEditPositionCollateral={triggerEditPositionCollateral}
+              setShareClosePosition={setShareClosePosition}
               setTokenB={setTokenB}
             />
           ))}

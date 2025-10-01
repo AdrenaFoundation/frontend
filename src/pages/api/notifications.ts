@@ -28,7 +28,7 @@ export default async function handler(
 
     try {
       const resp = await fetch(
-        `https://alerts-api.dial.to/v2/${DIALECT_APP_ID}/subscribers?limit=1000`,
+        `https://alerts-api.dial.to/v2/${DIALECT_APP_ID}/subscribers?limit=1000&walletAddress=${wallet_address}`,
         {
           method: 'GET',
           headers: {

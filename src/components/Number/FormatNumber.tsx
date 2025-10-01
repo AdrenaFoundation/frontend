@@ -2,7 +2,12 @@ import Tippy from '@tippyjs/react';
 import { forwardRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { formatNumAbbreviated, formatNumber, formatPriceInfo, formatSecondsToTimeDifference } from '@/utils';
+import {
+  formatNumAbbreviated,
+  formatNumber,
+  formatPriceInfo,
+  formatSecondsToTimeDifference,
+} from '@/utils';
 
 interface FormatNumberProps {
   nb?: number | null;
@@ -102,7 +107,6 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       num = formatSecondsToTimeDifference(nb);
     }
 
-
     if (isAbbreviate) {
       num = formatNumAbbreviated(Number(nb), precision);
     }
@@ -114,7 +118,9 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       <p ref={ref} className={twMerge('font-mono inline-block', className)}>
         {isAbbreviate && isAbbreviateIcon && '~'}
         {showSignBeforePrefix && sign}
-        {prefix && <span className={twMerge(className, prefixClassName)}>{prefix}</span>}
+        {prefix && (
+          <span className={twMerge(className, prefixClassName)}>{prefix}</span>
+        )}
         {integer}
         {decimal && (
           <span
@@ -128,7 +134,9 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
           </span>
         )}
         {format === 'percentage' && '%'}
-        {suffix ? <span className={twMerge('ml-1', suffixClassName)}>{suffix}</span> : null}
+        {suffix ? (
+          <span className={twMerge('ml-1', suffixClassName)}>{suffix}</span>
+        ) : null}
       </p>
     );
 
@@ -137,7 +145,12 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
     }
 
     return (
-      <div className={twMerge(info && 'flex flex-row gap-1 items-center', wrapperClassName)}>
+      <div
+        className={twMerge(
+          info && 'flex flex-row gap-1 items-center',
+          wrapperClassName,
+        )}
+      >
         <Tippy
           content={
             <div className="text-sm w-60 flex flex-col justify-around items-center">
