@@ -78,6 +78,9 @@ export default function Stake({ connected }: PageProps) {
   const [optimisticClaimAdx, setOptimisticClaimAdx] =
     useState<ClaimHistoryExtended | null>(null);
 
+  const [optimisticClaimAlp, setOptimisticClaimAlp] =
+    useState<ClaimHistoryExtended | null>(null);
+
   const [adxDetails, setAdxDetails] = useState<ADXTokenDetails>({
     balance: null,
     totalLiquidStaked: null,
@@ -450,7 +453,7 @@ export default function Stake({ connected }: PageProps) {
         alpRewards.pendingAdxRewards = 0;
         alpRewards.pendingGenesisAdxRewards = 0;
         fetchAlpRewards();
-        // You can add setOptimisticClaimAlp here if needed
+        setOptimisticClaimAlp(optimisticClaim);
       }
     } catch (error) {
       console.error('error', error);
@@ -854,6 +857,8 @@ export default function Stake({ connected }: PageProps) {
                   }
                   pendingGenesisAdxRewards={alpRewards.pendingGenesisAdxRewards}
                   walletAddress={wallet?.walletAddress ?? null}
+                  optimisticClaim={optimisticClaimAlp}
+                  setOptimisticClaim={setOptimisticClaimAlp}
                 />
               </div>
             ) : null}
