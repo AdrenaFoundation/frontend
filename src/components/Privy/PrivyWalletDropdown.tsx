@@ -123,7 +123,6 @@ export function PrivyWalletDropdown({
                                     getProfilePicture,
                                     getProfileName
                                 );
-                                console.log('walletData embedded', walletData);
                                 return (
                                     <div key={enhancedWallet.address} className={`flex items-center justify-between px-4 py-3 transition-colors ${enhancedWallet.address === enchancedWalletData?.address
                                         ? 'bg-gray-700 border-l-2 border-green-400'

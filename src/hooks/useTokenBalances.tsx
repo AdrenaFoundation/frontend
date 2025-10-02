@@ -90,7 +90,6 @@ export function useTokenBalances(walletAddress?: string) {
     const [error, setError] = useState<string | null>(null);
     const isMountedRef = useRef(true);
 
-
     // Use the app's configured RPC connection but with 'confirmed' commitment for Privy compatibility
     const connection = useMemo(() => {
         const appConnection = window.adrena?.client?.connection;
@@ -100,7 +99,7 @@ export function useTokenBalances(walletAddress?: string) {
             return new Connection(appConnection.rpcEndpoint, 'confirmed');
         }
         return null;
-    }, []);
+    }, [window.adrena?.client?.connection]);
 
     // Fetch Jupiter token registry using global cache
     useEffect(() => {

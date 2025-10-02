@@ -102,9 +102,6 @@ export function getWalletDisplayData(
     getProfilePicture: (address: string) => string | undefined,
     getProfileName: (address: string) => string | undefined
 ): WalletDisplayData {
-    console.log('wallet', wallet);
-    console.log('getProfileName', getProfileName);
-    console.log('getProfilePicture', getProfilePicture);
     const profileName = getProfileName(wallet.address);
     const displayName = profileName || getAbbrevWalletAddress(wallet.address);
     const profilePicture = getProfilePicture(wallet.address);

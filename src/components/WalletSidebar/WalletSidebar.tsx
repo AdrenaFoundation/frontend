@@ -5,7 +5,7 @@
 
 import { useExportWallet, useFundWallet, useWallets } from '@privy-io/react-auth/solana';
 import Image from 'next/image';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useWalletSidebar } from '@/contexts/WalletSidebarContext';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
@@ -27,6 +27,8 @@ export default function WalletSidebar() {
 
     // Get wallet state from Redux store
     const wallet = useSelector(selectWallet);
+    // Get current wallet address for token balances
+    const currentWalletAddress = wallet?.walletAddress;
 
     const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
 
@@ -35,9 +37,6 @@ export default function WalletSidebar() {
 
     // State for wallet selection and balance with persistence
     const [showSendModal, setShowSendModal] = useState(false);
-
-    // Get current wallet address for token balances
-    const currentWalletAddress = wallet?.walletAddress;
 
     // Use token balances hook
     const {
@@ -114,7 +113,6 @@ export default function WalletSidebar() {
         if (!wallet?.walletAddress) return null;
         const enhancedWallet = enhancedWallets.find(w => w.address === wallet.walletAddress) ?? null;
         if (!enhancedWallet) return null;
-        console.log('enhancedWallet found', enhancedWallet);
         const enchancedWalletData = getWalletDisplayData(enhancedWallet, getProfilePicture, getProfileName);
         return enchancedWalletData;
     }, [wallet, getProfilePicture, getProfileName, enhancedWallets]);
@@ -131,7 +129,9 @@ export default function WalletSidebar() {
         if (!newWallet) return;
 
         if (address !== wallet?.walletAddress) {
-            console.log('Selected Privy wallet:', address.slice(0, 8) + '...');
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('privy:selectedWallet', address);
+            }
 
             // Update global wallet state
             dispatch({
@@ -145,135 +145,36 @@ export default function WalletSidebar() {
         }
     };
 
-    // Fetch balance and assets for selected wallet
-    useEffect(() => {
-        if (wallet?.walletAddress) {
-            /* fetchWalletBalance(selectedWallet.address);
-            fetchSplTokens(selectedWallet.address); */
-        }
-    }, [wallet?.walletAddress]);
-
-
-    // Fetch SPL token holdings for selected wallet
-    /* const fetchSplTokens = async (address: string) => {
-         setIsLoadingSplTokens(true);
-         try {
-             const response = await fetch('https://solana-mainnet.g.alchemy.com/v2/demo', {
-                 method: 'POST',
-                 headers: { 'Content-Type': 'application/json' },
-                 body: JSON.stringify({
-                     jsonrpc: '2.0',
-                     id: 1,
-                     method: 'getTokenAccountsByOwner',
-                     params: [
-                         address,
-                         { programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' },
-                         { encoding: 'jsonParsed' }
-                     ]
-                 })
-             });
-
-             const data = await response.json();
-             const tokens = ((data?.result?.value ?? []) as unknown[])
-                 .map((acc: unknown) => {
-                     const info = (acc as { account?: { data?: { parsed?: { info?: { mint?: string; tokenAmount?: { uiAmount?: number; decimals?: number } } } } } }).account?.data?.parsed?.info;
-                     const mint = info?.mint as string | undefined;
-                     const uiAmount = info?.tokenAmount?.uiAmount as number | undefined;
-                     const decimals = info?.tokenAmount?.decimals as number | undefined;
-                     return mint && typeof uiAmount === 'number' && typeof decimals === 'number'
-                         ? { mint, uiAmount, decimals }
-                         : null;
-                 })
-                 .filter((t: unknown): t is { mint: string; uiAmount: number; decimals: number } => !!t)
-                 .filter((t) => (t.uiAmount ?? 0) > 0);
-
-             setSplTokens(tokens);
-         } catch (error) {
-             console.error('Error fetching SPL tokens:', error);
-             setSplTokens([]);
-         } finally {
-             setIsLoadingSplTokens(false);
-         }
-    }; */
-
-    /* const fetchWalletBalance = async (address: string) => {
-        setIsLoadingBalance(true);
-        try {
-            // Validate Solana address format
-            if (!address || address.length < 32 || address.length > 44) {
-                setBalance(null);
-                return;
-            }
-
-            const response = await fetch('https://solana-mainnet.g.alchemy.com/v2/demo', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    jsonrpc: '2.0',
-                    id: 1,
-                    method: 'getBalance',
-                    params: [address]
-                })
-            });
-
-            const data = await response.json();
-            if (data.result) {
-                setBalance(data.result / 1e9); // Convert lamports to SOL
-            }
-        } catch (error) {
-            console.error('Error fetching wallet balance:', error);
-            setBalance(null);
-        } finally {
-            setIsLoadingBalance(false);
-        }
-    };*/
-
     const handleFundWallet = async () => {
-        if (wallet?.isPrivy && wallet?.walletAddress) {
+        if (!enchancedWalletData || !enchancedWalletData.address || !enchancedWalletData.isEmbedded) return;
 
-            try {
-                // Try to call fundWallet with new Privy 3.0 interface
-                await fundWallet({
-                    address: wallet?.walletAddress,
-                    options: {
-                        amount: '1',
-                        asset: 'native-currency',
-                        chain: 'solana:mainnet'
-                    }
-                });
-            } catch (error) {
-                console.error('Error funding wallet:', error);
-                alert('Funding is temporarily unavailable. Please try using an external wallet or contact support.');
-            }
-        } else {
-            // Native wallet funding - show external funding options
-            alert('Please fund your wallet directly through your wallet app (Phantom, Solflare, etc.) or use a DEX/CEX to transfer funds.');
+        try {
+            // Try to call fundWallet with new Privy 3.0 interface
+            await fundWallet({
+                address: enchancedWalletData.address,
+                options: {
+                    amount: '1',
+                    asset: 'native-currency',
+                    chain: 'solana:mainnet'
+                }
+            });
+        } catch (error) {
+            console.error('Error funding wallet:', error);
+            alert('Funding is temporarily unavailable. Please try using an external wallet or contact support.');
         }
     };
 
     // Export wallet functionality (only for Privy embedded wallets)
     const handleExportWallet = async () => {
-        if (!wallet?.isPrivy || !wallet?.walletAddress) return;
+        if (!enchancedWalletData || !enchancedWalletData.address || !enchancedWalletData.isEmbedded) return;
 
         try {
-            // Use the selected wallet address if available, otherwise use the first embedded wallet
-            const walletToExport = wallet?.walletAddress;
-
-            if (!walletToExport) {
-                console.error('No embedded wallet found for export');
-                return;
-            }
-
             // Export the wallet private key
-            await exportWallet({ address: walletToExport });
+            await exportWallet({ address: enchancedWalletData.address });
         } catch (error) {
             console.error('Error exporting wallet:', error);
         }
     };
-
-    // Calculate USD values
-    /*  const solUsdValue = balance && solPrice ? balance * solPrice : null;
-     const totalUsdValue = solUsdValue || 0; */
 
     // Don't render if sidebar is closed or no wallet is connected
     if (!isSidebarOpen || !wallet) {
@@ -302,7 +203,7 @@ export default function WalletSidebar() {
                         />
                     ) : (
                         /* Native Wallet Display */
-                        enchancedWalletData && (
+                        enchancedWalletData ? (
                             <div className="flex items-center gap-3">
                                 {/* Profile Picture */}
                                 <div className="flex-shrink-0">
@@ -327,7 +228,7 @@ export default function WalletSidebar() {
                                     </div>
                                 </div>
                             </div>
-                        )
+                        ) : null
                     )}
                 </div>
 
@@ -413,41 +314,41 @@ export default function WalletSidebar() {
 
                     {/* Fund Wallet */}
                     <div className="mt-6 space-y-3">
-                        <button
-                            onClick={handleFundWallet}
-                            className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
-                        >
-                            💳 {wallet?.isPrivy ? 'Fund the Account' : 'Fund Wallet (External)'}
-                        </button>
+                        {enchancedWalletData?.isEmbedded ? (
+                            <button
+                                onClick={handleFundWallet}
+                                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
+                            >
+                                💳 {wallet?.isPrivy ? 'Fund the Account' : 'Fund Wallet (External)'}
+                            </button>
+                        ) : null}
 
                         {/* Send Tokens Button - Only for Privy wallets */}
-                        {wallet?.isPrivy ? (
-                            <button
-                                onClick={() => setShowSendModal(true)}
-                                disabled={!wallet?.walletAddress}
-                                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
-                            >
-                                📤 Send Tokens
-                            </button>
-                        ) : null}
+                        <button
+                            onClick={() => setShowSendModal(true)}
+                            disabled={!enchancedWalletData?.address}
+                            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
+                        >
+                            📤 Send Tokens
+                        </button>
 
                         {/* Export Wallet Button - Only for Privy embedded wallets */}
-                        {wallet?.isPrivy && enchancedWalletData?.isEmbedded ? (
-                            <button
-                                onClick={handleExportWallet}
-                                disabled={!enchancedWalletData?.isEmbedded}
-                                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
-                            >
-                                🔑 Export Private Key
-                            </button>
+                        {enchancedWalletData?.isEmbedded ? (
+                            <>
+                                <button
+                                    onClick={handleExportWallet}
+                                    disabled={!enchancedWalletData?.isEmbedded}
+                                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
+                                >
+                                    🔑 Export Private Key
+                                </button>
+
+                                <div className="text-xs text-gray-500 text-center">
+                                    Fund your account to start trading.
+                                </div>
+                            </>
                         ) : null}
 
-                        <div className="text-xs text-gray-500 text-center">
-                            {wallet?.isPrivy
-                                ? 'Fund your account to start trading.'
-                                : 'Use your wallet app to manage funds and transactions.'
-                            }
-                        </div>
                     </div>
                 </div>
             </div>
