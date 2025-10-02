@@ -136,14 +136,16 @@ export default function PositionHistoryBlockV2({
                   value: positionHistory.entryPrice,
                   format: 'currency',
                   isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
-                  precision: positionHistory.token.symbol === 'BONK' ? 8 : 2,
+                  precision:
+                    positionHistory.token.displayAmountDecimalsPrecision,
                 },
                 {
                   title: 'Exit',
                   value: positionHistory.exitPrice,
                   format: 'currency',
                   isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
-                  precision: positionHistory.token.symbol === 'BONK' ? 8 : 2,
+                  precision:
+                    positionHistory.token.displayAmountDecimalsPrecision,
                 },
                 {
                   title: 'Fees',
