@@ -4,16 +4,16 @@
 
 import { createContext, ReactNode, useContext, useState } from 'react';
 
-interface PrivySidebarContextType {
+interface WalletSidebarContextType {
     isSidebarOpen: boolean;
     openSidebar: () => void;
     closeSidebar: () => void;
     toggleSidebar: () => void;
 }
 
-const PrivySidebarContext = createContext<PrivySidebarContextType | undefined>(undefined);
+const WalletSidebarContext = createContext<WalletSidebarContextType | undefined>(undefined);
 
-export function PrivySidebarProvider({ children }: { children: ReactNode }) {
+export function WalletSidebarProvider({ children }: { children: ReactNode }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const openSidebar = () => setIsSidebarOpen(true);
@@ -21,21 +21,21 @@ export function PrivySidebarProvider({ children }: { children: ReactNode }) {
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
     return (
-        <PrivySidebarContext.Provider value={{
+        <WalletSidebarContext.Provider value={{
             isSidebarOpen,
             openSidebar,
             closeSidebar,
             toggleSidebar,
         }}>
             {children}
-        </PrivySidebarContext.Provider>
+        </WalletSidebarContext.Provider>
     );
 }
 
-export function usePrivySidebar() {
-    const context = useContext(PrivySidebarContext);
+export function useWalletSidebar() {
+    const context = useContext(WalletSidebarContext);
     if (context === undefined) {
-        throw new Error('usePrivySidebar must be used within a PrivySidebarProvider');
+        throw new Error('useWalletSidebar must be used within a WalletSidebarProvider');
     }
     return context;
 }

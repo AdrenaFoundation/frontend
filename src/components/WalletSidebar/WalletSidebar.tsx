@@ -1,37 +1,39 @@
 /**
- * Global Privy Sidebar - Accessible from the whole app
+ * Global Wallet Sidebar - Handles both Privy and Native wallets
  * Includes blur effect when wallet is opened
  */
 
-import { usePrivy, type WalletWithMetadata } from '@privy-io/react-auth';
 import { useExportWallet, useFundWallet, useWallets } from '@privy-io/react-auth/solana';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { usePrivySidebar } from '@/contexts/PrivySidebarContext';
+import { useWalletSidebar } from '@/contexts/WalletSidebarContext';
+import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import { useTokenBalances } from '@/hooks/useTokenBalances';
 import { selectWallet } from '@/selectors/walletSelectors';
 import { useDispatch, useSelector } from '@/store/store';
+import { enhanceWallets, getWalletDisplayData, useWalletProfiles, WalletIcon, WalletTypeIcon } from '@/utils/walletUtils';
 
-import { PrivySendSOL } from './PrivySendSOL';
-import { PrivyWalletDropdown } from './PrivyWalletDropdown';
+import { PrivySendSOL } from '../Privy/PrivySendSOL';
+import { PrivyWalletDropdown } from '../Privy/PrivyWalletDropdown';
 
-export function PrivyGlobalSidebar() {
-    const { ready, authenticated, user } = usePrivy();
+export default function WalletSidebar() {
+    // Only use Privy hooks when we have a Privy wallet
     const { fundWallet } = useFundWallet();
     const { exportWallet } = useExportWallet();
     const { wallets: connectedStandardWallets } = useWallets();
 
     const dispatch = useDispatch();
 
-    // Get external wallet state from Redux store old way (many subscriptions)
-    // const { wallet } = useSelector((s) => s.walletState);
-
-    // new way to retrieve wallet
+    // Get wallet state from Redux store
     const wallet = useSelector(selectWallet);
 
+    const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
+
+    // Use wallet profiles hook for normalized profile management
+    const { getProfilePicture, getProfileName, isLoadingProfiles } = useWalletProfiles(allUserProfilesMetadata);
+
     // State for wallet selection and balance with persistence
-    const [selectedWalletIndex, setSelectedWalletIndex] = useState(0);
     const [showSendModal, setShowSendModal] = useState(false);
 
     // Get current wallet address for token balances
@@ -98,124 +100,58 @@ export function PrivyGlobalSidebar() {
     }, [tokenBalancesWithPrices]);
 
     // Use context for sidebar state
-    const { isSidebarOpen, closeSidebar } = usePrivySidebar();
+    const { isSidebarOpen, closeSidebar } = useWalletSidebar();
 
-    // CRITICAL FIX: Filter wallets based on their type
-    const solanaWallets = connectedStandardWallets.filter((w) => {
-        // Check if it's a Privy embedded wallet by checking the standardWallet name
-        return w.standardWallet.name.toLowerCase().includes('privy');
-    });
+    // For Privy wallets: show Privy embedded and external wallets
+    const enhancedWallets = useMemo(() => {
+        if (!wallet?.isPrivy) return [];
 
-    // Get external wallets connected through Privy (non-selectable)
-    const privyExternalWallets = connectedStandardWallets.filter((w) => {
-        // External wallets are those that are not Privy embedded wallets
-        return !w.standardWallet.name.toLowerCase().includes('privy');
-    });
+        return enhanceWallets(connectedStandardWallets);
+    }, [wallet?.isPrivy, connectedStandardWallets]);
 
-    // Get external wallet from Redux store (connected through standard wallet adapter)
-    const externalWallet = wallet && wallet.adapterName !== 'Privy' ? {
-        address: wallet.walletAddress,
-        connectorType: 'external' as const,
-        walletClientType: 'solana' as const,
-        type: 'wallet' as const,
-        chainType: 'solana' as const,
-        adapterName: wallet.adapterName,
-    } : null;
-
-    // Smart wallet selection with persistence
-    useEffect(() => {
-        if (solanaWallets.length === 0) return;
-
-        // Get saved wallet address from localStorage
-        const savedWalletAddress = typeof window !== 'undefined'
-            ? localStorage.getItem('privy:selectedWallet')
-            : null;
-
-        let defaultIndex = 0;
-
-        if (savedWalletAddress) {
-            // Try to find the saved wallet
-            const savedIndex = solanaWallets.findIndex(w => w.address === savedWalletAddress);
-            if (savedIndex !== -1) {
-                defaultIndex = savedIndex;
-            }
-        }
-
-        // If no saved wallet or saved wallet not found, use smart defaults
-        if (defaultIndex === 0 && solanaWallets.length > 1) {
-            // Prefer embedded wallets first
-            const embeddedIndex = solanaWallets.findIndex(w => w.standardWallet.name.toLowerCase().includes('privy'));
-            if (embeddedIndex !== -1) {
-                defaultIndex = embeddedIndex;
-            }
-            // Otherwise use first wallet (already defaultIndex = 0)
-        }
-
-        setSelectedWalletIndex(defaultIndex);
-    }, [solanaWallets]);
-
-    const selectedWallet = solanaWallets[selectedWalletIndex];
+    // Get current wallet display data
+    const enchancedWalletData = useMemo(() => {
+        if (!wallet?.walletAddress) return null;
+        const enhancedWallet = enhancedWallets.find(w => w.address === wallet.walletAddress) ?? null;
+        if (!enhancedWallet) return null;
+        console.log('enhancedWallet found', enhancedWallet);
+        const enchancedWalletData = getWalletDisplayData(enhancedWallet, getProfilePicture, getProfileName);
+        return enchancedWalletData;
+    }, [wallet, getProfilePicture, getProfileName, enhancedWallets]);
 
     // Persist wallet selection when it changes
-    const handleWalletSelection = (index: number, walletType?: 'privy' | 'external') => {
+    const handleWalletSelection = (address: string) => {
         // Guard against duplicate selections
-        if (walletType === 'external') {
-            // External wallet selection is handled by handleExternalWalletSelection
+        if (wallet?.walletAddress === address) {
             return;
         }
 
-        setSelectedWalletIndex(index);
-        const newWallet = solanaWallets[index];
-        if (newWallet.address !== wallet?.walletAddress) {
-            console.log('Selected Privy wallet:', newWallet.address.slice(0, 8) + '...');
+        // Find the wallet by address
+        const newWallet = connectedStandardWallets.find(w => w.address === address);
+        if (!newWallet) return;
+
+        if (address !== wallet?.walletAddress) {
+            console.log('Selected Privy wallet:', address.slice(0, 8) + '...');
 
             // Update global wallet state
             dispatch({
                 type: 'connect',
                 payload: {
                     adapterName: 'Privy',
-                    walletAddress: newWallet.address,
+                    walletAddress: address,
                     isPrivy: true,
                 },
             });
         }
     };
 
-    // Handle external wallet selection with debouncing
-    const handleExternalWalletSelection = useCallback(async (address: string, adapterName: string) => {
-        // Guard against duplicate selections
-        if (wallet?.walletAddress === address) {
-            return;
-        }
-
-        console.log('Selected external wallet in PirvyGlobalSidebar:', address, 'Adapter:', adapterName);
-
-        // Update global wallet state to use external wallet
-        dispatch({
-            type: 'connect',
-            payload: {
-                //adapterName: adapterName,
-                adapterName: 'Privy',
-                walletAddress: address,
-                isPrivy: true,
-            },
-        });
-    }, [dispatch, wallet?.walletAddress]);
-
-    // Auto-open sidebar when wallet connects
-    useEffect(() => {
-        if (authenticated && solanaWallets.length > 0) {
-            // Don't auto-open, let user control it
-        }
-    }, [authenticated, solanaWallets.length]);
-
     // Fetch balance and assets for selected wallet
     useEffect(() => {
-        if (selectedWallet?.address) {
+        if (wallet?.walletAddress) {
             /* fetchWalletBalance(selectedWallet.address);
             fetchSplTokens(selectedWallet.address); */
         }
-    }, [selectedWallet?.address]);
+    }, [wallet?.walletAddress]);
 
 
     // Fetch SPL token holdings for selected wallet
@@ -292,44 +228,36 @@ export function PrivyGlobalSidebar() {
         }
     };*/
 
-
-
     const handleFundWallet = async () => {
-        if (!selectedWallet) return;
+        if (wallet?.isPrivy && wallet?.walletAddress) {
 
-        try {
-            // Try to call fundWallet with new Privy 3.0 interface
-            await fundWallet({
-                address: selectedWallet.address,
-                options: {
-                    amount: '1',
-                    asset: 'native-currency',
-                    chain: 'solana:mainnet'
-                }
-            });
-        } catch (error) {
-            console.error('Error funding wallet:', error);
-
-            // If Privy funding fails, show a message to the user
-            alert('Funding is temporarily unavailable. Please try using an external wallet or contact support.');
+            try {
+                // Try to call fundWallet with new Privy 3.0 interface
+                await fundWallet({
+                    address: wallet?.walletAddress,
+                    options: {
+                        amount: '1',
+                        asset: 'native-currency',
+                        chain: 'solana:mainnet'
+                    }
+                });
+            } catch (error) {
+                console.error('Error funding wallet:', error);
+                alert('Funding is temporarily unavailable. Please try using an external wallet or contact support.');
+            }
+        } else {
+            // Native wallet funding - show external funding options
+            alert('Please fund your wallet directly through your wallet app (Phantom, Solflare, etc.) or use a DEX/CEX to transfer funds.');
         }
     };
 
-    // Check if user has an embedded wallet that can be exported
-    const hasEmbeddedWallet = !!user?.linkedAccounts?.find(
-        (account): account is WalletWithMetadata =>
-            account.type === 'wallet' &&
-            account.walletClientType === 'privy' &&
-            account.chainType === 'solana'
-    );
-
-    // Export wallet functionality
+    // Export wallet functionality (only for Privy embedded wallets)
     const handleExportWallet = async () => {
-        if (!ready || !authenticated || !hasEmbeddedWallet) return;
+        if (!wallet?.isPrivy || !wallet?.walletAddress) return;
 
         try {
             // Use the selected wallet address if available, otherwise use the first embedded wallet
-            const walletToExport = selectedWallet?.address || solanaWallets.find(w => w.standardWallet.name.toLowerCase().includes('privy'))?.address;
+            const walletToExport = wallet?.walletAddress;
 
             if (!walletToExport) {
                 console.error('No embedded wallet found for export');
@@ -347,8 +275,8 @@ export function PrivyGlobalSidebar() {
     /*  const solUsdValue = balance && solPrice ? balance * solPrice : null;
      const totalUsdValue = solUsdValue || 0; */
 
-    // Don't render if not ready or not authenticated
-    if (!ready || !authenticated || !isSidebarOpen) {
+    // Don't render if sidebar is closed or no wallet is connected
+    if (!isSidebarOpen || !wallet) {
         return null;
     }
 
@@ -361,21 +289,46 @@ export function PrivyGlobalSidebar() {
             />
 
             {/* Sidebar */}
-            <div className="fixed top-[5rem] right-0 h-[calc(100vh-5rem)] w-72 sm:w-80 bg-gradient-to-b from-gray-900 to-gray-800 border-l border-gray-700 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out">
+            <div className="fixed top-[3rem] right-0 h-[calc(100vh-5rem)] w-72 sm:w-80 bg-gradient-to-b from-gray-900 to-gray-800 border-l border-gray-700 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out">
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-700">
-                    {/* Wallet Dropdown */}
-                    <PrivyWalletDropdown
-                        solanaWallets={solanaWallets}
-                        privyExternalWallets={privyExternalWallets}
-                        externalWallet={externalWallet}
-                        selectedWallet={selectedWallet}
-                        user={user}
-                        wallet={wallet}
-                        onWalletSelection={handleWalletSelection}
-                        onExternalWalletSelection={handleExternalWalletSelection}
-                        className="text-white"
-                    />
+                    {wallet?.isPrivy && enchancedWalletData ? (
+                        /* Privy Wallet Dropdown */
+                        <PrivyWalletDropdown
+                            enhancedWallets={enhancedWallets}
+                            enchancedWalletData={enchancedWalletData}
+                            onWalletSelection={handleWalletSelection}
+                            className="text-white"
+                        />
+                    ) : (
+                        /* Native Wallet Display */
+                        enchancedWalletData && (
+                            <div className="flex items-center gap-3">
+                                {/* Profile Picture */}
+                                <div className="flex-shrink-0">
+                                    <WalletIcon
+                                        walletData={enchancedWalletData}
+                                        size="lg"
+                                        isLoadingProfiles={isLoadingProfiles}
+                                    />
+                                </div>
+
+                                {/* Content - Profile Name + Wallet Info */}
+                                <div className="flex-1 min-w-0">
+                                    {/* Profile Name */}
+                                    <div className="font-medium text-white">
+                                        {enchancedWalletData.displayName}
+                                    </div>
+
+                                    {/* Adapter Name */}
+                                    <div className="text-xs text-gray-400 flex items-center gap-2">
+                                        <WalletTypeIcon walletData={enchancedWalletData} size="sm" />
+                                        <span>{wallet.adapterName}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    )}
                 </div>
 
                 {/* Holdings List */}
@@ -464,38 +417,43 @@ export function PrivyGlobalSidebar() {
                             onClick={handleFundWallet}
                             className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
                         >
-                            💳 Fund the Account
+                            💳 {wallet?.isPrivy ? 'Fund the Account' : 'Fund Wallet (External)'}
                         </button>
 
-                        {/* Send Tokens Button */}
-                        <button
-                            onClick={() => setShowSendModal(true)}
-                            disabled={!ready || !authenticated || !selectedWallet}
-                            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
-                        >
-                            📤 Send Tokens
-                        </button>
+                        {/* Send Tokens Button - Only for Privy wallets */}
+                        {wallet?.isPrivy ? (
+                            <button
+                                onClick={() => setShowSendModal(true)}
+                                disabled={!wallet?.walletAddress}
+                                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
+                            >
+                                📤 Send Tokens
+                            </button>
+                        ) : null}
 
-                        {/* Export Wallet Button */}
-                        {hasEmbeddedWallet && selectedWallet?.standardWallet.name.toLowerCase().includes('privy') && (
+                        {/* Export Wallet Button - Only for Privy embedded wallets */}
+                        {wallet?.isPrivy && enchancedWalletData?.isEmbedded ? (
                             <button
                                 onClick={handleExportWallet}
-                                disabled={!ready || !authenticated || !hasEmbeddedWallet}
+                                disabled={!enchancedWalletData?.isEmbedded}
                                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
                             >
                                 🔑 Export Private Key
                             </button>
-                        )}
+                        ) : null}
 
                         <div className="text-xs text-gray-500 text-center">
-                            Fund your account to start trading.
+                            {wallet?.isPrivy
+                                ? 'Fund your account to start trading.'
+                                : 'Use your wallet app to manage funds and transactions.'
+                            }
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Send Tokens Modal */}
-            {showSendModal && (
+            {/* Send Tokens Modal - Only for Privy wallets */}
+            {showSendModal && wallet?.isPrivy ? (
                 <>
                     {/* Modal Overlay - Higher z-index than sidebar */}
                     <div
@@ -508,7 +466,7 @@ export function PrivyGlobalSidebar() {
                         <PrivySendSOL onClose={() => setShowSendModal(false)} />
                     </div>
                 </>
-            )}
+            ) : null}
         </>
     );
 }

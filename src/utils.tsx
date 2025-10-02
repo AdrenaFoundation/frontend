@@ -1811,22 +1811,12 @@ export function isPartialClose(activePercent: number | null) {
   );
 }
 
-/**
- * Check if a wallet is a Privy embedded wallet
- * @param walletName - The wallet name to check
- * @returns true if it's a Privy embedded wallet
- */
-export function isPrivyEmbeddedWallet(walletName: string): boolean {
-  return walletName.toLowerCase().includes('privy');
+export function isPrivyEmbeddedWallet(walletAddress: string, privyEmbeddedWallets: Array<{ address: string; standardWallet: { name: string; icon: string } }>): boolean {
+  return privyEmbeddedWallets.some(wallet => wallet.address === walletAddress);
 }
 
-/**
- * Get wallet type display name
- * @param walletName - The wallet name
- * @returns Display name for the wallet type
- */
-export function getWalletTypeDisplayName(walletName: string): string {
-  return isPrivyEmbeddedWallet(walletName) ? 'Adrena Account' : walletName;
+export function getWalletTypeDisplayName(walletAddress: string, privyEmbeddedWallets: Array<{ address: string; standardWallet: { name: string; icon: string } }>): string {
+  return isPrivyEmbeddedWallet(walletAddress, privyEmbeddedWallets) ? 'Adrena Account' : 'External Wallet';
 }
 
 // Safely get wallet address, handling Privy loading delays

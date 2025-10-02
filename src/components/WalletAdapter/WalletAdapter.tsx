@@ -10,7 +10,7 @@ import {
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
 import { PROFILE_PICTURES } from '@/constant';
-import { usePrivySidebar } from '@/contexts/PrivySidebarContext';
+import { useWalletSidebar } from '@/contexts/WalletSidebarContext';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
@@ -53,7 +53,7 @@ export default function WalletAdapter({
   const { wallet } = useSelector((s) => s.walletState);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
-  const { isSidebarOpen, openSidebar, closeSidebar } = usePrivySidebar();
+  const { isSidebarOpen, openSidebar, closeSidebar } = useWalletSidebar();
 
   const connectedAdapter = useMemo(
     () => wallet && adapters.find((x) => x.name === wallet.adapterName),
@@ -206,7 +206,7 @@ export default function WalletAdapter({
                     return;
                   }
 
-                  if (isConnected) { // adapt for nativer wallets aswell
+                  if (isConnected) { // TODO:adapt for native wallets aswell
                     if (isSidebarOpen) {
                       closeSidebar();
                     } else {

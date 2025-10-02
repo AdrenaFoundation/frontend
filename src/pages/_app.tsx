@@ -25,7 +25,7 @@ import RootLayout from '@/components/layouts/RootLayout/RootLayout';
 import MigrateUserProfileV1Tov2Modal from '@/components/pages/profile/MigrateUserProfileV1Tov2Modal';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
 import initConfig from '@/config/init';
-import { PrivySidebarProvider } from '@/contexts/PrivySidebarContext';
+import { WalletSidebarProvider } from '@/contexts/WalletSidebarContext';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import useRpc from '@/hooks/useRPC';
@@ -179,7 +179,7 @@ export default function App(props: AppProps) {
     >
       <Provider store={store}>
         <CookiesProvider>
-          <PrivySidebarProvider>
+          <WalletSidebarProvider>
             <MemoizedAppComponent
               activeRpc={activeRpc}
               rpcInfos={rpcInfos}
@@ -194,7 +194,7 @@ export default function App(props: AppProps) {
             />
             <Analytics />
             <SpeedInsights />
-          </PrivySidebarProvider>
+          </WalletSidebarProvider>
         </CookiesProvider>
       </Provider>
     </PrivyProvider >
