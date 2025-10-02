@@ -190,14 +190,14 @@ export default function PositionBlockV2({
         value: position.price,
         format: 'currency',
         isDecimalDimmed: position.token.symbol !== 'BONK',
-        precision: position.token.symbol === 'BONK' ? 8 : 2,
+        precision: position.token.displayPriceDecimalsPrecision,
       },
       {
         title: 'Market',
         value: tradeTokenPrice,
         format: 'currency',
         isDecimalDimmed: position.token.symbol !== 'BONK',
-        precision: position.token.symbol === 'BONK' ? 8 : 2,
+        precision: position.token.displayPriceDecimalsPrecision,
       },
       {
         title: 'Liquidation',
@@ -208,6 +208,7 @@ export default function PositionBlockV2({
         format: 'currency',
         color: 'text-orange',
         isDecimalDimmed: false,
+        precision: position.token.displayPriceDecimalsPrecision,
         onEditClick: () => triggerEditPositionCollateral?.(position),
       },
       {
@@ -219,6 +220,7 @@ export default function PositionBlockV2({
         format: 'currency',
         color: 'text-purpleColor',
         isDecimalDimmed: false,
+        precision: position.token.displayPriceDecimalsPrecision,
       },
       {
         title: 'Stop Loss',
