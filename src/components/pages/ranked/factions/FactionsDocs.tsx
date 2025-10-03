@@ -9,7 +9,11 @@ import mutagenIcon from '@/../public/images/mutagen.png';
 import Button from '@/components/common/Button/Button';
 import { formatNumber } from '@/utils';
 
-export default function FactionsDocs() {
+export default function FactionsDocs({
+    showLegacySections = true,
+}: {
+    showLegacySections?: boolean;
+}) {
     // Data for the Size Multiplier chart
     const sizeMultiplierData = [
         { name: '$10', multiplier: 0.00025, label: '$10' },
@@ -418,6 +422,7 @@ export default function FactionsDocs() {
                 </div>
             </div>
 
+            {showLegacySections && (
             <div className="grid md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-3 border border-[#333] rounded-md p-5 hover:border-[#444] transition-colors">
                     <div className="flex items-center gap-2">
@@ -569,6 +574,7 @@ export default function FactionsDocs() {
                     </div>
                 </div>
             </div>
+            )}
         </div >
     );
 }

@@ -780,7 +780,21 @@ export default class DataApiClient {
         return null;
       }
 
-      const d: MutagenLeaderboardRawAPI = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const body = await response.text();
+        console.error('Non-JSON response from mutagen-leaderboard:', body.slice(0, 200));
+        return null;
+      }
+
+      let d: MutagenLeaderboardRawAPI;
+      try {
+        d = await response.json();
+      } catch {
+        const body = await response.text();
+        console.error('Failed to parse mutagen-leaderboard JSON. Body snippet:', body.slice(0, 200));
+        return null;
+      }
 
       return d.data.map((data) => ({
         rank: data.rank,
@@ -1806,9 +1820,21 @@ export default class DataApiClient {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const body = await response.text();
+        console.error('Non-JSON response from anniversary_event_stats:', body.slice(0, 200));
+        return null;
+      }
 
-      const data = await response.json();
-      return data.success ? data.data : null;
+      try {
+        const data = await response.json();
+        return data.success ? data.data : null;
+      } catch {
+        const body = await response.text();
+        console.error('Failed to parse anniversary_event_stats JSON. Body snippet:', body.slice(0, 200));
+        return null;
+      }
     } catch (error) {
       console.error('Error fetching anniversary records:', error);
       return null;

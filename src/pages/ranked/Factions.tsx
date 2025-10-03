@@ -43,11 +43,11 @@ export default function Factions({
     return (
         <div className="max-w-[1920px] w-full mx-auto px-4 relative flex flex-col pb-4">
             <div
-                className="uppercase self-center mb-8 sm:mb-0 font-semibold sm:absolute sm:-top-[6em] sm:right-2 text-sm underline opacity-80 hover:opacity-100 transition-opacity cursor-pointer p-1"
+                className="uppercase self-center mb-8 sm:mb-0 font-semibold sm:absolute sm:-top-[6em] sm:right-2 text-sm underline opacity-80 hover:opacity-100 transition-opacity p-1 z-30 pointer-events-none"
             >
                 <button
                     onClick={() => setActiveTab(activeTab === 'leaderboard' ? 'mechanics' : 'leaderboard')}
-                    className="bg-[#0B131D] border border-white/20 px-5 py-2 rounded-md hover:border-white/40 hover:shadow-xl transition-all duration-300"
+                    className="bg-[#0B131D] border border-white/20 px-5 py-2 rounded-md hover:border-white/40 hover:shadow-xl transition-all duration-300 pointer-events-auto"
                 >
                     <div className='flex'>
                         <div
