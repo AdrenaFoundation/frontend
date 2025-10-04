@@ -78,6 +78,8 @@ export default function CompetitionBanner({
                                 src={banner}
                                 alt="competition banner"
                                 className="absolute top-0 left-0 w-full h-full object-cover opacity-30"
+                                width={1040}
+                                height={1040}
                             />}
                         </motion.span>
                     </AnimatePresence>
@@ -206,6 +208,8 @@ export default function CompetitionBanner({
                                         src={window.adrena.client.adxToken.image}
                                         alt="ADX logo"
                                         className="w-4 h-4"
+                                        width={16}
+                                        height={16}
                                     />
 
                                     <FormatNumber

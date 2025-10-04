@@ -34,7 +34,8 @@ import usePositionsHistory from '@/hooks/usePositionHistory';
 import usePositions from '@/hooks/usePositions';
 import { useDispatch, useSelector } from '@/store/store';
 import { PageProps, PositionExtended, Token } from '@/types';
-import { getTokenSymbol, getWalletAddress, uiToNative } from '@/utils';
+import { getTokenSymbol, uiToNative } from '@/utils';
+import { getWalletAddress } from '@/utils/walletUtils';
 
 
 export type Action = 'long' | 'short' | 'swap';

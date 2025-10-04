@@ -1,5 +1,4 @@
 import { BN, Program } from '@coral-xyz/anchor';
-import { Wallet } from '@coral-xyz/anchor';
 import { QuoteResponse } from '@jup-ag/api';
 import { sha256 } from '@noble/hashes/sha256';
 import {
@@ -1811,44 +1810,6 @@ export function isPartialClose(activePercent: number | null) {
   );
 }
 
-export function isPrivyEmbeddedWallet(walletAddress: string, privyEmbeddedWallets: Array<{ address: string; standardWallet: { name: string; icon: string } }>): boolean {
-  return privyEmbeddedWallets.some(wallet => wallet.address === walletAddress);
-}
-
-export function getWalletTypeDisplayName(walletAddress: string, privyEmbeddedWallets: Array<{ address: string; standardWallet: { name: string; icon: string } }>): string {
-  return isPrivyEmbeddedWallet(walletAddress, privyEmbeddedWallets) ? 'Adrena Account' : 'External Wallet';
-}
-
-// Safely get wallet address, handling Privy loading delays
-export function getWalletAddress(wallet: Wallet | null | undefined): string | null {
-  if (!wallet) return null;
-
-  try {
-    // Check if wallet has publicKey property
-    if (!wallet.publicKey) return null;
-
-    // Safely call toBase58() with error handling
-    const address = wallet.publicKey.toBase58();
-
-    // Validate that we got a valid Solana address (should be 32-44 characters)
-    if (typeof address === 'string' && address.length >= 32 && address.length <= 44) {
-      return address;
-    }
-
-    return null;
-  } catch (error) {
-    // Log error in development but don't crash
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Error getting wallet address:', error);
-    }
-    return null;
-  }
-}
-
-// Hook for getting a memoized wallet address that updates safely
-export function useWalletAddress(wallet: Wallet | null | undefined): string | null {
-  return React.useMemo(() => getWalletAddress(wallet), [wallet]);
-}
 
 export function periodModeToSeconds(periodMode: '1d' | '7d' | '1D' | '7D' | '1M' | '3M' | '6M' | '1Y' | 'All Time') {
   switch (periodMode) {

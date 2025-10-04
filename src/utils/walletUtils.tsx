@@ -1,10 +1,9 @@
+import { Wallet } from '@coral-xyz/anchor';
 import Image from 'next/image';
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 
 import { PROFILE_PICTURES } from '@/constant';
 import { WALLET_ICONS, WalletAdapterName } from '@/hooks/useWalletAdapters';
-import { UserProfileMetadata } from '@/types';
-import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
 // Enhanced wallet interface with isEmbedded property
 export interface EnhancedWallet {
@@ -24,49 +23,6 @@ export interface WalletDisplayData {
     walletIcon: string;
     walletName: string;
     isEmbedded: boolean;
-}
-
-// Profile data interface
-export interface ProfileData {
-    picture?: string;
-    nickname?: string;
-}
-
-// Hook for wallet profile management
-export function useWalletProfiles(allUserProfilesMetadata: UserProfileMetadata[]) {
-    // Memoize profile data to avoid unnecessary recalculations
-    const profilesMap = useMemo(() => {
-        const map: Record<string, ProfileData> = {};
-        allUserProfilesMetadata.forEach(profile => {
-            const walletAddress = profile.owner.toBase58();
-            const pictureUrl = PROFILE_PICTURES[profile.profilePicture as keyof typeof PROFILE_PICTURES];
-            map[walletAddress] = {
-                picture: pictureUrl,
-                nickname: profile.nickname
-            };
-        });
-        return map;
-    }, [allUserProfilesMetadata]);
-
-    // Simple loading state - profiles are loading if we don't have data yet
-    const isLoadingProfiles = allUserProfilesMetadata.length === 0;
-
-    // Helper functions for profile data
-    const getProfilePicture = useCallback((address: string): string | undefined => {
-        return profilesMap[address]?.picture;
-    }, [profilesMap]);
-
-    const getProfileName = useCallback((address: string): string | undefined => {
-        const nickname = profilesMap[address]?.nickname;
-        return nickname ? getAbbrevNickname(nickname) : undefined;
-    }, [profilesMap]);
-
-    return {
-        profilesMap,
-        isLoadingProfiles,
-        getProfilePicture,
-        getProfileName
-    };
 }
 
 // Enhanced wallet utilities
@@ -100,10 +56,9 @@ export function enhanceWallets(
 export function getWalletDisplayDataForEnhancedWallet(
     wallet: EnhancedWallet,
     getProfilePicture: (address: string) => string | undefined,
-    getProfileName: (address: string) => string | undefined
+    getDisplayName: (address: string) => string
 ): WalletDisplayData {
-    const profileName = getProfileName(wallet.address);
-    const displayName = profileName || getAbbrevWalletAddress(wallet.address);
+    const displayName = getDisplayName(wallet.address);
     const profilePicture = getProfilePicture(wallet.address);
 
     return {
@@ -123,12 +78,11 @@ export function getWalletDisplayDataForNativeWallet(
         isPrivy: boolean;
     } | null,
     getProfilePicture: (address: string) => string | undefined,
-    getProfileName: (address: string) => string | undefined
+    getDisplayName: (address: string) => string
 ): WalletDisplayData | null {
     if (wallet === null) return null;
 
-    const profileName = getProfileName(wallet.walletAddress);
-    const displayName = profileName || getAbbrevWalletAddress(wallet.walletAddress);
+    const displayName = getDisplayName(wallet.walletAddress);
     const profilePicture = getProfilePicture(wallet.walletAddress);
 
     return {
@@ -269,18 +223,33 @@ export function WalletTypeIcon({
     return null;
 }
 
-// Check if wallet is embedded (enhanced version of existing utility)
-export function isEmbeddedWallet(
-    walletAddress: string,
-    privyEmbeddedWallets: Array<{ address: string; standardWallet: { name: string; icon: string } }>
-): boolean {
-    return privyEmbeddedWallets.some(wallet => wallet.address === walletAddress);
+// Safely get wallet address, handling Privy loading delays
+export function getWalletAddress(wallet: Wallet | null | undefined): string | null {
+    if (!wallet) return null;
+
+    try {
+        // Check if wallet has publicKey property
+        if (!wallet.publicKey) return null;
+
+        // Safely call toBase58() with error handling
+        const address = wallet.publicKey.toBase58();
+
+        // Validate that we got a valid Solana address (should be 32-44 characters)
+        if (typeof address === 'string' && address.length >= 32 && address.length <= 44) {
+            return address;
+        }
+
+        return null;
+    } catch (error) {
+        // Log error in development but don't crash
+        if (process.env.NODE_ENV === 'development') {
+            console.warn('Error getting wallet address:', error);
+        }
+        return null;
+    }
 }
 
-// Get wallet type display name (enhanced version)
-export function getWalletTypeDisplayName(
-    walletAddress: string,
-    privyEmbeddedWallets: Array<{ address: string; standardWallet: { name: string; icon: string } }>
-): string {
-    return isEmbeddedWallet(walletAddress, privyEmbeddedWallets) ? 'Adrena Account' : 'External Wallet';
+// Hook for getting a memoized wallet address that updates safely
+export function useWalletAddress(wallet: Wallet | null | undefined): string | null {
+    return React.useMemo(() => getWalletAddress(wallet), [wallet]);
 }

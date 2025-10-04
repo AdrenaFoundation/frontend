@@ -100,6 +100,8 @@ const TicketCount = memo(({ connectedWalletTickets, totalTickets, trader, handle
                     src={ticketImage}
                     alt="ticket image"
                     className="w-10 h-8"
+                    width={40}
+                    height={40}
                 />
             </>
         ) : (

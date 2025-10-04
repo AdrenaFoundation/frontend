@@ -12,7 +12,8 @@ import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import useCountDown from '@/hooks/useCountDown';
 import { useDispatch } from '@/store/store';
 import { PageProps } from '@/types';
-import { getWalletAddress, nativeToUi } from '@/utils';
+import { nativeToUi } from '@/utils';
+import { getWalletAddress } from '@/utils/walletUtils';
 
 export default function UserVest({
   userVest: paramUserVest,

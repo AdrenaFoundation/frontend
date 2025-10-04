@@ -2,8 +2,8 @@ import { usePrivy } from '@privy-io/react-auth';
 import { useEffect, useRef, useState } from 'react';
 
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
+import { EnhancedWallet, getWalletDisplayDataForEnhancedWallet, WalletDisplayData, WalletIcon, WalletTypeIcon } from '@/utils/walletUtils';
 
-import { EnhancedWallet, getWalletDisplayDataForEnhancedWallet, useWalletProfiles, WalletDisplayData, WalletIcon, WalletTypeIcon } from '../../utils/walletUtils';
 import CopyButton from '../common/CopyButton/CopyButton';
 
 interface PrivyWalletDropdownProps {
@@ -21,8 +21,7 @@ export function PrivyWalletDropdown({
 }: PrivyWalletDropdownProps) {
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
-    const { getProfilePicture, getProfileName, isLoadingProfiles } = useWalletProfiles(allUserProfilesMetadata);
+    const { getProfilePicture, getDisplayName, isLoadingProfiles } = useAllUserProfilesMetadata();
     const { connectWallet } = usePrivy();
 
     // Close dropdown when clicking outside
@@ -89,7 +88,7 @@ export function PrivyWalletDropdown({
                 {/* Content - Profile Name + Wallet Info */}
                 <div className="flex-1 min-w-0 w-full">
                     {/* Profile Name - 1 line */}
-                    <div className={`flex font-medium text-white ${isLoadingProfiles && !getProfileName(enchancedWalletData?.address || '') ? 'animate-pulse' : ''}`}>
+                    <div className="flex font-medium text-white">
                         {getDisplayText()}
                     </div>
 
@@ -122,7 +121,7 @@ export function PrivyWalletDropdown({
                                 const walletData = getWalletDisplayDataForEnhancedWallet(
                                     enhancedWallet,
                                     getProfilePicture,
-                                    getProfileName
+                                    getDisplayName
                                 );
                                 return (
                                     <div key={enhancedWallet.address} className={`flex items-center justify-between px-4 py-3 transition-colors ${enhancedWallet.address === enchancedWalletData?.address
@@ -188,7 +187,7 @@ export function PrivyWalletDropdown({
                                 const walletData = getWalletDisplayDataForEnhancedWallet(
                                     enhancedWallet,
                                     getProfilePicture,
-                                    getProfileName
+                                    getDisplayName
                                 );
                                 return (
                                     <div key={`privy-ext-${enhancedWallet.address}`} className={`flex items-center justify-between px-4 py-3 transition-colors ${enhancedWallet.address === enchancedWalletData?.address

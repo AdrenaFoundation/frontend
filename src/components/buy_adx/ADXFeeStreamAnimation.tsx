@@ -78,6 +78,8 @@ export default function ADXFeeStreamAnimation({
         }
         className="w-[150px] h-[150px] z-10"
         alt="adx logo"
+        width={150}
+        height={150}
       />
       {lines.map(({ start, end, duration, className }, i) => (
         <motion.div

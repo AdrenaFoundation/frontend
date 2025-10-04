@@ -60,7 +60,6 @@ export default function WalletAdapter({
     [wallet, adapters],
   );
 
-  // Check if any adapter is currently connecting
   const isConnecting = useMemo(() => {
     return adapters.some((adapter) => adapter.connecting)
   }, [adapters],
@@ -96,10 +95,8 @@ export default function WalletAdapter({
 
   const isBreak = useBetterMediaQuery('(min-width: 640px)');
 
-  // Attempt to auto-connect Wallet on mount.
   useEffect(() => {
     if (autoConnectAuthorizedRef.current && lastConnectedWalletRef.current) {
-      // Check if the last connection was via Privy - if so, skip native auto-connect
       const wasPrivyConnection = lastConnectedWalletRef.current === 'Privy';
 
       if (wasPrivyConnection) {
@@ -112,12 +109,10 @@ export default function WalletAdapter({
       );
       if (!adapter) return;
 
-      console.log('🔄 Native auto-connecting to:', adapter.name);
       dispatch(autoConnectWalletAction(adapter));
       return;
     }
     // `dispatch` is stable, does not need to be included in the dependencies array.
-    // We also only want to run this effect once, when the component is mounted.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -206,7 +201,7 @@ export default function WalletAdapter({
                     return;
                   }
 
-                  if (isConnected) { // TODO:adapt for native wallets aswell
+                  if (isConnected) {
                     if (isSidebarOpen) {
                       closeSidebar();
                     } else {

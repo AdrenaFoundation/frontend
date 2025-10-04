@@ -8,12 +8,13 @@ import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 
 import refreshIcon from '@/../public/images/refresh.png';
+import Button from '@/components/common/Button/Button';
 import { useWalletSidebar } from '@/contexts/WalletSidebarContext';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import { useTokenBalances } from '@/hooks/useTokenBalances';
 import { selectWallet } from '@/selectors/walletSelectors';
 import { useDispatch, useSelector } from '@/store/store';
-import { enhanceWallets, getWalletDisplayDataForEnhancedWallet, getWalletDisplayDataForNativeWallet, useWalletProfiles, WalletIcon, WalletTypeIcon } from '@/utils/walletUtils';
+import { enhanceWallets, getWalletDisplayDataForEnhancedWallet, getWalletDisplayDataForNativeWallet, WalletIcon, WalletTypeIcon } from '@/utils/walletUtils';
 
 import { PrivyWalletDropdown } from '../Privy/PrivyWalletDropdown';
 import { SendToken } from './SendToken';
@@ -29,8 +30,7 @@ export default function WalletSidebar() {
     const wallet = useSelector(selectWallet);
     const currentWalletAddress = wallet?.walletAddress;
 
-    const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
-    const { getProfilePicture, getProfileName, isLoadingProfiles } = useWalletProfiles(allUserProfilesMetadata);
+    const { getProfilePicture, getDisplayName, isLoadingProfiles } = useAllUserProfilesMetadata();
 
     const [showSendModal, setShowSendModal] = useState(false);
 
@@ -88,16 +88,16 @@ export default function WalletSidebar() {
     const enchancedWalletData = useMemo(() => {
         if (!wallet?.walletAddress) return null;
         if (enhancedWallets.length === 0) {
-            const enchancedWalletData = getWalletDisplayDataForNativeWallet(wallet, getProfilePicture, getProfileName);
+            const enchancedWalletData = getWalletDisplayDataForNativeWallet(wallet, getProfilePicture, getDisplayName);
             return enchancedWalletData;
         }
 
         const enhancedWallet = enhancedWallets.find(w => w.address === wallet.walletAddress) ?? null;
         if (!enhancedWallet) return null;
-        const enchancedWalletData = getWalletDisplayDataForEnhancedWallet(enhancedWallet, getProfilePicture, getProfileName);
+        const enchancedWalletData = getWalletDisplayDataForEnhancedWallet(enhancedWallet, getProfilePicture, getDisplayName);
         return enchancedWalletData;
 
-    }, [wallet, getProfilePicture, getProfileName, enhancedWallets]);
+    }, [wallet, getProfilePicture, getDisplayName, enhancedWallets]);
 
     const handleWalletSelection = (address: string) => {
         if (wallet?.walletAddress === address) {
@@ -248,35 +248,43 @@ export default function WalletSidebar() {
                     <div className="flex-shrink-0 mt-4 space-y-3">
                         <div className="mt-6 space-y-3">
                             {enchancedWalletData?.isEmbedded ? (
-                                <button
+                                <Button
                                     onClick={handleFundWallet}
-                                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
-                                >
-                                    💳 {wallet?.isPrivy ? 'Fund the Account' : 'Fund Wallet (External)'}
-                                </button>
+                                    variant="success"
+                                    size="lg"
+                                    className="w-full"
+                                    title="Fund the Account"
+                                />
                             ) : null}
 
-                            <button
+                            <Button
                                 onClick={() => setShowSendModal(true)}
                                 disabled={!enchancedWalletData?.address}
-                                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
-                            >
-                                📤 Send Tokens
-                            </button>
+                                variant="danger"
+                                size="lg"
+                                className="w-full"
+                                title="Send Tokens"
+                            />
 
                             {enchancedWalletData?.isEmbedded ? (
                                 <>
-                                    <button
+                                    <Button
                                         onClick={handleExportWallet}
                                         disabled={!enchancedWalletData?.isEmbedded}
-                                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
-                                    >
-                                        🔑 Export Private Key
-                                    </button>
+                                        variant="info"
+                                        size="lg"
+                                        className="w-full"
+                                        title="Export Private Key"
+                                    />
 
-                                    <div className="text-xs text-gray-500 text-center">
-                                        Fund your account to start trading.
-                                    </div>
+                                    {(() => {
+                                        const solToken = tokenBalancesWithPrices.find(token => token.symbol === 'SOL');
+                                        return (solToken?.uiAmount || 0) <= 0.01 ? (
+                                            <div className="text-xl text-red text-center">
+                                                Fund your account to start trading.
+                                            </div>
+                                        ) : null;
+                                    })()}
                                 </>
                             ) : null}
                         </div></div>
