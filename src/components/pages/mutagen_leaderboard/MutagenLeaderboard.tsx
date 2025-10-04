@@ -3,6 +3,7 @@ import Image from 'next/image';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import needle from '@/../../public/images/needle.png';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
@@ -462,8 +463,10 @@ export default function MutagenLeaderboard({
                 </span>
                 <span className="text-xl font-boldy text-mutagen sm:hidden flex items-center flex-shrink-0">
                   <Image
-                    src="https://app.adrena.xyz/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fneedle.fd8822dd.png&w=64&q=75"
+                    src={needle}
                     alt="Mutagen"
+                    width={20}
+                    height={20}
                     className="w-5 h-5 mr-1"
                   />
                   {formatNumber(userRow.totalPoints, 2, 0)}

@@ -2,6 +2,7 @@ import Image from 'next/image';
 import React, { useCallback, useMemo } from 'react';
 
 import { PROFILE_PICTURES } from '@/constant';
+import { WALLET_ICONS, WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { UserProfileMetadata } from '@/types';
 import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
@@ -96,8 +97,7 @@ export function enhanceWallets(
     return [...embeddedWallets, ...externalWallets];
 }
 
-// Get wallet display data
-export function getWalletDisplayData(
+export function getWalletDisplayDataForEnhancedWallet(
     wallet: EnhancedWallet,
     getProfilePicture: (address: string) => string | undefined,
     getProfileName: (address: string) => string | undefined
@@ -113,6 +113,31 @@ export function getWalletDisplayData(
         walletIcon: wallet.standardWallet.icon,
         walletName: wallet.isEmbedded ? 'Adrena Account' : wallet.standardWallet.name,
         isEmbedded: wallet.isEmbedded
+    };
+}
+
+export function getWalletDisplayDataForNativeWallet(
+    wallet: {
+        adapterName: WalletAdapterName;
+        walletAddress: string;
+        isPrivy: boolean;
+    } | null,
+    getProfilePicture: (address: string) => string | undefined,
+    getProfileName: (address: string) => string | undefined
+): WalletDisplayData | null {
+    if (wallet === null) return null;
+
+    const profileName = getProfileName(wallet.walletAddress);
+    const displayName = profileName || getAbbrevWalletAddress(wallet.walletAddress);
+    const profilePicture = getProfilePicture(wallet.walletAddress);
+
+    return {
+        address: wallet.walletAddress,
+        displayName,
+        profilePicture,
+        walletIcon: WALLET_ICONS[wallet.adapterName],
+        walletName: wallet.adapterName,
+        isEmbedded: false
     };
 }
 

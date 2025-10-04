@@ -132,7 +132,7 @@ export default function App(props: AppProps) {
         walletList: ['detected_wallets'],
         walletChainType: 'solana-only' as const,
       },
-      loginMethods: ['email', 'google', 'twitter', 'discord', 'wallet'],
+      loginMethods: ['email', 'google', 'twitter', 'discord', 'wallet', 'github',], // apple, line, tiktok, linkedin have to be configured first
       embeddedWallets: {
         solana: {
           createOnLogin: 'all-users' as const,
