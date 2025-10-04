@@ -12,7 +12,6 @@ import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
 import PositionStatsCard from '@/components/pages/monitoring/PositionStatsCard';
 import TopTraders from '@/components/pages/monitoring/TopTraders';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import usePositionStats from '@/hooks/usePositionStats';
 import { CustodyExtended, UserProfileExtended } from '@/types';
 
@@ -34,7 +33,6 @@ export default function Flow({
   } = usePositionStats();
 
   const [selectedRange, setSelectedRange] = useState('All time');
-  const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
   const [profile, setProfile] = useState<UserProfileExtended | null>(null);
   const [showTopTraders, setShowTopTraders] = useState(false);
 
@@ -233,7 +231,6 @@ export default function Flow({
                   <TopTraders
                     startDate={startDate}
                     endDate={endDate}
-                    allUserProfilesMetadata={allUserProfilesMetadata}
                     setProfile={setProfile}
                   />
                 </motion.div>

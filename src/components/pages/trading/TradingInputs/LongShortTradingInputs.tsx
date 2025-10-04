@@ -23,12 +23,12 @@ import {
   applySlippage,
   getJupiterApiQuote,
   getTokenSymbol,
-  getWalletAddress,
   nativeToUi,
   uiLeverageToNative,
   uiToNative,
   validateTPSLInputs,
 } from '@/utils';
+import { getWalletAddress } from '@/utils/walletUtils';
 
 import { ExecutionModeSelector } from './LongShortTradingInputs/ExecutionModeSelector';
 import { FeesSection } from './LongShortTradingInputs/FeesSection';
