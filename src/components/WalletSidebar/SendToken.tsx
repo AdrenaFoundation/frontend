@@ -1,19 +1,17 @@
 import { BN } from '@coral-xyz/anchor';
-import { usePrivy } from '@privy-io/react-auth';
-import { useWallets } from '@privy-io/react-auth/solana';
 import { PublicKey, Transaction } from '@solana/web3.js';
 import Image from 'next/image';
 import { useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
 import { TokenBalance } from '@/hooks/useTokenBalances';
+import { selectWalletAddress } from '@/selectors/walletSelectors';
+import { useSelector } from '@/store/store';
 import { isValidPublicKey } from '@/utils';
 
 import refreshIcon from '../../../public/images/refresh.png';
 import MultiStepNotification from '../common/MultiStepNotification/MultiStepNotification';
 import { TokenListItem } from './TokenListItem';
-import { selectWalletAddress } from '@/selectors/walletSelectors';
-import { useSelector } from '@/store/store';
 
 interface SendTokenProps {
     onClose?: () => void;

@@ -30,7 +30,6 @@ function ADXSwap({
         <JupiterWidget
           adapters={adapters}
           activeRpc={activeRpc}
-          connected={connected}
           id="adx-swap-widget"
           className="bg-transparent border-transparent min-w-[300px] w-full min-h-[550px]"
           defaultOutputMint={adxMint}

@@ -158,7 +158,6 @@ export function useTokenBalances(walletAddress?: string) {
         setIsLoadingBalances(true);
         setError(null);
 
-
         try {
             const publicKey = new PublicKey(address);
 
@@ -256,7 +255,6 @@ export function useTokenBalances(walletAddress?: string) {
             setSelectedToken(null);
         }
     }, [walletAddress, fetchTokenBalances]);
-
 
     const refreshBalances = useCallback(() => {
         if (walletAddress) {
