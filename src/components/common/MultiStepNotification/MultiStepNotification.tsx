@@ -243,7 +243,9 @@ export default class MultiStepNotification {
       return this.error;
     })();
 
-    return (
+    // Wrapper to filter out toast-specific props that shouldn't be passed to DOM
+    // eslint-disable-next-line react/display-name
+    return () => (
       <motion.div
         animate={{
           height: this.report_code
