@@ -38,6 +38,7 @@ import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import initializeApp, { createReadOnlyAdrenaProgram } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { VestExtended } from '@/types';
+import { getWalletAddress } from '@/utils';
 
 import logo from '../../public/images/logo.svg';
 import store, { useDispatch, useSelector } from '../store/store';
@@ -336,7 +337,7 @@ function AppComponent({
     );
 
     if (wallet) {
-      const newWalletAddress = wallet.publicKey?.toBase58();
+      const newWalletAddress = getWalletAddress(wallet);
 
       if (walletAddress !== newWalletAddress) {
         window.adrena.client.setAdrenaProgram(

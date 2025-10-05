@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import {
   setTokenPricesWebSocketLoading,
@@ -15,10 +15,6 @@ const PRICES_ALP_ADX_LOADING_INTERVAL_IN_MS = 10_000;
 
 export default function useWatchTokenPrices() {
   const dispatch = useDispatch();
-
-  // Use refs to properly manage intervals in React
-  const chaosLabsPriceIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const pricesAlpAdxIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const loadChaosLabsPrices = useCallback(async () => {
     if (!dispatch) return;
@@ -59,17 +55,14 @@ export default function useWatchTokenPrices() {
       console.error('error happened loading oracle prices', e),
     );
 
-    chaosLabsPriceIntervalRef.current = setInterval(() => {
+    const intervalId = setInterval(() => {
       loadChaosLabsPrices().catch((e) =>
         console.error('error happened loading oracle prices', e),
       );
     }, CHAOS_LABS_PRICE_LOADING_INTERVAL_IN_MS);
 
     return () => {
-      if (chaosLabsPriceIntervalRef.current) {
-        clearInterval(chaosLabsPriceIntervalRef.current);
-        chaosLabsPriceIntervalRef.current = null;
-      }
+      clearInterval(intervalId);
     };
 
     // Manually handle dependencies to avoid unwanted refresh
@@ -111,15 +104,12 @@ export default function useWatchTokenPrices() {
 
     loadAlpAdxPrices();
 
-    pricesAlpAdxIntervalRef.current = setInterval(() => {
+    const intervalId = setInterval(() => {
       loadAlpAdxPrices();
     }, PRICES_ALP_ADX_LOADING_INTERVAL_IN_MS);
 
     return () => {
-      if (pricesAlpAdxIntervalRef.current) {
-        clearInterval(pricesAlpAdxIntervalRef.current);
-        pricesAlpAdxIntervalRef.current = null;
-      }
+      clearInterval(intervalId);
     };
     // Manually handle dependencies to avoid unwanted refresh
     // eslint-disable-next-line react-hooks/exhaustive-deps
