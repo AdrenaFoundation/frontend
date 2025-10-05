@@ -584,7 +584,6 @@ export default function Trade({
                   <PositionsHistory
                     walletAddress={getWalletAddress(wallet)}
                     connected={connected}
-                    exportButtonPosition="top"
                     key={`history-${getWalletAddress(wallet) || 'none'}`}
                   />
                 </div>
@@ -634,7 +633,6 @@ export default function Trade({
                   <PositionsHistory
                     walletAddress={getWalletAddress(wallet)}
                     connected={connected}
-                    exportButtonPosition="top"
                     key={`history-${getWalletAddress(wallet) || 'none'}`}
                   />
                 </div>
