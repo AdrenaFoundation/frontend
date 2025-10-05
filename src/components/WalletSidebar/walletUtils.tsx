@@ -1,4 +1,3 @@
-import { Wallet } from '@coral-xyz/anchor';
 import Image from 'next/image';
 import React from 'react';
 
@@ -213,23 +212,4 @@ export function WalletTypeIcon({
     }
 
     return null;
-}
-
-export function getWalletAddress(wallet: Wallet | null | undefined): string | null {
-    if (!wallet) return null;
-
-    try {
-        if (!wallet.publicKey) return null;
-
-        return wallet.publicKey.toBase58();
-    } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-            console.warn('Error getting wallet address:', error);
-        }
-        return null;
-    }
-}
-
-export function useWalletAddress(wallet: Wallet | null | undefined): string | null {
-    return React.useMemo(() => getWalletAddress(wallet), [wallet]);
 }

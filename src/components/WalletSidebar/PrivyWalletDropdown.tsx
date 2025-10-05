@@ -2,9 +2,9 @@ import { usePrivy } from '@privy-io/react-auth';
 import { useEffect, useRef, useState } from 'react';
 
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
-import { EnhancedWallet, getWalletDisplayDataForEnhancedWallet, WalletDisplayData, WalletIcon, WalletTypeIcon } from '@/utils/walletUtils';
 
 import CopyButton from '../common/CopyButton/CopyButton';
+import { EnhancedWallet, getWalletDisplayDataForEnhancedWallet, WalletDisplayData, WalletIcon, WalletTypeIcon } from './walletUtils';
 
 interface PrivyWalletDropdownProps {
     enhancedWallets: EnhancedWallet[];

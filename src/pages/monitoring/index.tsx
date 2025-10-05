@@ -6,7 +6,7 @@ import { ADRENA_TEAM_WALLET } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
-import { getWalletAddress } from '@/utils/walletUtils';
+import { getWalletAddress } from '@/utils';
 
 import AddressLookupTable from './AddressLookupTable';
 import AllPositions from './allPositions';

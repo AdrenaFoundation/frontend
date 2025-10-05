@@ -9,7 +9,7 @@ import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { ALTERNATIVE_SWAP_TOKENS } from '@/constant';
 import { Action } from '@/pages/trade';
 import { PositionExtended, Token, WalletAdapterExtended } from '@/types';
-import { getWalletAddress } from '@/utils/walletUtils';
+import { getWalletAddress } from '@/utils';
 
 import LongShortTradingInputs from '../TradingInputs/LongShortTradingInputs';
 import SwapTradingInputs from '../TradingInputs/SwapTradingInputs';

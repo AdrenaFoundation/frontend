@@ -23,13 +23,12 @@ import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
 import { EventEmitter } from 'events';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useDispatch } from '@/store/store';
+import { selectWalletAddress } from '@/selectors/walletSelectors';
+import { useDispatch, useSelector } from '@/store/store';
 import { WalletAdapterExtended } from '@/types';
-import { PrivyAdapterExtended } from '@/types/privy';
 import { isValidPublicKey } from '@/utils';
 
 import { WalletAdapterName } from './useWalletAdapters';
-import { useWalletAddress } from './useWalletOptimized';
 
 export function usePrivyAdapter(): WalletAdapterExtended | null {
   const { ready, authenticated, user, login, logout } = usePrivy();
@@ -42,7 +41,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   const { wallets: connectedStandardWallets } = useWallets();
   const { createWallet } = useCreateWallet();
 
-  const currentWalletAddress = useWalletAddress();
+  const currentWalletAddress = useSelector(selectWalletAddress);
 
   const externalWalletAddressMap = useMemo(() => {
     const map = new Map();
@@ -367,11 +366,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     }
 
     if (adapterRef.current) {
-      const currentWalletName = externalWallet?.adapterName || 'Privy';
-
-      (adapterRef.current as PrivyAdapterExtended)._activeWalletName = currentWalletName;
-      (adapterRef.current as PrivyAdapterExtended)._externalWallet = externalWallet;
-
       adapterRef.current.publicKey = publicKey;
       adapterRef.current.connecting = isConnecting;
       adapterRef.current.connected = authenticated && !!currentWalletAddress;

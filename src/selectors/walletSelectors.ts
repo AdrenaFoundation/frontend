@@ -1,18 +1,18 @@
 /**
- * Optimized wallet selectors with memoization
+ * Memoized wallet selectors
  *
- * These selectors prevent unnecessary re-renders by memoizing
- * wallet-derived values and providing stable references.
+ * These selectors use Redux Toolkit's createSelector to memoize values,
+ * preventing unnecessary re-renders when unrelated wallet state changes.
  */
 
 import { createSelector } from '@reduxjs/toolkit';
+import { PublicKey } from '@solana/web3.js';
 
 import { RootState } from '@/store/store';
+import { isValidPublicKey } from '@/utils';
 
-// Base wallet state selector
 const selectWalletState = (state: RootState) => state.walletState;
 
-// Memoized wallet selectors
 export const selectWallet = createSelector(
   [selectWalletState],
   (walletState) => walletState.wallet,
@@ -23,6 +23,15 @@ export const selectWalletAddress = createSelector(
   (wallet) => wallet?.walletAddress || null,
 );
 
+export const selectWalletPublicKey = createSelector(
+  [selectWalletAddress],
+  (walletAddress) =>
+    walletAddress && isValidPublicKey(walletAddress)
+      ? new PublicKey(walletAddress)
+      : null,
+);
+
+// Additional selectors for commonly accessed wallet properties
 export const selectWalletAdapterName = createSelector(
   [selectWallet],
   (wallet) => wallet?.adapterName || null,
@@ -33,26 +42,7 @@ export const selectIsPrivyWallet = createSelector(
   (wallet) => wallet?.isPrivy || false,
 );
 
-export const selectIsWalletConnected = createSelector(
-  [selectWallet],
-  (wallet) => !!wallet?.walletAddress,
-);
-
 export const selectWalletModalOpen = createSelector(
   [selectWalletState],
   (walletState) => walletState.modalIsOpen,
-);
-
-// Combined wallet info selector (prevents multiple subscriptions)
-export const selectWalletInfo = createSelector([selectWallet], (wallet) => ({
-  address: wallet?.walletAddress || null,
-  adapterName: wallet?.adapterName || null,
-  isPrivy: wallet?.isPrivy || false,
-  isConnected: !!wallet?.walletAddress,
-}));
-
-// Stable wallet reference for components that need the full wallet object
-export const selectWalletForComponents = createSelector(
-  [selectWallet],
-  (wallet) => wallet,
 );

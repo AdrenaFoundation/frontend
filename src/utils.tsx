@@ -1,4 +1,4 @@
-import { BN, Program } from '@coral-xyz/anchor';
+import { BN, Program, Wallet } from '@coral-xyz/anchor';
 import { QuoteResponse } from '@jup-ag/api';
 import { sha256 } from '@noble/hashes/sha256';
 import {
@@ -1832,5 +1832,21 @@ export function periodModeToSeconds(periodMode: '1d' | '7d' | '1D' | '7D' | '1M'
       return Number.MAX_SAFE_INTEGER; // Effectively no limit
     default:
       throw new Error('Invalid period mode');
+  }
+}
+
+// Simple helper to extract address from Anchor Wallet type
+// For Redux wallet state, use selectWalletAddress from @/selectors/walletSelectors
+export function getWalletAddress(wallet: Wallet | null | undefined): string | null {
+  if (!wallet) return null;
+
+  try {
+    if (!wallet.publicKey) return null;
+    return wallet.publicKey.toBase58();
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Error getting wallet address:', error);
+    }
+    return null;
   }
 }

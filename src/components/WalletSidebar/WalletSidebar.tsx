@@ -14,11 +14,11 @@ import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import { useGetBalancesAndJupiterPrices } from '@/hooks/useGetBalancesAndJupiterPrices';
 import { selectWallet } from '@/selectors/walletSelectors';
 import { useDispatch, useSelector } from '@/store/store';
-import { enhanceWallets, getWalletDisplayDataForEnhancedWallet, getWalletDisplayDataForNativeWallet, WalletIcon, WalletTypeIcon } from '@/utils/walletUtils';
 
 import { PrivyWalletDropdown } from './PrivyWalletDropdown';
 import { SendToken } from './SendToken';
 import { TokenListItem } from './TokenListItem';
+import { enhanceWallets, getWalletDisplayDataForEnhancedWallet, getWalletDisplayDataForNativeWallet, WalletIcon, WalletTypeIcon } from './walletUtils';
 
 export default function WalletSidebar() {
     const { fundWallet } = useFundWallet();

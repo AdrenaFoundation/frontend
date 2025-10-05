@@ -13,7 +13,7 @@ import useCountDown from '@/hooks/useCountDown';
 import { useDispatch } from '@/store/store';
 import { PageProps } from '@/types';
 import { nativeToUi } from '@/utils';
-import { getWalletAddress } from '@/utils/walletUtils';
+import { getWalletAddress } from '@/utils';
 
 export default function UserVest({
   userVest: paramUserVest,
