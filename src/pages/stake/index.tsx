@@ -59,17 +59,13 @@ export type ALPTokenDetails = {
 export const DEFAULT_LOCKED_STAKE_LOCK_DURATION = 180;
 export const LIQUID_STAKE_LOCK_DURATION = 0;
 
-export default function Stake({
-  connected,
-}: PageProps) {
+export default function Stake({ connected }: PageProps) {
   const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
-  const {
-    stakingAccounts,
-    triggerWalletStakingAccountsReload
-  } = useWalletStakingAccounts(wallet?.walletAddress ?? null);
+  const { stakingAccounts, triggerWalletStakingAccountsReload } =
+    useWalletStakingAccounts(wallet?.walletAddress ?? null);
 
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
@@ -79,7 +75,11 @@ export default function Stake({
     useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.symbol]) ??
     null;
 
-  const [optimisticClaimAdx, setOptimisticClaimAdx] = useState<ClaimHistoryExtended | null>(null);
+  const [optimisticClaimAdx, setOptimisticClaimAdx] =
+    useState<ClaimHistoryExtended | null>(null);
+
+  const [optimisticClaimAlp, setOptimisticClaimAlp] =
+    useState<ClaimHistoryExtended | null>(null);
 
   const [adxDetails, setAdxDetails] = useState<ADXTokenDetails>({
     balance: null,
@@ -291,9 +291,7 @@ export default function Stake({
     }
   };
 
-  const handleLockedStakeRedeem = async (
-    lockedStake: LockedStakeExtended,
-  ) => {
+  const handleLockedStakeRedeem = async (lockedStake: LockedStakeExtended) => {
     if (!owner) {
       addNotification({
         type: 'error',
@@ -346,12 +344,16 @@ export default function Stake({
         stake.index = i;
       });
 
-      const filteredLockedStakes = tokenObj.lockedStakes.filter(stake => !stake.amount.isZero());
+      const filteredLockedStakes = tokenObj.lockedStakes.filter(
+        (stake) => !stake.amount.isZero(),
+      );
 
       let i = 0;
 
       for (const lockedStake of filteredLockedStakes) {
-        const notification = MultiStepNotification.newForRegularTransaction(`Claim & Unstake ${++i}/${filteredLockedStakes.length}`).fire();
+        const notification = MultiStepNotification.newForRegularTransaction(
+          `Claim & Unstake ${++i}/${filteredLockedStakes.length}`,
+        ).fire();
 
         await window.adrena.client.removeLockedStake({
           owner,
@@ -365,8 +367,10 @@ export default function Stake({
           notification,
           // TODO: replace this with a proper system allowing the user to claim on a TA instead of the ATA, but pretty niche usecase tbh
           // Special override for a user that has a different reward token account following a hack
-          overrideRewardTokenAccount: owner.toBase58() === '5aBuBWGxkyHMDE6kqLLA1sKJjd2emdoKJWm8hhMTSKEs' ?
-            new PublicKey('654FfF8WWJ7BTLdWtpAo4F3AiY2pRAPU8LEfLdMFwNK9') : undefined
+          overrideRewardTokenAccount:
+            owner.toBase58() === '5aBuBWGxkyHMDE6kqLLA1sKJjd2emdoKJWm8hhMTSKEs'
+              ? new PublicKey('654FfF8WWJ7BTLdWtpAo4F3AiY2pRAPU8LEfLdMFwNK9')
+              : undefined,
         });
       }
 
@@ -404,11 +408,12 @@ export default function Stake({
         notification,
         // TODO: replace this with a proper system allowing the user to claim on a TA instead of the ATA, but pretty niche usecase tbh
         // Special override for a user that has a different reward token account following a hack
-        overrideRewardTokenAccount: owner.toBase58() === '5aBuBWGxkyHMDE6kqLLA1sKJjd2emdoKJWm8hhMTSKEs' ?
-          new PublicKey('654FfF8WWJ7BTLdWtpAo4F3AiY2pRAPU8LEfLdMFwNK9') : undefined
+        overrideRewardTokenAccount:
+          owner.toBase58() === '5aBuBWGxkyHMDE6kqLLA1sKJjd2emdoKJWm8hhMTSKEs'
+            ? new PublicKey('654FfF8WWJ7BTLdWtpAo4F3AiY2pRAPU8LEfLdMFwNK9')
+            : undefined,
       });
 
-      // No alp claim anymore since it became liquid
       if (tokenSymbol === 'ADX') {
         const optimisticClaim = {
           claim_id: new BN(Date.now()).toString(),
@@ -429,6 +434,26 @@ export default function Stake({
         adxRewards.pendingGenesisAdxRewards = 0;
         fetchAdxRewards();
         setOptimisticClaimAdx(optimisticClaim);
+      } else if (tokenSymbol === 'ALP') {
+        const optimisticClaim = {
+          claim_id: new BN(Date.now()).toString(),
+          rewards_adx: alpRewards.pendingAdxRewards,
+          rewards_adx_genesis: alpRewards.pendingGenesisAdxRewards,
+          rewards_usdc: alpRewards.pendingUsdcRewards,
+          signature: 'optimistic',
+          transaction_date: new Date(),
+          created_at: new Date(),
+          stake_mint: stakedTokenMint,
+          symbol: tokenSymbol,
+          source: 'optimistic',
+        } as unknown as ClaimHistoryExtended;
+
+        // Reset rewards in the ui until next fetch
+        alpRewards.pendingUsdcRewards = 0;
+        alpRewards.pendingAdxRewards = 0;
+        alpRewards.pendingGenesisAdxRewards = 0;
+        fetchAlpRewards();
+        setOptimisticClaimAlp(optimisticClaim);
       }
     } catch (error) {
       console.error('error', error);
@@ -495,7 +520,9 @@ export default function Stake({
         });
 
       if (!swapInstructions) {
-        notification.currentStepErrored('Cannot build jupiter swap instructions');
+        notification.currentStepErrored(
+          'Cannot build jupiter swap instructions',
+        );
         return;
       }
 
@@ -505,14 +532,26 @@ export default function Stake({
         caller: owner,
         // TODO: replace this with a proper system allowing the user to claim on a TA instead of the ATA, but pretty niche usecase tbh
         // Special override for a user that has a different reward token account following a hack
-        overrideRewardTokenAccount: owner.toBase58() === '5aBuBWGxkyHMDE6kqLLA1sKJjd2emdoKJWm8hhMTSKEs' ?
-          new PublicKey('654FfF8WWJ7BTLdWtpAo4F3AiY2pRAPU8LEfLdMFwNK9') : undefined
+        overrideRewardTokenAccount:
+          owner.toBase58() === '5aBuBWGxkyHMDE6kqLLA1sKJjd2emdoKJWm8hhMTSKEs'
+            ? new PublicKey('654FfF8WWJ7BTLdWtpAo4F3AiY2pRAPU8LEfLdMFwNK9')
+            : undefined,
       });
 
       const jupiterInstructions = [
-        ...(swapInstructions.setupInstructions || []).map(jupInstructionToTransactionInstruction),
-        jupInstructionToTransactionInstruction(swapInstructions.swapInstruction),
-        ...(swapInstructions.cleanupInstruction ? [jupInstructionToTransactionInstruction(swapInstructions.cleanupInstruction)] : []),
+        ...(swapInstructions.setupInstructions || []).map(
+          jupInstructionToTransactionInstruction,
+        ),
+        jupInstructionToTransactionInstruction(
+          swapInstructions.swapInstruction,
+        ),
+        ...(swapInstructions.cleanupInstruction
+          ? [
+              jupInstructionToTransactionInstruction(
+                swapInstructions.cleanupInstruction,
+              ),
+            ]
+          : []),
       ];
 
       builder.postInstructions(jupiterInstructions);
@@ -524,7 +563,10 @@ export default function Stake({
       await window.adrena.client.signAndExecuteTxAlternative({
         transaction,
         notification,
-        additionalAddressLookupTables: swapInstructions.addressLookupTableAddresses.map(x => new PublicKey(x)),
+        additionalAddressLookupTables:
+          swapInstructions.addressLookupTableAddresses.map(
+            (x) => new PublicKey(x),
+          ),
       });
 
       const optimisticClaim = {
@@ -642,7 +684,7 @@ export default function Stake({
       return;
     }
     const balance =
-      activeStakingToken === 'ALP' ? alpBalance ?? 0 : adxBalance ?? 0;
+      activeStakingToken === 'ALP' ? (alpBalance ?? 0) : (adxBalance ?? 0);
 
     const minAmount =
       activeStakingToken === 'ALP'
@@ -666,18 +708,18 @@ export default function Stake({
   //   window.adrena.client.lpTokenMint,
   // );
 
-
   // const nextStakingRoundTimeAlp = alpStakingAccount
   //   ? getNextStakingRoundStartTime(
   //     alpStakingAccount.currentStakingRound.startTime,
   //   ).getTime()
   //   : null;
 
-
-
   // The rewards pending for the user
   const { rewards: adxRewards, fetchRewards: fetchAdxRewards } =
     useStakingClaimableRewards('ADX');
+
+  const { rewards: alpRewards, fetchRewards: fetchAlpRewards } =
+    useStakingClaimableRewards('ALP');
 
   // The rewards pending collection in the current round
   const alpStakingCurrentRoundRewards = useStakingAccountRewardsAccumulated(
@@ -748,9 +790,7 @@ export default function Stake({
         errorMessage={errorMessage}
         stakeAmount={stakeAmount}
         lockPeriod={lockPeriod as AdxLockPeriod}
-        setLockPeriod={(lockPeriod: AdxLockPeriod) =>
-          setLockPeriod(lockPeriod)
-        }
+        setLockPeriod={(lockPeriod: AdxLockPeriod) => setLockPeriod(lockPeriod)}
         balance={adxBalance}
       />
     </Modal>
@@ -785,46 +825,59 @@ export default function Stake({
       />
     </>
   ) : (
-    <div className={twMerge("w-full flex flex-col z-10 min-h-full pl-4 pr-4 pb-4 pt-2 m-auto items-center justify-center", alpLockedStakes && alpLockedStakes?.length ? 'max-w-[80em]' : 'max-w-[50em]')}>
+    <div
+      className={twMerge(
+        'w-full flex flex-col z-10 min-h-full pl-4 pr-4 pb-4 pt-2 m-auto items-center justify-center',
+        alpLockedStakes && alpLockedStakes?.length
+          ? 'max-w-[80em]'
+          : 'max-w-[50em]',
+      )}
+    >
       <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
-      <div className='flex flex-col items-center justify-center flex-grow w-full my-auto'>
+      <div className="flex flex-col items-center justify-center flex-grow w-full my-auto">
         <div className="flex flex-col lg:flex-row gap-4 pl-4 pr-4 pb-4 pt-2 justify-center z-10 w-full">
           <>
-            {alpLockedStakes && alpLockedStakes?.length ? <div className="flex-1">
-              <FullyLiquidALPStaking
-                totalLockedStake={alpDetails.totalLockedStake}
-                lockedStakes={alpLockedStakes}
-                handleLockedStakeRedeem={handleLockedStakeRedeem}
-                handleClickOnClaimRewardsAndRedeem={() => handleClaimRewardsAndRedeemALP()}
-                userPendingUsdcRewards={0}
-                userPendingAdxRewards={0}
-
-                roundPendingUsdcRewards={
-                  alpStakingCurrentRoundRewards.usdcRewards ??
-                  0
-                }
-                roundPendingAdxRewards={
-                  alpStakingCurrentRoundRewards.adxRewards ??
-                  0
-                }
-                pendingGenesisAdxRewards={0}
-                walletAddress={wallet?.walletAddress ?? null}
-              />
-            </div> : null}
+            {alpLockedStakes && alpLockedStakes?.length ? (
+              <div className="flex-1">
+                <FullyLiquidALPStaking
+                  totalLockedStake={alpDetails.totalLockedStake}
+                  lockedStakes={alpLockedStakes}
+                  handleLockedStakeRedeem={handleLockedStakeRedeem}
+                  handleClickOnClaimRewardsAndRedeem={() =>
+                    handleClaimRewardsAndRedeemALP()
+                  }
+                  userPendingUsdcRewards={alpRewards.pendingUsdcRewards}
+                  userPendingAdxRewards={alpRewards.pendingAdxRewards}
+                  roundPendingUsdcRewards={
+                    alpStakingCurrentRoundRewards.usdcRewards ?? 0
+                  }
+                  roundPendingAdxRewards={
+                    alpStakingCurrentRoundRewards.adxRewards ?? 0
+                  }
+                  pendingGenesisAdxRewards={alpRewards.pendingGenesisAdxRewards}
+                  walletAddress={wallet?.walletAddress ?? null}
+                  optimisticClaim={optimisticClaimAlp}
+                  setOptimisticClaim={setOptimisticClaimAlp}
+                />
+              </div>
+            ) : null}
 
             <div className="flex-1">
-              <StakeApr token='ADX' className='mb-2' />
+              <StakeApr token="ADX" className="mb-2" />
 
               <StakeOverview
-                token='ADX'
                 totalLockedStake={adxDetails.totalLockedStake}
                 totalLiquidStaked={adxDetails.totalLiquidStaked}
-                totalRedeemableLockedStake={getTotalRedeemableLockedStake('ADX')}
+                totalRedeemableLockedStake={getTotalRedeemableLockedStake(
+                  'ADX',
+                )}
                 lockedStakes={adxLockedStakes}
                 handleLockedStakeRedeem={handleLockedStakeRedeem}
                 handleClickOnClaimRewards={() => handleClaimRewards('ADX')}
-                handleClickOnClaimRewardsAndBuyAdx={() => handleClickOnClaimRewardsAndBuyAdx()}
+                handleClickOnClaimRewardsAndBuyAdx={() =>
+                  handleClickOnClaimRewardsAndBuyAdx()
+                }
                 handleClickOnStakeMore={(initialLockPeriod: AdxLockPeriod) => {
                   setLockPeriod(initialLockPeriod);
                   setActiveStakingToken('ADX');
@@ -890,7 +943,7 @@ export default function Stake({
         </div>
 
         <ALPStakingRecap walletAddress={wallet?.walletAddress ?? null} />
-      </div >
+      </div>
     </div>
   );
 }

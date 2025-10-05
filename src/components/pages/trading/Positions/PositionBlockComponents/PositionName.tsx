@@ -11,7 +11,7 @@ interface PositionNameProps {
     position: PositionExtended | EnrichedPositionApi;
     isHistory?: boolean;
     readOnly: boolean;
-    setTokenB: (token: Token) => void;
+    setTokenB?: (token: Token) => void;
 }
 
 const TokenSymbolDisplay = ({
@@ -37,7 +37,7 @@ export const PositionName = ({ position, readOnly, isHistory, setTokenB }: Posit
 
     const handleTokenClick = () => {
         if (!readOnly && isTradeRoute) {
-            setTokenB(position.token);
+            setTokenB?.(position.token);
         }
     };
 

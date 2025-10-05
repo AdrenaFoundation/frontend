@@ -99,8 +99,9 @@ export default function SharePositionModal({
 
   const shortenedUrl = `/position?data=${encodedParams}`;
 
-  const twitterText = `I just made ${isPnlUsd ? `$${pnlUsd?.toFixed(2)}` : `${pnlPercentage?.toFixed(2)}%`
-    } on ${position.side} position on ${position.token.symbol}!`;
+  const twitterText = `I just made ${
+    isPnlUsd ? `$${pnlUsd?.toFixed(2)}` : `${pnlPercentage?.toFixed(2)}%`
+  } on ${position.side} position on ${position.token.symbol}!`;
 
   const blinkParams = position?.exitPrice
     ? null
@@ -175,19 +176,21 @@ export default function SharePositionModal({
             <span className="font-archivoblack text-sm sm:text-lg">
               {position?.exitPrice
                 ? formatPriceInfo(
-                  position.exitPrice,
-                  position.token.displayPriceDecimalsPrecision,
-                )
+                    position.exitPrice,
+                    position.token.displayPriceDecimalsPrecision,
+                  )
                 : formatPriceInfo(
-                  tokenPrices[getTokenSymbol(position.token.symbol)],
-                )}
+                    tokenPrices[getTokenSymbol(position.token.symbol)],
+                  )}
             </span>
           </li>
           <li className="flex flex-col gap-1">
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
               Opened on
             </span>
-            <span className="font-archivoblack text-sm sm:text-lg">{openedOn}</span>
+            <span className="font-archivoblack text-sm sm:text-lg">
+              {openedOn}
+            </span>
           </li>
         </ul>
 
@@ -264,7 +267,7 @@ export default function SharePositionModal({
           className="flex flex-row justify-between gap-3 bg-secondary border border-bcolor p-3 rounded-md cursor-pointer select-none"
           onClick={() => setIsPnlUsd(!isPnlUsd)}
         >
-          <p className="font-boldy text-base">Display PnL in USD</p>
+          <p className="font-semibold text-base">Display PnL in USD</p>
           <label className="flex items-center ml-1 cursor-pointer">
             <Switch
               className="mr-0.5"
@@ -281,7 +284,7 @@ export default function SharePositionModal({
           className="flex flex-row justify-between gap-3 bg-secondary border border-bcolor p-3 rounded-md cursor-pointer select-none"
           onClick={() => setIsPnlWFees(!isPnlWFees)}
         >
-          <p className="font-boldy text-base">Display PnL with fees</p>
+          <p className="font-semibold text-base">Display PnL with fees</p>
           <label className="flex items-center ml-1 cursor-pointer">
             <Switch
               className="mr-0.5"

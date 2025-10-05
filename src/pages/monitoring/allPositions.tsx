@@ -1,17 +1,15 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import chartIcon from '@/../public/images/Icons/chart-icon.svg';
 import listIcon from '@/../public/images/Icons/list-ul.svg';
 import Button from '@/components/common/Button/Button';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
-import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import AllPositionsChart from '@/components/pages/global/AllPositionsChart/AllPositionsChart';
 import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
 import { UnrealizedPnlChart } from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
 import FilterSidebar from '@/components/pages/monitoring/FilterSidebar/FilterSidebar';
-import PositionBlock from '@/components/pages/trading/Positions/PositionBlock';
 import { useAllPositions } from '@/hooks/useAllPositions';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
@@ -19,27 +17,128 @@ import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
 import resetIcon from '../../../public/images/Icons/cross.svg';
+import AllPositionTable from './AllPositionTable';
 
-export default function AllPositions({ isSmallScreen, view }: { isSmallScreen: boolean, view: string }) {
-    const wallet = useSelector((state) => state.walletState.wallet);
+export default function AllPositions({
+  isSmallScreen,
+  view,
+}: {
+  isSmallScreen: boolean;
+  view: string;
+}) {
+  const wallet = useSelector((state) => state.walletState.wallet);
 
-    const connected = !!wallet;
+  const connected = !!wallet;
 
-    const { allPositions, triggerAllPositionsReload } = useAllPositions({
-        connected,
+  const { allPositions, triggerAllPositionsReload } = useAllPositions({
+    connected,
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sideFilter, setSideFilter] = useState('all');
+  const [mintFilter, setMintFilter] = useState<string[] | null>(null);
+  const [ownerFilter, setOwnerFilter] = useState('');
+  const [pnlFilter, setPnlFilter] = useState('all');
+  const itemsPerPage = 20;
+  const [sortConfigs, setSortConfigs] = useState<{
+    [key: string]: 'asc' | 'desc';
+  }>({
+    pnl: 'asc',
+    size: 'asc',
+    leverage: 'desc',
+  });
+  const [sortOrder, setSortOrder] = useState<string[]>([
+    'pnl',
+    'size',
+    'leverage',
+  ]);
+
+  const [sortedPositions, setSortedPositions] = useState<PositionExtended[]>(
+    [],
+  );
+  const [paginatedPositions, setPaginatedPositions] = useState<
+    PositionExtended[]
+  >([]);
+
+  const [viewPage, setViewPage] = useState<string>('List view');
+
+  useEffect(() => {
+    if (view !== 'livePositions') return;
+
+    const filteredPositions = allPositions.filter((position) => {
+      const matchesSide = sideFilter === 'all' || position.side === sideFilter;
+      const matchesMint =
+        mintFilter === null ||
+        mintFilter.includes(getTokenSymbol(position.token.symbol));
+      const matchesUser =
+        ownerFilter === '' ||
+        position.owner
+          .toBase58()
+          .toLowerCase()
+          .includes(ownerFilter.toLowerCase());
+      const matchesPnl =
+        pnlFilter === 'all' ||
+        (pnlFilter === 'profit' && position.pnl && position.pnl > 0) ||
+        (pnlFilter === 'loss' && position.pnl && position.pnl < 0);
+      return matchesSide && matchesMint && matchesUser && matchesPnl;
     });
-    const [currentPage, setCurrentPage] = useState(1);
-    const [sideFilter, setSideFilter] = useState('all');
-    const [mintFilter, setMintFilter] = useState<string[] | null>(null);
-    const [ownerFilter, setOwnerFilter] = useState('');
-    const [pnlFilter, setPnlFilter] = useState('all');
-    const itemsPerPage = 7;
-    const [sortConfigs, setSortConfigs] = useState<{
-        [key: string]: 'asc' | 'desc';
-    }>({
-        pnl: 'asc',
-        size: 'asc',
-        leverage: 'desc',
+
+    setSortedPositions(
+      filteredPositions.sort((a, b) => {
+        for (const criteria of sortOrder) {
+          const order = sortConfigs[criteria];
+          const multiplier = order === 'asc' ? 1 : -1;
+          let comparison = 0;
+
+          switch (criteria) {
+            case 'pnl':
+              comparison = multiplier * ((b.pnl || 0) - (a.pnl || 0));
+              break;
+            case 'size':
+              comparison = multiplier * (b.sizeUsd - a.sizeUsd);
+              break;
+            case 'leverage':
+              comparison =
+                multiplier *
+                ((b.currentLeverage || 0) - (a.currentLeverage || 0));
+              break;
+          }
+
+          if (comparison !== 0) return comparison;
+        }
+
+        return 0;
+      }),
+    );
+  }, [
+    allPositions,
+    mintFilter,
+    ownerFilter,
+    pnlFilter,
+    sideFilter,
+    sortConfigs,
+    sortOrder,
+    view,
+  ]);
+
+  useEffect(() => {
+    const paginatedPositions = sortedPositions.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage,
+    );
+
+    setPaginatedPositions(paginatedPositions);
+  }, [currentPage, sortedPositions]);
+
+  const toggleSortOrder = (criteria: string) => {
+    const prevConfigs = { ...sortConfigs };
+
+    setSortConfigs(() => ({
+      ...prevConfigs,
+      [criteria]: prevConfigs[criteria] === 'desc' ? 'asc' : 'desc',
+    }));
+    setSortOrder((prevOrder) => {
+      const newOrder = prevOrder.filter((item) => item !== criteria);
+      return [criteria, ...newOrder];
     });
     const [sortOrder, setSortOrder] = useState<string[]>([
         'pnl',

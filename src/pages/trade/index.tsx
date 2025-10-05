@@ -436,6 +436,14 @@ export default function Trade({
     ? allPositions.filter((p) => p.token.mint.equals(tokenB.mint))
     : null;
 
+  // Calculate position counts for the selected token
+  const numberLong = allActivePositions?.filter(
+    (p) => p.side === 'long',
+  ).length;
+  const numberShort = allActivePositions?.filter(
+    (p) => p.side === 'short',
+  ).length;
+
   const totalStats =
     positions && positions.length > 0
       ? positions.reduce(
@@ -454,10 +462,10 @@ export default function Trade({
 
   return (
     <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full sm:p-4 pb-[200px] sm:pb-4">
-      <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-60 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
+      <div className="fixed w-full h-screen left-0 top-0 -z-10 opacity-50 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
-      <div className="flex flex-col w-full">
-        <div className="flex flex-col w-full border sm:rounded-md overflow-hidden bg-secondary">
+      <div className="flex flex-col w-full min-w-0">
+        <div className="flex flex-col w-full border sm:rounded-lg overflow-hidden bg-secondary">
           {/* Trading chart header */}
           {tokenB ? (
             <TradingChartHeader
@@ -772,11 +780,18 @@ export default function Trade({
                   activePositionModal.slice(1)
                   } Position`}
                 close={() => setActivePositionModal(null)}
-                className="flex flex-col overflow-y-auto"
+                className="flex flex-col overflow-y-auto w-full"
               >
-                {tokenB && <TradingChartMini token={tokenB} />}
+                {tokenB && (
+                  <TradingChartMini
+                    token={tokenB}
+                    selectedAction={selectedAction}
+                    numberLong={numberLong}
+                    numberShort={numberShort}
+                  />
+                )}
                 <div className="bg-bcolor w-full h-[1px] my-3" />
-                <div className="flex w-full px-4">
+                <div className="flex w-full">
                   <TradeComp
                     selectedAction={selectedAction}
                     setSelectedAction={setSelectedAction}
@@ -794,7 +809,7 @@ export default function Trade({
                     }}
                     setTokenB={setTokenB}
                     openedPosition={openedPosition}
-                    className="p-0 m-0"
+                    className="p-0 m-0 w-full px-4"
                     wallet={wallet}
                     connected={connected}
                     activeRpc={activeRpc}
