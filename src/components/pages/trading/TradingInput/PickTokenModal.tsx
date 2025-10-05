@@ -44,7 +44,7 @@ export function PickTokenModal({
     }), [tokenList, displayAllTokens, walletTokenBalances, tokenSearch]);
 
     return <AnimatePresence>
-        {isPickTokenModalOpen ? (
+        {isPickTokenModalOpen && (
             <Modal
                 header={false}
                 key='pick-token-modal-inner'
@@ -175,7 +175,6 @@ export function PickTokenModal({
                     </div>)) : <div className='text-base mt-8 text-white/60'>No tokens found</div>}
                 </div>
             </Modal>
-        ) : null
-        }
+        )}
     </AnimatePresence >;
 }

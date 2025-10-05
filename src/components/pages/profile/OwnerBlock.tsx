@@ -792,7 +792,7 @@ export default function OwnerBloc({
       </div>
 
       <AnimatePresence>
-        {nicknameUpdating ? (
+        {nicknameUpdating && (
           <Modal
             title="Update Nickname"
             close={() => {
@@ -877,7 +877,7 @@ export default function OwnerBloc({
               </div>
             </div>
           </Modal>
-        ) : null}
+        )}
 
         {isUpdatingMetadata ? (
           <Modal

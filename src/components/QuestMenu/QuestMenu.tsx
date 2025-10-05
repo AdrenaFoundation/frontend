@@ -265,7 +265,7 @@ export default function QuestMenu({
             )}
         >
             <AnimatePresence>
-                {!isOpen ? (
+                {!isOpen && (
                     <motion.div
                         key="closed-state"
                         className={twMerge("-translate-x-6 translate-y-6 cursor-pointer", !isMobile && 'hover:translate-x-0 hover:translate-y-0 transition-transform duration-300')}
@@ -292,9 +292,9 @@ export default function QuestMenu({
                             Quests
                         </p>
                     </motion.div>
-                ) : null}
+                )}
 
-                {(isOpen && !isMobile) ? (
+                {(isOpen && !isMobile) && (
                     <motion.div
                         key="open-state"
                         ref={ref}
@@ -331,13 +331,13 @@ export default function QuestMenu({
                     >
                         {body}
                     </motion.div>
-                ) : null}
+                )}
 
-                {(isMobile && isOpen) ? (
+                {(isMobile && isOpen) && (
                     <Modal close={() => setIsOpen(!isOpen)} className="p-0 w-full" key="modal">
                         {body}
                     </Modal>
-                ) : null}
+                )}
             </AnimatePresence>
         </div>
     );

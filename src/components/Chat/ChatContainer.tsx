@@ -384,7 +384,7 @@ function ChatContainerWrapper({
 
   return (
     <AnimatePresence>
-      {isChatOpen ? (
+      {isChatOpen && (
         <motion.div
           initial={{ opacity: 0, y: '-2rem' }}
           animate={{ opacity: 1, y: '-2.5rem' }}
@@ -405,7 +405,7 @@ function ChatContainerWrapper({
           />
           {children}
         </motion.div>
-      ) : null}
+      )}
     </AnimatePresence>
   );
 }

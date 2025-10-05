@@ -284,10 +284,11 @@ export default function SuperchargedFooter({
 
         <div className="flex flex-row items-center">
           <AnimatePresence mode="wait">
-            {isAnnouncementView ? (
-              <FooterAnnouncement />
-            ) : (
-              <FooterStats mainPool={mainPool} />
+            {isAnnouncementView && (
+              <FooterAnnouncement key="announcement" />
+            )}
+            {!isAnnouncementView && (
+              <FooterStats key="stats" mainPool={mainPool} />
             )}
           </AnimatePresence>
 
@@ -314,7 +315,7 @@ export default function SuperchargedFooter({
                 <div className="flex items-center justify-center bg-redbright min-w-1.5 rounded-full ml-2" />
               ) : null}
               <AnimatePresence>
-                {!isChatOpen ? (
+                {!isChatOpen && (
                   <motion.div
                     initial={{ opacity: 0, y: '-1rem' }}
                     animate={{ opacity: 1, y: '-1.65rem' }}
@@ -345,7 +346,7 @@ export default function SuperchargedFooter({
                       <LiveIcon size={9} />
                     </div>
                   </motion.div>
-                ) : null}
+                )}
               </AnimatePresence>
             </div>
           )}

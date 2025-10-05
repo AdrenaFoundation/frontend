@@ -208,16 +208,16 @@ export default function BurgerMenu({
           <Mutagen isMobile />
 
           <AnimatePresence>
-            {isPriorityFeeModalOpen ? (
+            {isPriorityFeeModalOpen && (
               <PriorityFeeSetting
                 setCloseMobileModal={setIsPriorityFeeModalOpen}
                 isMobile
               />
-            ) : null}
+            )}
           </AnimatePresence>
 
           <AnimatePresence>
-            {isSettingsModalOpen ? (
+            {isSettingsModalOpen && (
               <Settings
                 activeRpc={activeRpc}
                 rpcInfos={rpcInfos}
@@ -231,7 +231,7 @@ export default function BurgerMenu({
                 setCloseMobileModal={setIsSettingsModalOpen}
                 isMobile
               />
-            ) : null}
+            )}
           </AnimatePresence>
 
           {

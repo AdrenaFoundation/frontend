@@ -108,7 +108,7 @@ export default function Menu({
         </div>
 
         <AnimatePresence>
-          {isMenuOpen || forceOpen ? (
+          {isMenuOpen || forceOpen && (
             <motion.div
               ref={ref}
               initial="hidden"
@@ -125,12 +125,12 @@ export default function Menu({
             >
               {children}
             </motion.div>
-          ) : null}
+          )}
         </AnimatePresence>
       </div>
 
       <AnimatePresence>
-        {isDim && (isMenuOpen || forceOpen) ? (
+        {isDim && (isMenuOpen || forceOpen) && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -141,7 +141,7 @@ export default function Menu({
               bgClassName,
             )}
           />
-        ) : null}
+        )}
       </AnimatePresence>
     </>
   );

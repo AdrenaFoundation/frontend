@@ -89,7 +89,7 @@ export default function FavAchievements({
         </div>
       </div>
       <AnimatePresence>
-        {isModalOpen ? (
+        {isModalOpen && (
           <Modal
             close={() => setIsModalOpen(false)}
             title="Favorite Achievements"
@@ -105,7 +105,7 @@ export default function FavAchievements({
               ))}
             </div>
           </Modal>
-        ) : null}
+        )}
       </AnimatePresence>
     </>
   );

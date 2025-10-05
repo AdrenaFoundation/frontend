@@ -77,7 +77,7 @@ export default function MoreMenu({
       <div className="absolute left-1/2 -translate-x-1/2 w-[6.25rem] h-[1.125rem]" />
 
       <AnimatePresence>
-        {isOpen ? (
+        {isOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -206,7 +206,7 @@ export default function MoreMenu({
               </div>
             </div>
           </motion.div>
-        ) : null}
+        )}
       </AnimatePresence>
     </div>
   );

@@ -278,7 +278,7 @@ export default function FooterStats({
     >
       <div className="hidden group-hover:block absolute w-full h-2 -top-2 left-0" />
       <AnimatePresence>
-        {showDetails ? (
+        {showDetails && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -291,7 +291,7 @@ export default function FooterStats({
           >
             <motion.p
               initial={{ opacity: 0, x: '-1rem', filter: 'blur(2px)' }}
-              animate={{ opacity: 1, x: 0, filter: 'blur(0)' }}
+              animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
               exit={{ opacity: 0, x: '-1rem', filter: 'blur(2px)' }}
               transition={{ duration: 0.3 }}
               className="text-sm font-regular"
@@ -300,7 +300,7 @@ export default function FooterStats({
             </motion.p>
             <motion.span
               initial={{ opacity: 0, x: '1rem', filter: 'blur(2px)' }}
-              animate={{ opacity: 1, x: 0, filter: 'blur(0)' }}
+              animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
               exit={{ opacity: 0, x: '1rem', filter: 'blur(2px)' }}
               transition={{ duration: 0.3 }}
             >
@@ -313,7 +313,7 @@ export default function FooterStats({
               />
             </motion.span>
           </motion.div>
-        ) : null}
+        )}
       </AnimatePresence>
       <div className="w-5 h-full bg-gradient-to-r from-secondary to-transparent absolute left-0 top-0 z-20" />
       <div className="w-5 h-full bg-gradient-to-l from-secondary to-transparent absolute right-0 top-0 z-20" />
@@ -345,7 +345,7 @@ export default function FooterStats({
       </InfiniteScroll>
 
       <AnimatePresence>
-        {showDetails ? (
+        {showDetails && (
           <motion.div
             initial={{ opacity: 0, y: '-2rem' }}
             animate={{ opacity: 1, y: '-2.5rem' }}
@@ -460,34 +460,38 @@ export default function FooterStats({
                     {custodyLiquidity !== null &&
                       tokenPrice &&
                       custody &&
-                      !isTokenDataLoading ? (
-                      <motion.span
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        key={`${activeToken}-available-liq`}
-                      >
-                        <FormatNumber
-                          nb={custodyLiquidity * tokenPrice}
-                          format="currency"
-                          precision={2}
-                          className="text-xs opacity-50 transition-opacity duration-300"
-                          isDecimalDimmed={false}
-                          isAbbreviate
-                          isAbbreviateIcon
+                      !isTokenDataLoading && (
+                        <motion.span
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          key={`${activeToken}-available-liq`}
+                        >
+                          <FormatNumber
+                            nb={custodyLiquidity * tokenPrice}
+                            format="currency"
+                            precision={2}
+                            className="text-xs opacity-50 transition-opacity duration-300"
+                            isDecimalDimmed={false}
+                            isAbbreviate
+                            isAbbreviateIcon
+                          />
+                        </motion.span>
+                      )}
+                    {(custodyLiquidity === null ||
+                      !tokenPrice ||
+                      !custody ||
+                      isTokenDataLoading) && (
+                        <motion.div
+                          key="adx-staking-loader"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="bg-[#050D14] h-[1.125rem] w-[3rem] animate-loader rounded-md"
                         />
-                      </motion.span>
-                    ) : (
-                      <motion.div
-                        key="adx-staking-loader"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="bg-[#050D14] h-[1.125rem] w-[3rem] animate-loader rounded-md"
-                      />
-                    )}
+                      )}
                   </AnimatePresence>
                 </div>
               </div>
@@ -607,7 +611,7 @@ export default function FooterStats({
               </div>
             </div>
           </motion.div>
-        ) : null}
+        )}
       </AnimatePresence>
     </motion.div>
   );

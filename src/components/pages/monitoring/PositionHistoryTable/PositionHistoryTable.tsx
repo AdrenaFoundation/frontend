@@ -502,7 +502,7 @@ export default function PositionHistoryTable({
         />
       </div>
       <AnimatePresence>
-        {activePosition ? (
+        {activePosition && (
           <Modal
             close={() => setActivePosition(null)}
             className="p-5 w-full"
@@ -514,7 +514,7 @@ export default function PositionHistoryTable({
               showExpanded={true}
             />
           </Modal>
-        ) : null}
+        )}
       </AnimatePresence>
     </>
   );
