@@ -220,18 +220,16 @@ export default function AllUserProfiles() {
                 </div>
 
                 <div className="flex flex-wrap flex-col gap-2 mb-3">
-                  <AnimatePresence mode="wait">
-                    {paginatedProfiles.length > 0 ? (
+                  <AnimatePresence>
+                    {paginatedProfiles.length > 0 &&
                       paginatedProfiles.map((superchargedProfile) => (
                         <UserProfileBlock
                           key={superchargedProfile.wallet.toBase58()}
                           superchargedProfile={superchargedProfile}
                           setActiveProfile={setActiveProfile}
                         />
-                      ))
-                    ) : (
-                      <LoaderState />
-                    )}
+                      ))}
+                    {paginatedProfiles.length === 0 && <LoaderState />}
                   </AnimatePresence>
                 </div>
 

@@ -27,8 +27,8 @@ export default function FavAchievements({
           className="flex flex-row justify-end items-center px-[3.125rem] overflow-hidden cursor-pointer"
           onClick={() => setIsModalOpen(true)}
         >
-          <AnimatePresence mode="wait">
-            {isFavoriteLoading ? (
+          <AnimatePresence>
+            {isFavoriteLoading && (
               <div className="scale-[0.7] sm:scale-[0.9] mt-1.5 sm:mt-0 flex flex-row transform translate-x-[1.7rem] sm:translate-x-[9rem] md:translate-x-[4rem] translate-y-[2rem]  sm:translate-y-[1rem]">
                 {Array.from({ length: 3 }, (_, i) => i + 1).map(
                   (skeleton, i) => (
@@ -50,7 +50,8 @@ export default function FavAchievements({
                   ),
                 )}
               </div>
-            ) : (
+            )}
+            {!isFavoriteLoading &&
               achievements.map((achievement, i) => (
                 <motion.span
                   initial={{ opacity: 0 }}
@@ -83,8 +84,7 @@ export default function FavAchievements({
                     )}
                   />
                 </motion.span>
-              ))
-            )}
+              ))}
           </AnimatePresence>
         </div>
       </div>

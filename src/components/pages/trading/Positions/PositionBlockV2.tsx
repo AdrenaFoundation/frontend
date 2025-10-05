@@ -245,6 +245,7 @@ export default function PositionBlockV2({
         onEditClick: () => triggerStopLossTakeProfit?.(position),
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       position.openDate,
       position.collateralUsd,
@@ -294,7 +295,7 @@ export default function PositionBlockV2({
           readOnly={readOnly}
           itemClassName={twMerge(
             isMini &&
-              'border-0 flex-row justify-between items-center w-full p-0',
+            'border-0 flex-row justify-between items-center w-full p-0',
           )}
         />
 

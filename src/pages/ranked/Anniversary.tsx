@@ -292,8 +292,8 @@ function RaffleAdditionalPrize({
       const profile = profileMap.get(wallet);
       return profile
         ? PROFILE_PICTURES[
-            profile.profilePicture as keyof typeof PROFILE_PICTURES
-          ]
+        profile.profilePicture as keyof typeof PROFILE_PICTURES
+        ]
         : PROFILE_PICTURES[0];
     },
     [profileMap],
@@ -621,10 +621,12 @@ export default function Anniversary() {
   return (
     <div className="w-full mx-auto relative flex flex-col pb-4">
       {/* Background image */}
-      <img
+      <Image
         src="https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/hb-3.jpg"
         alt="anniversary bg"
         className="absolute inset-0 w-full h-[calc(100%+3em)] object-cover opacity-10 -top-[3em]"
+        fill
+        priority
       />
 
       <div className="flex flex-col gap-2 items-center justify-center text-center mx-auto max-w-[100em] w-full">
@@ -635,10 +637,12 @@ export default function Anniversary() {
         </div>
 
         <div className="relative w-full sm:max-w-[40em] h-[15em] border-t-2 border-b-2 sm:border-2 sm:border-white/100 overflow-hidden">
-          <img
+          <Image
             src="https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/raffle-3.jpg"
             alt="raffle"
             className="absolute inset-0 w-full h-full object-cover"
+            fill
+            priority
           />
           <video
             className="absolute inset-0 w-full h-full object-cover"

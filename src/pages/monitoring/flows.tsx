@@ -147,7 +147,7 @@ export default function Flow({
             transition={{ duration: 0.3, delay: 0.1 }}
             className="flex flex-col lg:flex-row gap-3"
           >
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
               {isInitialLoad &&
                 // Show loading cards while data is being fetched
                 Array.from({ length: 3 }).map((_, index) => (
