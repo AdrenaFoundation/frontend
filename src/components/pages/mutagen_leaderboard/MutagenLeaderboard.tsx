@@ -461,7 +461,7 @@ export default function MutagenLeaderboard({
                 <span className="text-xl font-semibold text-mutagen sm:flex hidden flex-shrink-0">
                   {formatNumber(userRow.totalPoints, 2, 0)}
                 </span>
-                <span className="text-xl font-boldy text-mutagen sm:hidden flex items-center flex-shrink-0">
+                <span className="text-xl font-semibold text-mutagen sm:hidden flex items-center flex-shrink-0">
                   <Image
                     src={needle}
                     alt="Mutagen"

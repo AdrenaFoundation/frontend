@@ -5,7 +5,7 @@ import JupiterWidget from '@/components/JupiterWidget/JupiterWidget';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { WalletAdapterExtended } from '@/types';
 
-function ADXSwap({
+export default function ADXSwap({
   className,
   connected,
   adapters,
@@ -44,5 +44,3 @@ function ADXSwap({
     </div>
   );
 }
-
-export default ADXSwap;

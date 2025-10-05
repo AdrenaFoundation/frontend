@@ -1,4 +1,4 @@
-import { TokenBalance } from '@/hooks/useTokenBalances';
+import { TokenBalance } from '@/hooks/useGetBalancesAndJupiterPrices';
 
 interface TokenListItemProps {
     token: TokenBalance & { priceUsd?: number; valueUsd?: number };
@@ -25,13 +25,11 @@ export function TokenListItem({ token, onClick, isSelected = false }: TokenListI
                         height={40}
                         className="w-10 h-10 rounded-full object-cover"
                         onError={(e) => {
-                            // Fallback to gradient placeholder if image fails to load
                             e.currentTarget.style.display = 'none';
                             e.currentTarget.nextElementSibling?.classList.remove('hidden');
                         }}
                     />
                 ) : null}
-                {/* Fallback gradient placeholder - shown when no icon or when image fails */}
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${token.icon ? 'hidden' : ''}`}>
                     <span className="text-white text-sm font-bold">
                         -

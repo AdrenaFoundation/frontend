@@ -69,7 +69,6 @@ export default function WalletAdapter({
     return adapters.some((adapter) => adapter.connected);
   }, [adapters]);
 
-  // We use a ref in order to avoid getting item from local storage unnecessarily on every render.
   const autoConnectAuthorizedRef = useRef<null | boolean>(null);
   const lastConnectedWalletRef = useRef<null | WalletAdapterName>(null);
 
@@ -132,7 +131,6 @@ export default function WalletAdapter({
       const currentWalletAddress = wallet?.walletAddress;
       const newWalletAddress = walletPubkey.toBase58();
 
-      // Only dispatch if the wallet address actually changed (account switch)
       if (currentWalletAddress && currentWalletAddress !== newWalletAddress) {
         console.log('🔄 Account changed from', currentWalletAddress.slice(0, 8), 'to', newWalletAddress.slice(0, 8));
         dispatch({

@@ -28,7 +28,6 @@ import {
   uiToNative,
   validateTPSLInputs,
 } from '@/utils';
-import { getWalletAddress } from '@/utils/walletUtils';
 
 import { ExecutionModeSelector } from './LongShortTradingInputs/ExecutionModeSelector';
 import { FeesSection } from './LongShortTradingInputs/FeesSection';
@@ -72,16 +71,13 @@ export default function LongShortTradingInputs({
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const walletState = useSelector((s) => s.walletState.wallet);
 
-  // Get wallet address safely, prioritizing Redux state over adapter
   const walletAddress = useMemo(() => {
-    // First try to get from Redux state (works with external wallets selected in Privy)
     if (walletState?.walletAddress) {
       return walletState.walletAddress;
     }
 
-    // Fallback to adapter publicKey (traditional wallet connection)
-    return getWalletAddress(wallet);
-  }, [walletState?.walletAddress, wallet]);
+    return null
+  }, [walletState?.walletAddress]);
 
   const [takeProfitInput, setTakeProfitInput] = useState<number | null>(null);
   const [stopLossInput, setStopLossInput] = useState<number | null>(null);

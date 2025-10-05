@@ -5,7 +5,6 @@ import React from 'react';
 import { PROFILE_PICTURES } from '@/constant';
 import { WALLET_ICONS, WalletAdapterName } from '@/hooks/useWalletAdapters';
 
-// Enhanced wallet interface with isEmbedded property
 export interface EnhancedWallet {
     address: string;
     standardWallet: {
@@ -15,7 +14,6 @@ export interface EnhancedWallet {
     isEmbedded: boolean;
 }
 
-// Wallet display data interface
 export interface WalletDisplayData {
     address: string;
     displayName: string;
@@ -25,16 +23,13 @@ export interface WalletDisplayData {
     isEmbedded: boolean;
 }
 
-// Enhanced wallet utilities
 export function enhanceWallets(
     connectedStandardWallets: Array<{ address: string; standardWallet: { name: string; icon: string } }>,
 ): EnhancedWallet[] {
     const privyEmbeddedWallets = connectedStandardWallets.filter((w: { address: string; standardWallet: { name: string; icon: string } }) => {
-        // Check if it's a Privy embedded wallet by checking the standardWallet name
         return w.standardWallet.name.toLowerCase().includes('privy');
     });
     const privyExternalWallets = connectedStandardWallets.filter((w: { address: string; standardWallet: { name: string; icon: string } }) => {
-        // External wallets are those that are not Privy embedded wallets
         return !w.standardWallet.name.toLowerCase().includes('privy');
     });
 
@@ -95,7 +90,6 @@ export function getWalletDisplayDataForNativeWallet(
     };
 }
 
-// Wallet icon component props
 interface WalletIconProps {
     walletData: WalletDisplayData;
     size?: 'sm' | 'md' | 'lg';
@@ -103,7 +97,6 @@ interface WalletIconProps {
     className?: string;
 }
 
-// Reusable wallet icon component
 export function WalletIcon({
     walletData,
     size = 'md',
@@ -174,7 +167,6 @@ export function WalletIcon({
     );
 }
 
-// Wallet type icon component (for displaying wallet brand)
 interface WalletTypeIconProps {
     walletData: WalletDisplayData;
     size?: 'sm' | 'md';
@@ -223,25 +215,14 @@ export function WalletTypeIcon({
     return null;
 }
 
-// Safely get wallet address, handling Privy loading delays
 export function getWalletAddress(wallet: Wallet | null | undefined): string | null {
     if (!wallet) return null;
 
     try {
-        // Check if wallet has publicKey property
         if (!wallet.publicKey) return null;
 
-        // Safely call toBase58() with error handling
-        const address = wallet.publicKey.toBase58();
-
-        // Validate that we got a valid Solana address (should be 32-44 characters)
-        if (typeof address === 'string' && address.length >= 32 && address.length <= 44) {
-            return address;
-        }
-
-        return null;
+        return wallet.publicKey.toBase58();
     } catch (error) {
-        // Log error in development but don't crash
         if (process.env.NODE_ENV === 'development') {
             console.warn('Error getting wallet address:', error);
         }
@@ -249,7 +230,6 @@ export function getWalletAddress(wallet: Wallet | null | undefined): string | nu
     }
 }
 
-// Hook for getting a memoized wallet address that updates safely
 export function useWalletAddress(wallet: Wallet | null | undefined): string | null {
     return React.useMemo(() => getWalletAddress(wallet), [wallet]);
 }

@@ -87,11 +87,6 @@ export default function App(props: AppProps) {
     setFavoriteRpc,
   } = useRpc(CONFIG);
 
-  // Memoize RPC functions to prevent AppComponent re-renders
-  const memoizedSetAutoRpcMode = useCallback(setAutoRpcMode, [setAutoRpcMode]);
-  const memoizedSetCustomRpcUrl = useCallback(setCustomRpcUrl, [setCustomRpcUrl]);
-  const memoizedSetFavoriteRpc = useCallback(setFavoriteRpc, [setFavoriteRpc]);
-
   // Initialize the app as soon as possible:
   // - when the client-side app boots..
   //   - and the RPC has been picked by usePRC hook.
@@ -103,12 +98,11 @@ export default function App(props: AppProps) {
     });
   }
 
-  // Create dynamic Privy configuration that updates when RPC changes (needed for custom RPCs)
+  // Create dynamic Privy configuration that updates when RPC changes
   const privyConfigDynamic = useMemo(() => ({
     appId: privyAppId,
     supportedChains: ['solana'],
     config: {
-      // Use new Solana RPC configuration format for Privy 3.0
       solana: {
         rpcs: {
           'solana:mainnet': {
@@ -129,10 +123,10 @@ export default function App(props: AppProps) {
         accentColor: '#ab9ff2' as const,
         logo: '/images/logo.svg',
         showWalletLoginFirst: false,
-        walletList: ['detected_wallets'],
+        walletList: ['detected_wallets' as const],
         walletChainType: 'solana-only' as const,
       },
-      loginMethods: ['email', 'google', 'twitter', 'discord', 'wallet', 'github',], // apple, line, tiktok, linkedin have to be configured first
+      loginMethods: ['email' as const, 'google' as const, 'twitter' as const, 'discord' as const, 'wallet' as const, 'github' as const], // apple, line, tiktok, linkedin have to be configured first
       embeddedWallets: {
         solana: {
           createOnLogin: 'all-users' as const,
@@ -174,7 +168,6 @@ export default function App(props: AppProps) {
   return (
     <PrivyProvider
       appId={privyConfigDynamic.appId as string}
-      // @ts-expect-error Privy types are not updated yet
       config={privyConfigDynamic.config}
     >
       <Provider store={store}>
@@ -187,9 +180,9 @@ export default function App(props: AppProps) {
               customRpcUrl={customRpcUrl}
               customRpcLatency={customRpcLatency}
               favoriteRpc={favoriteRpc}
-              setAutoRpcMode={memoizedSetAutoRpcMode}
-              setCustomRpcUrl={memoizedSetCustomRpcUrl}
-              setFavoriteRpc={memoizedSetFavoriteRpc}
+              setAutoRpcMode={setAutoRpcMode}
+              setCustomRpcUrl={setCustomRpcUrl}
+              setFavoriteRpc={setFavoriteRpc}
               {...props}
             />
             <Analytics />
@@ -239,7 +232,7 @@ function AppComponent({
   const dispatch = useDispatch();
   const router = useRouter();
   const mainPool = useMainPool();
-  usePrivy(); // Initialize Privy as the provider is used in the app
+  usePrivy();
 
   const custodies = useCustodies(mainPool);
   const adapters = useWalletAdapters();
@@ -289,7 +282,6 @@ function AppComponent({
     useState<boolean>(false);
   const [connected, setConnected] = useState<boolean>(false);
 
-
   useEffect(() => {
     getUserVesting();
   }, [getUserVesting]);
@@ -304,7 +296,6 @@ function AppComponent({
   }, [cookies]);
 
   useEffect(() => {
-    // Use wallet address from Redux state for more reliable connection detection
     const isWalletConnected = !!(wallet && walletAddress);
     if (!isWalletConnected) {
       if (connected) {
@@ -316,7 +307,6 @@ function AppComponent({
 
     dispatch(setVerifiedWalletAddresses());
 
-    // Only set connected if it's not already true
     if (!connected) {
       setConnected(true);
     }
@@ -345,11 +335,9 @@ function AppComponent({
       createReadOnlyAdrenaProgram(activeRpc.connection),
     );
 
-    // Only create program if wallet exists and is different from current
     if (wallet) {
       const newWalletAddress = wallet.publicKey?.toBase58();
 
-      // Only recreate program if wallet address changed or no program exists
       if (walletAddress !== newWalletAddress) {
         window.adrena.client.setAdrenaProgram(
           new Program(

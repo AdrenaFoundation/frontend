@@ -24,7 +24,6 @@ export function PrivyWalletDropdown({
     const { getProfilePicture, getDisplayName, isLoadingProfiles } = useAllUserProfilesMetadata();
     const { connectWallet } = usePrivy();
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -50,7 +49,6 @@ export function PrivyWalletDropdown({
         return 'Wallet';
     };
 
-    // Wallet management handlers
     const handleLinkWallet = async () => {
         try {
             await connectWallet();
@@ -67,7 +65,6 @@ export function PrivyWalletDropdown({
                 className="flex items-start gap-3 hover:text-white transition-colors w-full"
                 disabled={enhancedWallets.length === 0 && !enchancedWalletData?.address}
             >
-                {/* Profile Picture - Takes 2 lines height */}
                 <div className="flex-shrink-0 w-10 h-10">
                     {enchancedWalletData ? (
                         <WalletIcon
@@ -76,7 +73,6 @@ export function PrivyWalletDropdown({
                             isLoadingProfiles={isLoadingProfiles}
                         />
                     ) : (
-                        // No wallet selected
                         <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
                             <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -85,14 +81,11 @@ export function PrivyWalletDropdown({
                     )}
                 </div>
 
-                {/* Content - Profile Name + Wallet Info */}
                 <div className="flex-1 min-w-0 w-full">
-                    {/* Profile Name - 1 line */}
                     <div className="flex font-medium text-white">
                         {getDisplayText()}
                     </div>
 
-                    {/* Wallet Icon + Name - Under profile name */}
                     <div className="flex text-xs text-gray-400 items-center mt-1 w-full">
                         {enchancedWalletData && (
                             <WalletTypeIcon walletData={enchancedWalletData} size="sm" />
@@ -103,7 +96,6 @@ export function PrivyWalletDropdown({
                     </div>
                 </div>
 
-                {/* Dropdown Arrow */}
                 <svg className="w-4 h-4 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
@@ -111,7 +103,6 @@ export function PrivyWalletDropdown({
 
             {showDropdown && (enhancedWallets.length > 0 || enchancedWalletData?.address) ? (
                 <div className="absolute top-full right-0 mt-2 w-64 bg-gray-800 border border-gray-600 rounded-lg shadow-lg z-10">
-                    {/* Privy Embedded Wallets - Selectable */}
                     {enhancedWallets.filter(wallet => wallet.isEmbedded).length > 0 && (
                         <>
                             <div className="px-4 py-2 text-xs text-gray-500 border-b border-gray-700">
@@ -136,7 +127,6 @@ export function PrivyWalletDropdown({
                                             className="flex-1 text-left text-sm text-gray-300 hover:text-white"
                                         >
                                             <div className="flex items-start gap-3">
-                                                {/* Profile Picture - Takes 2 lines height */}
                                                 <div className="flex-shrink-0">
                                                     <WalletIcon
                                                         walletData={walletData}
@@ -145,16 +135,13 @@ export function PrivyWalletDropdown({
                                                     />
                                                 </div>
 
-                                                {/* Content - Address + Name */}
                                                 <div className="flex-1 min-w-0">
-                                                    {/* Wallet Address - 1 line */}
                                                     <div className="flex items-center gap-2">
                                                         <div className="font-medium">
                                                             {walletData.displayName}
                                                         </div>
                                                     </div>
 
-                                                    {/* Wallet Icon + Name - Under address */}
                                                     <div className="text-xs text-gray-500 flex items-center gap-2 mt-1">
                                                         <WalletTypeIcon walletData={walletData} size="sm" />
                                                         <span className="text-xs">
@@ -174,7 +161,6 @@ export function PrivyWalletDropdown({
                         </>
                     )}
 
-                    {/* External Wallets - Selectable */}
                     {(enhancedWallets.filter(wallet => !wallet.isEmbedded).length > 0 || enchancedWalletData?.address) ? (
                         <>
                             {(enhancedWallets.filter(wallet => !wallet.isEmbedded).length > 1 || enhancedWallets.filter(wallet => !wallet.isEmbedded).length === 1) && <div className="border-t border-gray-700"></div>}
@@ -182,7 +168,6 @@ export function PrivyWalletDropdown({
                                 External Wallets
                             </div>
 
-                            {/* Privy External Wallets - Now Selectable */}
                             {enhancedWallets.filter(wallet => !wallet.isEmbedded).map((enhancedWallet) => {
                                 const walletData = getWalletDisplayDataForEnhancedWallet(
                                     enhancedWallet,
@@ -202,7 +187,6 @@ export function PrivyWalletDropdown({
                                             className="flex-1 text-left text-sm text-gray-300 hover:text-white"
                                         >
                                             <div className="flex items-start gap-3">
-                                                {/* Profile Picture - Takes 2 lines height */}
                                                 <div className="flex-shrink-0">
                                                     <WalletIcon
                                                         walletData={walletData}
@@ -211,9 +195,7 @@ export function PrivyWalletDropdown({
                                                     />
                                                 </div>
 
-                                                {/* Content - Address + Name */}
                                                 <div className="flex-1 min-w-0">
-                                                    {/* Wallet Address - 1 line */}
                                                     <div className="flex items-center gap-2">
                                                         <div className="font-medium">
                                                             {walletData.displayName}
@@ -225,7 +207,6 @@ export function PrivyWalletDropdown({
                                                         )}
                                                     </div>
 
-                                                    {/* Wallet Icon + Name - Under address */}
                                                     <div className="text-xs text-gray-500 flex items-center gap-2 mt-1">
                                                         <WalletTypeIcon walletData={walletData} size="sm" />
                                                         <span className="text-xs">

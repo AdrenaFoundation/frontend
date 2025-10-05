@@ -5,32 +5,15 @@ import { useSelector } from '@/store/store';
 import { WalletAdapterExtended } from '@/types';
 import { addFailedTxNotification, addSuccessTxNotification } from '@/utils';
 
-/**
- * Props for the Jupiter swap widget component
- */
+
 interface JupiterWidgetProps {
-    /** Array of available wallet adapters */
     adapters: WalletAdapterExtended[];
-    /** Active RPC connection configuration */
     activeRpc: { name: string; connection: Connection };
-    /** Unique identifier for the widget DOM element */
-    id: string;
-    /** Optional CSS class name */
+    id: string; // Unique identifier for the widget DOM element
     className?: string;
-    /** Default output token mint address */
     defaultOutputMint?: string;
 }
 
-/**
- * Jupiter swap widget component that integrates with Privy wallet system
- *
- * This component provides a seamless integration between Jupiter's swap widget
- * and the app's Privy-based wallet management system. It handles both embedded
- * and external wallets through a unified interface.
- *
- * @param props - Component props
- * @returns JSX element containing the Jupiter widget
- */
 export default function JupiterWidget({
     adapters,
     activeRpc,
@@ -56,11 +39,10 @@ export default function JupiterWidget({
     // Set Jupiter CSS custom properties for theming
     useEffect(() => {
         if (id.includes('integrated-terminal')) {
-            // Set integrated terminal specific styling
             document.documentElement.style.setProperty(
                 '--jupiter-plugin-background',
                 '6, 13, 22',
-            ); // bg-main with opacity support
+            );
             document.documentElement.style.setProperty(
                 '--jupiter-plugin-module',
                 '16, 23, 31',
@@ -88,7 +70,7 @@ export default function JupiterWidget({
             document.documentElement.style.setProperty(
                 '--jupiter-plugin-background',
                 '6, 16, 24',
-            ); // bg-secondary
+            );
             document.documentElement.style.setProperty(
                 '--jupiter-plugin-module',
                 '16, 23, 31',
@@ -113,7 +95,6 @@ export default function JupiterWidget({
         }
     }, [id]);
 
-    // Stabilize wallet context methods to prevent unnecessary re-renders
     const stableConnect = useCallback(async () => {
         if (connectedAdapter) {
             try {
@@ -134,14 +115,11 @@ export default function JupiterWidget({
         }
     }, [connectedAdapter]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const stableSignTransaction = useCallback(async (transaction: any) => {
+    const stableSignTransaction = useCallback(async (transaction: Transaction) => {
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const signedTx = await (connectedAdapter as any)?.signTransaction?.(transaction);
+            const signedTx = await (connectedAdapter as unknown as { signTransaction: (tx: Transaction) => Promise<Transaction> })?.signTransaction?.(transaction);
 
-            // Transaction signed successfully - Jupiter will handle sending
-
+            // Transaction signed successfully - Jupiter handles sending
             return signedTx;
         } catch (error) {
             console.error('❌ JUPITER: Transaction signing failed:', error);
@@ -149,40 +127,32 @@ export default function JupiterWidget({
         }
     }, [connectedAdapter]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const stableSignAllTransactions = useCallback((transactions: any[]) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return (connectedAdapter as any)?.signAllTransactions?.(transactions);
+    const stableSignAllTransactions = useCallback((transactions: Transaction[]) => {
+        return (connectedAdapter as unknown as { signAllTransactions: (txs: Transaction[]) => Promise<Transaction[]> })?.signAllTransactions?.(transactions);
     }, [connectedAdapter]);
 
     const stableSignMessage = useCallback((message: Uint8Array) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return (connectedAdapter as any)?.signMessage?.(message);
+        return (connectedAdapter as unknown as { signMessage: (msg: Uint8Array) => Promise<Uint8Array> })?.signMessage?.(message);
     }, [connectedAdapter]);
 
     // Create wallet context object that matches Jupiter's expected format
-    // Based on @solana/wallet-adapter-react useWallet() return type
     const walletContext = useMemo(() => {
         if (connectedAdapter && appWalletState) {
-            // Create a proxy adapter with the correct public key for Jupiter
-            const proxyAdapter = {
-                ...connectedAdapter,
-                publicKey: new PublicKey(appWalletState.walletAddress), // Override with the correct public key
-                connected: connectedAdapter.connected
-            };
-
-            const walletContext = {
+            return {
                 connected: connectedAdapter.connected,
                 connecting: false,
                 disconnecting: false,
                 // Jupiter expects wallet.adapter, not just wallet
                 wallet: {
-                    adapter: proxyAdapter,
+                    adapter: {
+                        ...connectedAdapter,
+                        publicKey: new PublicKey(appWalletState.walletAddress),
+                        connected: connectedAdapter.connected
+                    },
                     readyState: connectedAdapter.readyState
                 },
                 publicKey: new PublicKey(appWalletState.walletAddress),
                 autoConnect: false,
-                // Standard wallet adapter methods - using stable callbacks
                 connect: stableConnect,
                 disconnect: stableDisconnect,
                 sendTransaction: async (transaction: Transaction | VersionedTransaction, connection: Connection) => {
@@ -193,21 +163,13 @@ export default function JupiterWidget({
                         console.error('❌ JUPITER: sendTransaction wrapper failed:', error);
                         throw error;
                     }
-                }, // Jupiter should use this for sending
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                signTransaction: stableSignTransaction, // this is the correct one used by widget
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                signAllTransactions: stableSignAllTransactions, // not used by widget, keeping it in case
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                signMessage: stableSignMessage, // not used by widget, keeping it in case
+                },
+                signTransaction: stableSignTransaction,
+                signAllTransactions: stableSignAllTransactions,
+                signMessage: stableSignMessage,
                 wallets: [connectedAdapter],
                 select: async () => connectedAdapter
             };
-
-            return walletContext;
         }
 
         return {
@@ -225,7 +187,6 @@ export default function JupiterWidget({
         };
     }, [connectedAdapter, appWalletState, stableConnect, stableDisconnect, stableSignTransaction, stableSignAllTransactions, stableSignMessage]);
 
-    // Official Jupiter example - init once, sync on wallet changes
     useEffect(() => {
         if (!window.Jupiter) {
             console.error('❌ Jupiter script not loaded');
@@ -246,15 +207,11 @@ export default function JupiterWidget({
                 name: 'Adrena',
                 logoUri: 'https://app.adrena.xyz/_next/static/media/adx.ed486967.svg',
             },
-            // Official Jupiter example callbacks
             onRequestConnectWallet: walletContext.connect,
             onRequestDisconnectWallet: walletContext.disconnect,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onRequestSignTransaction: (walletContext as any).signTransaction || (async () => { throw new Error('Wallet not connected'); }),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onRequestSignAllTransactions: (walletContext as any).signAllTransactions || (async () => { throw new Error('Wallet not connected'); }),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onRequestSignMessage: (walletContext as any).signMessage || (async () => { throw new Error('Wallet not connected'); }),
+            onRequestSignTransaction: (walletContext as unknown as { signTransaction: (tx: Transaction) => Promise<Transaction> }).signTransaction || (async () => { throw new Error('Wallet not connected'); }),
+            onRequestSignAllTransactions: (walletContext as unknown as { signAllTransactions: (txs: Transaction[]) => Promise<Transaction[]> }).signAllTransactions || (async () => { throw new Error('Wallet not connected'); }),
+            onRequestSignMessage: (walletContext as unknown as { signMessage: (msg: Uint8Array) => Promise<Uint8Array> }).signMessage || (async () => { throw new Error('Wallet not connected'); }),
             onSuccess: ({ txid }: { txid: string }) => {
                 return addSuccessTxNotification({
                     title: 'Successful Transaction',
@@ -282,7 +239,6 @@ export default function JupiterWidget({
         walletContext // Use entire walletContext object instead of individual properties
     ]);
 
-    // Optimized Jupiter sync - reduced overhead and smarter updates
     const lastSyncRef = useRef<string>('');
 
     useEffect(() => {
@@ -290,10 +246,8 @@ export default function JupiterWidget({
             return;
         }
 
-        // Create a sync key to prevent unnecessary syncs
         const syncKey = `${walletContext.connected}-${walletContext.publicKey?.toBase58()}-${appWalletState?.adapterName}`;
 
-        // Skip if nothing meaningful changed
         if (lastSyncRef.current === syncKey) {
             return;
         }
@@ -301,7 +255,6 @@ export default function JupiterWidget({
         lastSyncRef.current = syncKey;
 
         try {
-            // Single sync with minimal delay - avoid double syncs that cause extra re-renders
             setTimeout(() => {
                 try {
                     console.log('🔍 JUPITER: Syncing props');
@@ -311,7 +264,7 @@ export default function JupiterWidget({
                 } catch (syncError) {
                     console.error('❌ STANDARD: Jupiter sync failed:', syncError);
                 }
-            }, 500); // Slightly longer delay but only one sync
+            }, 500);
 
         } catch (error) {
             console.error('❌ STANDARD: Failed to setup Jupiter sync:', error);

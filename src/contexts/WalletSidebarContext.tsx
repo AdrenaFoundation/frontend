@@ -1,7 +1,3 @@
-/**
- * Context for managing global Privy sidebar state
- */
-
 import { createContext, ReactNode, useContext, useState } from 'react';
 
 interface WalletSidebarContextType {

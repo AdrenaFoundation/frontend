@@ -45,7 +45,6 @@ export default function usePositions(walletAddress: string | null) {
   const positionsTokenPrices = useSelector(positionsTokenPricesSelector);
 
   useEffect(() => {
-    // Clear positions immediately when wallet disconnects
     if (!walletAddress) {
       console.log('🔌 Clearing positions due to wallet disconnect');
       setPositions(null);

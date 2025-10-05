@@ -11,12 +11,12 @@ import refreshIcon from '@/../public/images/refresh.png';
 import Button from '@/components/common/Button/Button';
 import { useWalletSidebar } from '@/contexts/WalletSidebarContext';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
-import { useTokenBalances } from '@/hooks/useTokenBalances';
+import { useGetBalancesAndJupiterPrices } from '@/hooks/useGetBalancesAndJupiterPrices';
 import { selectWallet } from '@/selectors/walletSelectors';
 import { useDispatch, useSelector } from '@/store/store';
 import { enhanceWallets, getWalletDisplayDataForEnhancedWallet, getWalletDisplayDataForNativeWallet, WalletIcon, WalletTypeIcon } from '@/utils/walletUtils';
 
-import { PrivyWalletDropdown } from '../Privy/PrivyWalletDropdown';
+import { PrivyWalletDropdown } from './PrivyWalletDropdown';
 import { SendToken } from './SendToken';
 import { TokenListItem } from './TokenListItem';
 
@@ -39,7 +39,7 @@ export default function WalletSidebar() {
         isLoadingBalances,
         error: balancesError,
         refreshBalances,
-    } = useTokenBalances(currentWalletAddress);
+    } = useGetBalancesAndJupiterPrices(currentWalletAddress);
 
     const totalValueUsd = useMemo(() => {
         return tokenBalancesWithPrices.reduce((total: number, token: typeof tokenBalancesWithPrices[0]) => total + (token.valueUsd || 0), 0);

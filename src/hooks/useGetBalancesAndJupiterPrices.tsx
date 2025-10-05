@@ -104,7 +104,7 @@ export interface TokenBalance {
     priceChange24h?: number;
 }
 
-export function useTokenBalances(walletAddress?: string) {
+export function useGetBalancesAndJupiterPrices(walletAddress?: string) {
     const [tokenBalances, setTokenBalances] = useState<TokenBalance[]>([]);
     const [isLoadingBalances, setIsLoadingBalances] = useState(false);
     const [selectedToken, setSelectedToken] = useState<TokenBalance | null>(null);

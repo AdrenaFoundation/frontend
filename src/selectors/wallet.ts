@@ -2,6 +2,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import { PublicKey } from '@solana/web3.js';
 
 import type { RootState } from '@/store/store';
+import { isValidPublicKey } from '@/utils';
 
 export const selectWalletAddress = (state: RootState) =>
   state.walletState.wallet?.walletAddress ?? null;
@@ -13,28 +14,8 @@ export const selectWalletAddress = (state: RootState) =>
  */
 export const selectWalletPublicKey = createSelector(
   [selectWalletAddress],
-  (walletAddress) => {
-    // Ensure walletAddress is a valid string
-    if (
-      !walletAddress ||
-      typeof walletAddress !== 'string' ||
-      walletAddress.length === 0
-    ) {
-      return null;
-    }
-
-    try {
-      return new PublicKey(walletAddress);
-    } catch (error) {
-      console.error(
-        'Failed to create PublicKey from address:',
-        walletAddress,
-        'Type:',
-        typeof walletAddress,
-        'Error:',
-        error,
-      );
-      return null;
-    }
-  },
+  (walletAddress) =>
+    walletAddress && isValidPublicKey(walletAddress)
+      ? new PublicKey(walletAddress)
+      : null,
 );

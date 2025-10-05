@@ -18,7 +18,7 @@ import {
 import { BigNumber } from 'bignumber.js';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
 
@@ -1809,7 +1809,6 @@ export function isPartialClose(activePercent: number | null) {
     typeof activePercent === 'number' && activePercent > 0 && activePercent < 1
   );
 }
-
 
 export function periodModeToSeconds(periodMode: '1d' | '7d' | '1D' | '7D' | '1M' | '3M' | '6M' | '1Y' | 'All Time') {
   switch (periodMode) {

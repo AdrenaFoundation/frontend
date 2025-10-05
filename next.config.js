@@ -28,11 +28,6 @@ module.exports = (phase, { defaultConfig }) => {
         },
         {
           protocol: 'https',
-          hostname: 'raw.githubusercontent.com',
-          pathname: '/wormhole-foundation/wormhole-token-list/main/assets/**',
-        },
-        {
-          protocol: 'https',
           hostname: 'metadata.jito.network',
           pathname: '/token/**',
         },
@@ -45,11 +40,6 @@ module.exports = (phase, { defaultConfig }) => {
           protocol: 'https',
           hostname: 'static.jup.ag',
           pathname: '/jlp/**',
-        },
-        {
-          protocol: 'https',
-          hostname: 'static.jup.ag',
-          pathname: '/**',
         },
         {
           protocol: 'https',
@@ -80,36 +70,6 @@ module.exports = (phase, { defaultConfig }) => {
           protocol: 'https',
           hostname: 'shdw-drive.genesysgo.net',
           pathname: '/7G7ayDnjFoLcEUVkxQ2Jd4qquAHp5LiSBii7t81Y2E23/**',
-        },
-        {
-          protocol: 'https',
-          hostname: 'statics.solscan.io',
-          pathname: '/**',
-        },
-        {
-          protocol: 'https',
-          hostname: 'cdn.jsdelivr.net',
-          pathname: '/gh/**',
-        },
-        {
-          protocol: 'https',
-          hostname: 'assets.coingecko.com',
-          pathname: '/coins/images/**',
-        },
-        {
-          protocol: 'https',
-          hostname: 'storage.googleapis.com',
-          pathname: '/**',
-        },
-        {
-          protocol: 'https',
-          hostname: 'cloudflare-ipfs.com',
-          pathname: '/ipfs/**',
-        },
-        {
-          protocol: 'https',
-          hostname: 'cf-ipfs.com',
-          pathname: '/ipfs/**',
         },
       ],
     },

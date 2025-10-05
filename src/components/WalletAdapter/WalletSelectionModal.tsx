@@ -49,14 +49,10 @@ export default function WalletSelectionModal({
                   'Privy': 'w-[8em] left-10 top-4',
                 } as Record<WalletAdapterName, Partial<string>>)[adapter.name as WalletAdapterName] ?? ''}
                 onClick={() => {
-                  // Special handling for Privy - just open the login modal
                   if (adapter.name === 'Privy') {
-                    // Close the wallet selection modal
                     dispatch(openCloseConnectionModalAction(false));
-                    // The Privy adapter will handle opening the login modal
                     dispatch(connectWalletAction(adapter));
                   } else {
-                    // Normal wallet connection
                     dispatch(connectWalletAction(adapter));
                     dispatch(openCloseConnectionModalAction(false));
                   }

@@ -4,10 +4,10 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
-import { TokenBalance } from '@/hooks/useTokenBalances';
+import { TokenBalance } from '@/hooks/useGetBalancesAndJupiterPrices';
 import { selectWalletAddress } from '@/selectors/walletSelectors';
 import { useSelector } from '@/store/store';
-import { isValidPublicKey } from '@/utils';
+import { isValidPublicKey, uiToNative } from '@/utils';
 
 import refreshIcon from '../../../public/images/refresh.png';
 import MultiStepNotification from '../common/MultiStepNotification/MultiStepNotification';
@@ -35,7 +35,6 @@ export function SendToken({ onClose, tokenBalancesWithPrices, onRefreshBalances,
     const handleRecipientAddressChange = (value: string) => {
         setRecipientAddress(value);
 
-        // Only validate if user has entered something
         if (value.trim()) {
             if (!isValidPublicKey(value)) {
                 setRecipientAddressError('Invalid Solana address format');
@@ -58,7 +57,6 @@ export function SendToken({ onClose, tokenBalancesWithPrices, onRefreshBalances,
             return;
         }
 
-        // Check for recipient address validation error
         if (recipientAddressError) {
             setError('Please enter a valid Solana address');
             return;
@@ -85,24 +83,17 @@ export function SendToken({ onClose, tokenBalancesWithPrices, onRefreshBalances,
             let transaction: Transaction;
 
             if (selectedToken.symbol === 'SOL') {
-                // SOL transfer using AdrenaClient
-                const amountToSend = Math.floor(amountNumber * Math.pow(10, selectedToken.decimals));
-
                 transaction = await window.adrena.client.buildTransferSolTx({
                     owner: senderPubkey,
                     recipient: recipientPubkey,
-                    amount: new BN(amountToSend),
+                    amountLamports: uiToNative(amountNumber, selectedToken.decimals),
                 });
             } else {
-                // SPL Token transfer using AdrenaClient
-                const amountToSend = Math.floor(amountNumber * Math.pow(10, selectedToken.decimals));
-                const mintPubkey = new PublicKey(selectedToken.mint);
-
                 transaction = await window.adrena.client.buildTransferTokenTx({
                     owner: senderPubkey,
                     recipient: recipientPubkey,
-                    mint: mintPubkey,
-                    amount: new BN(amountToSend),
+                    mint: new PublicKey(selectedToken.mint),
+                    amount: uiToNative(amountNumber, selectedToken.decimals),
                 });
             }
 
@@ -114,11 +105,9 @@ export function SendToken({ onClose, tokenBalancesWithPrices, onRefreshBalances,
                 notification,
             });
 
-            // Transaction successful - close modal
             onClose?.();
         } catch (err) {
             console.error('Transfer error:', err);
-            // Let the notification system handle the error display
         } finally {
             setIsLoading(false);
         }
@@ -131,7 +120,7 @@ export function SendToken({ onClose, tokenBalancesWithPrices, onRefreshBalances,
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold text-white">Send Tokens</h2>
                 <div className="flex items-center gap-2">
-                    {onRefreshBalances && (
+                    {onRefreshBalances ? (
                         <button
                             onClick={onRefreshBalances}
                             className="text-sm text-gray hover:text-white transition-colors flex items-center justify-center w-6 h-6 p-1 rounded-full hover:bg-gray"
@@ -139,19 +128,18 @@ export function SendToken({ onClose, tokenBalancesWithPrices, onRefreshBalances,
                         >
                             <Image src={refreshIcon} alt="Refresh" className="w-3 opacity-60 hover:opacity-100" />
                         </button>
-                    )}
-                    {onClose && (
+                    ) : null}
+                    {onClose ? (
                         <button
                             onClick={onClose}
                             className="text-gray hover:text-white transition-colors"
                         >
                             ✕
                         </button>
-                    )}
+                    ) : null}
                 </div>
             </div>
 
-            {/* Token Selection */}
             <div className="space-y-2">
                 {isLoadingBalances ? (
                     <div className="py-3 text-sm text-gray-400 text-center">Loading token balances...</div>
@@ -163,7 +151,7 @@ export function SendToken({ onClose, tokenBalancesWithPrices, onRefreshBalances,
                                 token={token}
                                 onClick={() => {
                                     setSelectedToken(token);
-                                    setAmount(''); // Reset amount when selecting a token
+                                    setAmount('');
                                 }}
                                 isSelected={selectedToken?.mint === token.mint}
                             />
@@ -172,7 +160,6 @@ export function SendToken({ onClose, tokenBalancesWithPrices, onRefreshBalances,
                 )}
             </div>
 
-            {/* Recipient Address */}
             <div className="space-y-2">
                 <label className="text-sm font-medium text-white">Recipient Address</label>
                 <input
@@ -185,19 +172,18 @@ export function SendToken({ onClose, tokenBalancesWithPrices, onRefreshBalances,
                         : 'border-gray-600 focus:border-blue-500'
                         }`}
                 />
-                {recipientAddressError && (
+                {recipientAddressError ? (
                     <div className="flex items-center gap-1 text-red-400 text-xs">
                         <span>⚠</span>
                         <span>{recipientAddressError}</span>
                     </div>
-                )}
+                ) : null}
             </div>
 
-            {/* Amount */}
             <div className="space-y-2">
                 <div className="flex justify-between items-center">
                     <label className="text-sm font-medium text-white">Amount</label>
-                    {selectedToken && (
+                    {selectedToken ? (
                         <button
                             type="button"
                             onClick={() => setAmount(selectedToken.uiAmount.toString())}
@@ -205,7 +191,7 @@ export function SendToken({ onClose, tokenBalancesWithPrices, onRefreshBalances,
                         >
                             Max: {selectedToken.uiAmount.toFixed(6)} {selectedToken.symbol}
                         </button>
-                    )}
+                    ) : null}
                 </div>
                 <input
                     type="number"
@@ -218,14 +204,12 @@ export function SendToken({ onClose, tokenBalancesWithPrices, onRefreshBalances,
                 />
             </div>
 
-            {/* Error Messages */}
-            {error && (
+            {error ? (
                 <div className="p-3 bg-red-500/10 border border-red-500 rounded-lg text-red-400 text-sm">
                     {error}
                 </div>
-            )}
+            ) : null}
 
-            {/* Send Button */}
             <Button
                 title={isLoading ? 'Sending...' : 'Send Tokens'}
                 disabled={isButtonDisabled}
