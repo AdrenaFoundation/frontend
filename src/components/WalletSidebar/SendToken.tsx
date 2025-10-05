@@ -1,4 +1,3 @@
-import { BN } from '@coral-xyz/anchor';
 import { PublicKey, Transaction } from '@solana/web3.js';
 import Image from 'next/image';
 import { useState } from 'react';
