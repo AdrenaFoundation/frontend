@@ -22,6 +22,7 @@ module.exports = (phase, { defaultConfig }) => {
         relayWss: 'wss://relay.walletconnect.com',
         relayWssFallback: 'wss://relay.walletconnect.org',
         explorer: 'https://explorer-api.walletconnect.com',
+        registry: 'https://registry.walletconnect.com',
         walletLink: 'https://www.walletlink.org',
       };
 
@@ -69,6 +70,7 @@ module.exports = (phase, { defaultConfig }) => {
         walletConnectDomains.relayWssFallback,
         walletConnectDomains.walletLink,
         walletConnectDomains.explorer,
+        walletConnectDomains.registry,
         serviceDomains.relay,
         rpcEndpoints.tritonHttp,
         rpcEndpoints.tritonWss,
