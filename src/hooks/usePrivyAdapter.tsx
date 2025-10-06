@@ -300,7 +300,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
       return signedTransaction;
     } catch (error) {
-      console.error('❌ SIGN: Failed to sign external wallet transaction:', error);
+      console.error('❌ SIGN: Failed to sign transaction:', error);
       throw error;
     }
   }, [externalWallet, currentWalletAddress, solanaWallets, serializeTransaction, handleVersionedTransaction, handleLegacyTransaction]);

@@ -47,9 +47,9 @@ export default function MoreMenu({
     event.preventDefault();
 
     const menuElement = ref.current;
-    const relatedTarget = event.relatedTarget as Element | null;
+    const relatedTarget = event.relatedTarget as Node | null;
 
-    if (menuElement && relatedTarget) {
+    if (menuElement && relatedTarget && relatedTarget instanceof Node) {
       const isTargetOutsideMenu = !menuElement.contains(relatedTarget);
       if (isTargetOutsideMenu) {
         setIsOpen(false);

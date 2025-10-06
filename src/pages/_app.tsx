@@ -154,12 +154,14 @@ export default function App(props: AppProps) {
         },
       },
       externalWallets: {
+        walletConnect: {
+          enabled: true,
+        },
         solana: {
           connectors: toSolanaWalletConnectors(),
         },
       },
-      // walletConnectCloudProjectId: '549f49d83c4bc0a5c405d8ef6db772a', // TODO: crash in localhost
-
+      walletConnectCloudProjectId: '549f49d83c4bc0a5c405d8ef6db7972a',
     }
   }), [activeRpc?.connection?.rpcEndpoint]);
 
