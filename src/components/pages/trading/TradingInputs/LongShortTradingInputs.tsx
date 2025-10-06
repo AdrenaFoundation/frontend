@@ -16,7 +16,11 @@ import { useDebounce } from '@/hooks/useDebounce';
 import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
 import { useFavorites } from '@/hooks/useFavoriteToken';
 import { useDispatch, useSelector } from '@/store/store';
-import { ChaosLabsPricesExtended, PositionExtended } from '@/types';
+import {
+  ChaosLabsPricesExtended,
+  PositionExtended,
+  UserProfileExtended,
+} from '@/types';
 import {
   addNotification,
   AdrenaTransactionError,
@@ -129,7 +133,7 @@ export default function LongShortTradingInputs({
   const availableLiquidityShort =
     (positionInfo.custody &&
       positionInfo.custody.maxCumulativeShortPositionSizeUsd -
-      (positionInfo.custody.oiShortUsd ?? 0)) ??
+        (positionInfo.custody.oiShortUsd ?? 0)) ??
     0;
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
@@ -143,23 +147,34 @@ export default function LongShortTradingInputs({
 
   const [isTPSL, setIsTPSL] = useState(false);
 
-  const referrer = useMemo(async () => {
-    if (
-      query.referral === null ||
-      typeof query.referral === 'undefined' ||
-      query.referral === '' ||
-      typeof query.referral !== 'string'
-    ) {
-      return null;
-    }
+  const [referrer, setReferrer] = useState<UserProfileExtended | null>(null);
 
-    const referrerNickname = query.referral;
+  useEffect(() => {
+    const loadReferrer = async () => {
+      if (
+        query.referral === null ||
+        typeof query.referral === 'undefined' ||
+        query.referral === '' ||
+        typeof query.referral !== 'string'
+      ) {
+        setReferrer(null);
+        return;
+      }
 
-    // Look for a user profile with that nickname
-    const p =
-      await window.adrena.client.loadUserProfileByNickname(referrerNickname);
+      try {
+        const referrerNickname = query.referral;
+        const p =
+          await window.adrena.client.loadUserProfileByNickname(
+            referrerNickname,
+          );
+        setReferrer(p ? p : null);
+      } catch (error) {
+        console.log('Error loading referrer profile:', error);
+        setReferrer(null);
+      }
+    };
 
-    return p;
+    loadReferrer();
   }, [query.referral]);
 
   const calculateIncreasePositionInfo = useCallback(() => {
@@ -340,11 +355,11 @@ export default function LongShortTradingInputs({
           inputState.limitOrderSlippage === null
             ? null
             : calculateLimitOrderLimitPrice({
-              limitOrderTriggerPrice: inputState.limitOrderTriggerPrice,
-              tokenDecimals: tokenB.displayPriceDecimalsPrecision,
-              percent: inputState.limitOrderSlippage,
-              side,
-            }),
+                limitOrderTriggerPrice: inputState.limitOrderTriggerPrice,
+                tokenDecimals: tokenB.displayPriceDecimalsPrecision,
+                percent: inputState.limitOrderSlippage,
+                side,
+              }),
         side,
         collateralAmount: uiToNative(inputState.inputA, tokenA.decimals),
         leverage: uiLeverageToNative(inputState.leverage),
@@ -430,7 +445,7 @@ export default function LongShortTradingInputs({
     }
 
     try {
-      const r = await referrer;
+      const r = referrer;
 
       // Undefined means user doesn't want to touch it
       let stopLossLimitPrice = undefined;
@@ -461,33 +476,33 @@ export default function LongShortTradingInputs({
 
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
-          owner: new PublicKey(wallet.publicKey),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: entryPrice,
-          collateralAmount,
-          leverage: uiLeverageToNative(inputState.leverage),
-          notification,
-          stopLossLimitPrice,
-          takeProfitLimitPrice,
-          isIncrease: !!openedPosition,
-          referrerProfile: r ? r.pubkey : undefined,
-          swapSlippage,
-        })
+            owner: new PublicKey(wallet.publicKey),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: entryPrice,
+            collateralAmount,
+            leverage: uiLeverageToNative(inputState.leverage),
+            notification,
+            stopLossLimitPrice,
+            takeProfitLimitPrice,
+            isIncrease: !!openedPosition,
+            referrerProfile: r ? r.pubkey : undefined,
+            swapSlippage,
+          })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
-          owner: new PublicKey(wallet.publicKey),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: entryPrice,
-          collateralAmount,
-          leverage: uiLeverageToNative(inputState.leverage),
-          notification,
-          stopLossLimitPrice,
-          takeProfitLimitPrice,
-          isIncrease: !!openedPosition,
-          referrerProfile: r ? r.pubkey : undefined,
-          swapSlippage,
-        }));
+            owner: new PublicKey(wallet.publicKey),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: entryPrice,
+            collateralAmount,
+            leverage: uiLeverageToNative(inputState.leverage),
+            notification,
+            stopLossLimitPrice,
+            takeProfitLimitPrice,
+            isIncrease: !!openedPosition,
+            referrerProfile: r ? r.pubkey : undefined,
+            swapSlippage,
+          }));
 
       dispatch(fetchWalletTokenBalances());
       setInputState((prev) => ({
@@ -1090,9 +1105,7 @@ export default function LongShortTradingInputs({
                 <Image src={infoIcon} alt="Info" width={12} height={12} />
                 <span className="font-xs">{tokenA.symbol}</span>
                 <span className="font-xs">auto-swapped to</span>
-                <span className="font-xs">
-                  {recommendedToken.symbol}
-                </span>
+                <span className="font-xs">{recommendedToken.symbol}</span>
                 <span className="font-xs">via Jupiter</span>
               </div>
             </Tippy>
