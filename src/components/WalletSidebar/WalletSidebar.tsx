@@ -292,7 +292,7 @@ export default function WalletSidebar() {
             </div >
 
             {
-                showSendModal && wallet?.isPrivy ? (
+                showSendModal ? (
                     <>
                         <div
                             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]"
