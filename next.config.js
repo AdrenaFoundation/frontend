@@ -52,11 +52,17 @@ module.exports = (phase, { defaultConfig }) => {
         coingecko: 'https://api.coingecko.com',
         pyth: 'https://hermes.pyth.network',
         defiLlama: 'https://api.llama.fi',
+        moonpay: 'https://api.moonpay.com',
         vercelInsights: 'https://vitals.vercel-insights.com',
         vercelScripts: 'https://va.vercel-scripts.com',
         vercelBlob: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com',
         cloudflare: 'https://challenges.cloudflare.com',
         relay: 'https://api.relay.link',
+        applePay: 'https://apple.com/apple-pay',
+        applePayWww: 'https://www.apple.com/apple-pay',
+        googlePay: 'https://google.com/pay',
+        googlePayWww: 'https://www.google.com/pay',
+        googlePayDirect: 'https://pay.google.com',
       };
 
       const connectSrcParts = [
@@ -92,6 +98,12 @@ module.exports = (phase, { defaultConfig }) => {
         serviceDomains.coingecko,
         serviceDomains.pyth,
         serviceDomains.defiLlama,
+        serviceDomains.moonpay,
+        serviceDomains.applePay,
+        serviceDomains.applePayWww,
+        serviceDomains.googlePay,
+        serviceDomains.googlePayWww,
+        serviceDomains.googlePayDirect,
       ];
 
       const scriptSrcParts = [
