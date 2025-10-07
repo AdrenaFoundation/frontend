@@ -3,7 +3,7 @@
 module.exports = (phase, { defaultConfig }) => {
   const isDev = process.env.NODE_ENV === 'development';
 
-  const cspMode = process.env.CSP_MODE || 'enforce';
+  const cspMode = process.env.CSP_MODE ? process.env.CSP_MODE : 'report-only';
 
   return {
     ...defaultConfig,
