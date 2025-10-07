@@ -13,9 +13,11 @@ interface TokenListItemProps {
 export function TokenListItem({ token, onClick, isSelected = false }: TokenListItemProps) {
     return (
         <div className={twMerge(
+            ' flex items-center justify-between p-2 bg-third rounded-lg',
             onClick
-                ? `flex items-center justify-between p-2 bg-third rounded-lg cursor-pointer transition-colors ${isSelected ? 'ring-2 ring-blue-500' : 'hover:bg-opacity-80'}`
-                : 'flex items-center justify-between p-2 bg-third rounded-lg',
+                ? `hover:bg-gray-800 hover:opacity-100 opacity-80 cursor-pointer transition-colors`
+                : '',
+            isSelected ? 'opacity-100 bg-gray-800' : '',
         )} onClick={onClick}>
             <div className="flex items-center gap-3">
                 {token.icon ? (
