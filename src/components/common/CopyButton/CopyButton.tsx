@@ -22,6 +22,7 @@ const CopyButton = forwardRef<HTMLDivElement, CopyButtonProps>(
 
       try {
         await navigator.clipboard.writeText(textToCopy);
+
         addNotification({
           title: notificationTitle,
           message: '',

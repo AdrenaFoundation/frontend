@@ -1,113 +1,59 @@
 import { usePrivy } from '@privy-io/react-auth';
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 
 import CopyButton from '../common/CopyButton/CopyButton';
 import { EnhancedWallet, getWalletDisplayDataForEnhancedWallet, WalletDisplayData, WalletIcon, WalletTypeIcon } from './walletUtils';
 
-interface PrivyWalletDropdownProps {
+export function PrivyWalletSelection({
+    enhancedWallets,
+    enhancedWalletData,
+    onWalletSelection,
+    closeDropdown,
+    className = ''
+}: {
     enhancedWallets: EnhancedWallet[];
-    enchancedWalletData: WalletDisplayData;
+    enhancedWalletData: WalletDisplayData;
     onWalletSelection: (address: string) => void;
     className?: string;
-}
-
-export function PrivyWalletDropdown({
-    enhancedWallets,
-    enchancedWalletData,
-    onWalletSelection,
-    className = ''
-}: PrivyWalletDropdownProps) {
-    const [showDropdown, setShowDropdown] = useState(false);
+    closeDropdown?: () => void;
+}) {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { getProfilePicture, getDisplayName, isLoadingProfiles } = useAllUserProfilesMetadata();
     const { connectWallet } = usePrivy();
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setShowDropdown(false);
-            }
-        };
+    // useEffect(() => {
+    //     const handleClickOutside = (event: MouseEvent) => {
+    //         if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    //             setShowDropdown(false);
+    //         }
+    //     };
 
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    const getDisplayText = () => {
-        if (enchancedWalletData) {
-            return enchancedWalletData.displayName;
-        }
-        return 'No wallet';
-    };
-
-    const getWalletType = () => {
-        if (enchancedWalletData) {
-            return enchancedWalletData.walletName;
-        }
-        return 'Wallet';
-    };
+    //     document.addEventListener('mousedown', handleClickOutside);
+    //     return () => document.removeEventListener('mousedown', handleClickOutside);
+    // }, []);
 
     const handleLinkWallet = async () => {
         try {
             await connectWallet();
-            setShowDropdown(false);
+            closeDropdown?.();
         } catch (error) {
             console.error('Error linking wallet:', error);
         }
     };
 
     return (
-        <div className={`relative flex w-full ${className}`} ref={dropdownRef}>
-            <button
-                onClick={() => setShowDropdown(!showDropdown)}
-                className="flex items-start gap-3 hover:text-white transition-colors w-full"
-                disabled={enhancedWallets.length === 0 && !enchancedWalletData?.address}
-            >
-                <div className="flex-shrink-0 w-10 h-10">
-                    {enchancedWalletData ? (
-                        <WalletIcon
-                            walletData={enchancedWalletData}
-                            size="lg"
-                            isLoadingProfiles={isLoadingProfiles}
-                        />
-                    ) : (
-                        <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
-                            <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                            </svg>
-                        </div>
-                    )}
-                </div>
-
-                <div className="flex-1 min-w-0 w-full">
-                    <div className="flex font-medium text-white">
-                        {getDisplayText()}
-                    </div>
-
-                    <div className="flex text-xs text-gray-400 items-center mt-1 w-full">
-                        {enchancedWalletData && (
-                            <WalletTypeIcon walletData={enchancedWalletData} size="sm" />
-                        )}
-                        <span className="text-xs ml-1">
-                            {getWalletType()}
-                        </span>
-                    </div>
-                </div>
-
-                <svg className="w-4 h-4 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-            </button>
-
-            {showDropdown && (enhancedWallets.length > 0 || enchancedWalletData?.address) ? (
-                <div className="absolute top-full right-0 mt-2 w-64 bg-gray-800 border border-gray-600 rounded-lg shadow-lg z-10">
+        <div className={twMerge('relative flex w-full', className)} ref={dropdownRef}>
+            {(enhancedWallets.length > 0 || enhancedWalletData?.address) ? (
+                <div className="w-full flex flex-col">
                     {enhancedWallets.filter(wallet => wallet.isEmbedded).length > 0 && (
                         <>
                             <div className="px-4 py-2 text-xs text-gray-500 border-b border-gray-700">
                                 Adrena Accounts
                             </div>
+
                             {enhancedWallets.filter(wallet => wallet.isEmbedded).map((enhancedWallet) => {
                                 const walletData = getWalletDisplayDataForEnhancedWallet(
                                     enhancedWallet,
@@ -115,14 +61,14 @@ export function PrivyWalletDropdown({
                                     getDisplayName
                                 );
                                 return (
-                                    <div key={enhancedWallet.address} className={`flex items-center justify-between px-4 py-3 transition-colors ${enhancedWallet.address === enchancedWalletData?.address
+                                    <div key={enhancedWallet.address} className={`flex items-center justify-between px-4 py-3 transition-colors ${enhancedWallet.address === enhancedWalletData?.address
                                         ? 'bg-gray-700 border-l-2 border-green-400'
                                         : 'hover:bg-gray-700'
                                         }`}>
                                         <button
                                             onClick={() => {
                                                 onWalletSelection(enhancedWallet.address);
-                                                setShowDropdown(false);
+                                                // setShowDropdown(false);
                                             }}
                                             className="flex-1 text-left text-sm text-gray-300 hover:text-white"
                                         >
@@ -161,7 +107,7 @@ export function PrivyWalletDropdown({
                         </>
                     )}
 
-                    {(enhancedWallets.filter(wallet => !wallet.isEmbedded).length > 0 || enchancedWalletData?.address) ? (
+                    {(enhancedWallets.filter(wallet => !wallet.isEmbedded).length > 0 || enhancedWalletData?.address) ? (
                         <>
                             {(enhancedWallets.filter(wallet => !wallet.isEmbedded).length > 1 || enhancedWallets.filter(wallet => !wallet.isEmbedded).length === 1) && <div className="border-t border-gray-700"></div>}
                             <div className="px-4 py-2 text-xs text-gray-500 border-b border-gray-700">
@@ -175,14 +121,17 @@ export function PrivyWalletDropdown({
                                     getDisplayName
                                 );
                                 return (
-                                    <div key={`privy-ext-${enhancedWallet.address}`} className={`flex items-center justify-between px-4 py-3 transition-colors ${enhancedWallet.address === enchancedWalletData?.address
-                                        ? 'bg-gray-700 border-l-2 border-green-400'
-                                        : 'hover:bg-gray-700'
-                                        }`}>
+                                    <div key={`privy-ext-${enhancedWallet.address}`} className={
+                                        twMerge(
+                                            `flex items-center justify-between px-4 py-3 transition-colors`,
+                                            enhancedWallet.address === enhancedWalletData?.address
+                                                ? 'bg-gray-900'
+                                                : 'hover:bg-gray-900'
+                                        )}>
                                         <button
                                             onClick={() => {
                                                 onWalletSelection(enhancedWallet.address);
-                                                setShowDropdown(false);
+                                                closeDropdown?.();
                                             }}
                                             className="flex-1 text-left text-sm text-gray-300 hover:text-white"
                                         >
@@ -200,7 +149,7 @@ export function PrivyWalletDropdown({
                                                         <div className="font-medium">
                                                             {walletData.displayName}
                                                         </div>
-                                                        {enhancedWallet.address === enchancedWalletData?.address && (
+                                                        {enhancedWallet.address === enhancedWalletData?.address && (
                                                             <svg className="w-4 h-4 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                             </svg>
@@ -240,7 +189,6 @@ export function PrivyWalletDropdown({
                             <div className="font-medium">No linked wallets</div>
                         </div>
                     )}
-
                 </div>
             ) : null}
         </div>

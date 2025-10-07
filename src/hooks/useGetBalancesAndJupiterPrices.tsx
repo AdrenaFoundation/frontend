@@ -108,6 +108,7 @@ export function useGetBalancesAndJupiterPrices(walletAddress?: string) {
     const [tokenBalances, setTokenBalances] = useState<TokenBalance[]>([]);
     const [isLoadingBalances, setIsLoadingBalances] = useState(false);
     const [selectedToken, setSelectedToken] = useState<TokenBalance | null>(null);
+    const [solBalance, setSolBalance] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
     const isMountedRef = useRef(true);
     const connection = window.adrena.mainConnection;
@@ -161,10 +162,14 @@ export function useGetBalancesAndJupiterPrices(walletAddress?: string) {
         try {
             const publicKey = new PublicKey(address);
 
-            const solBalance = await connection.getBalance(publicKey);
-            const tokenAccounts = await connection.getParsedTokenAccountsByOwner(publicKey, {
-                programId: TOKEN_PROGRAM_ID,
-            });
+            const [solBalance, tokenAccounts] = await Promise.all([
+                connection.getBalance(publicKey),
+                connection.getParsedTokenAccountsByOwner(publicKey, {
+                    programId: TOKEN_PROGRAM_ID,
+                }),
+            ]);
+
+            setSolBalance(solBalance / 1e9);
 
             const balances: TokenBalance[] = [];
 
@@ -231,6 +236,18 @@ export function useGetBalancesAndJupiterPrices(walletAddress?: string) {
                     );
                 });
 
+            // Sort by valueUsd descending then by token number
+            balancesWithPrices.sort((a, b) => {
+                const aValue = a.valueUsd || 0;
+                const bValue = b.valueUsd || 0;
+
+                if (bValue !== aValue) {
+                    return bValue - aValue;
+                }
+
+                return a.balance - b.balance;
+            });
+
             setTokenBalances(balancesWithPrices);
 
             if (!selectedToken && balances.length > 0) {
@@ -269,6 +286,7 @@ export function useGetBalancesAndJupiterPrices(walletAddress?: string) {
     }, [tokenBalances]);
 
     return {
+        solBalance,
         tokenBalances,
         selectedToken,
         isLoadingBalances,

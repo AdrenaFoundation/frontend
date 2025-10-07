@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import {
@@ -51,7 +51,6 @@ export default function WalletAdapter({
   const dispatch = useDispatch();
   const router = useRouter();
   const { wallet } = useSelector((s) => s.walletState);
-  const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
   const { isSidebarOpen, openSidebar, closeSidebar } = useWalletSidebar();
 
@@ -194,11 +193,6 @@ export default function WalletAdapter({
                 )}
                 variant="lightbg"
                 onClick={() => {
-                  if (isMobile) {
-                    setMenuIsOpen(!menuIsOpen);
-                    return;
-                  }
-
                   if (isConnected) {
                     if (isSidebarOpen) {
                       closeSidebar();
@@ -215,8 +209,6 @@ export default function WalletAdapter({
               <div
                 className="hidden sm:block p-1.5 px-2 hover:bg-third transition-colors cursor-pointer rounded-r-lg"
                 onClick={() => {
-                  setMenuIsOpen(!menuIsOpen);
-
                   if (!connected || !connectedAdapter) return;
 
                   if (wallet?.isPrivy) {

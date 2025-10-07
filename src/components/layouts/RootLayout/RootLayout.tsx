@@ -250,7 +250,7 @@ export default function RootLayout({
 
       <QuestMenu isMobile={!isBigScreen} />
 
-      <WalletSidebar />
+      <WalletSidebar adapters={adapters} />
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>
