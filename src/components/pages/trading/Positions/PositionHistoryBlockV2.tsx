@@ -67,7 +67,6 @@ export default function PositionHistoryBlockV2({
     : positionHistory.pnl + positionHistory.fees;
 
   const totalFees = positionHistory.exitFees + positionHistory.borrowFees;
-
   return (
     <>
       <AnimatePresence>
@@ -137,7 +136,7 @@ export default function PositionHistoryBlockV2({
                   format: 'currency',
                   isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
                   precision:
-                    positionHistory.token.displayAmountDecimalsPrecision,
+                    positionHistory.token.displayPriceDecimalsPrecision,
                 },
                 {
                   title: 'Exit',
@@ -145,7 +144,7 @@ export default function PositionHistoryBlockV2({
                   format: 'currency',
                   isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
                   precision:
-                    positionHistory.token.displayAmountDecimalsPrecision,
+                    positionHistory.token.displayPriceDecimalsPrecision,
                 },
                 {
                   title: 'Fees',
@@ -177,6 +176,7 @@ export default function PositionHistoryBlockV2({
             {isExpanded ? (
               <EventBlocks
                 positionId={positionHistory.positionId}
+                token={positionHistory.token}
                 events={events}
                 setEvents={setEvents}
               />

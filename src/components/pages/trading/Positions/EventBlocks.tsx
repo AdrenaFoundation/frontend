@@ -13,7 +13,7 @@ import partialCloseIcon from '@/../public/images/Icons/partial-close.svg';
 import removeCollateralIcon from '@/../public/images/Icons/remove-collateral-icon.svg';
 import FormatNumber from '@/components/Number/FormatNumber';
 import DataApiClient from '@/DataApiClient';
-import { ImageRef, PositionTransaction } from '@/types';
+import { ImageRef, PositionTransaction, Token } from '@/types';
 import { formatNumber } from '@/utils';
 
 export type FormattedEventsType = {
@@ -24,6 +24,7 @@ export type FormattedEventsType = {
   icon?: ImageRef;
   suffix?: string;
   format: 'currency' | 'number' | 'percentage' | 'text';
+  precision?: number;
 };
 
 type LabelType =
@@ -40,9 +41,11 @@ type LabelType =
 
 export default function EventBlocks({
   positionId,
+  token,
   events,
   setEvents,
 }: {
+  token: Token;
   positionId: number;
   events: FormattedEventsType[][];
   setEvents: React.Dispatch<React.SetStateAction<FormattedEventsType[][]>>;
@@ -109,6 +112,7 @@ export default function EventBlocks({
         {
           label: 'Price',
           value: event.additionalInfos.price,
+          precision: token.displayPriceDecimalsPrecision,
           format: 'currency',
         },
         {
@@ -430,7 +434,7 @@ const EventBlock = ({
                   format={item.format}
                   suffix={item.suffix}
                   className={twMerge('text-sm font-mono', item.className)}
-                  precision={item.format === 'currency' ? 2 : 0}
+                  precision={item.format === 'currency' ? item.precision : 0}
                   isDecimalDimmed={false}
                 />
               ) : (
