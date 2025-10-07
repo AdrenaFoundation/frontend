@@ -473,6 +473,8 @@ export default function WalletSidebar({
                                             transaction,
                                             notification,
                                         });
+
+                                        setView('tokens');
                                     } catch (error) {
                                         console.log('error', error);
                                     }

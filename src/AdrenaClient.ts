@@ -205,8 +205,10 @@ export class AdrenaClient {
   async checkATAAddressInitializedAndCreatePreInstruction({
     mint,
     owner,
+    payer = owner,
     preInstructions,
   }: {
+    payer?: PublicKey;
     mint: PublicKey;
     owner: PublicKey;
     preInstructions: TransactionInstruction[];
@@ -222,10 +224,10 @@ export class AdrenaClient {
 
       preInstructions.push(
         createAssociatedTokenAccountIdempotentInstruction(
-          owner, // payer
-          ataAddress, // associated token address
-          owner, // owner
-          mint, // mint
+          payer,
+          ataAddress,
+          owner,
+          mint,
         ),
       );
 
@@ -1743,6 +1745,7 @@ export class AdrenaClient {
 
     await this.checkATAAddressInitializedAndCreatePreInstruction({
       mint,
+      payer: owner,
       owner: recipient,
       preInstructions,
     });
@@ -1757,8 +1760,6 @@ export class AdrenaClient {
     const allInstructions = [...preInstructions, transferInstruction];
     const transaction = new Transaction().add(...allInstructions);
     transaction.feePayer = owner;
-    const { blockhash } = await this.connection.getLatestBlockhash('confirmed');
-    transaction.recentBlockhash = blockhash;
 
     return transaction;
   }
@@ -6882,6 +6883,8 @@ export class AdrenaClient {
         throw simulationError;
       }
 
+      console.log('simulationResult', simulationResult);
+
       computeUnitUsed = simulationResult.unitsConsumed;
       console.log('computeUnitUsed', computeUnitUsed);
     } catch (err) {
@@ -6932,7 +6935,7 @@ export class AdrenaClient {
       }
 
       transaction.instructions[1] = ComputeBudgetProgram.setComputeUnitLimit({
-        units: computeUnitToUse,
+        units: Math.ceil(computeUnitToUse),
       });
     }
 
@@ -6980,15 +6983,6 @@ export class AdrenaClient {
         skipPreflight: true,
         maxRetries: 0,
       });
-
-      // {
-      //   requireAllSignatures: false,
-      //   verifySignatures: false,
-      // }),
-      // {
-      //   skipPreflight: true,
-      //   maxRetries: 0,
-      // },
 
       if (getTransactionLogs) {
         await this.connection.confirmTransaction(
