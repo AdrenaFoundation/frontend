@@ -14,7 +14,6 @@ export default function TermsAndConditions({ }: PageProps) {
       setError(null);
 
       try {
-        // Fetch both HTML files
         const [termsResponse, tokenTermsResponse] = await Promise.all([
           fetch('/TermsAndConditions.html'),
           fetch('/TokenTermsAndConditions.html')
@@ -29,19 +28,16 @@ export default function TermsAndConditions({ }: PageProps) {
           tokenTermsResponse.text()
         ]);
 
-        // Process both HTML files with unique scoping
         const processHtml = (html: string, scopeClass: string) => {
           const styleMatches = html.match(/<style[^>]*>([\s\S]*?)<\/style>/gi);
           const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
 
           let scopedStyles = '';
 
-          // Scope all CSS rules to the specific scope class to prevent leaking and conflicts
           if (styleMatches) {
             styleMatches.forEach(styleTag => {
               const styleContent = styleTag.replace(/<\/?style[^>]*>/gi, '');
 
-              // Scope every CSS rule to the specific document container
               const rules = styleContent.split('}');
               const scopedRules = rules.map(rule => {
                 if (rule.trim() && rule.includes('{')) {
@@ -74,11 +70,9 @@ export default function TermsAndConditions({ }: PageProps) {
           return result;
         };
 
-        // Process each document with its own unique scope
         const termsContent = processHtml(termsHtml, 'legal-document-1');
         const tokenTermsContent = processHtml(tokenTermsHtml, 'legal-document-2');
 
-        // Wrap each document in its own container to prevent style conflicts
         const combinedContent = `
           <div class="legal-document legal-document-1">
             ${termsContent}
@@ -104,7 +98,6 @@ export default function TermsAndConditions({ }: PageProps) {
   return (
     <div className="flex flex-col p-4 min-h-screen">
       <StyledContainer className="w-full max-w-7xl mx-auto" bodyClassName="p-0">
-        {/* Header */}
         <div className="p-8 pb-6">
           <h1 className="text-3xl sm:text-4xl font-bold mb-2">Legal Information</h1>
           <p className="text-txtfade mb-6">
@@ -112,7 +105,6 @@ export default function TermsAndConditions({ }: PageProps) {
           </p>
         </div>
 
-        {/* HTML Content Viewer */}
         <div className="w-full border-t border-bcolor">
           {isLoading ? (
             <div className="flex items-center justify-center p-12">
