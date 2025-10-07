@@ -41,6 +41,7 @@ export default function TradingChartHeaderStats({
   isStatsExpanded?: boolean;
   setIsStatsExpanded?: (expanded: boolean) => void;
 }) {
+  const [displayBorrowRateAsApr, setDisplayBorrowRateAsApr] = useState(true);
   const selectedTokenPrice = useSelector(
     (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
   );
@@ -58,7 +59,7 @@ export default function TradingChartHeaderStats({
     isStatsExpanded !== undefined ? isStatsExpanded : localIsStatsExpanded;
   const setStatsExpanded = setIsStatsExpanded || setLocalIsStatsExpanded;
 
-  const borrowingRate = useMemo(() => {
+  const borrowRateHourly = useMemo(() => {
     if (!window.adrena?.client) return null;
 
     try {
@@ -67,18 +68,29 @@ export default function TradingChartHeaderStats({
         const usdcCustody = window.adrena.client.getCustodyByMint(
           usdcToken.mint,
         );
+
         if (!usdcCustody) return null;
-        return borrowRates[usdcCustody.pubkey.toBase58()] ?? null;
+
+        const rate = borrowRates[usdcCustody.pubkey.toBase58()];
+        return rate != null ? rate * 100 : null;
       } else {
         const custody = window.adrena.client.getCustodyByMint(selected.mint);
         if (!custody) return null;
-        return borrowRates[custody.pubkey.toBase58()] ?? null;
+
+        const rate = borrowRates[custody.pubkey.toBase58()];
+        return rate != null ? rate * 100 : null;
       }
     } catch (error) {
       console.warn('Error getting borrowing rate:', error);
       return null;
     }
   }, [selectedAction, selected.mint, borrowRates]);
+
+  const borrowRateApr = useMemo(() => {
+    if (borrowRateHourly === null) return null;
+
+    return borrowRateHourly * 24 * 365.4;
+  }, [borrowRateHourly]);
 
   const platformDailyVolume = useMemo(() => {
     if (!window.adrena?.client) return null;
@@ -109,6 +121,16 @@ export default function TradingChartHeaderStats({
   }, [selectedTokenPrice, previousTokenPrice]);
 
   const dailyChange = stats?.[selected.symbol]?.dailyChange ?? null;
+
+  const borrowRateToDisplay = useMemo(() => {
+    return <span className="font-mono text-sm sm:text-xs text-white ml-1 cursor-help" onClick={() => setDisplayBorrowRateAsApr(!displayBorrowRateAsApr)}>
+      {displayBorrowRateAsApr ? borrowRateApr !== null
+        ? `${(borrowRateApr).toFixed(0)}% APR`
+        : '-' : borrowRateHourly !== null
+        ? `${(borrowRateHourly).toFixed(4)}%/h`
+        : '-'}
+    </span>
+  }, [borrowRateApr, borrowRateHourly, displayBorrowRateAsApr]);
 
   if (showExpandedStatsOnly) {
     return (
@@ -157,11 +179,7 @@ export default function TradingChartHeaderStats({
                   <span className="font-mono text-sm sm:text-xs text-txtfade text-right cursor-help">
                     B.Rate
                   </span>
-                  <span className="font-mono text-sm sm:text-xs text-white ml-1 cursor-help">
-                    {borrowingRate !== null
-                      ? `${(borrowingRate * 100).toFixed(4)}%/h`
-                      : '-'}
-                  </span>
+                  {borrowRateToDisplay}
                 </div>
               </Tippy>
             </div>
@@ -176,13 +194,12 @@ export default function TradingChartHeaderStats({
       <div className="flex items-center gap-3 sm:hidden">
         <span className="text-xs font-mono text-txtfade">
           <span
-            className={`${
-              dailyChange
-                ? dailyChange > 0
-                  ? 'text-green'
-                  : 'text-redbright'
-                : 'text-white'
-            } font-mono`}
+            className={`${dailyChange
+              ? dailyChange > 0
+                ? 'text-green'
+                : 'text-redbright'
+              : 'text-white'
+              } font-mono`}
           >
             {dailyChange
               ? `${dailyChange > 0 ? '+' : ''}${dailyChange.toFixed(2)}%`
@@ -234,13 +251,12 @@ export default function TradingChartHeaderStats({
           <div className="flex items-center gap-3">
             <span className="text-xs font-mono text-txtfade ml-2">
               <span
-                className={`${
-                  dailyChange
-                    ? dailyChange > 0
-                      ? 'text-green'
-                      : 'text-redbright'
-                    : 'text-white'
-                } font-mono`}
+                className={`${dailyChange
+                  ? dailyChange > 0
+                    ? 'text-green'
+                    : 'text-redbright'
+                  : 'text-white'
+                  } font-mono`}
               >
                 {dailyChange
                   ? `${dailyChange > 0 ? '+' : ''}${dailyChange.toFixed(2)}%`
@@ -323,11 +339,8 @@ export default function TradingChartHeaderStats({
                   <span className="font-mono text-sm sm:text-xs text-txtfade text-right cursor-help">
                     B.Rate
                   </span>
-                  <span className="font-mono text-sm sm:text-xs text-white ml-1 cursor-help">
-                    {borrowingRate !== null
-                      ? `${(borrowingRate * 100).toFixed(4)}%/h`
-                      : '-'}
-                  </span>
+
+                  {borrowRateToDisplay}
                 </div>
               </Tippy>
             </div>
@@ -356,13 +369,12 @@ export default function TradingChartHeaderStats({
             <div className="flex items-center gap-2">
               <span className="text-xs font-mono text-txtfade">
                 <span
-                  className={`${
-                    dailyChange
-                      ? dailyChange > 0
-                        ? 'text-green'
-                        : 'text-redbright'
-                      : 'text-white'
-                  } font-mono`}
+                  className={`${dailyChange
+                    ? dailyChange > 0
+                      ? 'text-green'
+                      : 'text-redbright'
+                    : 'text-white'
+                    } font-mono`}
                 >
                   {dailyChange ? `${dailyChange.toFixed(2)}%` : '-'}
                 </span>
@@ -441,11 +453,8 @@ export default function TradingChartHeaderStats({
                     <span className="font-mono text-sm sm:text-xs text-txtfade text-right cursor-help">
                       B.Rate
                     </span>
-                    <span className="font-mono text-sm sm:text-xs text-white ml-1 cursor-help">
-                      {borrowingRate !== null
-                        ? `${(borrowingRate * 100).toFixed(4)}%/h`
-                        : '-'}
-                    </span>
+
+                    {borrowRateToDisplay}
                   </div>
                 </Tippy>
               </div>
@@ -560,11 +569,8 @@ export default function TradingChartHeaderStats({
                 <span className="font-mono text-sm sm:text-xs text-txtfade text-right cursor-help">
                   B.Rate
                 </span>
-                <span className="font-mono text-sm sm:text-xs text-white ml-1 cursor-help">
-                  {borrowingRate !== null
-                    ? `${(borrowingRate * 100).toFixed(4)}%/h`
-                    : '-'}
-                </span>
+
+                {borrowRateToDisplay}
               </div>
             </Tippy>
           </div>

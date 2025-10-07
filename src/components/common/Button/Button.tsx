@@ -38,14 +38,22 @@ export default function Button({
   leftIcon?: string | ImageRef;
   style?: CSSProperties;
   alt?: string;
-  variant?: 'primary' | 'secondary' | 'info' | 'text' | 'outline' | 'danger' | 'lightbg' | 'success';
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'info'
+    | 'text'
+    | 'outline'
+    | 'danger'
+    | 'lightbg'
+    | 'success';
   className?: string;
   iconClassName?: string;
   loaderClassName?: string;
   rightIconClassName?: string;
   leftIconClassName?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg';
-  onClick?: () => void | Promise<void>;
+  onClick?: (e?: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
   disabled?: boolean;
   rounded?: boolean;
   href?: Url;
@@ -117,14 +125,13 @@ export default function Button({
         className,
       )}
       disabled={disabled || onClickInProgress}
-      onClick={async () => {
+      onClick={async (e) => {
         if (!onClick) return;
 
         setOnClickInProgress(true);
-        await onClick();
+        await onClick(e);
         setOnClickInProgress(false);
       }}
-
       {...rest}
     >
       {icon && !onClickInProgress ? (
