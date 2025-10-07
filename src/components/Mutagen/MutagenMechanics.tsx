@@ -1,7 +1,6 @@
 import 'tippy.js/dist/tippy.css';
 
 import Tippy from '@tippyjs/react';
-import Image from 'next/image';
 import { useState } from 'react';
 import {
   Area,
@@ -13,7 +12,6 @@ import {
   YAxis,
 } from 'recharts';
 
-import mutagenIcon from '@/../public/images/mutagen.png';
 import Button from '@/components/common/Button/Button';
 import { formatNumber } from '@/utils';
 
