@@ -349,7 +349,7 @@ function AppComponent({
         }
 
         {
-          isCaptchaModalOpen && !isUserProfileMigrationV1Tov2Open && (
+          !isTermsAndConditionModalOpen && !isUserProfileMigrationV1Tov2Open && isCaptchaModalOpen && (
             <CaptchaModal
               isOpen={isCaptchaModalOpen}
               sitekey="8a046700-4994-4102-b25e-a50a34a05820"
