@@ -1,124 +1,136 @@
-import Image from 'next/image';
-import { useState } from 'react';
-import { twMerge } from 'tailwind-merge';
+import { useEffect, useState } from 'react';
 
-import documentIcon from '@/../public/images/Icons/document.svg';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { PageProps } from '@/types';
 
-const TOKEN_TERMS_PDF_URL = 'https://2570697779-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FSrdLcmUOicAVBsHQeHAa%2Fuploads%2F2aI660onfZVqBAusAVvL%2FTokenTermsAndConditions.pdf?alt=media&token=51652e7a-4856-4817-b2f6-5235a6d16547';
-
-const TERMS_OF_SERVICE_PDF_URL = 'https://2570697779-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FSrdLcmUOicAVBsHQeHAa%2Fuploads%2F3EXTCw5USM3nsBcQPfUi%2FTermsOfService.pdf?alt=media&token=c6c36bb0-4458-4d28-83af-c51c0967877f';
-
-type DocumentType = 'token-terms' | 'terms-of-service' | 'privacy-policy';
-
 export default function TermsAndConditions({ }: PageProps) {
-  const [activeTab, setActiveTab] = useState<DocumentType>('terms-of-service');
-  const [hasError, setHasError] = useState(false);
+  const [htmlContent, setHtmlContent] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const getPdfConfig = () => {
-    switch (activeTab) {
-      case 'token-terms':
-        return {
-          url: TOKEN_TERMS_PDF_URL,
-          title: 'Token Terms and Conditions',
-        };
-      case 'privacy-policy':
-        return {
-          url: `${TOKEN_TERMS_PDF_URL}#page=32`,
-          title: 'Privacy Policy',
-        };
-      case 'terms-of-service':
-      default:
-        return {
-          url: TERMS_OF_SERVICE_PDF_URL,
-          title: 'Terms of Service',
-        };
-    }
-  };
+  useEffect(() => {
+    const fetchAllContent = async () => {
+      setIsLoading(true);
+      setError(null);
 
-  const { url: currentPdfUrl, title: currentTitle } = getPdfConfig();
+      try {
+        // Fetch both HTML files
+        const [termsResponse, tokenTermsResponse] = await Promise.all([
+          fetch('/TermsAndConditions.html'),
+          fetch('/TokenTermsAndConditions.html')
+        ]);
+
+        if (!termsResponse.ok || !tokenTermsResponse.ok) {
+          throw new Error('Failed to load documents');
+        }
+
+        const [termsHtml, tokenTermsHtml] = await Promise.all([
+          termsResponse.text(),
+          tokenTermsResponse.text()
+        ]);
+
+        // Process both HTML files with unique scoping
+        const processHtml = (html: string, scopeClass: string) => {
+          const styleMatches = html.match(/<style[^>]*>([\s\S]*?)<\/style>/gi);
+          const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+
+          let scopedStyles = '';
+
+          // Scope all CSS rules to the specific scope class to prevent leaking and conflicts
+          if (styleMatches) {
+            styleMatches.forEach(styleTag => {
+              const styleContent = styleTag.replace(/<\/?style[^>]*>/gi, '');
+
+              // Scope every CSS rule to the specific document container
+              const rules = styleContent.split('}');
+              const scopedRules = rules.map(rule => {
+                if (rule.trim() && rule.includes('{')) {
+                  const [selectors, declarations] = rule.split('{');
+
+                  if (selectors && declarations) {
+                    const scopedSelectors = selectors
+                      .split(',')
+                      .map(s => `.${scopeClass} ${s.trim()}`)
+                      .join(', ');
+                    return `${scopedSelectors} { ${declarations}`;
+                  }
+                }
+                return rule;
+              }).join('}');
+
+              scopedStyles += scopedRules;
+            });
+          }
+
+          let result = '';
+          if (scopedStyles) {
+            result += `<style>${scopedStyles}</style>`;
+          }
+
+          if (bodyMatch) {
+            result += bodyMatch[1];
+          }
+
+          return result;
+        };
+
+        // Process each document with its own unique scope
+        const termsContent = processHtml(termsHtml, 'legal-document-1');
+        const tokenTermsContent = processHtml(tokenTermsHtml, 'legal-document-2');
+
+        // Wrap each document in its own container to prevent style conflicts
+        const combinedContent = `
+          <div class="legal-document legal-document-1">
+            ${termsContent}
+          </div>
+          <hr style="margin: 4em 0; border: none; border-top: 2px solid rgba(255, 255, 255, 0.1);" />
+          <div class="legal-document legal-document-2">
+            ${tokenTermsContent}
+          </div>
+        `;
+
+        setHtmlContent(combinedContent);
+      } catch (err) {
+        setError('Failed to load the documents. Please try again later.');
+        console.error('Error loading HTML:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAllContent();
+  }, []);
 
   return (
     <div className="flex flex-col p-4 min-h-screen">
       <StyledContainer className="w-full max-w-7xl mx-auto" bodyClassName="p-0">
+        {/* Header */}
         <div className="p-8 pb-6">
           <h1 className="text-3xl sm:text-4xl font-bold mb-2">Legal Information</h1>
           <p className="text-txtfade mb-6">
-            Please review our Token Terms and Conditions, Terms of Service, and Privacy Policy
+            Please review our Terms of Service, Token Terms and Conditions, and Privacy Policy
           </p>
-
-          <div className="flex gap-2 sm:gap-4 border-b border-bcolor overflow-x-auto">
-            <button
-              onClick={() => {
-                setActiveTab('terms-of-service');
-                setHasError(false);
-              }}
-              className={twMerge(
-                'px-3 sm:px-4 py-3 font-medium transition-colors text-xs sm:text-base whitespace-nowrap outline-none focus:outline-none border-b-2',
-                activeTab === 'terms-of-service'
-                  ? 'text-white border-orange'
-                  : 'text-txtfade hover:text-white border-transparent'
-              )}
-            >
-              Terms of Service
-            </button>
-            <button
-              onClick={() => {
-                setActiveTab('token-terms');
-                setHasError(false);
-              }}
-              className={twMerge(
-                'px-3 sm:px-4 py-3 font-medium transition-colors text-xs sm:text-base whitespace-nowrap outline-none focus:outline-none border-b-2',
-                activeTab === 'token-terms'
-                  ? 'text-white border-orange'
-                  : 'text-txtfade hover:text-white border-transparent'
-              )}
-            >
-              Token Terms & Conditions
-            </button>
-            <button
-              onClick={() => {
-                setActiveTab('privacy-policy');
-                setHasError(false);
-              }}
-              className={twMerge(
-                'px-3 sm:px-4 py-3 font-medium transition-colors text-xs sm:text-base whitespace-nowrap outline-none focus:outline-none border-b-2',
-                activeTab === 'privacy-policy'
-                  ? 'text-white border-orange'
-                  : 'text-txtfade hover:text-white border-transparent'
-              )}
-            >
-              Privacy Policy
-            </button>
-          </div>
         </div>
 
+        {/* HTML Content Viewer */}
         <div className="w-full border-t border-bcolor">
-          {!hasError ? (
-            <iframe
-              key={activeTab}
-              src={`${currentPdfUrl}#view=FitH`}
-              className="w-full"
-              style={{ height: 'calc(100vh - 350px)', minHeight: '600px' }}
-              title={currentTitle}
-              onError={() => setHasError(true)}
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center p-12 gap-6">
-              <Image
-                src={documentIcon}
-                alt="Document"
-                width={48}
-                height={48}
-                className="w-12 h-12 opacity-50"
-              />
-              <div className="text-center">
-                <h3 className="text-xl font-semibold mb-2">Unable to display PDF</h3>
-                <p className="text-txtfade mb-6">
-                  Your browser may not support embedded PDFs. Please try a different browser or contact support.
-                </p>
+          {isLoading ? (
+            <div className="flex items-center justify-center p-12">
+              <div className="text-txtfade">Loading documents...</div>
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center p-12">
+              <div className="text-red text-center">
+                <p className="font-semibold mb-2">Error</p>
+                <p>{error}</p>
               </div>
+            </div>
+          ) : (
+            <div className="p-8">
+              <div
+                className="legal-content"
+                dangerouslySetInnerHTML={{ __html: htmlContent }}
+              />
             </div>
           )}
         </div>
@@ -147,6 +159,58 @@ export default function TermsAndConditions({ }: PageProps) {
           </div>
         </div>
       </StyledContainer>
+
+      <style jsx>{`
+        /* Override text colors only - keep all other original formatting */
+        .legal-content :global(*) {
+          color: rgba(255, 255, 255, 0.85) !important;
+        }
+
+        .legal-content :global(h1),
+        .legal-content :global(h2),
+        .legal-content :global(h3),
+        .legal-content :global(h4),
+        .legal-content :global(h5),
+        .legal-content :global(h6) {
+          color: white !important;
+        }
+
+        .legal-content :global(a) {
+          color: #FA6724 !important;
+        }
+
+        .legal-content :global(a:hover) {
+          color: #FAD524 !important;
+        }
+
+        .legal-content :global(strong),
+        .legal-content :global(b) {
+          color: white !important;
+        }
+
+        /* Make table borders visible on dark background */
+        .legal-content :global(table),
+        .legal-content :global(td),
+        .legal-content :global(th) {
+          border-color: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        /* Remove white backgrounds */
+        .legal-content :global(*) {
+          background-color: transparent !important;
+        }
+
+        /* Isolate each document */
+        .legal-content :global(.legal-document) {
+          margin-bottom: 2em;
+        }
+
+        /* Ensure each document container has its own context */
+        .legal-content :global(.legal-document-1),
+        .legal-content :global(.legal-document-2) {
+          isolation: isolate;
+        }
+      `}</style>
     </div>
   );
 }
