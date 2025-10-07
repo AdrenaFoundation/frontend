@@ -2,10 +2,9 @@ import { PublicKey } from '@solana/web3.js';
 // import Image from 'next/image';
 import { useState } from 'react';
 
+import Modal from '@/components/common/Modal/Modal';
 // import bonkLogo from '@/../public/images/bonk.png';
 //import jtoLogo from '@/../public/images/jito-logo-2.png';
-import MutagenMechanicsButton from '@/components/Mutagen/MutagenMechanicsButton';
-import Modal from '@/components/common/Modal/Modal';
 // import FormatNumber from '@/components/Number/FormatNumber';
 import MutagenLeaderboardInterseason3 from '@/components/pages/mutagen_leaderboard/MutagenLeaderboardInterseason3';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';

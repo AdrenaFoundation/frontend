@@ -5,8 +5,8 @@ import { twMerge } from 'tailwind-merge';
 
 import bonkLogo from '@/../../public/images/bonk.png';
 import timerBg from '@/../../public/images/genesis-timer-bg.png';
-import jtoLogo from '@/../../public/images/jito-logo-2.png';
 import jitoLogo from '@/../../public/images/jito-logo.svg';
+import jtoLogo from '@/../../public/images/jito-logo-2.png';
 import MutagenMechanicsButton from '@/components/Mutagen/MutagenMechanicsButton';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
