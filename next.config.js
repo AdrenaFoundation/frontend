@@ -181,6 +181,29 @@ module.exports = (phase, { defaultConfig }) => {
         });
       }
 
+      // Add X-Frame-Options for older browser compatibility
+      // This works alongside CSP's frame-ancestors directive
+      headers.push({
+        key: 'X-Frame-Options',
+        value: 'DENY',
+      });
+
+      // Additional security headers recommended by Privy
+      headers.push({
+        key: 'X-Content-Type-Options',
+        value: 'nosniff',
+      });
+
+      headers.push({
+        key: 'Referrer-Policy',
+        value: 'strict-origin-when-cross-origin',
+      });
+
+      headers.push({
+        key: 'Permissions-Policy',
+        value: 'geolocation=()',
+      });
+
       return [
         {
           source: '/:path*',
