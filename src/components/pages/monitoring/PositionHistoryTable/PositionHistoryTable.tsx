@@ -289,8 +289,18 @@ export default function PositionHistoryTable({
       />
     ),
     fees: <CurrencyCell value={p.fees} />,
-    entry: <CurrencyCell value={p.entryPrice} />,
-    exit: <CurrencyCell value={p.exitPrice} />,
+    entry: (
+      <CurrencyCell
+        value={p.entryPrice}
+        precision={p.token.displayPriceDecimalsPrecision}
+      />
+    ),
+    exit: (
+      <CurrencyCell
+        value={p.exitPrice}
+        precision={p.token.displayPriceDecimalsPrecision}
+      />
+    ),
     mutagen: <MutagenCell value={p.totalPoints} />,
     entry_date: <DateCell date={p.entryDate} />,
     id: p.positionId,
