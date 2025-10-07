@@ -63,37 +63,12 @@ export default function Index() {
                 {'Mutagen leaderboard'}
               </p>
             </div>
-          </div>
-        </div>
 
-        {/* Mutagen Mechanics trigger below header, right-aligned on larger screens */}
-        <div className="w-full flex justify-center sm:justify-end mt-2 sm:mt-3 py-1 pr-2 sm:pr-4">
-          <MutagenMechanicsButton
-            buttonVariant="text"
-            className="opacity-100 bg-[#0B131D] border border-white/20 px-3 py-2 rounded-md hover:border-white/40 hover:shadow-xl transition-all duration-300 no-underline"
-            title={
-              <div className="flex">
-                <div
-                  className={twMerge(
-                    'text-sm font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
-                    'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)]',
-                  )}
-                >
-                  MUTAGEN
-                </div>
-                <div className="text-sm font-bold">&nbsp;</div>
-                <div
-                  className={twMerge(
-                    'text-sm font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
-                    'bg-[linear-gradient(110deg,#FA6724_40%,#FFD97C_60%,#FA6724)]',
-                  )}
-                >
-                  MECHANICS
-                </div>
-              </div>
-            }
-            showLegacySections={false}
-          />
+            {/* Mutagen Mechanics Button */}
+            <div className="absolute bottom-4 items-center sm:left-4 z-20">
+              <MutagenMechanicsButton />
+            </div>
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 items-center justify-center text-center mt-4 px-4 max-w-[60em] mx-auto">

@@ -426,14 +426,14 @@ export const TRADING_COMPETITION_SEASONS = {
       "Welcome to Adrena's trading pre-season, anon! This six-week event is the introduction to our upcoming recurring trading seasons. From November 11th 12pm UTC to December 23rd 12pm UTC, traders will vie for PnL-based ranks in one of four volume-based divisions. Your total trading volume during the six-week event determines your division qualification. Check out the divisions below, continuously updated based on onchain events.",
       "Only positions open after the start date and closed before the end date qualify. Each weekly periods ends on Monday 12am UTC, except the last one ending at 12pm UTC. Volume is determined by Open/Increase and Close positions. It's accounted for when the position closes (close or liquidation).",
     ] as string[],
-    bannerClassName: 'h-[30em] justify-center',
+    bannerClassName: 'h-[32em] pt-20',
   },
 
   expanse: {
     img: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/expanse/expanse-banner-M4jVXVtzATa0P36KUpVvc1hXFNkznk.jpg',
     title: 'The Expanse',
     bannerTitle: 'The Expanse',
-    subTitle: 'new season',
+    subTitle: 'Season 1',
     startDate: new Date('2025-01-31T23:59:59.999Z'),
     endDate: new Date('2025-04-11T23:59:59.999Z'),
     gradient: 'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
@@ -451,7 +451,7 @@ export const TRADING_COMPETITION_SEASONS = {
 
       `Come get some.`,
     ] as string[],
-    bannerClassName: 'h-[30em] justify-center',
+    bannerClassName: 'h-[32em] pt-20',
   },
 
   factions: {

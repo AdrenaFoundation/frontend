@@ -8,7 +8,6 @@ import firstImage from '@/../public/images/first-place.svg';
 import secondImage from '@/../public/images/second-place.svg';
 import thirdImage from '@/../public/images/third-place.svg';
 import Modal from '@/components/common/Modal/Modal';
-import MutagenMechanicsButton from '@/components/Mutagen/MutagenMechanicsButton';
 import FormatNumber from '@/components/Number/FormatNumber';
 import MutagenLeaderboardAnniversary from '@/components/pages/mutagen_leaderboard/MutagenLeaderboardAnniversary';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
@@ -293,8 +292,8 @@ function RaffleAdditionalPrize({
       const profile = profileMap.get(wallet);
       return profile
         ? PROFILE_PICTURES[
-        profile.profilePicture as keyof typeof PROFILE_PICTURES
-        ]
+            profile.profilePicture as keyof typeof PROFILE_PICTURES
+          ]
         : PROFILE_PICTURES[0];
     },
     [profileMap],
@@ -627,32 +626,6 @@ export default function Anniversary() {
         alt="anniversary bg"
         className="absolute inset-0 w-full h-[calc(100%+3em)] object-cover opacity-10 -top-[3em]"
       />
-
-      {/* Mutagen Mechanics trigger just below the separator line */}
-      <div className="w-full flex justify-center sm:justify-end mt-1 sm:mt-2 py-1 pr-2 sm:pr-4">
-        <MutagenMechanicsButton
-          buttonVariant="text"
-          className="opacity-100 bg-[#0B131D] border border-white/20 px-3 py-2 rounded-md hover:border-white/40 hover:shadow-xl transition-all duration-300 no-underline"
-          title={
-            <div className="flex">
-              <div className={twMerge(
-                'text-sm font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
-                'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)]',
-              )}>
-                MUTAGEN
-              </div>
-              <div className="text-sm font-bold">&nbsp;</div>
-              <div className={twMerge(
-                'text-sm font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
-                'bg-[linear-gradient(110deg,#FA6724_40%,#FFD97C_60%,#FA6724)]',
-              )}>
-                MECHANICS
-              </div>
-            </div>
-          }
-          showLegacySections={false}
-        />
-      </div>
 
       <div className="flex flex-col gap-2 items-center justify-center text-center mx-auto max-w-[100em] w-full">
         <div className="text-xs sm:text-sm lg:text-base font-semibold text-white/90 w-full z-10 mb-4 mt-8">
