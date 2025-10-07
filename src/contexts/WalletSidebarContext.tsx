@@ -30,8 +30,10 @@ export function WalletSidebarProvider({ children }: { children: ReactNode }) {
 
 export function useWalletSidebar() {
     const context = useContext(WalletSidebarContext);
+
     if (context === undefined) {
         throw new Error('useWalletSidebar must be used within a WalletSidebarProvider');
     }
+
     return context;
 }
