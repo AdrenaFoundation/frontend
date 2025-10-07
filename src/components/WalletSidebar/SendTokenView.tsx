@@ -11,6 +11,7 @@ import { isValidPublicKey, uiToNative } from '@/utils';
 import InputNumber from '../common/InputNumber/InputNumber';
 import InputString from '../common/inputString/InputString';
 import FormatNumber from '../Number/FormatNumber';
+import OnchainAccountInfo from '../pages/monitoring/OnchainAccountInfo';
 import { TokenListItem } from './TokenListItem';
 
 export function SendTokenView({
@@ -35,6 +36,7 @@ export function SendTokenView({
     );
 
     const [recipientAddress, setRecipientAddress] = useState<string | null>('');
+    const [recipientAddressPubkey, setRecipientAddressPubkey] = useState<PublicKey | null>(null);
     const [amount, setAmount] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -46,8 +48,10 @@ export function SendTokenView({
 
         if (value?.trim()) {
             if (!isValidPublicKey(value)) {
+                setRecipientAddressPubkey(null);
                 setRecipientAddressError('Invalid Solana address format');
             } else {
+                setRecipientAddressPubkey(new PublicKey(value));
                 setRecipientAddressError(null);
             }
         } else {
@@ -75,8 +79,12 @@ export function SendTokenView({
         setIsLoading(true);
 
         try {
-            const recipientPubkey = new PublicKey(recipientAddress);
             const amountNumber = amount ?? 0;
+
+            if (!recipientAddressPubkey) {
+                setError('Invalid recipient address');
+                return;
+            }
 
             if (amountNumber <= 0) {
                 setError('Amount must be greater than 0');
@@ -95,7 +103,7 @@ export function SendTokenView({
                 tokenSymbol: selectedToken.symbol,
                 tokenAddress: new PublicKey(selectedToken.mint),
                 amount: uiToNative(amountNumber, selectedToken.decimals),
-                recipientAddress: recipientPubkey
+                recipientAddress: recipientAddressPubkey
             });
         } catch (err) {
             console.error('Transfer error:', err);
@@ -129,14 +137,22 @@ export function SendTokenView({
             </div>
 
             <div className="space-y-2">
-                <label className="text-sm font-medium text-white">Recipient Address</label>
+                <div className='flex justify-between items-center'>
+                    <label className="text-sm font-medium text-white">Recipient Address</label>
+
+                    {recipientAddressPubkey ? <OnchainAccountInfo
+                        address={recipientAddressPubkey}
+                        shorten
+                        className='text-xs'
+                    /> : null}
+                </div>
 
                 <InputString
                     value={recipientAddress ?? ''}
                     onChange={(value) => handleRecipientAddressChange(value)}
                     placeholder='Enter recipient address'
                     className='p-2 bg-inputcolor rounded-md'
-                    inputFontSize='1em'
+                    inputFontSize='0.8em'
                 />
 
                 {recipientAddressError ? (
@@ -173,7 +189,7 @@ export function SendTokenView({
                     value={amount ?? undefined}
                     onChange={(value: number | null) => setAmount(value)}
                     className='bg-inputcolor p-2 rounded-md'
-                    inputFontSize='1em'
+                    inputFontSize='0.8em'
                 />
             </div>
 
