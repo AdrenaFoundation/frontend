@@ -16,6 +16,7 @@
     "@dialectlabs/react-ui": "^3.0.0-beta.6",
     "@emotion/react": "=11.14.0",
     "@emotion/styled": "=11.14.0",
+    "@hcaptcha/react-hcaptcha": "=1.12.1",
     "@jup-ag/api": "^6.0.42",
     "@mui/material": "=6.2.0",
     "@reduxjs/toolkit": "=2.5.0",

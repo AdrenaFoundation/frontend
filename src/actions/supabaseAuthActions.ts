@@ -84,7 +84,8 @@ export const refreshVerifiedWalletAddresses =
   };
 
 export const checkAndSignInAnonymously =
-  () => async (dispatch: Dispatch<setIsSignedInAnonymouslyAction>) => {
+  (captchaToken?: string) =>
+  async (dispatch: Dispatch<setIsSignedInAnonymouslyAction>) => {
     try {
       const {
         data: { session },
@@ -97,7 +98,9 @@ export const checkAndSignInAnonymously =
         });
       }
 
-      const { error } = await supabaseAnonClient.auth.signInAnonymously();
+      const { error } = await supabaseAnonClient.auth.signInAnonymously({
+        options: captchaToken ? { captchaToken } : undefined,
+      });
       if (error) {
         console.error('Error signing in anonymously:', error);
         return dispatch({

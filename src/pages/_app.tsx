@@ -18,6 +18,7 @@ import {
 } from '@/actions/supabaseAuthActions';
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { AdrenaClient } from '@/AdrenaClient';
+import CaptchaModal from '@/components/CaptchaModal/CaptchaModal';
 import RootLayout from '@/components/layouts/RootLayout/RootLayout';
 import MigrateUserProfileV1Tov2Modal from '@/components/pages/profile/MigrateUserProfileV1Tov2Modal';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
@@ -162,6 +163,9 @@ function AppComponent({
   useWatchTokenPrices();
   useWatchBorrowRates();
 
+  const [captchaToken, setCaptchaToken] = useState<string | undefined>(undefined);
+  const [isCaptchaModalOpen, setIsCaptchaModalOpen] = useState<boolean>(false);
+
   // Fetch token balances for the connected wallet:
   // on initial mount of the app & on account change.
   useEffect(() => {
@@ -234,7 +238,15 @@ function AppComponent({
   }, [wallet]);
 
   useEffect(() => {
-    dispatch(checkAndSignInAnonymously());
+    if (captchaToken) {
+      dispatch(checkAndSignInAnonymously(captchaToken));
+    }
+  }, [captchaToken, dispatch]);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') return;
+
+    setIsCaptchaModalOpen(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -335,6 +347,24 @@ function AppComponent({
             />
           ) : null
         }
+
+        {
+          isCaptchaModalOpen && !isUserProfileMigrationV1Tov2Open && (
+            <CaptchaModal
+              isOpen={isCaptchaModalOpen}
+              sitekey="8a046700-4994-4102-b25e-a50a34a05820"
+              onComplete={(token) => {
+                setCaptchaToken(token);
+                setIsCaptchaModalOpen(false);
+              }}
+              onSkip={() => {
+                setIsCaptchaModalOpen(false);
+              }}
+            />
+          )
+        }
+
+
 
         <Component
           {...pageProps}
