@@ -76,8 +76,9 @@ export default function RootLayout({
   adapters: WalletAdapterExtended[];
   mainPool: PageProps['mainPool'];
 }) {
-  const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
+  const isBigScreen = useBetterMediaQuery('(min-width: 1024px)');
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
+  const isTablet = useBetterMediaQuery('(min-width: 640px) and (max-width: 1023px)');
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [isPriorityFeeOpen, setIsPriorityFeeOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
@@ -154,7 +155,7 @@ export default function RootLayout({
     }
   }, []);
 
-  if (isBigScreen === null || isMobile === null) {
+  if (isBigScreen === null || isMobile === null || isTablet === null) {
     return null;
   }
 
@@ -205,6 +206,7 @@ export default function RootLayout({
           adapters={adapters}
           isChatOpen={isChatOpen}
           setIsChatOpen={setIsChatOpen}
+          isTablet={isTablet}
         />
       )}
       <ViewsWarning />
@@ -213,7 +215,8 @@ export default function RootLayout({
         <div
           className={twMerge(
             'w-full flex flex-col max-w-[200em]',
-            !isBigScreen ? 'pb-[100px]' : 'sm:pb-0',
+            isMobile ? 'pb-[100px]' : 'sm:pb-0',
+            isTablet ? 'pl-16' : '',
           )}
         >
           {children}
@@ -228,13 +231,15 @@ export default function RootLayout({
         onClose={() => setIsSearchUserProfilesOpen(false)}
       />
 
-      {!isBigScreen ? (
+      {isMobile ? (
         <MobileNavbar
           PAGES={pages}
           userVest={userVest}
           userDelegatedVest={userDelegatedVest}
         />
-      ) : (
+      ) : null}
+
+      {isBigScreen ? (
         <SuperchargedFooter
           disableChat={disableChat}
           isMobile={!isBigScreen}
@@ -247,7 +252,7 @@ export default function RootLayout({
           setIsSettingsOpen={setIsSettingsOpen}
           setIsPriorityFeeOpen={setIsPriorityFeeOpen}
         />
-      )}
+      ) : null}
 
       {!isBigScreen && !disableChat && (
         <ChatContainer

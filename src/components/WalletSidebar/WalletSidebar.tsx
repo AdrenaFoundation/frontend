@@ -489,18 +489,6 @@ export default function WalletSidebar({
 
     }, [isSidebarOpen, wallet, enhancedWalletData, view, enhancedWallets, isLoadingBalances, totalValueUsd, solBalance, refreshBalances, balancesError, tokenBalancesWithPrices, connectedStandardWallets, dispatch, fundWallet, exportWallet, connectedAdapter, closeSidebar, adapters]);
 
-    if (isMobile) {
-        return isSidebarOpen ? <Modal
-            close={() => {
-                closeSidebar();
-                setView('tokens');
-            }}
-            className="flex flex-col w-full p-5 relative overflow-visible"
-        >
-            {dom}
-        </Modal> : null;
-    }
-
     return (
         <AnimatePresence>
             {isSidebarOpen && (
@@ -526,9 +514,9 @@ export default function WalletSidebar({
                             damping: 30,
                             stiffness: 300,
                         }}
-                        className="flex flex-col fixed top-[3rem] h-[calc(100vh-5rem)] right-0 bottom-0 w-[20%] sm:w-[50%] md:w-[40%] xl:w-[30%] 2xl:w-[20%] border-l bg-secondary border-b border-bcolor shadow-2xl z-50"
+                        className="flex flex-col fixed top-0 right-0 h-full w-[85%] sm:w-[60%] md:w-[50%] lg:w-[50%] lg:max-w-none xl:w-[40%] 2xl:w-[30%] border-l bg-secondary border-bcolor shadow-2xl z-[60]"
                     >
-                        <div className="flex-1 flex flex-col p-6">
+                        <div className="flex-1 flex flex-col p-6 overflow-y-auto">
                             {dom}
                         </div>
                     </motion.div>

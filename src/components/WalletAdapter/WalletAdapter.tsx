@@ -33,6 +33,7 @@ export default function WalletAdapter({
   isIconOnly,
   adapters,
   isMobile = false,
+  isTablet = false,
   setIsPriorityFeeModalOpen,
   setIsSettingsModalOpen,
   setIsChatOpen,
@@ -43,6 +44,7 @@ export default function WalletAdapter({
   isIconOnly?: boolean;
   adapters: WalletAdapterExtended[];
   isMobile?: boolean;
+  isTablet?: boolean;
   setIsSettingsModalOpen?: (isOpen: boolean) => void;
   setIsPriorityFeeModalOpen?: (isOpen: boolean) => void;
   setIsChatOpen?: (isOpen: boolean) => void;
@@ -154,57 +156,9 @@ export default function WalletAdapter({
       {connected && userProfile !== null ? (
         <Menu
           trigger={
-            <div
-              className={
-                'flex flex-row items-center border border-[#414E5E] rounded-full sm:rounded-md'
-              }
-            >
-              <Button
-                className={twMerge(
-                  className,
-                  'p-1 px-2 hover:bg-third transition-colors cursor-pointer border-bcolor rounded-full sm:rounded-none sm:rounded-l-lg border-r border-r-[#414E5E] gap-2 text-xs h-auto bg-transparent',
-                  isIconOnly && 'p-0 h-8 w-8',
-                )}
-                style={
-                  !isBreak
-                    ? {
-                      backgroundImage: `url(${PROFILE_PICTURES[userProfile ? userProfile.profilePicture : 0]})`,
-                      backgroundSize: 'cover',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPositionY: 'center',
-                    }
-                    : {}
-                }
-                title={
-                  !isIconOnly
-                    ? userProfile
-                      ? getAbbrevNickname(userProfile.nickname)
-                      : getAbbrevWalletAddress(wallet?.walletAddress ?? 'User')
-                    : null
-                }
-                leftIcon={
-                  userProfile
-                    ? PROFILE_PICTURES[userProfile.profilePicture]
-                    : PROFILE_PICTURES[0]
-                }
-                leftIconClassName="hidden sm:block w-4 h-4 rounded-full border border-white/20"
-                variant="lightbg"
-                onClick={() => {
-                  if (isMobile) {
-                    if (isSidebarOpen) {
-                      closeSidebar();
-                    } else {
-                      openSidebar();
-                    }
-                    return;
-                  }
-
-                  router.push('/profile');
-                }}
-              />
-
-              <div
-                className="hidden sm:block p-1.5 px-2 hover:bg-third transition-colors cursor-pointer rounded-r-lg"
+            isTablet ? (
+              // Mobile/Tablet: Compact rounded button
+              <button
                 onClick={() => {
                   if (isSidebarOpen) {
                     closeSidebar();
@@ -212,19 +166,79 @@ export default function WalletAdapter({
                     openSidebar();
                   }
                 }}
+                className="flex flex-row items-center gap-1.5 border border-[#414E5E] rounded-full px-2 py-1.5 hover:bg-third transition-colors cursor-pointer"
               >
                 <Image
+                  src={userProfile ? PROFILE_PICTURES[userProfile.profilePicture] : PROFILE_PICTURES[0]}
+                  alt="Profile"
+                  width={16}
+                  height={16}
+                  className="w-4 h-4 rounded-full"
+                />
+                <span className="text-xs leading-none">
+                  {userProfile
+                    ? getAbbrevNickname(userProfile.nickname, 6)
+                    : getAbbrevWalletAddress(wallet?.walletAddress ?? 'User', 3)}
+                </span>
+                <Image
                   src={chevronDownIcon}
-                  alt="Toggle Sidebar"
+                  alt="Toggle"
                   className={twMerge(
-                    "w-3 h-3 transition-transform duration-200",
+                    "w-2.5 h-2.5 transition-transform duration-200",
                     isSidebarOpen && "rotate-180"
                   )}
-                  width={14}
-                  height={14}
+                  width={10}
+                  height={10}
                 />
+              </button>
+            ) : (
+              // Desktop: Split button with profile/chevron
+              <div className="flex flex-row items-center border border-[#414E5E] rounded-md">
+                <Button
+                  className={twMerge(
+                    className,
+                    'p-1 px-2 hover:bg-third transition-colors cursor-pointer border-bcolor rounded-none rounded-l-lg border-r border-r-[#414E5E] gap-2 text-xs h-auto bg-transparent'
+                  )}
+                  title={
+                    userProfile
+                      ? getAbbrevNickname(userProfile.nickname, 6)
+                      : getAbbrevWalletAddress(wallet?.walletAddress ?? 'User', 3)
+                  }
+                  leftIcon={
+                    userProfile
+                      ? PROFILE_PICTURES[userProfile.profilePicture]
+                      : PROFILE_PICTURES[0]
+                  }
+                  leftIconClassName="w-4 h-4 rounded-full border border-white/20"
+                  variant="lightbg"
+                  onClick={() => {
+                    router.push('/profile');
+                  }}
+                />
+
+                <div
+                  className="p-1.5 px-2 hover:bg-third transition-colors cursor-pointer rounded-r-lg"
+                  onClick={() => {
+                    if (isSidebarOpen) {
+                      closeSidebar();
+                    } else {
+                      openSidebar();
+                    }
+                  }}
+                >
+                  <Image
+                    src={chevronDownIcon}
+                    alt="Toggle Sidebar"
+                    className={twMerge(
+                      "w-3 h-3 transition-transform duration-200",
+                      isSidebarOpen && "rotate-180"
+                    )}
+                    width={14}
+                    height={14}
+                  />
+                </div>
               </div>
-            </div>
+            )
           }
           disabled={true}
           openMenuClassName="w-[14rem] right-0 border border-white/10 shadow-xl bg-secondary"
