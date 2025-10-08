@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileExtended, WalletAdapterExtended } from '@/types';
 import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
-import logOutIcon from '../../../public/images/Icons/log-out.svg';
+import chevronDownIcon from '../../../public/images/Icons/chevron-down.svg';
 import walletIcon from '../../../public/images/wallet-icon.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -185,23 +185,11 @@ export default function WalletAdapter({
                 leftIcon={
                   userProfile
                     ? PROFILE_PICTURES[userProfile.profilePicture]
-                    : (connectedAdapter?.iconOverride ?? connectedAdapter?.icon)
+                    : PROFILE_PICTURES[0]
                 }
-                leftIconClassName={twMerge(
-                  'hidden sm:block w-4 h-4 rounded-full border border-white/20',
-                  !userProfile && 'border-0',
-                )}
+                leftIconClassName="hidden sm:block w-4 h-4 rounded-full border border-white/20"
                 variant="lightbg"
                 onClick={() => {
-                  if (isConnected) {
-                    if (isSidebarOpen) {
-                      closeSidebar();
-                    } else {
-                      openSidebar();
-                    }
-                    return;
-                  }
-
                   router.push('/profile');
                 }}
               />
@@ -209,19 +197,20 @@ export default function WalletAdapter({
               <div
                 className="hidden sm:block p-1.5 px-2 hover:bg-third transition-colors cursor-pointer rounded-r-lg"
                 onClick={() => {
-                  if (!connected || !connectedAdapter) return;
-
-                  if (wallet?.isPrivy) {
-                    dispatch(disconnectWalletAction(adapters.find((x) => x.name === 'Privy')!));
+                  if (isSidebarOpen) {
+                    closeSidebar();
                   } else {
-                    dispatch(disconnectWalletAction(connectedAdapter));
+                    openSidebar();
                   }
                 }}
               >
                 <Image
-                  src={logOutIcon}
-                  alt="Disconnect Icon"
-                  className="w-3 h-3"
+                  src={chevronDownIcon}
+                  alt="Toggle Sidebar"
+                  className={twMerge(
+                    "w-3 h-3 transition-transform duration-200",
+                    isSidebarOpen && "rotate-180"
+                  )}
                   width={14}
                   height={14}
                 />

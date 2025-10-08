@@ -2,6 +2,7 @@ import { BN } from '@coral-xyz/anchor';
 import { useExportWallet, useFundWallet, useWallets } from '@privy-io/react-auth/solana';
 import { PublicKey, Transaction } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
+import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -489,12 +490,8 @@ export default function WalletSidebar({
 
     }, [isSidebarOpen, wallet, enhancedWalletData, view, enhancedWallets, isLoadingBalances, totalValueUsd, solBalance, refreshBalances, balancesError, tokenBalancesWithPrices, connectedStandardWallets, dispatch, fundWallet, exportWallet, connectedAdapter, closeSidebar, adapters]);
 
-    if (!isSidebarOpen) {
-        return null;
-    }
-
     if (isMobile) {
-        return <Modal
+        return isSidebarOpen ? <Modal
             close={() => {
                 closeSidebar();
                 setView('tokens');
@@ -502,24 +499,42 @@ export default function WalletSidebar({
             className="flex flex-col w-full p-5 relative overflow-visible"
         >
             {dom}
-        </Modal>;
+        </Modal> : null;
     }
 
-    return <>
-        <div
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
-            onClick={() => {
-                closeSidebar();
-                setView('tokens');
-            }}
-        />
+    return (
+        <AnimatePresence>
+            {isSidebarOpen && (
+                <>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+                        onClick={() => {
+                            closeSidebar();
+                            setView('tokens');
+                        }}
+                    />
 
-        <div
-            className="flex flex-col fixed top-[3rem] h-[calc(100vh-5rem)] right-0 bottom-0 w-[20%] sm:w-[50%] md:w-[40%] xl:w-[30%] 2xl:w-[20%] border-l bg-secondary border-b border-bcolor shadow-2xl z-50 transform transition-transform duration-300 ease-in-out"
-        >
-            <div className="flex-1 flex flex-col p-6">
-                {dom}
-            </div>
-        </div>
-    </>;
+                    <motion.div
+                        initial={{ x: '100%' }}
+                        animate={{ x: 0 }}
+                        exit={{ x: '100%' }}
+                        transition={{
+                            type: 'spring',
+                            damping: 30,
+                            stiffness: 300,
+                        }}
+                        className="flex flex-col fixed top-[3rem] h-[calc(100vh-5rem)] right-0 bottom-0 w-[20%] sm:w-[50%] md:w-[40%] xl:w-[30%] 2xl:w-[20%] border-l bg-secondary border-b border-bcolor shadow-2xl z-50"
+                    >
+                        <div className="flex-1 flex flex-col p-6">
+                            {dom}
+                        </div>
+                    </motion.div>
+                </>
+            )}
+        </AnimatePresence>
+    );
 }
