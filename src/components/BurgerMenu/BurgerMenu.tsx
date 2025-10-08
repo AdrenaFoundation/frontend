@@ -169,7 +169,15 @@ export default function BurgerMenu({
           <div className="flex flex-row items-center gap-1">
             <Mutagen />
 
-            {/* Priority Fee Button */}
+            {
+              <NotificationBell
+                setIsNotificationModalOpen={setIsNotificationModalOpen}
+                isNotificationModalOpen={isNotificationModalOpen}
+                adapters={adapters}
+                isMobile
+              />
+            }
+
             <button
               type="button"
               onClick={() => setIsPriorityFeeModalOpen(true)}
@@ -184,7 +192,6 @@ export default function BurgerMenu({
               />
             </button>
 
-            {/* Settings Button */}
             <button
               type="button"
               onClick={() => setIsSettingsModalOpen(true)}
@@ -226,15 +233,6 @@ export default function BurgerMenu({
               )}
             </AnimatePresence>
 
-            {
-              <NotificationBell
-                setIsNotificationModalOpen={setIsNotificationModalOpen}
-                isNotificationModalOpen={isNotificationModalOpen}
-                adapters={adapters}
-                isMobile
-              />
-            }
-
             <WalletAdapter
               className="w-full"
               userProfile={userProfile}
@@ -251,7 +249,6 @@ export default function BurgerMenu({
         </div>
       )}
 
-      {/* Tablet header - desktop style */}
       {isTablet && (
         <div className="w-full flex flex-row items-center justify-between gap-3 p-3 px-3 border-b border-bcolor bg-secondary z-[51]">
           <div className="flex flex-row items-center gap-4">
@@ -287,7 +284,15 @@ export default function BurgerMenu({
           <div className="flex flex-row items-center gap-1">
             <Mutagen />
 
-            {/* Priority Fee Button */}
+            {
+              <NotificationBell
+                setIsNotificationModalOpen={setIsNotificationModalOpen}
+                isNotificationModalOpen={isNotificationModalOpen}
+                adapters={adapters}
+                isMobile
+              />
+            }
+
             <button
               type="button"
               onClick={() => setIsPriorityFeeModalOpen(true)}
@@ -302,7 +307,6 @@ export default function BurgerMenu({
               />
             </button>
 
-            {/* Settings Button */}
             <button
               type="button"
               onClick={() => setIsSettingsModalOpen(true)}
@@ -344,15 +348,6 @@ export default function BurgerMenu({
               )}
             </AnimatePresence>
 
-            {
-              <NotificationBell
-                setIsNotificationModalOpen={setIsNotificationModalOpen}
-                isNotificationModalOpen={isNotificationModalOpen}
-                adapters={adapters}
-                isMobile
-              />
-            }
-
             <WalletAdapter
               className="w-full"
               userProfile={userProfile}
@@ -369,12 +364,9 @@ export default function BurgerMenu({
         </div>
       )}
 
-      {/* Tablet vertical sidebar - fixed on left */}
       {isTablet && (
         <div className="fixed left-0 top-[48px] h-[calc(100vh-48px)] w-16 bg-secondary border-r border-white/10 z-40 flex flex-col justify-between">
-          {/* Navigation Icons - Scrollable */}
           <div className="flex-1 overflow-y-auto flex flex-col items-center py-4 gap-2">
-            {/* Profile */}
             {PAGES.find((p) => p.name === 'Profile') && (() => {
               const page = PAGES.find((p) => p.name === 'Profile')!;
               const isActive = pathname === page.link;
@@ -403,7 +395,6 @@ export default function BurgerMenu({
               );
             })()}
 
-            {/* Chat */}
             {!disableChat && (
               <button
                 onClick={() => setIsChatOpen(true)}
@@ -420,7 +411,6 @@ export default function BurgerMenu({
               </button>
             )}
 
-            {/* Achievements */}
             {PAGES.find((p) => p.name === 'Achievements') && (() => {
               const page = PAGES.find((p) => p.name === 'Achievements')!;
               const isActive = pathname === page.link;
@@ -449,7 +439,6 @@ export default function BurgerMenu({
               );
             })()}
 
-            {/* Referral */}
             {PAGES.find((p) => p.name === 'Referral') && (() => {
               const page = PAGES.find((p) => p.name === 'Referral')!;
               const isActive = pathname === page.link;
@@ -478,7 +467,6 @@ export default function BurgerMenu({
               );
             })()}
 
-            {/* Leaderboard */}
             {PAGES.find((p) => p.name === 'Leaderboard') && (() => {
               const page = PAGES.find((p) => p.name === 'Leaderboard')!;
               const isActive = pathname === page.link;
@@ -507,7 +495,6 @@ export default function BurgerMenu({
               );
             })()}
 
-            {/* Learn */}
             {PAGES.find((p) => p.name === 'Learn') && (() => {
               const page = PAGES.find((p) => p.name === 'Learn')!;
               return (
@@ -531,7 +518,6 @@ export default function BurgerMenu({
               );
             })()}
 
-            {/* Vote */}
             {PAGES.find((p) => p.name === 'Vote') && (() => {
               const page = PAGES.find((p) => p.name === 'Vote')!;
               return (
@@ -556,7 +542,6 @@ export default function BurgerMenu({
             })()}
           </div>
 
-          {/* Social Links - Fixed at bottom */}
           <div className="flex-shrink-0 p-2 border-t border-white/[0.06] flex flex-col items-center gap-2">
             <Link
               href="https://discord.gg/adrena"
@@ -604,11 +589,9 @@ export default function BurgerMenu({
         </div>
       )}
 
-      {/* Mobile sidebar - only for mobile */}
       {!isTablet && portalContainer && (
         createPortal(
           <>
-            {/* Backdrop */}
             <motion.div
               initial={false}
               animate={{ opacity: isOpen ? 1 : 0 }}
@@ -618,7 +601,6 @@ export default function BurgerMenu({
               style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
             />
 
-            {/* Sidebar */}
             <motion.div
               initial={false}
               animate={{ x: isOpen ? 0 : '-100%' }}
@@ -629,7 +611,6 @@ export default function BurgerMenu({
               }}
               className="fixed left-0 top-0 h-full w-[85%] max-w-[340px] bg-secondary border-r border-white/10 z-[60] flex flex-col"
             >
-              {/* Header with Logo - Fixed */}
               <div className="flex-shrink-0 p-2 flex items-center justify-between border-b border-white/[0.06]">
                 <Image
                   src={adxLogo}
@@ -660,10 +641,8 @@ export default function BurgerMenu({
                 </button>
               </div>
 
-              {/* Navigation Links - Scrollable */}
               <div className="flex-1 overflow-y-auto">
                 {!hasMenuLoadedOnce ? (
-                  /* Shimmer Loading State */
                   <div className="flex flex-col">
                     {[...Array(9)].map((_, i) => (
                       <div key={i} className="flex items-center gap-4 px-4 py-5 border-b border-white/[0.06] animate-pulse">

@@ -185,18 +185,6 @@ export default function WalletSidebar({
             }
         };
 
-        // TODO: Handle account with no funding
-        // {
-        //     (() => {
-        //         const solToken = tokenBalancesWithPrices.find(token => token.symbol === 'SOL');
-        //         return (solToken?.uiAmount || 0) <= 0.01 ? (
-        //             <div className="text-xl text-red text-center">
-        //                 Fund your account to start trading.
-        //             </div>
-        //         ) : null;
-        //     })()
-        // }
-
         return <>
             <div className='flex items-center justify-between gap-2'>
                 <div className='flex items-center gap-2'>
@@ -604,7 +592,7 @@ export default function WalletSidebar({
                             damping: 30,
                             stiffness: 300,
                         }}
-                        className="flex flex-col fixed top-0 right-0 h-full w-[85%] sm:w-[60%] md:w-[50%] lg:w-[50%] lg:max-w-none xl:w-[40%] 2xl:w-[30%] border-l bg-secondary border-bcolor shadow-2xl z-[60]"
+                        className="flex flex-col fixed top-0 right-0 h-full w-[95%] sm:w-[60%] md:w-[50%] lg:w-[50%] lg:max-w-none xl:w-[40%] 2xl:w-[30%] border-l bg-secondary border-bcolor shadow-2xl z-[60]"
                     >
                         <div className="flex-1 flex flex-col p-6 overflow-y-auto">
                             {dom}
