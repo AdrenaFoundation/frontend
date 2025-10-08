@@ -144,7 +144,7 @@ export default function App(props: AppProps) {
         },
         fundingMethodConfig: {
           moonpay: {
-            useSandbox: process.env.NEXT_PUBLIC_DEV_CLUSTER === 'devnet',
+            useSandbox: false,
             paymentMethod: 'credit_debit_card' as const,
             uiConfig: {
               theme: 'dark' as const,
