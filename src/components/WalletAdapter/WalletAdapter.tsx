@@ -174,8 +174,8 @@ export default function WalletAdapter({
                 />
                 <span className="text-xs leading-none">
                   {userProfile
-                    ? getAbbrevNickname(userProfile.nickname, 6)
-                    : getAbbrevWalletAddress(wallet?.walletAddress ?? 'User', 3)}
+                    ? getAbbrevNickname(userProfile.nickname, 16)
+                    : getAbbrevWalletAddress(wallet?.walletAddress ?? 'User', 4)}
                 </span>
                 <Image
                   src={chevronDownIcon}
@@ -191,12 +191,14 @@ export default function WalletAdapter({
                 <Button
                   className={twMerge(
                     className,
-                    'p-1 px-2 hover:bg-third transition-colors cursor-pointer border-bcolor rounded-none rounded-l-lg border-r border-r-[#414E5E] gap-2 text-xs h-auto bg-transparent'
+                    'p-1 px-2 hover:bg-third transition-colors cursor-pointer',
+                    'border-bcolor rounded-none rounded-l-lg border-r border-r-[#414E5E] gap-2 text-xs h-auto bg-transparent',
+                    'whitespace-nowrap'
                   )}
                   title={
                     userProfile
-                      ? getAbbrevNickname(userProfile.nickname, 6)
-                      : getAbbrevWalletAddress(wallet?.walletAddress ?? 'User', 3)
+                      ? getAbbrevNickname(userProfile.nickname, 16)
+                      : getAbbrevWalletAddress(wallet?.walletAddress ?? 'User', 6)
                   }
                   leftIcon={
                     userProfile

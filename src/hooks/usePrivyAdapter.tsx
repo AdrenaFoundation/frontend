@@ -102,8 +102,10 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     }
 
     if (!ready || isDisconnecting || isConnecting) {
-      console.log('🔍 AUTO CONNECT ///// NOT READY OR IS DISCONNECTING OR IS CONNECTING');
+      console.log('🔍 AUTO CONNECT ///// NOT READY OR IS DISCONNECTING OR IS CONNECTING', ready, isDisconnecting, isConnecting);
       return;
+    } else {
+      console.log('🔍 AUTO CONNECT ///// READY', ready, isDisconnecting, isConnecting);
     }
 
     try {
@@ -115,13 +117,23 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
         if (typeof window !== 'undefined') {
           const savedWallet = localStorage.getItem('privy:selectedWallet');
 
-          if (savedWallet && !isValidPublicKey(savedWallet) && user?.linkedAccounts.find(account =>
-            account.type === 'wallet' &&
-            account.chainType === 'solana'
-          )) {
-            walletAddress = savedWallet;
-          } else {
-            localStorage.removeItem('privy:selectedWallet');
+          if (savedWallet) {
+            if (isValidPublicKey(savedWallet) && user?.linkedAccounts.find(account =>
+              account.type === 'wallet' &&
+              account.chainType === 'solana' &&
+              account.address === savedWallet
+            )) {
+              console.log('>>> AAAA', savedWallet, user);
+              walletAddress = savedWallet;
+            } else {
+              localStorage.removeItem('privy:selectedWallet');
+
+              // ICI
+              // walletAddress = user?.linkedAccounts.find(account =>
+              //   account.type === 'wallet' &&
+              //   account.chainType === 'solana'
+              // );
+            }
           }
         }
 
@@ -164,6 +176,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   // called from function connectWalletAction in walletActions.ts
   const connect = useCallback(async () => {
     if (!ready || isConnecting || isDisconnecting) {
+      console.log('🔍 MANUAL CONNECT ///// NOT READY OR IS DISCONNECTING OR IS CONNECTING', ready, isDisconnecting, isConnecting);
       return;
     }
 
@@ -243,6 +256,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       setIsDisconnecting(false);
     } catch (error) {
       console.error('🔍 DISCONNECT: Error during logout:', error);
+    } finally {
       setIsDisconnecting(false);
     }
   }, [logout, dispatch, isDisconnecting]);

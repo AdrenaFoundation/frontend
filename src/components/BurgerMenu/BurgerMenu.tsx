@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { twMerge } from 'tailwind-merge';
 
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import {
   LinksType,
   UserProfileExtended,
@@ -85,6 +86,8 @@ export default function BurgerMenu({
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [hasMenuLoadedOnce, setHasMenuLoadedOnce] = useState(false);
 
+  const isSmallTablet = useBetterMediaQuery('(max-width: 700px)');
+
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -128,468 +131,126 @@ export default function BurgerMenu({
     ['Trade', 'Provide Liquidity', 'Stake', 'Ranked', 'Monitor'].includes(page.name)
   );
 
-  return (
-    <>
-      {!isTablet && (
-        <div className="w-full flex flex-row items-center justify-between gap-3 p-3 px-3 border-b border-bcolor bg-secondary z-[51]">
-          <div className="flex flex-row items-center gap-1">
-            <Link href="/trade" className="flex h-9 flex-shrink-0 items-center">
-              <Image
-                src={adxLogo}
-                alt="Adrena"
-                width={22}
-                height={22}
-                className="w-[22px] h-[22px]"
-              />
-            </Link>
+  if (!isTablet) {
+    return <>
+      <div className="w-full flex flex-row items-center justify-between gap-3 p-3 px-3 border-b border-bcolor bg-secondary z-[51]">
+        <div className="flex flex-row items-center gap-1">
+          <Link href="/trade" className="flex h-9 flex-shrink-0 items-center">
+            <Image
+              src={adxLogo}
+              alt="Adrena"
+              width={22}
+              height={22}
+              className="w-[22px] h-[22px]"
+            />
+          </Link>
 
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="flex size-8 items-center justify-center rounded-lg hover:bg-third/50 transition-colors"
-              aria-label="Open menu"
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="flex size-8 items-center justify-center rounded-lg hover:bg-third/50 transition-colors"
+            aria-label="Open menu"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="size-4 shrink-0"
             >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="size-4 shrink-0"
-              >
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
-            </button>
-          </div>
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+        </div>
 
-          <div className="flex flex-row items-center gap-1">
-            <Mutagen />
+        <div className="flex flex-row items-center gap-1">
+          <Mutagen />
 
-            {
-              <NotificationBell
-                setIsNotificationModalOpen={setIsNotificationModalOpen}
-                isNotificationModalOpen={isNotificationModalOpen}
-                adapters={adapters}
+          {
+            <NotificationBell
+              setIsNotificationModalOpen={setIsNotificationModalOpen}
+              isNotificationModalOpen={isNotificationModalOpen}
+              adapters={adapters}
+              isMobile
+            />
+          }
+
+          <button
+            type="button"
+            onClick={() => setIsPriorityFeeModalOpen(true)}
+            className="border border-[#414E5E] p-2 rounded-full hover:bg-third transition-colors cursor-pointer"
+          >
+            <Image
+              src={fuelIcon}
+              alt="Priority Fee"
+              width={12}
+              height={12}
+              className="w-3 h-3"
+            />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsSettingsModalOpen(true)}
+            className="border border-[#414E5E] p-2 rounded-full hover:bg-third transition-colors cursor-pointer"
+          >
+            <Image
+              src={settingsIcon}
+              alt="Settings"
+              width={12}
+              height={12}
+              className="w-3 h-3"
+            />
+          </button>
+
+          <AnimatePresence>
+            {isPriorityFeeModalOpen && (
+              <PriorityFeeSetting
+                setCloseMobileModal={setIsPriorityFeeModalOpen}
                 isMobile
               />
-            }
-
-            <button
-              type="button"
-              onClick={() => setIsPriorityFeeModalOpen(true)}
-              className="border border-[#414E5E] p-2 rounded-full hover:bg-third transition-colors cursor-pointer"
-            >
-              <Image
-                src={fuelIcon}
-                alt="Priority Fee"
-                width={12}
-                height={12}
-                className="w-3 h-3"
-              />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setIsSettingsModalOpen(true)}
-              className="border border-[#414E5E] p-2 rounded-full hover:bg-third transition-colors cursor-pointer"
-            >
-              <Image
-                src={settingsIcon}
-                alt="Settings"
-                width={12}
-                height={12}
-                className="w-3 h-3"
-              />
-            </button>
-
-            <AnimatePresence>
-              {isPriorityFeeModalOpen && (
-                <PriorityFeeSetting
-                  setCloseMobileModal={setIsPriorityFeeModalOpen}
-                  isMobile
-                />
-              )}
-            </AnimatePresence>
-
-            <AnimatePresence>
-              {isSettingsModalOpen && (
-                <Settings
-                  activeRpc={activeRpc}
-                  rpcInfos={rpcInfos}
-                  autoRpcMode={autoRpcMode}
-                  customRpcUrl={customRpcUrl}
-                  customRpcLatency={customRpcLatency}
-                  favoriteRpc={favoriteRpc}
-                  setAutoRpcMode={setAutoRpcMode}
-                  setCustomRpcUrl={setCustomRpcUrl}
-                  setFavoriteRpc={setFavoriteRpc}
-                  setCloseMobileModal={setIsSettingsModalOpen}
-                  isMobile
-                />
-              )}
-            </AnimatePresence>
-
-            <WalletAdapter
-              className="w-full"
-              userProfile={userProfile}
-              isIconOnly={false}
-              adapters={adapters}
-              setIsPriorityFeeModalOpen={setIsPriorityFeeModalOpen}
-              setIsSettingsModalOpen={setIsSettingsModalOpen}
-              setIsChatOpen={() => setIsChatOpen(!isChatOpen)}
-              disableChat={disableChat}
-              isMobile={false}
-              isTablet={true}
-            />
-          </div>
-        </div>
-      )}
-
-      {isTablet && (
-        <div className="w-full flex flex-row items-center justify-between gap-3 p-3 px-3 border-b border-bcolor bg-secondary z-[51]">
-          <div className="flex flex-row items-center gap-4">
-            <Link className="font-bold uppercase relative p-1.5 -m-1.5" href="/">
-              <Image
-                src={adxLogo}
-                className="shrink-0 relative"
-                alt="logo"
-                width={25}
-                height={25}
-              />
-            </Link>
-
-            {tabletSidebarPages.map((page) => {
-              const isActive = pathname === page.link;
-              return (
-                <Link
-                  key={page.name}
-                  href={page.link}
-                  className={twMerge(
-                    'text-sm opacity-50 hover:opacity-100 transition-opacity duration-300 hover:grayscale-0 flex items-center justify-center p-0.5 -m-0.5 whitespace-nowrap',
-                    isActive
-                      ? 'grayscale-0 opacity-100'
-                      : 'grayscale'
-                  )}
-                >
-                  {page.name}
-                </Link>
-              );
-            })}
-          </div>
-
-          <div className="flex flex-row items-center gap-1">
-            <Mutagen />
-
-            {
-              <NotificationBell
-                setIsNotificationModalOpen={setIsNotificationModalOpen}
-                isNotificationModalOpen={isNotificationModalOpen}
-                adapters={adapters}
-                isMobile
-              />
-            }
-
-            <button
-              type="button"
-              onClick={() => setIsPriorityFeeModalOpen(true)}
-              className="border border-[#414E5E] p-2 rounded-full hover:bg-third transition-colors cursor-pointer"
-            >
-              <Image
-                src={fuelIcon}
-                alt="Priority Fee"
-                width={12}
-                height={12}
-                className="w-3 h-3"
-              />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setIsSettingsModalOpen(true)}
-              className="border border-[#414E5E] p-2 rounded-full hover:bg-third transition-colors cursor-pointer"
-            >
-              <Image
-                src={settingsIcon}
-                alt="Settings"
-                width={12}
-                height={12}
-                className="w-3 h-3"
-              />
-            </button>
-
-            <AnimatePresence>
-              {isPriorityFeeModalOpen && (
-                <PriorityFeeSetting
-                  setCloseMobileModal={setIsPriorityFeeModalOpen}
-                  isMobile
-                />
-              )}
-            </AnimatePresence>
-
-            <AnimatePresence>
-              {isSettingsModalOpen && (
-                <Settings
-                  activeRpc={activeRpc}
-                  rpcInfos={rpcInfos}
-                  autoRpcMode={autoRpcMode}
-                  customRpcUrl={customRpcUrl}
-                  customRpcLatency={customRpcLatency}
-                  favoriteRpc={favoriteRpc}
-                  setAutoRpcMode={setAutoRpcMode}
-                  setCustomRpcUrl={setCustomRpcUrl}
-                  setFavoriteRpc={setFavoriteRpc}
-                  setCloseMobileModal={setIsSettingsModalOpen}
-                  isMobile
-                />
-              )}
-            </AnimatePresence>
-
-            <WalletAdapter
-              className="w-full"
-              userProfile={userProfile}
-              isIconOnly={false}
-              adapters={adapters}
-              setIsPriorityFeeModalOpen={setIsPriorityFeeModalOpen}
-              setIsSettingsModalOpen={setIsSettingsModalOpen}
-              setIsChatOpen={() => setIsChatOpen(!isChatOpen)}
-              disableChat={disableChat}
-              isMobile={false}
-              isTablet={true}
-            />
-          </div>
-        </div>
-      )}
-
-      {isTablet && (
-        <div className="fixed left-0 top-[48px] h-[calc(100vh-48px)] w-16 bg-secondary border-r border-white/10 z-40 flex flex-col justify-between">
-          <div className="flex-1 overflow-y-auto flex flex-col items-center py-4 gap-2">
-            {PAGES.find((p) => p.name === 'Profile') && (() => {
-              const page = PAGES.find((p) => p.name === 'Profile')!;
-              const isActive = pathname === page.link;
-              return (
-                <Link
-                  key="profile"
-                  href={page.link}
-                  className={twMerge(
-                    'flex items-center justify-center w-12 h-12 rounded-lg transition-all',
-                    isActive
-                      ? 'bg-white/10 opacity-100'
-                      : 'opacity-50 hover:opacity-100 hover:bg-white/5'
-                  )}
-                  title="Profile"
-                >
-                  {page.icon && (
-                    <Image
-                      src={page.icon}
-                      alt="Profile"
-                      width={20}
-                      height={20}
-                      className="brightness-0 invert opacity-90"
-                    />
-                  )}
-                </Link>
-              );
-            })()}
-
-            {!disableChat && (
-              <button
-                onClick={() => setIsChatOpen(true)}
-                className="flex items-center justify-center w-12 h-12 rounded-lg transition-all opacity-50 hover:opacity-100 hover:bg-white/5"
-                title="Chat"
-              >
-                <Image
-                  src={chatIcon}
-                  alt="Chat"
-                  width={20}
-                  height={20}
-                  className="brightness-0 invert opacity-90"
-                />
-              </button>
             )}
+          </AnimatePresence>
 
-            {PAGES.find((p) => p.name === 'Achievements') && (() => {
-              const page = PAGES.find((p) => p.name === 'Achievements')!;
-              const isActive = pathname === page.link;
-              return (
-                <Link
-                  key="achievements"
-                  href={page.link}
-                  className={twMerge(
-                    'flex items-center justify-center w-12 h-12 rounded-lg transition-all',
-                    isActive
-                      ? 'bg-white/10 opacity-100'
-                      : 'opacity-50 hover:opacity-100 hover:bg-white/5'
-                  )}
-                  title="Achievements"
-                >
-                  {page.icon && (
-                    <Image
-                      src={page.icon}
-                      alt="Achievements"
-                      width={20}
-                      height={20}
-                      className="brightness-0 invert opacity-90"
-                    />
-                  )}
-                </Link>
-              );
-            })()}
-
-            {PAGES.find((p) => p.name === 'Referral') && (() => {
-              const page = PAGES.find((p) => p.name === 'Referral')!;
-              const isActive = pathname === page.link;
-              return (
-                <Link
-                  key="referral"
-                  href={page.link}
-                  className={twMerge(
-                    'flex items-center justify-center w-12 h-12 rounded-lg transition-all',
-                    isActive
-                      ? 'bg-white/10 opacity-100'
-                      : 'opacity-50 hover:opacity-100 hover:bg-white/5'
-                  )}
-                  title="Referral"
-                >
-                  {page.icon && (
-                    <Image
-                      src={page.icon}
-                      alt="Referral"
-                      width={20}
-                      height={20}
-                      className="brightness-0 invert opacity-90"
-                    />
-                  )}
-                </Link>
-              );
-            })()}
-
-            {PAGES.find((p) => p.name === 'Leaderboard') && (() => {
-              const page = PAGES.find((p) => p.name === 'Leaderboard')!;
-              const isActive = pathname === page.link;
-              return (
-                <Link
-                  key="leaderboard"
-                  href={page.link}
-                  className={twMerge(
-                    'flex items-center justify-center w-12 h-12 rounded-lg transition-all',
-                    isActive
-                      ? 'bg-white/10 opacity-100'
-                      : 'opacity-50 hover:opacity-100 hover:bg-white/5'
-                  )}
-                  title="Leaderboard"
-                >
-                  {page.icon && (
-                    <Image
-                      src={page.icon}
-                      alt="Leaderboard"
-                      width={20}
-                      height={20}
-                      className="brightness-0 invert opacity-90"
-                    />
-                  )}
-                </Link>
-              );
-            })()}
-
-            {PAGES.find((p) => p.name === 'Learn') && (() => {
-              const page = PAGES.find((p) => p.name === 'Learn')!;
-              return (
-                <Link
-                  key="learn"
-                  href={page.link}
-                  target="_blank"
-                  className="flex items-center justify-center w-12 h-12 rounded-lg transition-all opacity-50 hover:opacity-100 hover:bg-white/5"
-                  title="Learn"
-                >
-                  {page.icon && (
-                    <Image
-                      src={page.icon}
-                      alt="Learn"
-                      width={20}
-                      height={20}
-                      className="brightness-0 invert opacity-90"
-                    />
-                  )}
-                </Link>
-              );
-            })()}
-
-            {PAGES.find((p) => p.name === 'Vote') && (() => {
-              const page = PAGES.find((p) => p.name === 'Vote')!;
-              return (
-                <Link
-                  key="vote"
-                  href={page.link}
-                  target="_blank"
-                  className="flex items-center justify-center w-12 h-12 rounded-lg transition-all opacity-50 hover:opacity-100 hover:bg-white/5"
-                  title="Vote"
-                >
-                  {page.icon && (
-                    <Image
-                      src={page.icon}
-                      alt="Vote"
-                      width={20}
-                      height={20}
-                      className="brightness-0 invert opacity-90"
-                    />
-                  )}
-                </Link>
-              );
-            })()}
-          </div>
-
-          <div className="flex-shrink-0 p-2 border-t border-white/[0.06] flex flex-col items-center gap-2">
-            <Link
-              href="https://discord.gg/adrena"
-              target="_blank"
-              className="p-2 hover:bg-white/5 rounded-lg transition-all"
-              title="Discord"
-            >
-              <Image
-                src={discordLogo}
-                alt="Discord"
-                width="16"
-                height="16"
-                className="opacity-40 hover:opacity-80 transition-opacity"
+          <AnimatePresence>
+            {isSettingsModalOpen && (
+              <Settings
+                activeRpc={activeRpc}
+                rpcInfos={rpcInfos}
+                autoRpcMode={autoRpcMode}
+                customRpcUrl={customRpcUrl}
+                customRpcLatency={customRpcLatency}
+                favoriteRpc={favoriteRpc}
+                setAutoRpcMode={setAutoRpcMode}
+                setCustomRpcUrl={setCustomRpcUrl}
+                setFavoriteRpc={setFavoriteRpc}
+                setCloseMobileModal={setIsSettingsModalOpen}
+                isMobile
               />
-            </Link>
-            <Link
-              href="https://twitter.com/AdrenaProtocol"
-              target="_blank"
-              className="p-2 hover:bg-white/5 rounded-lg transition-all"
-              title="Twitter"
-            >
-              <Image
-                src={twitterLogo}
-                alt="Twitter"
-                width="16"
-                height="16"
-                className="opacity-40 hover:opacity-80 transition-opacity"
-              />
-            </Link>
-            <Link
-              href="https://github.com/orgs/AdrenaFoundation"
-              target="_blank"
-              className="p-2 hover:bg-white/5 rounded-lg transition-all"
-              title="GitHub"
-            >
-              <Image
-                src={githubLogo}
-                alt="GitHub"
-                width="16"
-                height="16"
-                className="opacity-40 hover:opacity-80 transition-opacity"
-              />
-            </Link>
-          </div>
+            )}
+          </AnimatePresence>
+
+          <WalletAdapter
+            className="w-full"
+            userProfile={userProfile}
+            isIconOnly={false}
+            adapters={adapters}
+            setIsPriorityFeeModalOpen={setIsPriorityFeeModalOpen}
+            setIsSettingsModalOpen={setIsSettingsModalOpen}
+            setIsChatOpen={() => setIsChatOpen(!isChatOpen)}
+            disableChat={disableChat}
+            isMobile={false}
+            isTablet={true}
+          />
         </div>
-      )}
+      </div>
 
-      {!isTablet && portalContainer && (
+      {portalContainer && (
         createPortal(
           <>
             <motion.div
@@ -1009,8 +670,348 @@ export default function BurgerMenu({
             </motion.div>
           </>,
           portalContainer
-        )
-      )}
+        ))}
+    </>
+  }
+
+  // Tablet view
+  return (
+    <>
+      <div className="w-full flex flex-row items-center justify-between gap-3 p-3 px-3 border-b border-bcolor bg-secondary z-[51]">
+        <div className="flex flex-row items-center gap-4">
+          <Link className="relative p-1.5 -m-1.5 shrink-0 flex" href="/">
+            <Image
+              src={adxLogo}
+              className="w-6 h-6"
+              alt="logo"
+              width={25}
+              height={25}
+            />
+          </Link>
+
+          {tabletSidebarPages.map((page) => {
+            const isActive = pathname === page.link;
+            return (
+              <Link
+                key={page.name}
+                href={page.link}
+                className={twMerge(
+                  'text-sm opacity-50 hover:opacity-100 transition-opacity duration-300 hover:grayscale-0 flex items-center justify-center p-0.5 -m-0.5 whitespace-nowrap',
+                  isActive
+                    ? 'grayscale-0 opacity-100'
+                    : 'grayscale'
+                )}
+              >
+                {page.name}
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="flex flex-row items-center gap-1">
+          {!isSmallTablet ? <Mutagen /> : null}
+
+          {
+            <NotificationBell
+              setIsNotificationModalOpen={setIsNotificationModalOpen}
+              isNotificationModalOpen={isNotificationModalOpen}
+              adapters={adapters}
+              isMobile
+            />
+          }
+
+          <button
+            type="button"
+            onClick={() => setIsPriorityFeeModalOpen(true)}
+            className="border border-[#414E5E] p-2 rounded-full hover:bg-third transition-colors cursor-pointer"
+          >
+            <Image
+              src={fuelIcon}
+              alt="Priority Fee"
+              width={12}
+              height={12}
+              className="w-3 h-3"
+            />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsSettingsModalOpen(true)}
+            className="border border-[#414E5E] p-2 rounded-full hover:bg-third transition-colors cursor-pointer"
+          >
+            <Image
+              src={settingsIcon}
+              alt="Settings"
+              width={12}
+              height={12}
+              className="w-3 h-3"
+            />
+          </button>
+
+          <AnimatePresence>
+            {isPriorityFeeModalOpen && (
+              <PriorityFeeSetting
+                setCloseMobileModal={setIsPriorityFeeModalOpen}
+                isMobile
+              />
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {isSettingsModalOpen && (
+              <Settings
+                activeRpc={activeRpc}
+                rpcInfos={rpcInfos}
+                autoRpcMode={autoRpcMode}
+                customRpcUrl={customRpcUrl}
+                customRpcLatency={customRpcLatency}
+                favoriteRpc={favoriteRpc}
+                setAutoRpcMode={setAutoRpcMode}
+                setCustomRpcUrl={setCustomRpcUrl}
+                setFavoriteRpc={setFavoriteRpc}
+                setCloseMobileModal={setIsSettingsModalOpen}
+                isMobile
+              />
+            )}
+          </AnimatePresence>
+
+          <WalletAdapter
+            className="w-full"
+            userProfile={userProfile}
+            isIconOnly={false}
+            adapters={adapters}
+            setIsPriorityFeeModalOpen={setIsPriorityFeeModalOpen}
+            setIsSettingsModalOpen={setIsSettingsModalOpen}
+            setIsChatOpen={() => setIsChatOpen(!isChatOpen)}
+            disableChat={disableChat}
+            isMobile={false}
+            isTablet={true}
+          />
+        </div>
+      </div>
+
+      <div className="fixed left-0 top-[48px] h-[calc(100vh-48px)] w-16 bg-secondary border-r border-white/10 z-40 flex flex-col justify-between">
+        <div className="flex-1 overflow-y-auto flex flex-col items-center py-4 gap-2">
+          {PAGES.find((p) => p.name === 'Profile') && (() => {
+            const page = PAGES.find((p) => p.name === 'Profile')!;
+            const isActive = pathname === page.link;
+            return (
+              <Link
+                key="profile"
+                href={page.link}
+                className={twMerge(
+                  'flex items-center justify-center w-12 h-12 rounded-lg transition-all',
+                  isActive
+                    ? 'bg-white/10 opacity-100'
+                    : 'opacity-50 hover:opacity-100 hover:bg-white/5'
+                )}
+                title="Profile"
+              >
+                {page.icon && (
+                  <Image
+                    src={page.icon}
+                    alt="Profile"
+                    width={20}
+                    height={20}
+                    className="brightness-0 invert opacity-90"
+                  />
+                )}
+              </Link>
+            );
+          })()}
+
+          {!disableChat && (
+            <button
+              onClick={() => setIsChatOpen(true)}
+              className="flex items-center justify-center w-12 h-12 rounded-lg transition-all opacity-50 hover:opacity-100 hover:bg-white/5"
+              title="Chat"
+            >
+              <Image
+                src={chatIcon}
+                alt="Chat"
+                width={20}
+                height={20}
+                className="brightness-0 invert opacity-90"
+              />
+            </button>
+          )}
+
+          {PAGES.find((p) => p.name === 'Achievements') && (() => {
+            const page = PAGES.find((p) => p.name === 'Achievements')!;
+            const isActive = pathname === page.link;
+            return (
+              <Link
+                key="achievements"
+                href={page.link}
+                className={twMerge(
+                  'flex items-center justify-center w-12 h-12 rounded-lg transition-all',
+                  isActive
+                    ? 'bg-white/10 opacity-100'
+                    : 'opacity-50 hover:opacity-100 hover:bg-white/5'
+                )}
+                title="Achievements"
+              >
+                {page.icon && (
+                  <Image
+                    src={page.icon}
+                    alt="Achievements"
+                    width={20}
+                    height={20}
+                    className="brightness-0 invert opacity-90"
+                  />
+                )}
+              </Link>
+            );
+          })()}
+
+          {PAGES.find((p) => p.name === 'Referral') && (() => {
+            const page = PAGES.find((p) => p.name === 'Referral')!;
+            const isActive = pathname === page.link;
+            return (
+              <Link
+                key="referral"
+                href={page.link}
+                className={twMerge(
+                  'flex items-center justify-center w-12 h-12 rounded-lg transition-all',
+                  isActive
+                    ? 'bg-white/10 opacity-100'
+                    : 'opacity-50 hover:opacity-100 hover:bg-white/5'
+                )}
+                title="Referral"
+              >
+                {page.icon && (
+                  <Image
+                    src={page.icon}
+                    alt="Referral"
+                    width={20}
+                    height={20}
+                    className="brightness-0 invert opacity-90"
+                  />
+                )}
+              </Link>
+            );
+          })()}
+
+          {PAGES.find((p) => p.name === 'Leaderboard') && (() => {
+            const page = PAGES.find((p) => p.name === 'Leaderboard')!;
+            const isActive = pathname === page.link;
+            return (
+              <Link
+                key="leaderboard"
+                href={page.link}
+                className={twMerge(
+                  'flex items-center justify-center w-12 h-12 rounded-lg transition-all',
+                  isActive
+                    ? 'bg-white/10 opacity-100'
+                    : 'opacity-50 hover:opacity-100 hover:bg-white/5'
+                )}
+                title="Leaderboard"
+              >
+                {page.icon && (
+                  <Image
+                    src={page.icon}
+                    alt="Leaderboard"
+                    width={20}
+                    height={20}
+                    className="brightness-0 invert opacity-90"
+                  />
+                )}
+              </Link>
+            );
+          })()}
+
+          {PAGES.find((p) => p.name === 'Learn') && (() => {
+            const page = PAGES.find((p) => p.name === 'Learn')!;
+            return (
+              <Link
+                key="learn"
+                href={page.link}
+                target="_blank"
+                className="flex items-center justify-center w-12 h-12 rounded-lg transition-all opacity-50 hover:opacity-100 hover:bg-white/5"
+                title="Learn"
+              >
+                {page.icon && (
+                  <Image
+                    src={page.icon}
+                    alt="Learn"
+                    width={20}
+                    height={20}
+                    className="brightness-0 invert opacity-90"
+                  />
+                )}
+              </Link>
+            );
+          })()}
+
+          {PAGES.find((p) => p.name === 'Vote') && (() => {
+            const page = PAGES.find((p) => p.name === 'Vote')!;
+            return (
+              <Link
+                key="vote"
+                href={page.link}
+                target="_blank"
+                className="flex items-center justify-center w-12 h-12 rounded-lg transition-all opacity-50 hover:opacity-100 hover:bg-white/5"
+                title="Vote"
+              >
+                {page.icon && (
+                  <Image
+                    src={page.icon}
+                    alt="Vote"
+                    width={20}
+                    height={20}
+                    className="brightness-0 invert opacity-90"
+                  />
+                )}
+              </Link>
+            );
+          })()}
+        </div>
+
+        <div className="flex-shrink-0 p-2 border-t border-white/[0.06] flex flex-col items-center gap-2">
+          <Link
+            href="https://discord.gg/adrena"
+            target="_blank"
+            className="p-2 hover:bg-white/5 rounded-lg transition-all"
+            title="Discord"
+          >
+            <Image
+              src={discordLogo}
+              alt="Discord"
+              width="16"
+              height="16"
+              className="opacity-40 hover:opacity-80 transition-opacity"
+            />
+          </Link>
+          <Link
+            href="https://twitter.com/AdrenaProtocol"
+            target="_blank"
+            className="p-2 hover:bg-white/5 rounded-lg transition-all"
+            title="Twitter"
+          >
+            <Image
+              src={twitterLogo}
+              alt="Twitter"
+              width="16"
+              height="16"
+              className="opacity-40 hover:opacity-80 transition-opacity"
+            />
+          </Link>
+          <Link
+            href="https://github.com/orgs/AdrenaFoundation"
+            target="_blank"
+            className="p-2 hover:bg-white/5 rounded-lg transition-all"
+            title="GitHub"
+          >
+            <Image
+              src={githubLogo}
+              alt="GitHub"
+              width="16"
+              height="16"
+              className="opacity-40 hover:opacity-80 transition-opacity"
+            />
+          </Link>
+        </div>
+      </div>
     </>
   );
 }
