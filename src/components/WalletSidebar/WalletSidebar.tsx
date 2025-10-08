@@ -5,6 +5,7 @@ import Tippy from '@tippyjs/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
+import { QRCode } from 'react-qrcode-logo';
 
 import crossIcon from '@/../public/images/Icons/cross.svg';
 import dollarIcon from '@/../public/images/Icons/dollar.png';
@@ -359,7 +360,7 @@ export default function WalletSidebar({
 
                                         <Tippy content="Disconnect">
                                             <div
-                                                className='flex items-center justify-center rounded-full bg-gray-700 p-2 border-2 border-white/20 cursor-pointer opacity-80 hover:opacity-100 hover:border-white/40'
+                                                className='flex items-center justify-center rounded-full bg-[#4a5568] p-2 border-2 border-white/20 cursor-pointer opacity-80 hover:opacity-100 hover:border-white/40'
                                                 onClick={() => {
                                                     if (!connectedAdapter) return;
 
@@ -425,6 +426,74 @@ export default function WalletSidebar({
                                                         </div>
                                                     </div>
                                                 ))}
+                                            </div>
+                                        ) : (!solBalance || solBalance === 0) ? (
+                                            <div className="flex-1 flex justify-center px-6 py-8 overflow-y-auto">
+                                                <div className="text-center space-y-5">
+                                                    <div className="text-lg text-white/70 font-semibold">
+                                                        SOL needed for transactions
+                                                    </div>
+
+                                                    <div className="text-sm text-white/50 leading-relaxed">
+                                                        You need SOL to pay for transaction fees on Solana. Choose one of these methods:
+                                                    </div>
+
+                                                    {enhancedWalletData.isEmbedded && (
+                                                        <div className="p-4 bg-third/50 rounded-lg border border-white/10 space-y-2">
+                                                            <div className="text-sm text-white/70 font-semibold">
+                                                                1. Quick Fund (Recommended)
+                                                            </div>
+                                                            <button
+                                                                onClick={handleFundWallet}
+                                                                className="w-full px-4 py-2 bg-green text-white font-semibold rounded-lg hover:bg-green/80 transition-colors"
+                                                            >
+                                                                Fund with Privy
+                                                            </button>
+                                                            <div className="text-xs text-white/40">
+                                                                Buy crypto directly using card or other payment methods
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {enhancedWalletData.address && (
+                                                        <div className="p-4 bg-third/50 rounded-lg border border-white/10 space-y-3">
+                                                            <div className="text-sm text-white/70 font-semibold">
+                                                                {enhancedWalletData.isEmbedded ? '2. Scan QR Code' : '1. Scan QR Code'}
+                                                            </div>
+                                                            <div className="flex justify-center">
+                                                                <div className="p-3 bg-white rounded-lg">
+                                                                    <QRCode
+                                                                        value={enhancedWalletData.address}
+                                                                        size={160}
+                                                                        quietZone={8}
+                                                                        qrStyle="squares"
+                                                                        eyeRadius={5}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="text-xs text-white/40">
+                                                                Scan with your mobile wallet to send SOL
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {enhancedWalletData.address && (
+                                                        <div className="p-4 bg-third/50 rounded-lg border border-white/10 space-y-3">
+                                                            <div className="text-sm text-white/70 font-semibold">
+                                                                {enhancedWalletData.isEmbedded ? '3. Copy Address' : '2. Copy Address'}
+                                                            </div>
+                                                            <div className="p-3 bg-third rounded-lg border border-white/10 flex items-center gap-2">
+                                                                <div className="text-xs text-white font-mono break-all flex-1">
+                                                                    {enhancedWalletData.address}
+                                                                </div>
+                                                                <CopyButton textToCopy={enhancedWalletData.address} />
+                                                            </div>
+                                                            <div className="text-xs text-white/40">
+                                                                Manually paste this address in your wallet app
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         ) : (
                                             <div className="flex-1 overflow-y-auto space-y-2 pr-2 h-[calc(100vh-14em)] min-h-[calc(100vh-14em)] max-h-[calc(100vh-14em)]">
