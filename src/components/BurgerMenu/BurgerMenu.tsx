@@ -125,13 +125,10 @@ export default function BurgerMenu({
 
   const clusterSwitchEnabled = false;
 
-  // Unified menu item styles
   const MENU_ITEM_CLASSES = 'flex items-center gap-4 px-4 py-5 group border-b border-white/[0.06]';
-  const MENU_ITEM_HOVER = ''; // No hover/active needed - menu closes on click
   const MENU_ITEM_ACTIVE = 'bg-third';
   const ICON_CONTAINER = 'flex items-center justify-center w-12 h-12 flex-shrink-0';
   const ICON_SIZE = { width: 24, height: 24 };
-  const EMOJI_SIZE = 'text-2xl';
   const TITLE_CLASSES = 'text-base font-medium mb-0.5';
   const TITLE_ACTIVE = 'text-white';
   const TITLE_DEFAULT = 'text-white/90';
@@ -145,14 +142,12 @@ export default function BurgerMenu({
     }
   }, [isOpen]);
 
-  // Main pages for tablet sidebar
   const tabletSidebarPages = PAGES.filter((page) =>
     ['Trade', 'Provide Liquidity', 'Stake', 'Ranked', 'Monitor'].includes(page.name)
   );
 
   return (
     <>
-      {/* Mobile header */}
       {!isTablet && (
         <div className="w-full flex flex-row items-center justify-between gap-3 p-3 px-3 border-b border-bcolor bg-secondary z-[51]">
           <div className="flex flex-row items-center gap-1">
@@ -700,7 +695,6 @@ export default function BurgerMenu({
                   </div>
                 ) : (
                   <nav className="flex flex-col">
-                    {/* Profile */}
                     {PAGES.find((p) => p.name === 'Profile') && (() => {
                       const page = PAGES.find((p) => p.name === 'Profile')!;
                       const isActive = pathname === page.link;
@@ -711,7 +705,7 @@ export default function BurgerMenu({
                           onClick={() => setIsOpen(false)}
                           className={twMerge(
                             MENU_ITEM_CLASSES,
-                            isActive ? MENU_ITEM_ACTIVE : MENU_ITEM_HOVER
+                            isActive ? MENU_ITEM_ACTIVE : ''
                           )}
                         >
                           {page.icon && (
@@ -739,14 +733,13 @@ export default function BurgerMenu({
                       );
                     })()}
 
-                    {/* Chat */}
                     {!disableChat && (
                       <button
                         onClick={() => {
                           setIsChatOpen(true);
                           setIsOpen(false);
                         }}
-                        className={twMerge(MENU_ITEM_CLASSES, MENU_ITEM_HOVER, 'text-left w-full')}
+                        className={twMerge(MENU_ITEM_CLASSES, 'text-left w-full')}
                       >
                         <div className={ICON_CONTAINER}>
                           <Image
@@ -767,7 +760,6 @@ export default function BurgerMenu({
                       </button>
                     )}
 
-                    {/* Achievements */}
                     {PAGES.find((p) => p.name === 'Achievements') && (() => {
                       const page = PAGES.find((p) => p.name === 'Achievements')!;
                       const isActive = pathname === page.link;
@@ -778,7 +770,7 @@ export default function BurgerMenu({
                           onClick={() => setIsOpen(false)}
                           className={twMerge(
                             MENU_ITEM_CLASSES,
-                            isActive ? MENU_ITEM_ACTIVE : MENU_ITEM_HOVER
+                            isActive ? MENU_ITEM_ACTIVE : ''
                           )}
                         >
                           {page.icon && (
@@ -806,7 +798,6 @@ export default function BurgerMenu({
                       );
                     })()}
 
-                    {/* Referral */}
                     {PAGES.find((p) => p.name === 'Referral') && (() => {
                       const page = PAGES.find((p) => p.name === 'Referral')!;
                       const isActive = pathname === page.link;
@@ -817,7 +808,7 @@ export default function BurgerMenu({
                           onClick={() => setIsOpen(false)}
                           className={twMerge(
                             MENU_ITEM_CLASSES,
-                            isActive ? MENU_ITEM_ACTIVE : MENU_ITEM_HOVER
+                            isActive ? MENU_ITEM_ACTIVE : ''
                           )}
                         >
                           {page.icon && (
@@ -845,7 +836,6 @@ export default function BurgerMenu({
                       );
                     })()}
 
-                    {/* Leaderboard */}
                     {PAGES.find((p) => p.name === 'Leaderboard') && (() => {
                       const page = PAGES.find((p) => p.name === 'Leaderboard')!;
                       const isActive = pathname === page.link;
@@ -856,7 +846,7 @@ export default function BurgerMenu({
                           onClick={() => setIsOpen(false)}
                           className={twMerge(
                             MENU_ITEM_CLASSES,
-                            isActive ? MENU_ITEM_ACTIVE : MENU_ITEM_HOVER
+                            isActive ? MENU_ITEM_ACTIVE : ''
                           )}
                         >
                           {page.icon && (
@@ -884,7 +874,6 @@ export default function BurgerMenu({
                       );
                     })()}
 
-                    {/* Learn */}
                     {PAGES.find((p) => p.name === 'Learn') && (() => {
                       const page = PAGES.find((p) => p.name === 'Learn')!;
                       return (
@@ -893,7 +882,7 @@ export default function BurgerMenu({
                           href={page.link}
                           onClick={() => setIsOpen(false)}
                           target="_blank"
-                          className={twMerge(MENU_ITEM_CLASSES, MENU_ITEM_HOVER)}
+                          className={MENU_ITEM_CLASSES}
                         >
                           {page.icon && (
                             <div className={ICON_CONTAINER}>
@@ -924,7 +913,6 @@ export default function BurgerMenu({
                       );
                     })()}
 
-                    {/* Vote */}
                     {PAGES.find((p) => p.name === 'Vote') && (() => {
                       const page = PAGES.find((p) => p.name === 'Vote')!;
                       return (
@@ -933,7 +921,7 @@ export default function BurgerMenu({
                           href={page.link}
                           onClick={() => setIsOpen(false)}
                           target="_blank"
-                          className={twMerge(MENU_ITEM_CLASSES, MENU_ITEM_HOVER)}
+                          className={MENU_ITEM_CLASSES}
                         >
                           {page.icon && (
                             <div className={ICON_CONTAINER}>
@@ -1012,7 +1000,6 @@ export default function BurgerMenu({
                 )}
               </div>
 
-              {/* Footer with Social Links - Fixed */}
               {hasMenuLoadedOnce && (
                 <div className="flex-shrink-0 p-5 pt-4 border-t border-white/[0.06]">
                   <div className="flex justify-center gap-4 items-center">
