@@ -125,7 +125,6 @@ export default function WalletSidebar({
 
     const dom = useMemo(() => {
         if (!isSidebarOpen || !wallet) {
-            console.log('Sidebar closed or no wallet, returning null');
             return null;
         }
 

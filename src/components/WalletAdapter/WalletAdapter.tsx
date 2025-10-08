@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import {
@@ -51,6 +51,7 @@ export default function WalletAdapter({
   const dispatch = useDispatch();
   const router = useRouter();
   const { wallet } = useSelector((s) => s.walletState);
+  const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
   const { isSidebarOpen, openSidebar, closeSidebar } = useWalletSidebar();
 
@@ -190,6 +191,11 @@ export default function WalletAdapter({
                 leftIconClassName="hidden sm:block w-4 h-4 rounded-full border border-white/20"
                 variant="lightbg"
                 onClick={() => {
+                  if (isMobile) {
+                    setMenuIsOpen(!menuIsOpen);
+                    return;
+                  }
+
                   router.push('/profile');
                 }}
               />
@@ -230,6 +236,17 @@ export default function WalletAdapter({
                   className="py-2"
                 >
                   Profile
+                </MenuItem>
+
+                <MenuSeparator />
+
+                <MenuItem
+                  onClick={() => {
+                    openSidebar();
+                  }}
+                  className="py-2"
+                >
+                  Wallet
                 </MenuItem>
 
                 {!disableChat ? (

@@ -108,7 +108,7 @@ export default function Menu({
         </div>
 
         <AnimatePresence>
-          {isMenuOpen || forceOpen && (
+          {(isMenuOpen || forceOpen) && (
             <motion.div
               ref={ref}
               initial="hidden"
