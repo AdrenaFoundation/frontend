@@ -215,7 +215,7 @@ export default function RootLayout({
         <div
           className={twMerge(
             'w-full flex flex-col max-w-[200em]',
-            isMobile ? 'pb-[100px]' : 'sm:pb-0',
+            isMobile ? 'pb-[calc(100px+env(safe-area-inset-bottom))]' : 'sm:pb-0',
             isTablet ? 'pl-16' : '',
           )}
         >

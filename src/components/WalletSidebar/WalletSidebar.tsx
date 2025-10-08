@@ -186,20 +186,22 @@ export default function WalletSidebar({
         };
 
         return <>
-            <div className='flex items-center justify-between gap-2'>
-                <div className='flex items-center gap-2'>
-                    <CopyButton
-                        textToCopy={wallet.walletAddress}
-                        notificationTitle="Wallet address copied to clipboard"
-                        className="opacity-50"
-                    />
+            <div className='flex items-center justify-between gap-2 sm:gap-2'>
+                <div className='flex items-center gap-3 sm:gap-2'>
+                    <div className='scale-125 sm:scale-100'>
+                        <CopyButton
+                            textToCopy={wallet.walletAddress}
+                            notificationTitle="Wallet address copied to clipboard"
+                            className="opacity-50"
+                        />
+                    </div>
 
                     {wallet?.isPrivy ?
                         <button
                             onClick={() => setView(view === 'wallet-selection' ? 'tokens' : 'wallet-selection')}
-                            className="flex items-start gap-1 transition-colors w-full opacity-50 hover:opacity-100"
+                            className="flex items-start gap-1.5 sm:gap-1 transition-colors w-full opacity-50 hover:opacity-100"
                         >
-                            <span className='text-xs cursor-pointer'>
+                            <span className='text-base sm:text-xs cursor-pointer'>
                                 {getAbbrevWalletAddress(wallet.walletAddress)}
                             </span>
 
@@ -207,7 +209,7 @@ export default function WalletSidebar({
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        : <span className='text-xs'>
+                        : <span className='text-base sm:text-xs'>
                             {getAbbrevWalletAddress(wallet.walletAddress)}
                         </span>}
                 </div>
@@ -217,7 +219,7 @@ export default function WalletSidebar({
                         closeSidebar();
                         setView('tokens');
                     }}
-                    className="flex items-center justify-center rounded-full p-2 opacity-50 hover:opacity-100 transition-opacity"
+                    className="flex items-center justify-center rounded-full p-2 sm:p-2 opacity-50 hover:opacity-100 transition-opacity scale-125 sm:scale-100"
                     aria-label="Close sidebar"
                 >
                     <Image
@@ -257,7 +259,7 @@ export default function WalletSidebar({
                             transition={{ duration: 0.2 }}
                             className="flex flex-col grow"
                         >
-                            <div className="flex items-center justify-between mb-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4 sm:gap-0">
                                 <div className="flex flex-col">
                                     {isLoadingBalances ? (
                                         <div className='flex flex-col h-14 gap-2'>
@@ -285,10 +287,10 @@ export default function WalletSidebar({
                                 </div>
 
                                 <div className='flex flex-col'>
-                                    <div className='flex gap-2'>
+                                    <div className='flex gap-3 sm:gap-2 justify-center sm:justify-start'>
                                         {enhancedWalletData.isEmbedded ? <Tippy content="Fund" placement='left'>
                                             <button
-                                                className='flex items-center justify-center rounded-full p-2 border-2 border-white/20 cursor-pointer opacity-80 hover:opacity-100 hover:border-white/40'
+                                                className='flex items-center justify-center rounded-full p-3 sm:p-2 border-2 border-white/20 cursor-pointer opacity-80 hover:opacity-100 hover:border-white/40'
                                                 onClick={handleFundWallet}
                                             >
                                                 <Image
@@ -303,7 +305,7 @@ export default function WalletSidebar({
 
                                         {enhancedWalletData.address ? <Tippy content="Send" placement='left'>
                                             <button
-                                                className='flex items-center justify-center rounded-full p-2 border-2 border-white/20 cursor-pointer opacity-80 hover:opacity-100 hover:border-white/40'
+                                                className='flex items-center justify-center rounded-full p-3 sm:p-2 border-2 border-white/20 cursor-pointer opacity-80 hover:opacity-100 hover:border-white/40'
                                                 onClick={() => setView('send')}
                                             >
                                                 <Image
@@ -318,7 +320,7 @@ export default function WalletSidebar({
 
                                         {enhancedWalletData.isEmbedded ? <Tippy content="Export private Key" placement='left'>
                                             <button
-                                                className='flex items-center justify-center rounded-full p-2 border-2 border-white/20 cursor-pointer opacity-80 hover:opacity-100 hover:border-white/40'
+                                                className='flex items-center justify-center rounded-full p-3 sm:p-2 border-2 border-white/20 cursor-pointer opacity-80 hover:opacity-100 hover:border-white/40'
                                                 onClick={handleExportWallet}
                                             >
                                                 <Image
@@ -333,7 +335,7 @@ export default function WalletSidebar({
 
                                         <Tippy content="Refresh Balances" placement='left'>
                                             <button
-                                                className='flex items-center justify-center rounded-full p-2 border-2 border-white/20 cursor-pointer opacity-80 hover:opacity-100 hover:border-white/40'
+                                                className='flex items-center justify-center rounded-full p-3 sm:p-2 border-2 border-white/20 cursor-pointer opacity-80 hover:opacity-100 hover:border-white/40'
                                                 onClick={refreshBalances}
                                             >
                                                 <Image
@@ -348,7 +350,7 @@ export default function WalletSidebar({
 
                                         <Tippy content="Disconnect">
                                             <div
-                                                className='flex items-center justify-center rounded-full bg-[#4a5568] p-2 border-2 border-white/20 cursor-pointer opacity-80 hover:opacity-100 hover:border-white/40'
+                                                className='flex items-center justify-center rounded-full bg-[#4a5568] p-3 sm:p-2 border-2 border-white/20 cursor-pointer opacity-80 hover:opacity-100 hover:border-white/40'
                                                 onClick={() => {
                                                     if (!connectedAdapter) return;
 

@@ -48,19 +48,19 @@ export function PrivyWalletSelection({
         <div className={twMerge('relative flex w-full', className)} ref={dropdownRef}>
             {(enhancedWallets.length > 0 || enhancedWalletData?.address) ? (
                 <div className="w-full flex flex-col">
-                    <div className="px-4 py-3 border-b border-gray">
-                        <div className="text-sm">
+                    <div className="px-4 sm:px-6 py-4 sm:py-3 border-b border-gray">
+                        <div className="text-lg sm:text-sm">
                             Switch between wallets instantly—no need to disconnect!
                         </div>
                     </div>
 
                     {enhancedWallets.filter(wallet => wallet.isEmbedded).length > 0 && (
                         <>
-                            <div className="px-4 py-3 border-b border-gray-700">
-                                <div className="text-xs font-semibold text-gray-400 mb-1">
+                            <div className="px-4 sm:px-6 py-4 sm:py-3 border-b border-gray-700">
+                                <div className="text-base sm:text-xs font-semibold text-gray-400 mb-1">
                                     Adrena Accounts
                                 </div>
-                                <div className="text-xs text-gray-500">
+                                <div className="text-base sm:text-xs text-gray-500">
                                     Hot wallet with auto-confirm for seamless trading
                                 </div>
                             </div>
@@ -72,8 +72,8 @@ export function PrivyWalletSelection({
                                     getDisplayName
                                 );
                                 return (
-                                    <div key={enhancedWallet.address} className={`flex items-center justify-between px-4 py-3 transition-colors ${enhancedWallet.address === enhancedWalletData?.address
-                                        ? 'bg-gray-700 border-l-2 border-green-400'
+                                    <div key={enhancedWallet.address} className={`flex items-center justify-between px-4 sm:px-6 py-5 sm:py-3 transition-colors ${enhancedWallet.address === enhancedWalletData?.address
+                                        ? 'bg-gray-700 border-l-4 sm:border-l-2 border-green-400'
                                         : 'hover:bg-gray-700'
                                         }`}>
                                         <button
@@ -81,10 +81,10 @@ export function PrivyWalletSelection({
                                                 onWalletSelection(enhancedWallet.address);
                                                 // setShowDropdown(false);
                                             }}
-                                            className="flex-1 text-left text-sm text-gray-300 hover:text-white"
+                                            className="flex-1 text-left text-gray-300 hover:text-white"
                                         >
-                                            <div className="flex items-start gap-3">
-                                                <div className="flex-shrink-0">
+                                            <div className="flex items-start gap-4 sm:gap-3">
+                                                <div className="flex-shrink-0 scale-125 sm:scale-100">
                                                     <WalletIcon
                                                         walletData={walletData}
                                                         size="md"
@@ -94,24 +94,26 @@ export function PrivyWalletSelection({
 
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2">
-                                                        <div className="font-medium">
+                                                        <div className="font-semibold text-lg sm:text-sm">
                                                             {walletData.displayName}
                                                         </div>
                                                     </div>
 
-                                                    <div className="text-xs text-gray-500 flex items-center gap-2 mt-1">
+                                                    <div className="text-base sm:text-xs text-gray-500 flex items-center gap-2 mt-1.5 sm:mt-1">
                                                         <WalletTypeIcon walletData={walletData} size="sm" />
-                                                        <span className="text-xs">
+                                                        <span className="text-base sm:text-xs">
                                                             {walletData.walletName}
                                                         </span>
                                                     </div>
                                                 </div>
                                             </div>
                                         </button>
-                                        <CopyButton
-                                            textToCopy={enhancedWallet.address}
-                                            notificationTitle="Address copied to clipboard"
-                                        />
+                                        <div className="scale-125 sm:scale-100">
+                                            <CopyButton
+                                                textToCopy={enhancedWallet.address}
+                                                notificationTitle="Address copied to clipboard"
+                                            />
+                                        </div>
                                     </div>
                                 );
                             })}
@@ -121,11 +123,11 @@ export function PrivyWalletSelection({
                     {(enhancedWallets.filter(wallet => !wallet.isEmbedded).length > 0 || enhancedWalletData?.address) ? (
                         <>
                             {(enhancedWallets.filter(wallet => !wallet.isEmbedded).length > 1 || enhancedWallets.filter(wallet => !wallet.isEmbedded).length === 1) && <div className="border-t border-gray-700"></div>}
-                            <div className="px-4 py-3 border-b border-gray-700">
-                                <div className="text-xs font-semibold text-gray-400 mb-1">
+                            <div className="px-4 sm:px-6 py-4 sm:py-3 border-b border-gray-700">
+                                <div className="text-base sm:text-xs font-semibold text-gray-400 mb-1">
                                     External Wallets
                                 </div>
-                                <div className="text-xs text-gray-500">
+                                <div className="text-base sm:text-xs text-gray-500">
                                     Use your wallet as if you connected natively!
                                 </div>
                             </div>
@@ -139,9 +141,9 @@ export function PrivyWalletSelection({
                                 return (
                                     <div key={`privy-ext-${enhancedWallet.address}`} className={
                                         twMerge(
-                                            `flex items-center justify-between px-4 py-3 transition-colors`,
+                                            `flex items-center justify-between px-4 sm:px-6 py-5 sm:py-3 transition-colors`,
                                             enhancedWallet.address === enhancedWalletData?.address
-                                                ? 'bg-gray-900'
+                                                ? 'bg-gray-900 border-l-4 sm:border-l-2 border-green-400'
                                                 : 'hover:bg-gray-900'
                                         )}>
                                         <button
@@ -149,10 +151,10 @@ export function PrivyWalletSelection({
                                                 onWalletSelection(enhancedWallet.address);
                                                 closeDropdown?.();
                                             }}
-                                            className="flex-1 text-left text-sm text-gray-300 hover:text-white"
+                                            className="flex-1 text-left text-gray-300 hover:text-white"
                                         >
-                                            <div className="flex items-start gap-3">
-                                                <div className="flex-shrink-0">
+                                            <div className="flex items-start gap-4 sm:gap-3">
+                                                <div className="flex-shrink-0 scale-125 sm:scale-100">
                                                     <WalletIcon
                                                         walletData={walletData}
                                                         size="md"
@@ -162,26 +164,26 @@ export function PrivyWalletSelection({
 
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2">
-                                                        <div className="font-medium">
+                                                        <div className="font-semibold text-lg sm:text-sm">
                                                             {walletData.displayName}
                                                         </div>
                                                         {enhancedWallet.address === enhancedWalletData?.address && (
-                                                            <svg className="w-4 h-4 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <svg className="w-5 h-5 sm:w-4 sm:h-4 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                             </svg>
                                                         )}
                                                     </div>
 
-                                                    <div className="text-xs text-gray-500 flex items-center gap-2 mt-1">
+                                                    <div className="text-base sm:text-xs text-gray-500 flex items-center gap-2 mt-1.5 sm:mt-1">
                                                         <WalletTypeIcon walletData={walletData} size="sm" />
-                                                        <span className="text-xs">
+                                                        <span className="text-base sm:text-xs">
                                                             {walletData.walletName}
                                                         </span>
                                                     </div>
                                                 </div>
                                             </div>
                                         </button>
-                                        <div className="flex items-center gap-1">
+                                        <div className="flex items-center gap-1 scale-125 sm:scale-100">
                                             <CopyButton
                                                 textToCopy={enhancedWallet.address}
                                                 notificationTitle="Address copied to clipboard"
@@ -193,16 +195,16 @@ export function PrivyWalletSelection({
 
                             <button
                                 onClick={handleLinkWallet}
-                                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-blue-400 hover:text-blue-300 hover:bg-gray-700 transition-colors"
+                                className="w-full flex items-center gap-3 sm:gap-2 px-4 sm:px-6 py-5 sm:py-3 text-lg sm:text-sm text-blue-400 hover:text-blue-300 hover:bg-gray-700 transition-colors"
                             >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-5 h-5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
                                 Connect External Wallet
                             </button>
                         </>) : (
-                        <div className="flex-1">
-                            <div className="font-medium">No connected wallets</div>
+                        <div className="flex-1 px-4 sm:px-6 py-4 sm:py-3">
+                            <div className="font-medium text-lg sm:text-sm">No connected wallets</div>
                         </div>
                     )}
                 </div>
