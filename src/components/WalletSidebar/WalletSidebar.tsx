@@ -14,7 +14,6 @@ import refreshIcon from '@/../public/images/refresh.png';
 import { disconnectWalletAction } from '@/actions/walletActions';
 import { useWalletSidebar } from '@/contexts/WalletSidebarContext';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useGetBalancesAndJupiterPrices } from '@/hooks/useGetBalancesAndJupiterPrices';
 import { selectWallet } from '@/selectors/walletSelectors';
 import { useDispatch, useSelector } from '@/store/store';
@@ -22,7 +21,6 @@ import { WalletAdapterExtended } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
 
 import CopyButton from '../common/CopyButton/CopyButton';
-import Modal from '../common/Modal/Modal';
 import MultiStepNotification from '../common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '../Number/FormatNumber';
 import { PrivyWalletSelection } from './PrivyWalletSelection';
@@ -35,7 +33,6 @@ export default function WalletSidebar({
 }: {
     adapters: WalletAdapterExtended[];
 }) {
-    const isMobile = useBetterMediaQuery('(max-width: 640px)');
     const [view, setView] = useState<'tokens' | 'wallet-selection' | 'send'>('tokens');
     const { fundWallet } = useFundWallet();
     const { exportWallet } = useExportWallet();

@@ -11,7 +11,6 @@ import {
 } from '@/actions/walletActions';
 import { PROFILE_PICTURES } from '@/constant';
 import { useWalletSidebar } from '@/contexts/WalletSidebarContext';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileExtended, WalletAdapterExtended } from '@/types';
@@ -92,8 +91,6 @@ export default function WalletAdapter({
   const connectedWalletAdapterName = wallet?.adapterName;
 
   const connected = !!connectedWalletAdapterName && isConnected;
-
-  const isBreak = useBetterMediaQuery('(min-width: 640px)');
 
   useEffect(() => {
     if (autoConnectAuthorizedRef.current && lastConnectedWalletRef.current) {

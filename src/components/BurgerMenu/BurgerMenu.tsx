@@ -7,19 +7,14 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { twMerge } from 'tailwind-merge';
 
-import useAPR from '@/hooks/useAPR';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { useSelector } from '@/store/store';
 import {
   LinksType,
   UserProfileExtended,
   VestExtended,
   WalletAdapterExtended,
 } from '@/types';
-import { formatPriceInfo } from '@/utils';
 
 import adxLogo from '../../../public/images/adrena_logo_adx_white.svg';
-import alpLogo from '../../../public/images/adrena_logo_alp_white.svg';
 import chatIcon from '../../../public/images/chat-text.svg';
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import discordLogo from '../../../public/images/discord.png';
@@ -35,7 +30,6 @@ import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
 import Mutagen from '../Mutagen/Mutagen';
 import { NotificationBell } from '../Notifications';
-import FormatNumber from '../Number/FormatNumber';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
@@ -83,13 +77,8 @@ export default function BurgerMenu({
   setIsChatOpen: (isChatOpen: boolean) => void;
   isTablet?: boolean;
 }) {
-  const { aprs } = useAPR();
   const { pathname } = useRouter();
-  const isSmallerScreen = useBetterMediaQuery('(max-width: 640px)');
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  const [alpPrice, setAlpPrice] = useState<number | null>(null);
-  const [adxPrice, setAdxPrice] = useState<number | null>(null);
 
   const [isPriorityFeeModalOpen, setIsPriorityFeeModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
@@ -97,13 +86,6 @@ export default function BurgerMenu({
   const [hasMenuLoadedOnce, setHasMenuLoadedOnce] = useState(false);
 
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
-
-  const tokenPrices = useSelector((s) => s.tokenPrices);
-
-  useEffect(() => {
-    setAlpPrice(tokenPrices.ALP);
-    setAdxPrice(tokenPrices.ADX);
-  }, [tokenPrices]);
 
   useEffect(() => {
     const container = document.getElementById('modal-container');
