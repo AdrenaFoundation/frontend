@@ -10,7 +10,7 @@ export type SettingsState = {
   priorityFeeOption: PriorityFeeOption;
   maxPriorityFee: number;
   openPositionCollateralSymbol: string;
-  closePositionCollateralSymbol: string;
+  closePositionCollateralSymbols: Record<string, string>;
   depositCollateralSymbol: string;
   withdrawCollateralSymbol: string;
   disableFriendReq: boolean;
