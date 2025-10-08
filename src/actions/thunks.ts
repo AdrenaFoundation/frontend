@@ -74,6 +74,8 @@ export const fetchUserPositions =
     try {
       const positions = await window.adrena.client.loadUserPositions(
         walletPublicKey,
+        // TODO: Handle multiple pools
+        window.adrena.client.mainPool.pubkey,
         possibleUserPositions,
       );
 

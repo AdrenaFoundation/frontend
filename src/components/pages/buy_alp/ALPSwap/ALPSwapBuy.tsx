@@ -80,6 +80,8 @@ export default function ALPSwapBuy({
         minLpAmountOut: new BN(0),
         notification,
         swapSlippage,
+        // TODO: Handle multiple pools
+        poolKey: window.adrena.client.mainPool.pubkey,
       });
 
       dispatch(fetchWalletTokenBalances());
@@ -158,11 +160,15 @@ export default function ALPSwapBuy({
         amountAndFee = await window.adrena.client.getAddLiquidityAmountAndFee({
           amountIn: amountUsd,
           token: usdcToken,
+          // TODO: Handle multiple pools
+          poolKey: window.adrena.client.mainPool.pubkey,
         });
       } else {
         amountAndFee = await window.adrena.client.getAddLiquidityAmountAndFee({
           amountIn: uiToNative(collateralInput, collateralToken.decimals),
           token: collateralToken,
+          // TODO: Handle multiple pools
+          poolKey: window.adrena.client.mainPool.pubkey,
         });
       }
 

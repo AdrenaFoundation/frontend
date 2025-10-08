@@ -20,6 +20,8 @@ export default function usePositionsByAddress({
     try {
       const freshPositions = await window.adrena.client.loadUserPositions(
         new PublicKey(walletAddress),
+        // TODO: Handle multiple pools
+        window.adrena.client.mainPool.pubkey,
       );
 
       setPositions(freshPositions);
