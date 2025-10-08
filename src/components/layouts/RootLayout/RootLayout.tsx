@@ -19,6 +19,7 @@ import voteIcon from '@/../public/images/Icons/vote-icon.svg';
 import mutagenIcon from '@/../public/images/mutagen.png';
 import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
+import ChatContainer from '@/components/Chat/ChatContainer';
 import SuperchargedFooter from '@/components/Footer/SuperchargedFooter';
 import MobileNavbar from '@/components/MobileNavbar/MobileNavbar';
 import QuestMenu from '@/components/QuestMenu/QuestMenu';
@@ -245,6 +246,18 @@ export default function RootLayout({
           setIsSearchUserProfilesOpen={setIsSearchUserProfilesOpen}
           setIsSettingsOpen={setIsSettingsOpen}
           setIsPriorityFeeOpen={setIsPriorityFeeOpen}
+        />
+      )}
+
+      {!isBigScreen && !disableChat && (
+        <ChatContainer
+          title="Chat"
+          setTitle={() => { }}
+          setIsNewNotification={() => { }}
+          isMobile={true}
+          isChatOpen={isChatOpen}
+          setIsChatOpen={setIsChatOpen}
+          setOnlineCount={() => { }}
         />
       )}
 
