@@ -1,5 +1,7 @@
 import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
@@ -8,6 +10,7 @@ import { selectWalletAddress } from '@/selectors/walletSelectors';
 import { useSelector } from '@/store/store';
 import { isValidPublicKey, uiToNative } from '@/utils';
 
+import crossIcon from '../../../public/images/Icons/cross.svg';
 import InputNumber from '../common/InputNumber/InputNumber';
 import InputString from '../common/inputString/InputString';
 import FormatNumber from '../Number/FormatNumber';
@@ -116,21 +119,44 @@ export function SendTokenView({
 
     return (
         <div className="flex flex-col grow gap-4">
+            <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-white">Send Tokens</h2>
+                <button
+                    onClick={cancel}
+                    className="flex items-center justify-center rounded-full bg-transparent p-2 border border-bcolor cursor-pointer opacity-80 hover:opacity-100 transition-opacity"
+                    aria-label="Close send view"
+                >
+                    <Image
+                        src={crossIcon}
+                        alt="Close"
+                        className="w-4 h-4"
+                        width={16}
+                        height={16}
+                    />
+                </button>
+            </div>
+
             <div className="gap-2 pl-2 pr-2">
                 {isLoadingBalances ? (
                     <div className="flex-1 overflow-y-auto h-[calc(100vh-28em)] max-h-[calc(100vh-28em)] min-h-[calc(100vh-28em)] bg-gray-900 rounded-md" />
                 ) : (
-                    <div className="grid grid-cols-1 gap-1.5 h-[calc(100vh-28em)] pr-2 overflow-y-auto">
-                        {tokenBalancesWithPrices.map((token: typeof tokenBalancesWithPrices[0]) => (
-                            <TokenListItem
+                    <div className="flex flex-col gap-1.5 h-[calc(100vh-28em)] pr-2 overflow-y-auto">
+                        {tokenBalancesWithPrices.map((token: typeof tokenBalancesWithPrices[0], index: number) => (
+                            <motion.div
                                 key={token.mint}
-                                token={token}
-                                onClick={() => {
-                                    setSelectedToken(token);
-                                    setAmount(0);
-                                }}
-                                isSelected={selectedToken?.mint === token.mint}
-                            />
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.05, delay: index * 0.01 }}
+                            >
+                                <TokenListItem
+                                    token={token}
+                                    onClick={() => {
+                                        setSelectedToken(token);
+                                        setAmount(0);
+                                    }}
+                                    isSelected={selectedToken?.mint === token.mint}
+                                />
+                            </motion.div>
                         ))}
                     </div>
                 )}
@@ -194,7 +220,7 @@ export function SendTokenView({
             </div>
 
             {error ? (
-                <div className="p-3 bg-red-500/10 border border-red-500 rounded-lg text-red-400 text-sm">
+                <div className="p-3 bg-red/10 border border-red rounded-lg text-red text-sm">
                     {error}
                 </div>
             ) : null}
@@ -205,6 +231,7 @@ export function SendTokenView({
                     onClick={() => {
                         cancel();
                     }}
+                    variant="outline"
                     className="w-1/2"
                 />
 

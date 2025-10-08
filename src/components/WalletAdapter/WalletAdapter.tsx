@@ -180,10 +180,7 @@ export default function WalletAdapter({
                 <Image
                   src={chevronDownIcon}
                   alt="Toggle"
-                  className={twMerge(
-                    "w-2.5 h-2.5 transition-transform duration-200",
-                    isSidebarOpen && "rotate-180"
-                  )}
+                  className="w-2.5 h-2.5"
                   width={10}
                   height={10}
                 />
@@ -226,10 +223,7 @@ export default function WalletAdapter({
                   <Image
                     src={chevronDownIcon}
                     alt="Toggle Sidebar"
-                    className={twMerge(
-                      "w-3 h-3 transition-transform duration-200",
-                      isSidebarOpen && "rotate-180"
-                    )}
+                    className="w-3 h-3"
                     width={14}
                     height={14}
                   />
