@@ -31,7 +31,7 @@ import { isValidPublicKey } from '@/utils';
 import { WalletAdapterName } from './useWalletAdapters';
 
 export function usePrivyAdapter(): WalletAdapterExtended | null {
-  const { ready, authenticated, user, login, logout } = usePrivy();
+  const { ready, authenticated, login, logout } = usePrivy();
 
   const dispatch = useDispatch();
 
@@ -86,13 +86,86 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     };
   }, [eventEmitter]);
 
-  const solanaWallets = useMemo(() => {
-    return connectedStandardWallets;
-  }, [connectedStandardWallets]);
-
   const currentChain = useMemo(() => {
     return process.env.NEXT_PUBLIC_DEV_CLUSTER === 'devnet' ? 'solana:devnet' : 'solana:mainnet';
   }, []);
+
+  // TODO: TAKE DECISION ON THIS
+  // Polling mechanism: Check for account changes in external wallets
+  useEffect(() => {
+    /*     console.log('🔍 MONITORING ///// currentWalletAddress', currentWalletAddress);
+        console.log('🔍 MONITORING ///// connectedStandardWallets', connectedStandardWallets);
+        // Only poll if we're connected to Privy and have an address
+        if (!authenticated || !currentWalletAddress || !connectedStandardWallets.length) {
+          return;
+        }
+
+        // Find the current connected wallet
+        const currentWallet = connectedStandardWallets.find(w => w.address === currentWalletAddress);
+        if (!currentWallet) {
+          return;
+        }
+
+        // Skip embedded Privy wallets - they don't have the account switching issue
+        if (currentWallet.standardWallet.name.toLowerCase().includes('privy')) {
+          return;
+        }
+
+        console.log('🔄 Monitoring', currentWallet.standardWallet.name, 'for account changes...');
+
+        const interval = setInterval(() => {
+          if (typeof window === 'undefined') return;
+
+          // Get the browser wallet object
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const w = window as any;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          let browserWallet: any = null;
+
+          // Generic approach: use window.solana if the address matches
+          if (w.solana?.isConnected) {
+            const walletAddress = w.solana.publicKey?.toBase58?.();
+            if (walletAddress === currentWalletAddress) {
+              browserWallet = w.solana;
+            }
+          }
+
+          // Refresh wallet connection every 5 seconds to check for account changes
+          const pollIteration = Math.floor(Date.now() / 5000);
+          if (pollIteration % 1 === 0 && browserWallet && typeof browserWallet.connect === 'function') {
+            // Silent reconnect - refreshes the wallet's active account without showing UI
+            browserWallet.connect({ onlyIfTrusted: true }).then((result: { publicKey?: { toBase58: () => string } }) => {
+              const refreshedAddress = result?.publicKey?.toBase58();
+
+              if (refreshedAddress && refreshedAddress !== currentWalletAddress) {
+                console.log('🔄 Wallet account changed:', currentWalletAddress?.slice(0, 8), '→', refreshedAddress.slice(0, 8));
+
+                // Update localStorage
+                localStorage.setItem('privy:selectedWallet', refreshedAddress);
+
+                // Dispatch connect action
+                dispatch({
+                  type: 'connect',
+                  payload: {
+                    adapterName: 'Privy',
+                    walletAddress: refreshedAddress,
+                    isPrivy: true,
+                  },
+                });
+
+                // Emit connect event
+                if (adapterRef.current) {
+                  eventEmitter.emit('connect', new PublicKey(refreshedAddress));
+                }
+              }
+            }).catch(() => {
+              // Silent fail - expected if onlyIfTrusted is not supported
+            });
+          }
+        }, 1000); // Check every second
+
+        return () => clearInterval(interval); */
+  }, [authenticated, currentWalletAddress, connectedStandardWallets, dispatch, eventEmitter, adapterRef]);
 
   // Auto-connect when publicKey becomes available
   useEffect(() => {
@@ -118,33 +191,25 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
           const savedWallet = localStorage.getItem('privy:selectedWallet');
 
           if (savedWallet) {
-            if (isValidPublicKey(savedWallet) && user?.linkedAccounts.find(account =>
-              account.type === 'wallet' &&
-              account.chainType === 'solana' &&
-              account.address === savedWallet
-            )) {
-              console.log('>>> AAAA', savedWallet, user);
+            const connectedWallet = connectedStandardWallets.find(w =>
+              w.address === savedWallet
+            );
+
+            if (isValidPublicKey(savedWallet) && connectedWallet) {
+              console.log('>>> AAAA', savedWallet, connectedWallet);
               walletAddress = savedWallet;
             } else {
               localStorage.removeItem('privy:selectedWallet');
-
-              // ICI
-              // walletAddress = user?.linkedAccounts.find(account =>
-              //   account.type === 'wallet' &&
-              //   account.chainType === 'solana'
-              // );
             }
           }
         }
 
-        if (!walletAddress && user && user?.linkedAccounts?.length > 0) {
-          const embeddedWallet = user.linkedAccounts.find(account =>
-            account.type === 'wallet' &&
-            account.chainType === 'solana' &&
-            account.connectorType === "embedded"
+        if (!walletAddress && connectedStandardWallets.length > 0) {
+          const embeddedWallet = connectedStandardWallets.find(w =>
+            w.standardWallet.name.toLowerCase().includes('privy')
           );
           console.log('🔍 AUTO CONNECT ///// EMBEDDED WALLET because selected privy wallet is not valid:', embeddedWallet);
-          if (embeddedWallet && embeddedWallet.type === 'wallet') {
+          if (embeddedWallet) {
             walletAddress = embeddedWallet.address;
           }
         }
@@ -171,7 +236,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       setIsConnecting(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publicKey, authenticated, ready, isDisconnecting, isConnecting, user, dispatch, eventEmitter, adapterInitialized]);
+  }, [publicKey, authenticated, ready, isDisconnecting, isConnecting, dispatch, eventEmitter, adapterInitialized, connectedStandardWallets]);
 
   // called from function connectWalletAction in walletActions.ts
   const connect = useCallback(async () => {
@@ -195,13 +260,12 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
         walletAddress = savedWallet && isValidPublicKey(savedWallet) ? savedWallet : null;
       }
 
-      if (!walletAddress && user && user?.linkedAccounts?.length > 0) {
-        const embeddedWallet = user.linkedAccounts.find(account =>
-          account.type === 'wallet' &&
-          account.chainType === 'solana' &&
-          account.connectorType === "embedded"
+      if (!walletAddress && connectedStandardWallets.length > 0) {
+        // Find the first embedded wallet (Privy wallet)
+        const embeddedWallet = connectedStandardWallets.find(w =>
+          w.standardWallet.name.toLowerCase().includes('privy')
         );
-        if (embeddedWallet && embeddedWallet.type === 'wallet') {
+        if (embeddedWallet) {
           walletAddress = embeddedWallet.address;
         }
       }
@@ -237,7 +301,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     } finally {
       setIsConnecting(false);
     }
-  }, [ready, authenticated, login, isConnecting, isDisconnecting, publicKey, user, dispatch, createWallet]);
+  }, [ready, authenticated, login, isConnecting, isDisconnecting, publicKey, dispatch, createWallet, connectedStandardWallets]);
 
   const disconnect = useCallback(async () => {
     if (isDisconnecting) {
@@ -311,7 +375,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       throw new Error('No wallet address available for signing');
     }
 
-    const wallet = solanaWallets.find(w => w.address === targetWalletAddress);
+    const wallet = connectedStandardWallets.find(w => w.address === targetWalletAddress);
     if (!wallet) {
       throw new Error(`Wallet not found for address: ${targetWalletAddress?.slice(0, 8)}...`);
     }
@@ -333,7 +397,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       console.error('❌ SIGN: Failed to sign transaction:', error);
       throw error;
     }
-  }, [externalWallet, currentWalletAddress, solanaWallets, serializeTransaction, handleVersionedTransaction, handleLegacyTransaction]);
+  }, [externalWallet, currentWalletAddress, connectedStandardWallets, serializeTransaction, handleVersionedTransaction, handleLegacyTransaction]);
 
   const signAllTransactions = useCallback(async (transactions: (Transaction | VersionedTransaction)[]): Promise<(Transaction | VersionedTransaction)[]> => {
     const signedTransactions: (Transaction | VersionedTransaction)[] = [];
@@ -353,7 +417,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       throw new Error('No wallet address available for signing');
     }
 
-    const wallet = solanaWallets.find(w => w.address === targetWalletAddress);
+    const wallet = connectedStandardWallets.find(w => w.address === targetWalletAddress);
 
     if (!wallet) {
       throw new Error(`No Solana wallet available for signing. Address: ${targetWalletAddress?.slice(0, 8)}...`);
@@ -362,7 +426,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     const { signature } = await wallet.signMessage({ message });
 
     return signature;
-  }, [externalWallet, currentWalletAddress, solanaWallets]);
+  }, [externalWallet, currentWalletAddress, connectedStandardWallets]);
 
   useEffect(() => {
     if (!adapterRef.current && ready) {
@@ -425,7 +489,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
           throw new Error('No Solana wallet connected');
         }
 
-        const wallet = solanaWallets.find(w => w.address === currentWalletAddress);
+        const wallet = connectedStandardWallets.find(w => w.address === currentWalletAddress);
         if (!wallet) {
           throw new Error('Wallet not found for address: ' + currentWalletAddress);
         }
@@ -448,7 +512,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
       setAdapterInitialized(true);
     }
-  }, [publicKey, isConnecting, authenticated, currentWalletAddress, ready, connect, disconnect, signTransaction, signAllTransactions, signMessage, solanaWallets, currentChain, serializeTransaction, externalWallet, eventEmitter]);
+  }, [publicKey, isConnecting, authenticated, currentWalletAddress, ready, connect, disconnect, signTransaction, signAllTransactions, signMessage, connectedStandardWallets, currentChain, serializeTransaction, externalWallet, eventEmitter]);
 
   return ready && adapterRef.current ? (adapterRef.current || null) : null;
 }

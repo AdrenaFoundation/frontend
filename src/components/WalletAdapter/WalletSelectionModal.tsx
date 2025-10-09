@@ -13,21 +13,9 @@ import {
 } from '@/actions/walletActions';
 import { useDispatch, useSelector } from '@/store/store';
 import { WalletAdapterExtended } from '@/types';
+import { BulletPoint } from '@/utils';
 
 import Modal from '../common/Modal/Modal';
-
-function BulletPoint({ text }: { text: string }) {
-  return (
-    <div className="flex items-center gap-1.5 sm:gap-2">
-      <div className="flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500/90">
-        <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3.5} d="M5 13l4 4L19 7" />
-        </svg>
-      </div>
-      <span className="text-xs text-[#11aa78] font-bold">{text}</span>
-    </div>
-  );
-}
 
 export default function WalletSelectionModal({
   adapters,

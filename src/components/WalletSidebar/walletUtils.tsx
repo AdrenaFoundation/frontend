@@ -60,7 +60,7 @@ export function getWalletDisplayDataForEnhancedWallet(
         displayName,
         profilePicture,
         walletIcon: wallet.standardWallet.icon,
-        walletName: wallet.isEmbedded ? 'Adrena Account' : wallet.standardWallet.name,
+        walletName: wallet.isEmbedded ? 'Smart Wallet' : wallet.standardWallet.name,
         isEmbedded: wallet.isEmbedded
     };
 }

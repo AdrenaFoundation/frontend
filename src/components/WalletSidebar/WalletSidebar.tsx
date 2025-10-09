@@ -20,7 +20,7 @@ import { useGetBalancesAndJupiterPrices } from '@/hooks/useGetBalancesAndJupiter
 import { selectWallet } from '@/selectors/walletSelectors';
 import { useDispatch, useSelector } from '@/store/store';
 import { WalletAdapterExtended } from '@/types';
-import { getAbbrevWalletAddress } from '@/utils';
+import { BulletPoint, getAbbrevWalletAddress } from '@/utils';
 
 import CopyButton from '../common/CopyButton/CopyButton';
 import MultiStepNotification from '../common/MultiStepNotification/MultiStepNotification';
@@ -205,7 +205,12 @@ export default function WalletSidebar({
                                 {getAbbrevWalletAddress(wallet.walletAddress)}
                             </span>
 
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg
+                                className={`w-3 h-3 transition-transform duration-200 ${view === 'wallet-selection' ? 'rotate-180' : ''}`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
@@ -514,6 +519,7 @@ export default function WalletSidebar({
                                         <SendTokenView
                                             tokenBalancesWithPrices={tokenBalancesWithPrices}
                                             isLoadingBalances={isLoadingBalances}
+                                            enhancedWallets={enhancedWallets}
                                             sendTokensToWalletAddress={async ({
                                                 senderAddress,
                                                 tokenSymbol,
@@ -599,6 +605,25 @@ export default function WalletSidebar({
                         <div className="flex-1 flex flex-col p-6 overflow-y-auto">
                             {dom}
                         </div>
+
+                        {/* Wallet Footer - Visible in all views */}
+                        {wallet && (
+                            <div className="flex items-center justify-between p-3 border-t border-bcolor bg-secondary/50">
+                                {wallet.isPrivy && enhancedWalletData?.isEmbedded && (
+                                    <BulletPoint text="Auto-confirm" />
+                                )}
+                                <div className={`text-xs text-txtfade ${wallet.isPrivy && enhancedWalletData?.isEmbedded ? '' : 'flex-1 text-right'}`}>
+                                    Powered by <span className="text-white font-semibold">
+                                        {wallet.isPrivy && enhancedWalletData?.isEmbedded
+                                            ? 'Privy'
+                                            : wallet.isPrivy && enhancedWalletData?.walletName
+                                                ? enhancedWalletData.walletName
+                                                : wallet.adapterName}
+                                    </span>
+                                    {wallet.isPrivy && !enhancedWalletData?.isEmbedded && <> through <span className="text-white font-semibold">Privy</span></>}
+                                </div>
+                            </div>
+                        )}
                     </motion.div>
                 </>
             )}

@@ -2,26 +2,31 @@ import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import { TokenBalance } from '@/hooks/useGetBalancesAndJupiterPrices';
 import { selectWalletAddress } from '@/selectors/walletSelectors';
 import { useSelector } from '@/store/store';
 import { isValidPublicKey, uiToNative } from '@/utils';
 
 import crossIcon from '../../../public/images/Icons/cross.svg';
+import CopyButton from '../common/CopyButton/CopyButton';
 import InputNumber from '../common/InputNumber/InputNumber';
 import InputString from '../common/inputString/InputString';
 import FormatNumber from '../Number/FormatNumber';
 import OnchainAccountInfo from '../pages/monitoring/OnchainAccountInfo';
 import { TokenListItem } from './TokenListItem';
+import { EnhancedWallet, getWalletDisplayDataForEnhancedWallet, WalletIcon, WalletTypeIcon } from './walletUtils';
 
 export function SendTokenView({
     tokenBalancesWithPrices,
     isLoadingBalances,
     sendTokensToWalletAddress,
     cancel,
+    enhancedWallets,
 }: {
     tokenBalancesWithPrices: Array<TokenBalance & { priceUsd?: number; valueUsd?: number }>;
     isLoadingBalances?: boolean;
@@ -33,6 +38,7 @@ export function SendTokenView({
         recipientAddress: PublicKey;
     }) => Promise<void>;
     cancel: () => void;
+    enhancedWallets?: EnhancedWallet[];
 }) {
     const [selectedToken, setSelectedToken] = useState<typeof tokenBalancesWithPrices[0] | null>(
         tokenBalancesWithPrices.find(t => t.symbol === 'SOL') || tokenBalancesWithPrices[0] || null
@@ -44,7 +50,27 @@ export function SendTokenView({
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [recipientAddressError, setRecipientAddressError] = useState<string | null>(null);
+    const [showWalletDropdown, setShowWalletDropdown] = useState(false);
     const walletAddress = useSelector(selectWalletAddress);
+    const { getProfilePicture, getDisplayName, isLoadingProfiles } = useAllUserProfilesMetadata();
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setShowWalletDropdown(false);
+            }
+        };
+
+        if (showWalletDropdown) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showWalletDropdown]);
 
     const handleRecipientAddressChange = (value: string | null) => {
         setRecipientAddress(value);
@@ -136,11 +162,12 @@ export function SendTokenView({
                 </button>
             </div>
 
-            <div className="gap-2 pl-2 pr-2">
+
+            <div className="gap-2 pl-2 pr-2 flex-1 min-h-0">
                 {isLoadingBalances ? (
-                    <div className="flex-1 overflow-y-auto h-[calc(100vh-28em)] max-h-[calc(100vh-28em)] min-h-[calc(100vh-28em)] bg-gray-900 rounded-md" />
+                    <div className="h-full overflow-y-auto bg-gray-900 rounded-md" />
                 ) : (
-                    <div className="flex flex-col gap-1.5 h-[calc(100vh-28em)] pr-2 overflow-y-auto">
+                    <div className="flex flex-col gap-1.5 h-full pr-2 overflow-y-auto">
                         {tokenBalancesWithPrices.map((token: typeof tokenBalancesWithPrices[0], index: number) => (
                             <motion.div
                                 key={token.mint}
@@ -162,7 +189,7 @@ export function SendTokenView({
                 )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 relative" ref={dropdownRef}>
                 <div className='flex justify-between items-center'>
                     <label className="text-sm font-medium text-white">Recipient Address</label>
 
@@ -173,13 +200,95 @@ export function SendTokenView({
                     /> : null}
                 </div>
 
-                <InputString
-                    value={recipientAddress ?? ''}
-                    onChange={(value) => handleRecipientAddressChange(value)}
-                    placeholder='Enter recipient address'
-                    className='p-2 bg-inputcolor rounded-md'
-                    inputFontSize='0.8em'
-                />
+                <div className="relative">
+                    <InputString
+                        value={recipientAddress ?? ''}
+                        onChange={(value) => handleRecipientAddressChange(value)}
+                        placeholder='Enter recipient address or select wallet'
+                        className='p-2 bg-inputcolor rounded-md pr-10'
+                        inputFontSize='0.8em'
+                    />
+                    {enhancedWallets && enhancedWallets.filter(w => w.address !== walletAddress).length > 0 && (
+                        <button
+                            onClick={() => setShowWalletDropdown(!showWalletDropdown)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-txtfade hover:text-white transition-colors"
+                            type="button"
+                        >
+                            <svg
+                                className={twMerge("w-4 h-4 transition-transform", showWalletDropdown && "rotate-180")}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    )}
+                </div>
+
+                {/* Wallet Dropdown */}
+                {showWalletDropdown && enhancedWallets && enhancedWallets.filter(w => w.address !== walletAddress).length > 0 && (
+                    <div className="w-full bg-secondary border border-bcolor rounded-md shadow-lg max-h-[25vh] overflow-y-auto mt-1">
+                        {enhancedWallets
+                            .filter(w => w.address !== walletAddress)
+                            .map((enhancedWallet) => {
+                                const walletData = getWalletDisplayDataForEnhancedWallet(
+                                    enhancedWallet,
+                                    getProfilePicture,
+                                    getDisplayName
+                                );
+                                const isSelected = enhancedWallet.address === recipientAddress;
+                                return (
+                                    <div
+                                        key={enhancedWallet.address}
+                                        className={twMerge(
+                                            `flex items-center justify-between p-3 transition-all border-b last:border-b-0 border-bcolor`,
+                                            isSelected && 'bg-third',
+                                            !isSelected && 'hover:bg-third/50'
+                                        )}
+                                    >
+                                        <button
+                                            onClick={() => {
+                                                setRecipientAddress(enhancedWallet.address);
+                                                setRecipientAddressPubkey(new PublicKey(enhancedWallet.address));
+                                                setRecipientAddressError(null);
+                                                setShowWalletDropdown(false);
+                                            }}
+                                            className="flex-1 text-left cursor-pointer text-txtfade hover:text-white"
+                                            type="button"
+                                        >
+                                            <div className="flex items-start gap-3">
+                                                <div className="flex-shrink-0 scale-125 sm:scale-100">
+                                                    <WalletIcon
+                                                        walletData={walletData}
+                                                        size="md"
+                                                        isLoadingProfiles={isLoadingProfiles}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="font-semibold text-lg sm:text-sm text-white">
+                                                        {walletData.displayName}
+                                                    </div>
+                                                    <div className="text-base sm:text-xs text-txtfade flex items-center gap-2 mt-1">
+                                                        <WalletTypeIcon walletData={walletData} size="sm" />
+                                                        <span className="text-base sm:text-xs">
+                                                            {walletData.walletName}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                        <div className="flex items-center gap-1 scale-125 sm:scale-100">
+                                            <CopyButton
+                                                textToCopy={enhancedWallet.address}
+                                                notificationTitle="Address copied to clipboard"
+                                            />
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                    </div>
+                )}
 
                 {recipientAddressError ? (
                     <div className="flex items-center gap-1 text-red-400 text-xs">
