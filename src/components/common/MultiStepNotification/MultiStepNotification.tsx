@@ -5,10 +5,7 @@ import { Id, toast } from 'react-toastify';
 import { twMerge } from 'tailwind-merge';
 
 import { getLogs } from '@/logs';
-import {
-  AdrenaTransactionError,
-  getTxExplorer,
-} from '@/utils';
+import { AdrenaTransactionError, getTxExplorer } from '@/utils';
 
 import discordLogo from '../../../../public/images/discord.png';
 import arrowIcon from '../../../../public/images/Icons/arrow-sm-45.svg';
@@ -61,7 +58,7 @@ export default class MultiStepNotification {
     protected steps: NotificationSteps,
     protected closingTimeSuccessInMs: number,
     protected closingTimeErrorInMs: number,
-  ) { }
+  ) {}
 
   public static new({
     title,
@@ -259,7 +256,9 @@ export default class MultiStepNotification {
       >
         <div className="flex flex-col h-full w-full">
           <div className="flex w-full justify-between p-2 px-3">
-            <h3 className="font-semibold capitalize">{this.title ?? 'Title'}</h3>
+            <h3 className="font-semibold capitalize">
+              {this.title ?? 'Title'}
+            </h3>
 
             <Image
               className="opacity-20 hover:opacity-40 cursor-pointer"
@@ -357,16 +356,16 @@ export default class MultiStepNotification {
                         className={twMerge(
                           'flex flex-row items-center gap-2 w-auto text-sm text-nowrap max-w-full overflow-hidden transition duration-500',
                           step.state === NotificationStepState.inProgress &&
-                          'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]',
+                            'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]',
                           step.state === NotificationStepState.error &&
-                          'text-redbright',
+                            'text-redbright',
                           step.state === NotificationStepState.succeeded &&
-                          'text-green',
+                            'text-green',
                           step.state === NotificationStepState.waiting &&
-                          'opacity-40',
+                            'opacity-40',
                           step.title === 'Execute transaction' &&
-                          this.txHash &&
-                          'underline cursor-pointer group',
+                            this.txHash &&
+                            'underline cursor-pointer group',
                         )}
                         onClick={() => {
                           if (
@@ -443,7 +442,7 @@ export default class MultiStepNotification {
                       )}
 
                       {this.error instanceof AdrenaTransactionError &&
-                        this.error.txHash ? (
+                      this.error.txHash ? (
                         <Link
                           href={getTxExplorer(this.error.txHash)}
                           target="_blank"

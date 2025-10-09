@@ -25,7 +25,7 @@ export default function BorrowRateChart() {
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
-  const [displayBorrowRateAsApr, setDisplayBorrowRateAsApr] = useState(true);
+  const [displayBorrowRateAsApr, setDisplayBorrowRateAsApr] = useState(false);
 
   useEffect(() => {
     periodRef.current = period;
@@ -168,7 +168,7 @@ export default function BorrowRateChart() {
 
   return (
     <LineRechart
-      title="hourly Borrow Rate"
+      title="Borrow Rate"
       extraHeaderContent={
         <div className="text-xs flex gap-2 ml-auto mt-1">
           <div
