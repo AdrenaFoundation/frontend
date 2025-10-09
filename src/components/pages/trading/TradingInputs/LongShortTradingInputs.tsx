@@ -352,6 +352,7 @@ export default function LongShortTradingInputs({
         mint: tokenB.mint,
         collateralMint: tokenA.mint,
         swapSlippage,
+        poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pool
       });
 
       dispatch(fetchWalletTokenBalances());
@@ -473,6 +474,7 @@ export default function LongShortTradingInputs({
           isIncrease: !!openedPosition,
           referrerProfile: r ? r.pubkey : undefined,
           swapSlippage,
+          poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pool
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -487,6 +489,7 @@ export default function LongShortTradingInputs({
           isIncrease: !!openedPosition,
           referrerProfile: r ? r.pubkey : undefined,
           swapSlippage,
+          poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pool
         }));
 
       dispatch(fetchWalletTokenBalances());
@@ -630,6 +633,7 @@ export default function LongShortTradingInputs({
               leverage: uiLeverageToNative(inputState.leverage),
               side,
               tokenPrices,
+              poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pool
             });
         } else {
           // Short
@@ -672,6 +676,7 @@ export default function LongShortTradingInputs({
               leverage: uiLeverageToNative(inputState.leverage),
               side,
               tokenPrices,
+              poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pool
             });
         }
 

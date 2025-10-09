@@ -24,7 +24,9 @@ export default function useAssetsUnderManagement(): number | null {
       }
 
       try {
-        const aum = await window.adrena.client.getAssetsUnderManagement();
+        const aum = await window.adrena.client.getAssetsUnderManagement({
+          poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pools
+        });
 
         if (aum === null) {
           if (retryNb >= 3) {

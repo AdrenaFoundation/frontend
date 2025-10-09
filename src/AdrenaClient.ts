@@ -39,7 +39,7 @@ import {
 } from '@solana/web3.js';
 
 import { Adrena } from '@/target/adrena';
-import AdrenaJson from '@/target/adrena.json';
+import { IDL as AdrenaJson } from '@/target/adrena';
 
 import adxIcon from '../public/images/adx.svg';
 import alpIcon from '../public/images/alp.svg';
@@ -1058,6 +1058,7 @@ export class AdrenaClient {
           USD_DECIMALS,
         ),
         oiShortUsd: nativeToUi(custody.tradeStats.oiShortUsd, USD_DECIMALS),
+        pool: custody.pool,
         nativeObject: custody,
       };
     });
@@ -1762,7 +1763,7 @@ export class AdrenaClient {
 
     const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
       collateralCustody.mint,
-      collateralCustody.nativeObject.pool,
+      collateralCustody.pool,
     );
 
     const [receivingAccount, userProfileAccount] = await Promise.all([
@@ -1791,7 +1792,7 @@ export class AdrenaClient {
         owner: position.owner,
         receivingAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        pool: custody.nativeObject.pool,
+        pool: custody.pool,
         position: position.pubkey,
         custody: position.custody,
         collateralCustodyTokenAccount,
@@ -1841,7 +1842,7 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
-    const poolKey = custody.nativeObject.pool;
+    const poolKey = custody.pool;
 
     console.log('Close short position:', {
       position: position.pubkey.toBase58(),
@@ -1875,7 +1876,7 @@ export class AdrenaClient {
         owner: position.owner,
         receivingAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        pool: custody.nativeObject.pool,
+        pool: custody.pool,
         position: position.pubkey,
         custody: position.custody,
         collateralCustody: collateralCustody.pubkey,
@@ -2262,7 +2263,7 @@ export class AdrenaClient {
   }
 
   // When shorting, stable token must be used.
-  public async openOrIncreasePositionShort({
+  public async openOrIncreasePositionWithSwapShort({
     owner,
     collateralMint,
     mint,
@@ -3358,7 +3359,7 @@ export class AdrenaClient {
       throw new Error('Cannot find collateralCustody related to position');
     }
 
-    const poolKey = collateralCustody.nativeObject.pool;
+    const poolKey = collateralCustody.pool;
 
     const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
       collateralCustody.mint,
@@ -3417,7 +3418,7 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
-    const poolKey = custody.nativeObject.pool;
+    const poolKey = custody.pool;
 
     const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
       collateralCustody.mint,
@@ -3437,7 +3438,7 @@ export class AdrenaClient {
         owner: position.owner,
         fundingAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        pool: custody.nativeObject.pool,
+        pool: custody.pool,
         position: position.pubkey,
         custody: position.custody,
         collateralCustody: position.collateralCustody,
@@ -3478,7 +3479,7 @@ export class AdrenaClient {
       throw new Error('Cannot find collateralCustody related to position');
     }
 
-    const poolKey = custody.nativeObject.pool;
+    const poolKey = custody.pool;
 
     const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
       collateralCustody.mint,
@@ -3504,7 +3505,7 @@ export class AdrenaClient {
           owner: position.owner,
           receivingAccount,
           transferAuthority: AdrenaClient.transferAuthorityAddress,
-          pool: custody.nativeObject.pool,
+          pool: custody.pool,
           position: position.pubkey,
           custody: position.custody,
           collateralCustodyTokenAccount,
@@ -3550,7 +3551,7 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
-    const poolKey = custody.nativeObject.pool;
+    const poolKey = custody.pool;
 
     const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
       collateralCustody.mint,
@@ -3576,7 +3577,7 @@ export class AdrenaClient {
           owner: position.owner,
           receivingAccount,
           transferAuthority: AdrenaClient.transferAuthorityAddress,
-          pool: custody.nativeObject.pool,
+          pool: custody.pool,
           position: position.pubkey,
           custody: position.custody,
           collateralCustody: position.collateralCustody,
@@ -3768,7 +3769,7 @@ export class AdrenaClient {
       throw new Error('Cannot find custody for the position');
     }
 
-    const poolKey = custody.nativeObject.pool;
+    const poolKey = custody.pool;
 
     const transaction = await this.adrenaProgram.methods
       .resolvePositionBorrowFees()
@@ -4614,7 +4615,7 @@ export class AdrenaClient {
 
     const transferAuthority = AdrenaClient.transferAuthorityAddress;
     const cortex = AdrenaClient.cortexPda;
-    const poolKey = collateralCustodyInfos.nativeObject.pool;
+    const poolKey = collateralCustodyInfos.pool;
 
     const limitOrderBook = this.getLimitOrderBookPda(owner, poolKey);
 
@@ -4934,7 +4935,7 @@ export class AdrenaClient {
         position: position.pubkey,
         cortex: AdrenaClient.cortexPda,
         owner: position.owner,
-        pool: custody.nativeObject.pool,
+        pool: custody.pool,
         custody: position.custody,
       })
       .instruction();
@@ -4958,7 +4959,7 @@ export class AdrenaClient {
         position: position.pubkey,
         cortex: AdrenaClient.cortexPda,
         owner: position.owner,
-        pool: custody.nativeObject.pool,
+        pool: custody.pool,
         custody: position.custody,
       })
       .instruction();
@@ -4988,7 +4989,7 @@ export class AdrenaClient {
       .accountsStrict({
         cortex: AdrenaClient.cortexPda,
         owner: position.owner,
-        pool: custody.nativeObject.pool,
+        pool: custody.pool,
         custody: position.custody,
         position: position.pubkey,
       })
@@ -5019,7 +5020,7 @@ export class AdrenaClient {
       .accountsStrict({
         cortex: AdrenaClient.cortexPda,
         owner: position.owner,
-        pool: custody.nativeObject.pool,
+        pool: custody.pool,
         custody: position.custody,
         position: position.pubkey,
       })
@@ -5047,7 +5048,7 @@ export class AdrenaClient {
       .accountsStrict({
         cortex: AdrenaClient.cortexPda,
         owner: position.owner,
-        pool: custody.nativeObject.pool,
+        pool: custody.pool,
         custody: position.custody,
         position: position.pubkey,
       })
@@ -5075,7 +5076,7 @@ export class AdrenaClient {
       .accountsStrict({
         cortex: AdrenaClient.cortexPda,
         owner: position.owner,
-        pool: custody.nativeObject.pool,
+        pool: custody.pool,
         custody: position.custody,
         position: position.pubkey,
       })
@@ -5258,7 +5259,7 @@ export class AdrenaClient {
       .accountsStrict({
         oracle: AdrenaClient.oraclePda,
         cortex: AdrenaClient.cortexPda,
-        pool: custody.nativeObject.pool,
+        pool: custody.pool,
         position: position.pubkey,
         custody: position.custody,
         collateralCustody: position.collateralCustody,
@@ -5304,7 +5305,7 @@ export class AdrenaClient {
       .accountsStrict({
         oracle: AdrenaClient.oraclePda,
         cortex: AdrenaClient.cortexPda,
-        pool: custody.nativeObject.pool,
+        pool: custody.pool,
         position: position.pubkey,
         custody: custody.pubkey,
         collateralCustody: collateralCustody.pubkey,
@@ -5357,7 +5358,7 @@ export class AdrenaClient {
       .accountsStrict({
         oracle: AdrenaClient.oraclePda,
         cortex: AdrenaClient.cortexPda,
-        pool: custody.nativeObject.pool,
+        pool: custody.pool,
         position: position.pubkey,
         custody: custody.pubkey,
         collateralCustody: collateralCustody.pubkey,

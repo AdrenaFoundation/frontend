@@ -50,7 +50,7 @@ export default function ALPSwapSell({
 
     return (
       collateralTokenCustodyLiquidity[
-        collateralTokenCustody.pubkey.toBase58()
+      collateralTokenCustody.pubkey.toBase58()
       ] * tokenPrice
     );
   }, [tokenPrices, collateralToken.symbol, collateralTokenCustodyLiquidity]);
@@ -86,9 +86,9 @@ export default function ALPSwapSell({
           window.adrena.client.alpToken.decimals,
         ),
         mint: collateralToken.mint,
-
         // TODO: Apply proper slippage
         minAmountOut: new BN(0),
+        poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pools
         notification,
       });
 
@@ -132,6 +132,7 @@ export default function ALPSwapSell({
             window.adrena.client.alpToken.decimals,
           ),
           token: collateralToken,
+          poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pools
         });
 
       setIsMainDataLoading(false);

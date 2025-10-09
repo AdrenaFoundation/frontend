@@ -174,7 +174,7 @@ export default function AdrenaAccounts({
                 <div className="flex items-center">
                   <CopyButton
                     textToCopy={window.adrena.client
-                      .findCustodyTokenAccountAddress(custody.mint)
+                      .findCustodyTokenAccountAddress(custody.mint, custody.pool)
                       .toBase58()}
                     notificationTitle={`${custody.tokenInfo.symbol} Custody ATA address copied to clipboard`}
                     className="mr-2"
@@ -192,6 +192,7 @@ export default function AdrenaAccounts({
                   className="md:ml-auto"
                   address={window.adrena.client.findCustodyTokenAccountAddress(
                     custody.mint,
+                    custody.pool,
                   )}
                 />
               ),
@@ -344,8 +345,9 @@ export default function AdrenaAccounts({
             rowTitle: (
               <div className="flex items-center font-semibold">
                 <CopyButton
+                  // TODO: handle multiple pool
                   textToCopy={window.adrena.client
-                    .getGenesisLockPda()
+                    .getGenesisLockPda(window.adrena.client.mainPool.pubkey)
                     .toBase58()}
                   notificationTitle="Genesis Lock PDA address copied to clipboard"
                   className="mr-2"
@@ -354,9 +356,10 @@ export default function AdrenaAccounts({
               </div>
             ),
             value: (
+              // TODO: handle multiple pool
               <OnchainAccountInfo
                 className="md:ml-auto"
-                address={window.adrena.client.getGenesisLockPda()}
+                address={window.adrena.client.getGenesisLockPda(window.adrena.client.mainPool.pubkey)}
               />
             ),
           },

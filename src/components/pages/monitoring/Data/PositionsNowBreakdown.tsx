@@ -80,7 +80,7 @@ export default function PositionsNowBreakdown({
                       nb={nativeToUi(
                         // Works because we have only one stable
                         custody.nativeObject.shortPositions
-                          .stableLockedAmount[0].lockedAmount,
+                          .stableLockedAmount,
                         USD_DECIMALS,
                       )}
                       precision={0}

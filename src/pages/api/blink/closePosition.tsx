@@ -64,6 +64,7 @@ export default async function handler(
 
         const allUserPositions = await client.loadUserPositions(
             new PublicKey(walletAddress),
+            window.adrena.client.mainPool.pubkey, // TODO: handle multiple pools
         );
 
         const position = allUserPositions.find(

@@ -90,6 +90,7 @@ export default function Referrer({
 
               try {
                 await window.adrena.client.claimReferralRewards({
+                  poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pool
                   notification,
                 });
               } catch (error) {

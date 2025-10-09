@@ -113,6 +113,7 @@ export default function SwapTradingInputs({
           tokenIn: tokenA,
           tokenOut: tokenB,
           amountIn: uiToNative(inputA, tokenA.decimals),
+          poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pool
         });
 
         // Verify that information is not outdated
@@ -229,6 +230,7 @@ export default function SwapTradingInputs({
         minAmountOut: new BN(0),
         mintA: tokenA.mint,
         mintB: tokenB.mint,
+        poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pool
         notification,
       });
 

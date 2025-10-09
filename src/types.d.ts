@@ -150,6 +150,7 @@ export type CustodyExtended = {
   maxCumulativeShortPositionSizeUsd: number;
   // TradeStats
   oiShortUsd: number;
+  pool: PublicKey;
 
   // Onchain data
   nativeObject: Custody;

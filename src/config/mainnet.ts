@@ -119,18 +119,22 @@ export default class MainnetConfiguration implements IConfiguration {
 
   public readonly rpcOptions: RpcOption[] = this.devMode
     ? [
+        // {
+        //   name: 'Triton Dev RPC',
+        //   url: (() => {
+        //     const apiKey = process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY;
+
+        //     if (!apiKey)
+        //       throw new Error(
+        //         'Missing environment variable NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY',
+        //       );
+
+        //     return `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${apiKey}`;
+        //   })(),
+        // },
         {
-          name: 'Triton Dev RPC',
-          url: (() => {
-            const apiKey = process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY;
-
-            if (!apiKey)
-              throw new Error(
-                'Missing environment variable NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY',
-              );
-
-            return `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${apiKey}`;
-          })(),
+          name: 'Surfpool RPC',
+          url: 'http://127.0.0.1:8899',
         },
         // {
         //   name: 'Helius Dev RPC',

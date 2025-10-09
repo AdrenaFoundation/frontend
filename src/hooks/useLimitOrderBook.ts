@@ -24,6 +24,7 @@ export const useLimitOrderBook = ({
     try {
       const limitOrderBook = await window.adrena.client.loadLimitOrderBook({
         wallet: new PublicKey(walletAddress),
+        poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pools
       });
 
       setLimitOrderBook(limitOrderBook);

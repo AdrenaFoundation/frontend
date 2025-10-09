@@ -134,6 +134,7 @@ export default async function handler(
                         tokenA.decimals,
                     ),
                     leverage: uiLeverageToNative(Number(leverage)),
+                    poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pools
                 });
 
             await client.checkATAAddressInitializedAndCreatePreInstruction({
@@ -148,7 +149,7 @@ export default async function handler(
 
             const ix =
                 side === 'long'
-                    ? await client.buildOpenOrIncreasePositionWithSwapLong({
+                    ? await client.buildOpenOrIncreasePositionLong({
                         owner: new PublicKey(account),
                         collateralMint: tokenA.mint,
                         mint: tokenB.mint,
@@ -158,8 +159,9 @@ export default async function handler(
                             tokenA.decimals,
                         ),
                         leverage: uiLeverageToNative(Number(leverage)),
+                        poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pools
                     })
-                    : await client.buildOpenOrIncreasePositionWithSwapShort({
+                    : await client.buildOpenOrIncreasePositionShort({
                         owner: new PublicKey(account),
                         collateralMint: tokenA.mint,
                         mint: tokenB.mint,
@@ -169,6 +171,7 @@ export default async function handler(
                             tokenA.decimals,
                         ),
                         leverage: uiLeverageToNative(Number(leverage)),
+                        poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pools
                     });
 
             const tx = await ix.transaction();

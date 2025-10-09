@@ -90,6 +90,7 @@ export default async function handler(
                 minLpAmountOut: new BN(0),
                 owner: new PublicKey(account),
                 mint: token.mint,
+                poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pools
             });
 
             const tx = await ix.transaction();

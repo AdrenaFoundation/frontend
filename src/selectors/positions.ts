@@ -8,5 +8,11 @@ import { selectWalletPublicKey } from './wallet';
  */
 export const selectPossibleUserPositions = createSelector(
   [selectWalletPublicKey],
-  (user) => user && window.adrena.client.getPossiblePositionAddresses(user),
+  // TODO: handle multiple pool
+  (user) =>
+    user &&
+    window.adrena.client.getPossiblePositionAddresses(
+      user,
+      window.adrena.client.mainPool.pubkey,
+    ),
 );
