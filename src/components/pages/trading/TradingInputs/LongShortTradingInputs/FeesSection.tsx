@@ -35,7 +35,7 @@ export const FeesSection = ({
     newPositionInfo,
     isInfoLoading,
 }: FeesSectionProps) => {
-    const [displayBorrowRateAsApr, setDisplayBorrowRateAsApr] = useState(true);
+    const [displayBorrowRateAsApr, setDisplayBorrowRateAsApr] = useState(false);
 
     const highSwapFeeTippyContent = (
         <div className="gap-4 flex flex-col">
