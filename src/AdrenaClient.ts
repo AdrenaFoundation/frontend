@@ -6764,7 +6764,6 @@ export class AdrenaClient {
       lastValidBlockHeight: number;
     };
 
-    const blockhashFetchStart = Date.now();
     try {
       latestBlockHash = await this.connection.getLatestBlockhash('confirmed');
     } catch (err) {
@@ -6951,6 +6950,7 @@ export class AdrenaClient {
       .compileToV0Message(lookupTableAccounts.filter((x) => x !== null));
 
     const versionedTx = new VersionedTransaction(messageV0);
+
     let signedTransaction: VersionedTransaction;
 
     // Sign the transaction
@@ -6978,9 +6978,7 @@ export class AdrenaClient {
 
     /////////////////////// Send the transaction ///////////////////////
     try {
-      const serializedForRpc = signedTransaction.serialize();
-
-      await this.connection.sendRawTransaction(serializedForRpc, {
+      await this.connection.sendRawTransaction(signedTransaction.serialize(), {
         skipPreflight: true,
         maxRetries: 0,
       });
