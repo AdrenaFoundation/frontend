@@ -90,7 +90,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
   const currentChain = useMemo(() => {
     const chain = process.env.NEXT_PUBLIC_DEV_CLUSTER === 'devnet' ? 'solana:devnet' : 'solana:mainnet';
-    console.log('🔍 CURRENT CHAIN:', chain);
     return chain;
   }, []);
 
@@ -218,28 +217,14 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
           return;
         }
 
-        console.log('✅ Privy wallets ready, proceeding with auto-connect');
-        console.log('   Available wallets:', connectedStandardWallets.map(w => ({
-          address: w.address.slice(0, 8) + '...',
-          name: w.standardWallet.name,
-        })));
-
         setIsConnecting(true);
 
         let walletAddress = null;
 
         if (typeof window !== 'undefined') {
           const savedWallet = localStorage.getItem('privy:selectedWallet');
-          console.log('💾 Saved wallet from localStorage:', savedWallet?.slice(0, 8) + '...' || 'none');
 
           if (savedWallet) {
-            console.log('🔍 Looking for saved wallet in connectedStandardWallets...');
-            console.log('   connectedStandardWallets:', connectedStandardWallets.map(w => ({
-              address: w.address.slice(0, 8) + '...',
-              name: w.standardWallet.name,
-              isEmbedded: w.standardWallet.name.toLowerCase().includes('privy'),
-            })));
-
             const connectedWallet = connectedStandardWallets.find(w =>
               w.address === savedWallet
             );
@@ -256,8 +241,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
               // Don't remove from localStorage immediately - wallets might still be loading
               // Just fall back to embedded wallet for now
             }
-          } else {
-            console.log('📭 No saved wallet in localStorage');
           }
         }
 
@@ -454,29 +437,14 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     wallet: ConnectedStandardSolanaWallet,
     serializedTransaction: Uint8Array
   ): Promise<VersionedTransaction> => {
-    console.log('🔍 HANDLE VERSIONED TRANSACTION');
-    console.log('   Wallet:', wallet.standardWallet.name);
-    console.log('   Input serialized size:', serializedTransaction.length, 'bytes');
-    console.log('   First 32 bytes:', Array.from(serializedTransaction.slice(0, 32)));
-    console.log('   Last 32 bytes:', Array.from(serializedTransaction.slice(-32)));
 
     const result = await wallet.signTransaction({
       transaction: serializedTransaction,
       chain: currentChain,
     });
 
-    console.log('📥 Wallet returned result:', result);
-    console.log('   signedTransaction size:', result.signedTransaction.length, 'bytes');
-    console.log('   Size difference:', result.signedTransaction.length - serializedTransaction.length, 'bytes');
-    console.log('   First 32 bytes:', Array.from(result.signedTransaction.slice(0, 32)));
-    console.log('   Last 32 bytes:', Array.from(result.signedTransaction.slice(-32)));
-
     try {
       const signedVersionedTx = VersionedTransaction.deserialize(result.signedTransaction);
-      console.log('✅ Successfully deserialized as VersionedTransaction');
-      console.log('   Number of signatures:', signedVersionedTx.signatures.length);
-      console.log('   Signature samples:', signedVersionedTx.signatures.map(s => Array.from(s.slice(0, 16))));
-      console.log('📤 Returning signed VersionedTransaction');
       return signedVersionedTx;
     } catch (error) {
       console.error('❌ Failed to deserialize as VersionedTransaction:', error);
@@ -490,34 +458,19 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     wallet: ConnectedStandardSolanaWallet,
     serializedTransaction: Uint8Array
   ): Promise<Transaction> => {
-    console.log('🔍 HANDLE LEGACY TRANSACTION');
-    console.log('   Wallet:', wallet.standardWallet.name);
-    console.log('   Input serialized size:', serializedTransaction.length, 'bytes');
-    console.log('   First 32 bytes:', Array.from(serializedTransaction.slice(0, 32)));
-    console.log('   Last 32 bytes:', Array.from(serializedTransaction.slice(-32)));
 
     const result = await wallet.signTransaction({
       transaction: serializedTransaction,
       chain: currentChain,
     });
 
-    console.log('📥 Wallet returned result:', result);
-    console.log('   signedTransaction size:', result.signedTransaction.length, 'bytes');
-    console.log('   Size difference:', result.signedTransaction.length - serializedTransaction.length, 'bytes');
-    console.log('   First 32 bytes:', Array.from(result.signedTransaction.slice(0, 32)));
-    console.log('   Last 32 bytes:', Array.from(result.signedTransaction.slice(-32)));
-
     try {
       const versionedTx = VersionedTransaction.deserialize(result.signedTransaction);
-      console.log('✅ Successfully deserialized as VersionedTransaction');
-      console.log('   Number of signatures:', versionedTx.signatures.length);
-      console.log('   Signature samples:', versionedTx.signatures.map(s => Array.from(s.slice(0, 16))));
 
       if (versionedTx.signatures && versionedTx.signatures.length > 0) {
         (transaction as unknown as { signatures: Uint8Array[] }).signatures = versionedTx.signatures.map((sig) => new Uint8Array(sig));
       }
 
-      console.log('📤 Returning transaction with signatures applied');
       return transaction;
     } catch (error) {
       console.error('❌ Failed to deserialize as VersionedTransaction:', error);
@@ -527,17 +480,12 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   }, [currentChain]);
 
   const signTransaction = useCallback(async (transaction: Transaction | VersionedTransaction): Promise<Transaction | VersionedTransaction> => {
-    console.log('📝 signTransaction called');
-    console.log('   walletsReady:', walletsReady);
-    console.log('   currentWalletAddress:', currentWalletAddress?.slice(0, 8) + '...');
-    console.log('   externalWallet:', externalWallet ? `${externalWallet.address.slice(0, 8)}... (${externalWallet.adapterName})` : 'none');
 
     if (!walletsReady) {
       throw new Error('Wallets not ready for signing');
     }
 
     const targetWalletAddress = externalWallet?.address || currentWalletAddress;
-    console.log('   targetWalletAddress:', targetWalletAddress?.slice(0, 8) + '...');
 
     if (!targetWalletAddress) {
       throw new Error('No wallet address available for signing');
@@ -545,34 +493,24 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
     const wallet = connectedStandardWallets.find(w => w.address === targetWalletAddress);
     if (!wallet) {
-      console.error('❌ Wallet not found!');
-      console.error('   Looking for:', targetWalletAddress.slice(0, 8) + '...');
-      console.error('   Available wallets:', connectedStandardWallets.map(w => ({
-        address: w.address.slice(0, 8) + '...',
-        name: w.standardWallet.name,
-      })));
       throw new Error(`Wallet not found for address: ${targetWalletAddress?.slice(0, 8)}...`);
     }
 
-    console.log('✅ Found wallet:', wallet.standardWallet.name);
-
     try {
       const serializedTransaction = serializeTransaction(transaction);
-      console.log('   Serialized transaction size:', serializedTransaction.length, 'bytes');
 
       let signedTransaction: Transaction | VersionedTransaction;
 
-      const isVersionedTx = transaction.constructor.name === 'VersionedTransaction' || transaction.constructor.name === '$r';
-      console.log('   Transaction type:', isVersionedTx ? 'VersionedTransaction' : 'Legacy Transaction');
-      console.log('   Constructor name:', transaction.constructor.name);
+      // Use instanceof instead of constructor.name to handle minification
+      const isVersionedTx = transaction instanceof VersionedTransaction;
 
       if (isVersionedTx) {
         signedTransaction = await handleVersionedTransaction(wallet, serializedTransaction);
       } else {
+        console.warn('   Transaction is not a VersionedTransaction, falling back to legacy transaction');
         signedTransaction = await handleLegacyTransaction(transaction as Transaction, wallet, serializedTransaction);
       }
 
-      console.log('✅ Transaction signed successfully');
       return signedTransaction;
     } catch (error) {
       console.error('❌ SIGN: Failed to sign transaction:', error);
@@ -663,19 +601,8 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       adapter.signAllTransactions = signAllTransactions;
       adapter.signMessage = signMessage;
 
-      console.log('🔧 Adapter functions assigned:');
-      console.log('   signTransaction:', adapter.signTransaction);
-      console.log('   signAllTransactions:', adapter.signAllTransactions);
-      console.log('   signMessage:', adapter.signMessage);
-      console.log('   connect:', adapter.connect);
-      console.log('   disconnect:', adapter.disconnect);
-
       // function not used by adrena client right now, may be used later
       adapterRef.current.sendTransaction = async (transaction: Transaction | VersionedTransaction) => {
-        console.log('📤 sendTransaction called');
-        console.log('   walletsReady:', walletsReady);
-        console.log('   currentWalletAddress:', currentWalletAddress?.slice(0, 8) + '...');
-
         if (!walletsReady) {
           throw new Error('Wallets not ready for sending transaction');
         }
@@ -702,13 +629,9 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
           throw new Error('Wallet not found for address: ' + currentWalletAddress);
         }
 
-        console.log('✅ Found wallet:', wallet.standardWallet.name);
-
         try {
           // Privy wallet connectors don't have sendTransaction, only signAndSendTransaction
           const serializedTransaction = serializeTransaction(transaction);
-          console.log('   Serialized transaction size:', serializedTransaction.length, 'bytes');
-          console.log('   Chain:', currentChain);
 
           const result = await wallet.signAndSendTransaction({
             transaction: serializedTransaction,
@@ -716,8 +639,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
           });
 
           const signature = bs58.encode(result.signature);
-          console.log('✅ Transaction sent successfully');
-          console.log('   Signature:', signature);
 
           return signature;
         } catch (error) {
@@ -725,8 +646,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
           throw error;
         }
       };
-
-      console.log('📤 sendTransaction function assigned:', adapterRef.current.sendTransaction);
 
       setAdapterInitialized(true);
     }
