@@ -349,6 +349,8 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       chain: currentChain,
     });
 
+    console.log('🔍 HANDLE VERSIONED TRANSACTION ///// RESULT:', result);
+
     const signedVersionedTx = VersionedTransaction.deserialize(result.signedTransaction);
     return signedVersionedTx;
   }, [currentChain]);
@@ -362,6 +364,8 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       transaction: serializedTransaction,
       chain: currentChain,
     });
+
+    console.log('🔍 HANDLE LEGACY TRANSACTION ///// RESULT:', result);
 
     const versionedTx = VersionedTransaction.deserialize(result.signedTransaction);
 
@@ -391,8 +395,10 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       const isVersionedTx = transaction.constructor.name === 'VersionedTransaction' || transaction.constructor.name === '$r';
 
       if (isVersionedTx) {
+        console.log('🔍 SIGN TRANSACTION ///// IS VERSIONED TRANSACTION');
         signedTransaction = await handleVersionedTransaction(wallet, serializedTransaction);
       } else {
+        console.log('🔍 SIGN TRANSACTION ///// IS LEGACY TRANSACTION');
         signedTransaction = await handleLegacyTransaction(transaction as Transaction, wallet, serializedTransaction);
       }
 
@@ -501,10 +507,13 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
         try {
           // Privy wallet connectors don't have sendTransaction, only signAndSendTransaction
           const serializedTransaction = serializeTransaction(transaction);
+          console.log('🔍 SEND TRANSACTION ///// SERIALIZED TRANSACTION:', serializedTransaction);
           const result = await wallet.signAndSendTransaction({
             transaction: serializedTransaction,
             chain: currentChain,
           });
+
+          console.log('🔍 SEND TRANSACTION ///// RESULT:', result);
 
           const signature = bs58.encode(result.signature);
           return signature;
