@@ -373,6 +373,22 @@ export function PrivyWalletSelection({
                                 </div>
                             </div>
 
+                            {/* Info message about account switching */}
+                            {/* <div className="mb-3 p-3 bg-third border border-bcolor rounded-md">
+                                <div className="flex items-center gap-2">
+                                    <Image
+                                        src={infoIcon}
+                                        alt="Info"
+                                        width={12}
+                                        height={12}
+                                        className="flex-shrink-0 opacity-50"
+                                    />
+                                    <div className="text-xs text-txtfade">
+                                        If you <span className="text-white text-xs">change accounts</span> in your wallet extension, please <span className="text-white text-xs">reload the page</span> to update.
+                                    </div>
+                                </div>
+                            </div> */}
+
                             {enhancedWallets.filter(wallet => !wallet.isEmbedded).map((enhancedWallet) => {
                                 const walletData = getWalletDisplayDataForEnhancedWallet(
                                     enhancedWallet,

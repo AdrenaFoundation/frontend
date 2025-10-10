@@ -121,7 +121,7 @@ export default function App(props: AppProps) {
       },
       appearance: {
         theme: 'dark' as const,
-        accentColor: '#ab9ff2' as const,
+        accentColor: '#6757c6' as const,
         logo: '/images/logo.svg',
         showWalletLoginFirst: false,
         walletList: ['detected_wallets' as const],
@@ -148,7 +148,7 @@ export default function App(props: AppProps) {
             paymentMethod: 'credit_debit_card' as const,
             uiConfig: {
               theme: 'dark' as const,
-              accentColor: '#ab9ff2' as const,
+              accentColor: '#6757c6' as const,
             },
           },
         },

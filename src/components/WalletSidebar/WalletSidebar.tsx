@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { QRCode } from 'react-qrcode-logo';
 
+import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
 import crossIcon from '@/../public/images/Icons/cross.svg';
 import dollarIcon from '@/../public/images/Icons/dollar.png';
 import keyIcon from '@/../public/images/Icons/key.png';
@@ -205,14 +206,13 @@ export default function WalletSidebar({
                                 {getAbbrevWalletAddress(wallet.walletAddress)}
                             </span>
 
-                            <svg
+                            <Image
+                                src={chevronDownIcon}
+                                alt="chevron down"
+                                width={12}
+                                height={12}
                                 className={`w-3 h-3 transition-transform duration-200 ${view === 'wallet-selection' ? 'rotate-180' : ''}`}
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
+                            />
                         </button>
                         : <span className='text-base sm:text-xs'>
                             {getAbbrevWalletAddress(wallet.walletAddress)}
