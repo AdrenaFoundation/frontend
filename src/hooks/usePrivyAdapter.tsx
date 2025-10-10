@@ -487,11 +487,17 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   }, [currentChain]);
 
   const signTransaction = useCallback(async (transaction: Transaction | VersionedTransaction): Promise<Transaction | VersionedTransaction> => {
+    console.log('📝 signTransaction called');
+    console.log('   walletsReady:', walletsReady);
+    console.log('   currentWalletAddress:', currentWalletAddress?.slice(0, 8) + '...');
+    console.log('   externalWallet:', externalWallet ? `${externalWallet.address.slice(0, 8)}... (${externalWallet.adapterName})` : 'none');
+
     if (!walletsReady) {
       throw new Error('Wallets not ready for signing');
     }
 
     const targetWalletAddress = externalWallet?.address || currentWalletAddress;
+    console.log('   targetWalletAddress:', targetWalletAddress?.slice(0, 8) + '...');
 
     if (!targetWalletAddress) {
       throw new Error('No wallet address available for signing');
@@ -499,23 +505,33 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
     const wallet = connectedStandardWallets.find(w => w.address === targetWalletAddress);
     if (!wallet) {
+      console.error('❌ Wallet not found!');
+      console.error('   Looking for:', targetWalletAddress.slice(0, 8) + '...');
+      console.error('   Available wallets:', connectedStandardWallets.map(w => ({
+        address: w.address.slice(0, 8) + '...',
+        name: w.standardWallet.name,
+      })));
       throw new Error(`Wallet not found for address: ${targetWalletAddress?.slice(0, 8)}...`);
     }
 
+    console.log('✅ Found wallet:', wallet.standardWallet.name);
+
     try {
       const serializedTransaction = serializeTransaction(transaction);
+      console.log('   Serialized transaction size:', serializedTransaction.length, 'bytes');
+
       let signedTransaction: Transaction | VersionedTransaction;
 
       const isVersionedTx = transaction.constructor.name === 'VersionedTransaction' || transaction.constructor.name === '$r';
+      console.log('   Transaction type:', isVersionedTx ? 'VersionedTransaction' : 'Legacy Transaction');
 
       if (isVersionedTx) {
-        console.log('🔍 SIGN TRANSACTION ///// IS VERSIONED TRANSACTION');
         signedTransaction = await handleVersionedTransaction(wallet, serializedTransaction);
       } else {
-        console.log('🔍 SIGN TRANSACTION ///// IS LEGACY TRANSACTION');
         signedTransaction = await handleLegacyTransaction(transaction as Transaction, wallet, serializedTransaction);
       }
 
+      console.log('✅ Transaction signed successfully');
       return signedTransaction;
     } catch (error) {
       console.error('❌ SIGN: Failed to sign transaction:', error);
@@ -606,38 +622,62 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       adapter.signAllTransactions = signAllTransactions;
       adapter.signMessage = signMessage;
 
+      console.log('🔧 Adapter functions assigned:');
+      console.log('   signTransaction:', adapter.signTransaction);
+      console.log('   signAllTransactions:', adapter.signAllTransactions);
+      console.log('   signMessage:', adapter.signMessage);
+      console.log('   connect:', adapter.connect);
+      console.log('   disconnect:', adapter.disconnect);
+
       // function not used by adrena client right now, may be used later
       adapterRef.current.sendTransaction = async (transaction: Transaction | VersionedTransaction) => {
+        console.log('📤 sendTransaction called');
+        console.log('   walletsReady:', walletsReady);
+        console.log('   currentWalletAddress:', currentWalletAddress?.slice(0, 8) + '...');
+
         if (!walletsReady) {
           throw new Error('Wallets not ready for sending transaction');
         }
 
         const privySignature = (transaction as unknown as { _privySignature: string })?._privySignature;
         if (privySignature) {
+          console.log('✅ Using cached Privy signature:', privySignature.slice(0, 16) + '...');
           return privySignature;
         }
 
         if (!currentWalletAddress) {
+          console.error('❌ No Solana wallet connected');
           throw new Error('No Solana wallet connected');
         }
 
         const wallet = connectedStandardWallets.find(w => w.address === currentWalletAddress);
         if (!wallet) {
+          console.error('❌ Wallet not found!');
+          console.error('   Looking for:', currentWalletAddress.slice(0, 8) + '...');
+          console.error('   Available wallets:', connectedStandardWallets.map(w => ({
+            address: w.address.slice(0, 8) + '...',
+            name: w.standardWallet.name,
+          })));
           throw new Error('Wallet not found for address: ' + currentWalletAddress);
         }
+
+        console.log('✅ Found wallet:', wallet.standardWallet.name);
 
         try {
           // Privy wallet connectors don't have sendTransaction, only signAndSendTransaction
           const serializedTransaction = serializeTransaction(transaction);
-          console.log('🔍 SEND TRANSACTION ///// SERIALIZED TRANSACTION:', serializedTransaction);
+          console.log('   Serialized transaction size:', serializedTransaction.length, 'bytes');
+          console.log('   Chain:', currentChain);
+
           const result = await wallet.signAndSendTransaction({
             transaction: serializedTransaction,
             chain: currentChain,
           });
 
-          console.log('🔍 SEND TRANSACTION ///// RESULT:', result);
-
           const signature = bs58.encode(result.signature);
+          console.log('✅ Transaction sent successfully');
+          console.log('   Signature:', signature);
+
           return signature;
         } catch (error) {
           console.error('❌ [sendTransaction] Failed to send transaction:', error);
@@ -645,9 +685,13 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
         }
       };
 
+      console.log('📤 sendTransaction function assigned:', adapterRef.current.sendTransaction);
+
       setAdapterInitialized(true);
     }
   }, [publicKey, isConnecting, authenticated, currentWalletAddress, ready, connect, disconnect, signTransaction, signAllTransactions, signMessage, connectedStandardWallets, currentChain, serializeTransaction, externalWallet, eventEmitter, walletsReady]);
+
+
 
   return ready && adapterRef.current ? (adapterRef.current || null) : null;
 }
