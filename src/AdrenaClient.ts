@@ -7001,6 +7001,10 @@ export class AdrenaClient {
     }
 
     try {
+      console.log(
+        'Sending transaction to primary RPC',
+        this.connection.rpcEndpoint,
+      );
       await this.connection.sendRawTransaction(signedTransaction.serialize(), {
         skipPreflight: true,
         maxRetries: 0,
