@@ -454,15 +454,35 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     wallet: ConnectedStandardSolanaWallet,
     serializedTransaction: Uint8Array
   ): Promise<VersionedTransaction> => {
+    console.log('🔍 HANDLE VERSIONED TRANSACTION');
+    console.log('   Wallet:', wallet.standardWallet.name);
+    console.log('   Input serialized size:', serializedTransaction.length, 'bytes');
+    console.log('   First 32 bytes:', Array.from(serializedTransaction.slice(0, 32)));
+    console.log('   Last 32 bytes:', Array.from(serializedTransaction.slice(-32)));
+
     const result = await wallet.signTransaction({
       transaction: serializedTransaction,
       chain: currentChain,
     });
 
-    console.log('🔍 HANDLE VERSIONED TRANSACTION ///// RESULT:', result);
+    console.log('📥 Wallet returned result:', result);
+    console.log('   signedTransaction size:', result.signedTransaction.length, 'bytes');
+    console.log('   Size difference:', result.signedTransaction.length - serializedTransaction.length, 'bytes');
+    console.log('   First 32 bytes:', Array.from(result.signedTransaction.slice(0, 32)));
+    console.log('   Last 32 bytes:', Array.from(result.signedTransaction.slice(-32)));
 
-    const signedVersionedTx = VersionedTransaction.deserialize(result.signedTransaction);
-    return signedVersionedTx;
+    try {
+      const signedVersionedTx = VersionedTransaction.deserialize(result.signedTransaction);
+      console.log('✅ Successfully deserialized as VersionedTransaction');
+      console.log('   Number of signatures:', signedVersionedTx.signatures.length);
+      console.log('   Signature samples:', signedVersionedTx.signatures.map(s => Array.from(s.slice(0, 16))));
+      console.log('📤 Returning signed VersionedTransaction');
+      return signedVersionedTx;
+    } catch (error) {
+      console.error('❌ Failed to deserialize as VersionedTransaction:', error);
+      console.error('   This might indicate the wallet returned a different format');
+      throw error;
+    }
   }, [currentChain]);
 
   const handleLegacyTransaction = useCallback(async (
@@ -470,20 +490,40 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     wallet: ConnectedStandardSolanaWallet,
     serializedTransaction: Uint8Array
   ): Promise<Transaction> => {
+    console.log('🔍 HANDLE LEGACY TRANSACTION');
+    console.log('   Wallet:', wallet.standardWallet.name);
+    console.log('   Input serialized size:', serializedTransaction.length, 'bytes');
+    console.log('   First 32 bytes:', Array.from(serializedTransaction.slice(0, 32)));
+    console.log('   Last 32 bytes:', Array.from(serializedTransaction.slice(-32)));
+
     const result = await wallet.signTransaction({
       transaction: serializedTransaction,
       chain: currentChain,
     });
 
-    console.log('🔍 HANDLE LEGACY TRANSACTION ///// RESULT:', result);
+    console.log('📥 Wallet returned result:', result);
+    console.log('   signedTransaction size:', result.signedTransaction.length, 'bytes');
+    console.log('   Size difference:', result.signedTransaction.length - serializedTransaction.length, 'bytes');
+    console.log('   First 32 bytes:', Array.from(result.signedTransaction.slice(0, 32)));
+    console.log('   Last 32 bytes:', Array.from(result.signedTransaction.slice(-32)));
 
-    const versionedTx = VersionedTransaction.deserialize(result.signedTransaction);
+    try {
+      const versionedTx = VersionedTransaction.deserialize(result.signedTransaction);
+      console.log('✅ Successfully deserialized as VersionedTransaction');
+      console.log('   Number of signatures:', versionedTx.signatures.length);
+      console.log('   Signature samples:', versionedTx.signatures.map(s => Array.from(s.slice(0, 16))));
 
-    if (versionedTx.signatures && versionedTx.signatures.length > 0) {
-      (transaction as unknown as { signatures: Uint8Array[] }).signatures = versionedTx.signatures.map((sig) => new Uint8Array(sig));
+      if (versionedTx.signatures && versionedTx.signatures.length > 0) {
+        (transaction as unknown as { signatures: Uint8Array[] }).signatures = versionedTx.signatures.map((sig) => new Uint8Array(sig));
+      }
+
+      console.log('📤 Returning transaction with signatures applied');
+      return transaction;
+    } catch (error) {
+      console.error('❌ Failed to deserialize as VersionedTransaction:', error);
+      console.error('   This might indicate the wallet returned a different format');
+      throw error;
     }
-
-    return transaction;
   }, [currentChain]);
 
   const signTransaction = useCallback(async (transaction: Transaction | VersionedTransaction): Promise<Transaction | VersionedTransaction> => {
@@ -524,6 +564,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
       const isVersionedTx = transaction.constructor.name === 'VersionedTransaction' || transaction.constructor.name === '$r';
       console.log('   Transaction type:', isVersionedTx ? 'VersionedTransaction' : 'Legacy Transaction');
+      console.log('   Constructor name:', transaction.constructor.name);
 
       if (isVersionedTx) {
         signedTransaction = await handleVersionedTransaction(wallet, serializedTransaction);

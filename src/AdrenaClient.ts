@@ -7031,11 +7031,22 @@ export class AdrenaClient {
     }
 
     try {
+      const serializedForRpc = signedTransaction.serialize();
+      console.log('📡 Preparing to send to RPC');
+      console.log('   Transaction type:', signedTransaction.constructor.name);
+      console.log('   RPC endpoint:', this.connection.rpcEndpoint);
       console.log(
-        'Sending transaction to primary RPC',
-        this.connection.rpcEndpoint,
+        '   Serialized transaction size:',
+        serializedForRpc.length,
+        'bytes',
       );
-      await this.connection.sendRawTransaction(signedTransaction.serialize(), {
+      console.log(
+        '   First 32 bytes:',
+        Array.from(serializedForRpc.slice(0, 32)),
+      );
+      console.log('   Last 32 bytes:', Array.from(serializedForRpc.slice(-32)));
+
+      await this.connection.sendRawTransaction(serializedForRpc, {
         skipPreflight: true,
         maxRetries: 0,
       });
