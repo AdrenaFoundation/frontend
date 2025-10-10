@@ -6971,7 +6971,6 @@ export class AdrenaClient {
 
     const txSignature = signedTransaction.signatures[0];
     if (!txSignature) throw new Error('Transaction signature missing');
-
     const txSignatureBase58 = bs58.encode(txSignature);
 
     notification?.currentStepSucceeded();
@@ -6982,6 +6981,15 @@ export class AdrenaClient {
         skipPreflight: true,
         maxRetries: 0,
       });
+
+      // {
+      //   requireAllSignatures: false,
+      //   verifySignatures: false,
+      // }),
+      // {
+      //   skipPreflight: true,
+      //   maxRetries: 0,
+      // },
 
       if (getTransactionLogs) {
         await this.connection.confirmTransaction(
