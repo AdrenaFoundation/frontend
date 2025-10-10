@@ -195,16 +195,11 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     }
 
     try {
-      // Auto-connect if:
-      // 1. User is authenticated with Privy
-      // 2. No wallet is connected in Redux (first load or after disconnect)
-      // 3. Adapter is initialized
       const shouldAutoConnect = authenticated && !currentWalletAddress && adapterRef.current;
 
       if (shouldAutoConnect) {
-        // ⚠️ CRITICAL: Wait for wallets to be ready before auto-connecting
+        // Wait for wallets to be ready before auto-connecting
         if (!walletsReady) {
-          console.log('⏳ Waiting for Privy wallets to be ready...');
           return;
         }
 
@@ -222,15 +217,9 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
             if (isValidPublicKey(savedWallet) && connectedWallet) {
               walletAddress = savedWallet;
-            } else {
-              console.warn('⚠️ Saved wallet NOT found in connectedStandardWallets!');
-              console.warn('   Saved:', savedWallet.slice(0, 8) + '...');
-              console.warn('   Available:', connectedStandardWallets.map(w => w.address.slice(0, 8) + '...'));
-              console.warn('   Will NOT remove from localStorage yet - might still be loading...');
-
-              // Don't remove from localStorage immediately - wallets might still be loading
-              // Just fall back to embedded wallet for now
             }
+            // Don't remove from localStorage immediately - wallets might still be loading
+            // Just fall back to embedded wallet for now
           }
         }
 

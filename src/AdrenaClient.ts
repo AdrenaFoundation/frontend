@@ -6809,8 +6809,6 @@ export class AdrenaClient {
 
     let versionedTransaction = new VersionedTransaction(transactionMessage);
 
-    console.log('versioned transaction', versionedTransaction);
-
     let serializedTransaction: Uint8Array;
 
     try {
@@ -6890,10 +6888,7 @@ export class AdrenaClient {
         throw simulationError;
       }
 
-      console.log('simulationResult', simulationResult);
-
       computeUnitUsed = simulationResult.unitsConsumed;
-      console.log('computeUnitUsed', computeUnitUsed);
     } catch (err) {
       // Extract logs if this is a simulation error
       const logs = (err as { logs?: string[] })?.logs;
@@ -6959,15 +6954,6 @@ export class AdrenaClient {
       .compileToV0Message(lookupTableAccounts.filter((x) => x !== null));
 
     const versionedTx = new VersionedTransaction(messageV0);
-
-    console.log('📋 Transaction accounts:');
-    console.log('   Fee payer:', messageV0.staticAccountKeys[0]?.toBase58());
-    console.log(
-      '   All accounts:',
-      messageV0.staticAccountKeys.map((k) => k.toBase58()),
-    );
-    console.log('   Instructions:', messageV0.compiledInstructions.length);
-
     let signedTransaction: VersionedTransaction;
 
     // Sign the transaction
@@ -6992,9 +6978,6 @@ export class AdrenaClient {
     // Validate the signature is not all zeros (unsigned)
     const isUnsigned = txSignature.every((byte) => byte === 0);
     if (isUnsigned) {
-      console.error('❌ Transaction signing failed - signature is all zeros!');
-      console.error('Wallet:', wallet.publicKey.toBase58());
-      console.error('Wallet type:', wallet.name || 'Unknown');
       const adrenaError = new AdrenaTransactionError(
         null,
         'Transaction signing failed - wallet returned unsigned transaction',
@@ -7004,47 +6987,21 @@ export class AdrenaClient {
     }
 
     const txSignatureBase58 = bs58.encode(txSignature);
-    console.log('✅ Transaction signed successfully');
-    console.log('   Network cluster:', this.config.cluster);
-    console.log(
-      '   Signature (first 16 bytes):',
-      Array.from(txSignature.slice(0, 16)),
-    );
-    console.log('   Signature Base58:', txSignatureBase58);
 
     notification?.currentStepSucceeded();
 
     /////////////////////// Send the transaction ///////////////////////
     const elapsedSinceBlockhash = Date.now() - blockhashFetchStart;
-    console.log(
-      `📤 Sending transaction (${elapsedSinceBlockhash}ms since blockhash fetch)`,
-    );
 
     // Check wallet balance before sending
     try {
       const balance = await this.connection.getBalance(wallet.publicKey);
-      console.log(
-        `💰 Sender SOL balance: ${balance / 1e9} SOL (${balance} lamports)`,
-      );
     } catch (e) {
       console.warn('Could not fetch sender balance:', e);
     }
 
     try {
       const serializedForRpc = signedTransaction.serialize();
-      console.log('📡 Preparing to send to RPC');
-      console.log('   Transaction type:', signedTransaction.constructor.name);
-      console.log('   RPC endpoint:', this.connection.rpcEndpoint);
-      console.log(
-        '   Serialized transaction size:',
-        serializedForRpc.length,
-        'bytes',
-      );
-      console.log(
-        '   First 32 bytes:',
-        Array.from(serializedForRpc.slice(0, 32)),
-      );
-      console.log('   Last 32 bytes:', Array.from(serializedForRpc.slice(-32)));
 
       await this.connection.sendRawTransaction(serializedForRpc, {
         skipPreflight: true,
