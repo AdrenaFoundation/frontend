@@ -392,6 +392,18 @@ export default function SuperchargedFooter({
                 width={12}
               />
             </Link>
+
+            <Link
+              href="/terms_and_conditions"
+            >
+              <Image
+                src={documentIcon}
+                alt="Terms & Privacy"
+                className="w-3 h-3 hover:opacity-50 transition-opacity duration-300 cursor-pointer"
+                height={12}
+                width={12}
+              />
+            </Link>
           </div>
 
           <div className="hidden xl:flex flex-row items-center gap-4 p-2 px-4 border-l border-inputcolor">

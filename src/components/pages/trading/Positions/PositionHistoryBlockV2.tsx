@@ -67,176 +67,178 @@ export default function PositionHistoryBlockV2({
     : positionHistory.pnl + positionHistory.fees;
 
   const totalFees = positionHistory.exitFees + positionHistory.borrowFees;
-
   return (
     <>
-      <motion.div className="border border-inputcolor rounded-md">
-        <div className="flex flex-row items-center justify-between p-2 border-b">
-          {!showChart ? (
-            <>
-              <TokenDetails positionHistory={positionHistory} />
-              <PnLDetails
+      <AnimatePresence>
+        <motion.div className="border border-inputcolor rounded-md">
+          <div className="flex flex-row items-center justify-between p-2 border-b">
+            {!showChart ? (
+              <>
+                <TokenDetails positionHistory={positionHistory} />
+                <PnLDetails
+                  positionHistory={positionHistory}
+                  showAfterFees={showAfterFees}
+                  setShowAfterFees={setShowAfterFees}
+                  fees={totalFees}
+                />
+                <NetValue positionHistory={positionHistory} />
+              </>
+            ) : (
+              <PositionHistoryChart
                 positionHistory={positionHistory}
+                events={events}
                 showAfterFees={showAfterFees}
-                setShowAfterFees={setShowAfterFees}
-                fees={totalFees}
               />
-              <NetValue positionHistory={positionHistory} />
-            </>
-          ) : (
-            <PositionHistoryChart
-              positionHistory={positionHistory}
-              events={events}
-              showAfterFees={showAfterFees}
-            />
-          )}
-        </div>
-
-        <div
-          className={twMerge(
-            'flex flex-wrap flex-1 gap-2 p-3 border-b',
-            isMini && 'flex-col gap-1',
-            isMedium && 'grid grid-cols-3 gap-2',
-            isCompact && 'grid grid-cols-4 gap-2',
-            isBig && 'grid grid-cols-9 gap-2',
-            isBiggest && 'justify-between gap-2',
-          )}
-          ref={blockRef}
-        >
-          <PositionDetail
-            data={[
-              {
-                title: 'Duration',
-                value: formatTimeDifference(
-                  getFullTimeDifference(
-                    positionHistory.entryDate,
-                    positionHistory.exitDate || new Date(),
-                  ),
-                ),
-                format: 'time',
-              },
-              {
-                title: 'Leverage',
-                value: positionHistory.entryLeverage,
-                format: 'number',
-              },
-              {
-                title: 'Collateral',
-                value: positionHistory.collateralAmount,
-                format: 'currency',
-              },
-              {
-                title: 'Size',
-                value: positionHistory.entrySize,
-                format: 'currency',
-              },
-              {
-                title: 'Entry',
-                value: positionHistory.entryPrice,
-                format: 'currency',
-                isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
-                precision:
-                  positionHistory.token.displayAmountDecimalsPrecision,
-              },
-              {
-                title: 'Exit',
-                value: positionHistory.exitPrice,
-                format: 'currency',
-                isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
-                precision:
-                  positionHistory.token.displayAmountDecimalsPrecision,
-              },
-              {
-                title: 'Fees',
-                value: positionHistory.fees,
-                format: 'currency',
-              },
-              {
-                title: 'Borrow Fees',
-                value: positionHistory.borrowFees,
-                format: 'currency',
-              },
-              {
-                title: 'Mutagen',
-                value: positionHistory.totalPoints,
-                format: 'number',
-                color: 'text-mutagen',
-                isDecimalDimmed: false,
-              },
-            ]}
-            itemClassName={twMerge(
-              isMini &&
-              'border-0 flex-row justify-between items-center w-full p-0',
             )}
-            readOnly
-          />
-        </div>
-
-        <AnimatePresence>
-          {isExpanded && (
-            <EventBlocks
-              positionId={positionHistory.positionId}
-              events={events}
-              setEvents={setEvents}
-            />
-          )}
-        </AnimatePresence>
-        <div className="flex flex-row items-center justify-between">
-          <div className={'p-1.5 px-2 sm:border-r border-r-bcolor'}>
-            <div
-              className="flex flex-row items-center gap-1 bg-[#142030] border border-inputcolor p-1 px-2 rounded-md opacity-50 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              <p className="text-sm font-semibold">Events</p>
-              <Image
-                src={arrowIcon}
-                alt="Expand"
-                width={16}
-                height={16}
-                className={twMerge(
-                  'w-3 h-3 transition-transform duration-300',
-                  isExpanded ? 'rotate-180' : 'rotate-0',
-                )}
-              />
-            </div>
           </div>
 
-          <div className="flex flex-row items-center">
-            <div
-              className="flex flex-row items-center gap-3 p-2.5 px-3 border-l border-l-bcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
-              onClick={() => {
-                setShowAfterFees(!showAfterFees);
-              }}
-            >
-              <Switch
-                checked={showAfterFees}
-                size="small"
-                onChange={() => {
-                  // handle toggle in parent div
-                }}
-              />
-              <p className="text-sm font-semibold opacity-50">
-                PnL {showAfterFees ? 'w/ fees' : 'w/o fees'}
-              </p>
-            </div>
+          <div
+            className={twMerge(
+              'flex flex-wrap flex-1 gap-2 p-3 border-b',
+              isMini && 'flex-col gap-1',
+              isMedium && 'grid grid-cols-3 gap-2',
+              isCompact && 'grid grid-cols-4 gap-2',
+              isBig && 'grid grid-cols-9 gap-2',
+              isBiggest && 'justify-between gap-2',
+            )}
+            ref={blockRef}
+          >
+            <PositionDetail
+              data={[
+                {
+                  title: 'Duration',
+                  value: formatTimeDifference(
+                    getFullTimeDifference(
+                      positionHistory.entryDate,
+                      positionHistory.exitDate || new Date(),
+                    ),
+                  ),
+                  format: 'time',
+                },
+                {
+                  title: 'Leverage',
+                  value: positionHistory.entryLeverage,
+                  format: 'number',
+                },
+                {
+                  title: 'Collateral',
+                  value: positionHistory.collateralAmount,
+                  format: 'currency',
+                },
+                {
+                  title: 'Size',
+                  value: positionHistory.entrySize,
+                  format: 'currency',
+                },
+                {
+                  title: 'Entry',
+                  value: positionHistory.entryPrice,
+                  format: 'currency',
+                  isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
+                  precision:
+                    positionHistory.token.displayPriceDecimalsPrecision,
+                },
+                {
+                  title: 'Exit',
+                  value: positionHistory.exitPrice,
+                  format: 'currency',
+                  isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
+                  precision:
+                    positionHistory.token.displayPriceDecimalsPrecision,
+                },
+                {
+                  title: 'Fees',
+                  value: positionHistory.fees,
+                  format: 'currency',
+                },
+                {
+                  title: 'Borrow Fees',
+                  value: positionHistory.borrowFees,
+                  format: 'currency',
+                },
+                {
+                  title: 'Mutagen',
+                  value: positionHistory.totalPoints,
+                  format: 'number',
+                  color: 'text-mutagen',
+                  isDecimalDimmed: false,
+                },
+              ]}
+              itemClassName={twMerge(
+                isMini &&
+                  'border-0 flex-row justify-between items-center w-full p-0',
+              )}
+              readOnly
+            />
+          </div>
 
-            {showShareButton && (
+          <AnimatePresence>
+            {isExpanded && (
+              <EventBlocks
+                positionId={positionHistory.positionId}
+                token={positionHistory.token}
+                events={events}
+                setEvents={setEvents}
+              />
+            )}
+          </AnimatePresence>
+          <div className="flex flex-row items-center justify-between">
+            <div className={'p-1.5 px-2 sm:border-r border-r-bcolor'}>
               <div
-                className="flex flex-row items-center gap-3 p-3.5 px-3 border-l border-l-bcolor cursor-pointer opacity-50 hover:bg-[#131D2C] transition-colors duration-300"
-                onClick={() => setIsShareModalOpen(true)}
+                className="flex flex-row items-center gap-1 bg-[#142030] border border-inputcolor p-1 px-2 rounded-md opacity-50 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                onClick={() => setIsExpanded(!isExpanded)}
               >
+                <p className="text-sm font-semibold">Events</p>
                 <Image
-                  src={shareIcon}
-                  alt="Share"
+                  src={arrowIcon}
+                  alt="Expand"
                   width={16}
                   height={16}
-                  className="w-3 h-3"
+                  className={twMerge(
+                    'w-3 h-3 transition-transform duration-300',
+                    isExpanded ? 'rotate-180' : 'rotate-0',
+                  )}
                 />
               </div>
-            )}
+            </div>
+
+            <div className="flex flex-row items-center">
+              <div
+                className="flex flex-row items-center gap-3 p-2.5 px-3 border-l border-l-bcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
+                onClick={() => {
+                  setShowAfterFees(!showAfterFees);
+                }}
+              >
+                <Switch
+                  checked={showAfterFees}
+                  size="small"
+                  onChange={() => {
+                    // handle toggle in parent div
+                  }}
+                />
+                <p className="text-sm font-semibold opacity-50">
+                  PnL {showAfterFees ? 'w/ fees' : 'w/o fees'}
+                </p>
+              </div>
+
+              {showShareButton && (
+                <div
+                  className="flex flex-row items-center gap-3 p-3.5 px-3 border-l border-l-bcolor cursor-pointer opacity-50 hover:bg-[#131D2C] transition-colors duration-300"
+                  onClick={() => setIsShareModalOpen(true)}
+                >
+                  <Image
+                    src={shareIcon}
+                    alt="Share"
+                    width={16}
+                    height={16}
+                    className="w-3 h-3"
+                  />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      </AnimatePresence>
 
       <AnimatePresence>
         {isShareModalOpen && (

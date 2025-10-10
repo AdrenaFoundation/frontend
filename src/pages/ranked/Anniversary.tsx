@@ -519,7 +519,7 @@ export default function Anniversary() {
   );
 
   const getUserComparison = useCallback(
-    (title: string, currentValue: number) => {
+    (title: string, currentValue: number, leaderWallet?: string) => {
       if (!anniversaryData?.user_stats || !walletAddress) {
         return null;
       }
@@ -578,6 +578,7 @@ export default function Anniversary() {
       const difference = userValue - currentValue;
       const isAhead = difference > 0;
       const isSame = difference === 0;
+      const isLeader = isSame && walletAddress === leaderWallet;
 
       const formattedUserValue = isConsecutive
         ? Math.floor(userValue).toString()
@@ -606,9 +607,14 @@ export default function Anniversary() {
                 vs leader
               </div>
             )}
-            {isSame && (
+            {isSame && !isLeader && (
               <div className="text-xs mt-1 text-yellow-400">
                 Tied with leader!
+              </div>
+            )}
+            {isSame && isLeader && (
+              <div className="text-xs mt-1 font-semibold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#10B981,45%,#34D399,55%,#10B981)]">
+                You are the leader! 🏆
               </div>
             )}
           </div>
@@ -712,7 +718,13 @@ export default function Anniversary() {
                       record={anniversaryData?.records?.[prize.recordKey]}
                       profileMap={profileMap}
                       onClickProfile={handleProfileClick}
-                      getUserComparison={getUserComparison}
+                      getUserComparison={(title, currentValue) =>
+                        getUserComparison(
+                          title,
+                          currentValue,
+                          anniversaryData?.records?.[prize.recordKey]?.wallet,
+                        )
+                      }
                     />
                   ))}
                 </div>

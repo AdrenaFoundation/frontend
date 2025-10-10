@@ -160,7 +160,6 @@ export default function PositionBlockV2({
             nb={position.collateralAmount}
             format="number"
             className={POSITION_BLOCK_STYLES.text.white}
-            precision={position.collateralToken.displayAmountDecimalsPrecision}
             suffix={`${getTokenSymbol(
               position.collateralToken.symbol,
             )} (at init.)`}
@@ -180,7 +179,6 @@ export default function PositionBlockV2({
             }
             format="number"
             className={POSITION_BLOCK_STYLES.text.white}
-            precision={position.token.displayAmountDecimalsPrecision}
             suffix={getTokenSymbol(position.token.symbol)}
           />
         ),
@@ -231,6 +229,7 @@ export default function PositionBlockV2({
         format: 'currency',
         color: 'text-blue',
         isDecimalDimmed: false,
+        precision: position.token.displayPriceDecimalsPrecision,
         onEditClick: () => triggerStopLossTakeProfit?.(position),
       },
       {
@@ -242,6 +241,7 @@ export default function PositionBlockV2({
         format: 'currency',
         color: 'text-blue',
         isDecimalDimmed: false,
+        precision: position.token.displayPriceDecimalsPrecision,
         onEditClick: () => triggerStopLossTakeProfit?.(position),
       },
     ],
