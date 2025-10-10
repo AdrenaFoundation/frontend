@@ -6997,6 +6997,7 @@ export class AdrenaClient {
 
     const txSignatureBase58 = bs58.encode(txSignature);
     console.log('✅ Transaction signed successfully');
+    console.log('   Network cluster:', this.config.cluster);
     console.log(
       '   Signature (first 16 bytes):',
       Array.from(txSignature.slice(0, 16)),

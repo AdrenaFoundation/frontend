@@ -87,7 +87,9 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   }, [eventEmitter]);
 
   const currentChain = useMemo(() => {
-    return process.env.NEXT_PUBLIC_DEV_CLUSTER === 'devnet' ? 'solana:devnet' : 'solana:mainnet';
+    const chain = process.env.NEXT_PUBLIC_DEV_CLUSTER === 'devnet' ? 'solana:devnet' : 'solana:mainnet';
+    console.log('🔍 CURRENT CHAIN:', chain);
+    return chain;
   }, []);
 
   // TODO: TAKE DECISION ON THIS
