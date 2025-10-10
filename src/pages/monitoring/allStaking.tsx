@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
@@ -103,9 +104,10 @@ export default function AllStaking({
         {/* Two-column layout: Stats on left, Leaderboard on right */}
         <div className="flex flex-col lg:flex-row gap-2 w-full items-stretch">
           {/* Left side - Stats */}
-          <div className="flex flex-col gap-2 w-full lg:w-2/3 min-h-full">
-            <StyledContainer className="p-4 flex-1">
-              <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+          <div className="flex flex-col gap-2 w-full lg:w-2/3">
+            {/* Top container - smaller, fixed height */}
+            <StyledContainer className="p-4">
+              <div className="grid lg:grid-cols-2 gap-[2em] h-[18em]">
                 <AprLmChart />
 
                 <div className="flex flex-col items-center justify-center gap-1 w-full">
@@ -118,9 +120,10 @@ export default function AllStaking({
               </div>
             </StyledContainer>
 
+            {/* Bottom container - takes remaining space */}
             <StyledContainer
-              className="p-4"
-              bodyClassName="items-center justify-center flex relative"
+              className="p-4 flex-1"
+              bodyClassName="items-center justify-center flex relative h-full"
             >
               <div
                 className="flex flex-col items-center justify-center gap-1 cursor-pointer"

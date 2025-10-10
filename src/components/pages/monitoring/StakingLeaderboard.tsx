@@ -205,7 +205,12 @@ export default function StakingLeaderboard({
     );
   }
 
-  if (isLoading || !data) {
+  // Keep skeleton until both data is loaded AND user profile mapping is complete
+  if (
+    isLoading ||
+    !data ||
+    (walletAddress && !userRow && data.leaderboard.length > 0)
+  ) {
     return (
       <div className="flex flex-col gap-2 w-full h-full">
         {/* User profile card skeleton */}
@@ -215,6 +220,9 @@ export default function StakingLeaderboard({
             <div className="flex-1 h-8 bg-[#0B131D] animate-loader rounded"></div>
           </div>
         </div>
+
+        {/* Separator skeleton */}
+        <div className="h-[1px] bg-bcolor w-full mt-4 mb-4" />
 
         {/* Leaderboard table skeleton */}
         <div className="flex-1 bg-[#050D14] animate-loader rounded-md border border-white/10">

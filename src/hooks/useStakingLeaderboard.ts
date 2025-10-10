@@ -28,8 +28,6 @@ export interface StakingLeaderboardData {
   totalStakers: number;
 }
 
-// frontend/src/hooks/useStakingLeaderboard.ts
-
 export default function useStakingLeaderboard(
   walletAddress: string | null,
   allUserProfilesMetadata: UserProfileMetadata[] = [],
