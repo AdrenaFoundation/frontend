@@ -6767,10 +6767,6 @@ export class AdrenaClient {
     const blockhashFetchStart = Date.now();
     try {
       latestBlockHash = await this.connection.getLatestBlockhash('confirmed');
-      console.log(
-        `✅ Blockhash fetched in ${Date.now() - blockhashFetchStart}ms`,
-        latestBlockHash.blockhash,
-      );
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
 
@@ -6889,6 +6885,7 @@ export class AdrenaClient {
       }
 
       computeUnitUsed = simulationResult.unitsConsumed;
+      console.log('computeUnitUsed', computeUnitUsed);
     } catch (err) {
       // Extract logs if this is a simulation error
       const logs = (err as { logs?: string[] })?.logs;
@@ -6975,31 +6972,11 @@ export class AdrenaClient {
     const txSignature = signedTransaction.signatures[0];
     if (!txSignature) throw new Error('Transaction signature missing');
 
-    // Validate the signature is not all zeros (unsigned)
-    const isUnsigned = txSignature.every((byte) => byte === 0);
-    if (isUnsigned) {
-      const adrenaError = new AdrenaTransactionError(
-        null,
-        'Transaction signing failed - wallet returned unsigned transaction',
-      );
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
-
     const txSignatureBase58 = bs58.encode(txSignature);
 
     notification?.currentStepSucceeded();
 
     /////////////////////// Send the transaction ///////////////////////
-    const elapsedSinceBlockhash = Date.now() - blockhashFetchStart;
-
-    // Check wallet balance before sending
-    try {
-      const balance = await this.connection.getBalance(wallet.publicKey);
-    } catch (e) {
-      console.warn('Could not fetch sender balance:', e);
-    }
-
     try {
       const serializedForRpc = signedTransaction.serialize();
 
@@ -7007,14 +6984,8 @@ export class AdrenaClient {
         skipPreflight: true,
         maxRetries: 0,
       });
-      console.log(`✅ Transaction sent successfully:`, txSignatureBase58);
-      console.log(`   Blockhash age: ${Date.now() - blockhashFetchStart}ms`);
-      console.log(
-        `   Transaction link: https://solscan.io/tx/${txSignatureBase58}`,
-      );
 
       if (getTransactionLogs) {
-        console.log('⏳ Waiting for transaction confirmation...');
         await this.connection.confirmTransaction(
           {
             signature: txSignatureBase58,
@@ -7023,7 +6994,6 @@ export class AdrenaClient {
           },
           'confirmed',
         );
-        console.log('✅ Transaction confirmed!');
 
         const txInfo = await this.connection.getTransaction(txSignatureBase58, {
           commitment: 'confirmed',
