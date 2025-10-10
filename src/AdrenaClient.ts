@@ -6960,6 +6960,14 @@ export class AdrenaClient {
 
     const versionedTx = new VersionedTransaction(messageV0);
 
+    console.log('📋 Transaction accounts:');
+    console.log('   Fee payer:', messageV0.staticAccountKeys[0]?.toBase58());
+    console.log(
+      '   All accounts:',
+      messageV0.staticAccountKeys.map((k) => k.toBase58()),
+    );
+    console.log('   Instructions:', messageV0.compiledInstructions.length);
+
     let signedTransaction: VersionedTransaction;
 
     // Sign the transaction
@@ -7033,8 +7041,12 @@ export class AdrenaClient {
       });
       console.log(`✅ Transaction sent successfully:`, txSignatureBase58);
       console.log(`   Blockhash age: ${Date.now() - blockhashFetchStart}ms`);
+      console.log(
+        `   Transaction link: https://solscan.io/tx/${txSignatureBase58}`,
+      );
 
       if (getTransactionLogs) {
+        console.log('⏳ Waiting for transaction confirmation...');
         await this.connection.confirmTransaction(
           {
             signature: txSignatureBase58,
@@ -7043,6 +7055,7 @@ export class AdrenaClient {
           },
           'confirmed',
         );
+        console.log('✅ Transaction confirmed!');
 
         const txInfo = await this.connection.getTransaction(txSignatureBase58, {
           commitment: 'confirmed',

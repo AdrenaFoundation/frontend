@@ -536,6 +536,12 @@ export default function WalletSidebar({
                                                 amount: BN;
                                                 recipientAddress: PublicKey;
                                             }) => {
+                                                console.log('📝 Building transaction:');
+                                                console.log('   Token:', tokenSymbol);
+                                                console.log('   Sender:', senderAddress.toBase58());
+                                                console.log('   Recipient:', recipientAddress.toBase58());
+                                                console.log('   Amount:', amount.toString());
+
                                                 const transaction: Transaction = tokenSymbol === 'SOL' ?
                                                     await window.adrena.client.buildTransferSolTx({
                                                         owner: senderAddress,
