@@ -199,6 +199,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
               console.log('>>> AAAA', savedWallet, connectedWallet);
               walletAddress = savedWallet;
             } else {
+              console.warn('⚠️ Removing privy:selectedWallet - wallet not found in connectedStandardWallets:', savedWallet);
               localStorage.removeItem('privy:selectedWallet');
             }
           }
@@ -225,6 +226,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
           });
         } else if (!walletAddress) {
           console.error('🔌 PRIVY USE EFFECT: Invalid wallet address type or value:', walletAddress, typeof walletAddress);
+          console.warn('⚠️ Removing privy:selectedWallet - no valid wallet address found');
           localStorage.removeItem('privy:selectedWallet');
         }
       }

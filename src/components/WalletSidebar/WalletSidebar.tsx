@@ -143,8 +143,11 @@ export default function WalletSidebar({
             if (!newWallet) return;
 
             if (address !== wallet?.walletAddress) {
+                console.log('🔍 Before setting new privy selectedWallet if window is defined:', address);
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('privy:selectedWallet', address);
+                    console.log('✅ Set privy:selectedWallet to:', address);
+                    console.log('📋 Current localStorage keys:', Object.keys(localStorage).filter(k => k.startsWith('privy:')));
                 }
 
                 dispatch({
