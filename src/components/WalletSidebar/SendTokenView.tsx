@@ -263,7 +263,7 @@ export function SendTokenView({
                         transition={{ duration: 0.2 }}
                         className="flex items-center justify-center h-full text-txtfade text-sm"
                     >
-                        No tokens found matching "{searchQuery}"
+                        No tokens found matching &ldquo;{searchQuery}&rdquo;
                     </motion.div>
                 ) : (
                     <motion.div

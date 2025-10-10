@@ -249,7 +249,7 @@ export default function EventBlocks({
           return data;
       }
     },
-    [],
+    [token.displayPriceDecimalsPrecision],
   );
 
   return (
