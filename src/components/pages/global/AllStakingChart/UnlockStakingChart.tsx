@@ -131,7 +131,7 @@ export default function UnlockStakingChart({
           width={400}
           height={400}
           data={data}
-          margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
+          margin={{ top: 5, right: 20, left: -15, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 

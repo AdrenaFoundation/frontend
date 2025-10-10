@@ -7,6 +7,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/TableLegacy';
 import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useStakingLeaderboard from '@/hooks/useStakingLeaderboard';
 import { useSelector } from '@/store/store';
 import {
@@ -34,6 +35,8 @@ export default function StakingLeaderboard({
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const scrollToUserRowRef = useRef(false);
+
+  const breakpoint1 = useBetterMediaQuery('(min-width: 768px)'); // md breakpoint
 
   const handleProfileView = async (pubkey: string) => {
     if (!setProfile) return;
@@ -66,14 +69,8 @@ export default function StakingLeaderboard({
   const tableData = useMemo(() => {
     if (!data?.leaderboard) return [];
 
-    return data.leaderboard.map((entry, index) => ({
-      rowTitle: '',
-      specificRowClassName: twMerge(
-        walletAddress === entry.walletAddress
-          ? 'bg-red/20 border border-red/50 hover:border-red/70'
-          : null,
-      ),
-      values: [
+    return data.leaderboard.map((entry, index) => {
+      const values = [
         // Rank
         <div
           key={`rank-${index}`}
@@ -130,7 +127,7 @@ export default function StakingLeaderboard({
           </div>
         </div>,
 
-        // Total Voting Power
+        // Total Voting Power (always shown)
         <div
           key={`virtual-${index}`}
           className="flex items-center justify-center grow gap-1"
@@ -142,60 +139,76 @@ export default function StakingLeaderboard({
             isDecimalDimmed={false}
           />
         </div>,
+      ];
 
-        // Locked Stake
-        <div
-          key={`locked-${index}`}
-          className="hidden md:flex items-center justify-center grow gap-1"
-        >
-          <FormatNumber
-            nb={entry.lockedStakes}
-            precision={0}
-            className="text-xs font-semibold text-txtfade"
-            isDecimalDimmed={false}
-          />
-        </div>,
+      // Add Locked and Liquid columns only on md+ screens
+      if (breakpoint1) {
+        values.push(
+          // Locked Stake
+          <div
+            key={`locked-${index}`}
+            className="flex items-center justify-center grow gap-1"
+          >
+            <FormatNumber
+              nb={entry.lockedStakes}
+              precision={0}
+              className="text-xs font-semibold text-txtfade"
+              isDecimalDimmed={false}
+            />
+          </div>,
 
-        // Liquid Stake
-        <div
-          key={`liquid-${index}`}
-          className="hidden md:flex items-center justify-center grow gap-1"
-        >
-          <FormatNumber
-            nb={entry.liquidStake}
-            precision={0}
-            className="text-xs font-semibold text-txtfade"
-            isDecimalDimmed={false}
-          />
-        </div>,
-      ].filter(Boolean),
-    }));
-  }, [data?.leaderboard, handleProfileView, walletAddress]);
+          // Liquid Stake
+          <div
+            key={`liquid-${index}`}
+            className="flex items-center justify-center grow gap-1"
+          >
+            <FormatNumber
+              nb={entry.liquidStake}
+              precision={0}
+              className="text-xs font-semibold text-txtfade"
+              isDecimalDimmed={false}
+            />
+          </div>,
+        );
+      }
 
-  const columnsTitles = useMemo(
-    () => [
-      <span key="rank" className="ml-[2.2em] opacity-50">
+      return {
+        rowTitle: '',
+        specificRowClassName: twMerge(
+          walletAddress === entry.walletAddress
+            ? 'bg-red/10 border border-red/50 hover:border-red/70'
+            : null,
+        ),
+        values,
+      };
+    });
+  }, [data?.leaderboard, handleProfileView, walletAddress, breakpoint1]);
+
+  const columnsTitles = useMemo(() => {
+    const columns = [
+      <div key="rank" className="text-center">
         #
-      </span>,
+      </div>,
       'Staker',
-      <div key="virtual" className="ml-auto mr-auto opacity-50 text-center">
+      <div key="voting-power" className="text-right">
         Voting Power
       </div>,
-      <div
-        key="locked"
-        className="ml-auto mr-auto opacity-50 text-center text-sm"
-      >
-        Locked
-      </div>,
-      <div
-        key="liquid"
-        className="ml-auto mr-auto opacity-50 text-center text-sm"
-      >
-        Liquid
-      </div>,
-    ],
-    [],
-  );
+    ];
+
+    // Add Locked and Liquid columns only on md+ screens
+    if (breakpoint1) {
+      columns.push(
+        <div key="locked" className="text-right">
+          Locked
+        </div>,
+        <div key="liquid" className="text-right">
+          Liquid
+        </div>,
+      );
+    }
+
+    return columns;
+  }, [breakpoint1]);
 
   if (error) {
     return (
@@ -205,81 +218,138 @@ export default function StakingLeaderboard({
     );
   }
 
-  // Keep skeleton until both data is loaded AND user profile mapping is complete
   if (
     isLoading ||
     !data ||
     (walletAddress && !userRow && data.leaderboard.length > 0)
   ) {
     return (
-      <div className="flex flex-col gap-2 w-full h-full">
+      <div className="w-full h-full flex flex-col">
         {/* User profile card skeleton */}
-        <div className="relative flex flex-col gap-2 px-4 rounded-md max-w-3xl mx-auto mb-6 ml-2 mr-2 md:ml-auto md:mr-auto bg-[#050D14] animate-loader border border-white/10">
-          <div className="flex items-center justify-center gap-4 py-4">
-            <div className="h-16 w-16 rounded-full bg-[#0B131D] animate-loader"></div>
-            <div className="flex-1 h-8 bg-[#0B131D] animate-loader rounded"></div>
+        <div
+          className="
+          relative flex flex-col gap-2 px-4 rounded-md
+          max-w-3xl mx-auto mb-6 ml-2 mr-2 md:ml-auto md:mr-auto
+          bg-gradient-to-br from-red/30 to-red/10
+          border border-red/80
+          shadow-redBig
+          animate-fade-in
+          cursor-pointer
+          transition hover:border-red hover:shadow-redHoverBig
+        "
+        >
+          <div className="flex items-center justify-center gap-4">
+            <div className="h-16 w-16 rounded-full bg-[#0B131D] animate-loader mt-1 mb-1 flex-shrink-0"></div>
+            <div className="flex flex-col min-w-0 flex-1">
+              <div className="flex items-center min-w-0 gap-3 flex-1">
+                <div className="flex-1 h-6 bg-[#0B131D] animate-loader rounded w-24"></div>
+                <span className="font-semibold text-txtfade text-xl flex-shrink-0">
+                  |
+                </span>
+                <div className="h-7 bg-red/50 animate-loader rounded-full flex-shrink-0 w-12"></div>
+                <span className="font-semibold text-txtfade text-xl flex-shrink-0">
+                  |
+                </span>
+                <div className="h-6 bg-[#0B131D] animate-loader rounded sm:flex hidden flex-shrink-0 w-24"></div>
+                <div className="h-6 bg-[#0B131D] animate-loader rounded sm:flex hidden flex-shrink-0 w-20"></div>
+              </div>
+              <div className="h-4 bg-[#0B131D] animate-loader rounded mt-1 opacity-50 max-w-[60%]"></div>
+            </div>
           </div>
         </div>
 
-        {/* Separator skeleton */}
         <div className="h-[1px] bg-bcolor w-full mt-4 mb-4" />
 
-        {/* Leaderboard table skeleton */}
-        <div className="flex-1 bg-[#050D14] animate-loader rounded-md border border-white/10">
-          {/* Table header skeleton */}
-          <div className="flex items-center gap-4 px-4 py-2 mb-2">
-            <div className="w-[5em] h-4 bg-[#0B131D] animate-loader rounded opacity-50"></div>
-            <div className="w-[10em] h-4 bg-[#0B131D] animate-loader rounded opacity-50"></div>
-            <div className="flex-1 h-4 bg-[#0B131D] animate-loader rounded opacity-50 mx-auto max-w-[8em]"></div>
-            <div className="hidden md:flex flex-1 h-4 bg-[#0B131D] animate-loader rounded opacity-50 mx-auto max-w-[6em]"></div>
-            <div className="hidden md:flex flex-1 h-4 bg-[#0B131D] animate-loader rounded opacity-50 mx-auto max-w-[6em]"></div>
-          </div>
-
-          {/* Table rows skeleton */}
-          {Array.from({ length: 15 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-2 sm:gap-4 px-2 sm:px-4 py-3 bg-[#0B131D] rounded mx-2 mb-1"
-              style={{ opacity: 1 - i * 0.03 }}
-            >
-              {/* Rank */}
-              <div className="w-[5em] flex justify-center flex-shrink-0">
-                <div className="w-6 sm:w-8 h-5 bg-[#050D14] animate-loader rounded"></div>
-              </div>
-
-              {/* Avatar + Name */}
-              <div className="flex gap-1.5 sm:gap-2 min-w-0 flex-1 sm:w-[10em] items-center">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#050D14] animate-loader rounded-full flex-shrink-0"></div>
-                <div className="flex flex-col gap-1 min-w-0 flex-1">
-                  <div className="w-16 sm:w-20 h-3 bg-[#050D14] animate-loader rounded"></div>
-                  <div className="w-12 sm:w-16 h-2 bg-[#050D14] animate-loader rounded opacity-70"></div>
+        {/* Table skeleton */}
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex flex-col bg-transparent gap-1 border-none p-0">
+            {/* Header row */}
+            <div className="flex pb-2">
+              <div className="flex shrink-0 ml-2" style={{ width: '0%' }}></div>
+              {[
+                'RANK',
+                'NAME',
+                'VOTING POWER',
+                ...(breakpoint1 ? ['LOCKED', 'LIQUID'] : []),
+              ].map((title, i) => (
+                <div
+                  key={i}
+                  className={`flex grow flex-shrink-0 basis-0 ${i >= 3 ? 'hidden md:flex' : ''}`}
+                  style={{ maxWidth: i === 0 ? '75px' : 'auto' }}
+                >
+                  <div
+                    className={`h-4 bg-[#0B131D] animate-loader rounded opacity-50 ${
+                      i === 0
+                        ? 'w-12'
+                        : i === 1
+                          ? 'w-16'
+                          : i === 2
+                            ? 'w-28'
+                            : 'w-16'
+                    }`}
+                  ></div>
                 </div>
-              </div>
+              ))}
+            </div>
 
-              {/* Voting Power */}
-              <div className="flex justify-center flex-shrink-0">
-                <div className="w-12 sm:w-16 h-4 bg-[#050D14] animate-loader rounded"></div>
-              </div>
+            {/* Data rows */}
+            {Array.from({ length: 20 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex w-full border border-transparent bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center rounded-md pl-1"
+                style={{ opacity: 1 - i * 0.05 }}
+              >
+                <div
+                  className="flex shrink-0 items-center"
+                  style={{ width: '0%' }}
+                ></div>
 
-              {/* Locked */}
-              <div className="hidden md:flex justify-center flex-shrink-0">
-                <div className="w-14 h-4 bg-[#050D14] animate-loader rounded"></div>
-              </div>
+                {/* Rank */}
+                <div
+                  className="p-[0.3em] flex grow flex-shrink-0 basis-0"
+                  style={{ maxWidth: '75px' }}
+                >
+                  <div className="w-8 h-5 bg-[#050D14] animate-loader rounded"></div>
+                </div>
 
-              {/* Liquid */}
-              <div className="hidden md:flex justify-center flex-shrink-0">
-                <div className="w-14 h-4 bg-[#050D14] animate-loader rounded"></div>
+                {/* Name with avatar */}
+                <div className="p-[0.3em] flex grow flex-shrink-0 basis-0">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-[#050D14] animate-loader"></div>
+                    <div className="w-24 h-4 bg-[#050D14] animate-loader rounded"></div>
+                  </div>
+                </div>
+
+                {/* Voting Power */}
+                <div className="p-[0.3em] flex grow flex-shrink-0 basis-0">
+                  <div className="w-20 h-4 bg-[#050D14] animate-loader rounded"></div>
+                </div>
+
+                {/* Locked and Liquid - only show on md+ screens */}
+                {breakpoint1 && (
+                  <>
+                    <div className="p-[0.3em] grow flex-shrink-0 basis-0">
+                      <div className="w-16 h-4 bg-[#050D14] animate-loader rounded"></div>
+                    </div>
+                    <div className="p-[0.3em] grow flex-shrink-0 basis-0">
+                      <div className="w-16 h-4 bg-[#050D14] animate-loader rounded"></div>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+
+            {/* Pagination */}
+            <div className="mt-auto pt-2 flex justify-center scale-[80%]">
+              <div className="flex gap-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-8 h-8 bg-[#0B131D] animate-loader rounded"
+                  ></div>
+                ))}
               </div>
             </div>
-          ))}
-
-          {/* Pagination skeleton */}
-          <div className="flex justify-center items-center gap-2 mt-4 mb-4">
-            <div className="w-8 h-6 bg-[#0B131D] animate-loader rounded"></div>
-            <div className="w-6 h-6 bg-[#0B131D] animate-loader rounded"></div>
-            <div className="w-6 h-6 bg-[#0B131D] animate-loader rounded"></div>
-            <div className="w-6 h-6 bg-[#0B131D] animate-loader rounded"></div>
-            <div className="w-8 h-6 bg-[#0B131D] animate-loader rounded"></div>
           </div>
         </div>
       </div>
@@ -380,7 +450,7 @@ export default function StakingLeaderboard({
           paginationClassName="scale-[80%] p-0 mt-auto"
           nbItemPerPage={itemsPerPage}
           nbItemPerPageWhenBreakpoint={10}
-          breakpoint="768px"
+          breakpoint="0"
           rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
           rowTitleWidth="0%"
           isFirstColumnId

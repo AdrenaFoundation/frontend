@@ -107,13 +107,15 @@ export default function AllStaking({
           <div className="flex flex-col gap-2 w-full lg:w-2/3">
             {/* Top container - smaller, fixed height */}
             <StyledContainer className="p-4">
-              <div className="grid lg:grid-cols-2 gap-[2em] h-[18em]">
-                <AprLmChart />
+              <div className="grid lg:grid-cols-2 gap-[2em] lg:h-[18em]">
+                <div className="w-full flex h-[18em]">
+                  <AprLmChart />
+                </div>
 
                 <div className="flex flex-col items-center justify-center gap-1 w-full">
                   <h2 className="flex">LOCKED STAKE REPARTITION</h2>
 
-                  <div className="w-full flex h-[15em]">
+                  <div className="w-full flex h-[15em] -ml-[0.75rem]">
                     <StakingChart />
                   </div>
                 </div>
