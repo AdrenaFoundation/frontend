@@ -6980,7 +6980,23 @@ export class AdrenaClient {
 
     const txSignature = signedTransaction.signatures[0];
     if (!txSignature) throw new Error('Transaction signature missing');
+
+    // Validate the signature is not all zeros (unsigned)
+    const isUnsigned = txSignature.every((byte) => byte === 0);
+    if (isUnsigned) {
+      console.error('❌ Transaction signing failed - signature is all zeros!');
+      console.error('Wallet:', wallet.publicKey.toBase58());
+      console.error('Wallet type:', wallet.name || 'Unknown');
+      const adrenaError = new AdrenaTransactionError(
+        null,
+        'Transaction signing failed - wallet returned unsigned transaction',
+      );
+      notification?.currentStepErrored(adrenaError);
+      throw adrenaError;
+    }
+
     const txSignatureBase58 = bs58.encode(txSignature);
+    console.log('✅ Transaction signed successfully');
 
     notification?.currentStepSucceeded();
 
