@@ -1,15 +1,23 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { UserStakingExtended } from '@/types';
+import {
+  ProfilePicture,
+  UserProfileMetadata,
+  UserProfileTitle,
+  UserStakingExtended,
+} from '@/types';
 import { nativeToUi } from '@/utils';
 
 export interface StakingLeaderboardEntry {
   rank: number;
   walletAddress: string;
+  stakingPdaAddress?: string;
   virtualAmount: number;
   liquidStake: number;
   lockedStakes: number;
   nickname?: string;
+  profilePicture: ProfilePicture | null;
+  title: UserProfileTitle | null;
 }
 
 export interface StakingLeaderboardData {
@@ -20,9 +28,11 @@ export interface StakingLeaderboardData {
   totalStakers: number;
 }
 
+// frontend/src/hooks/useStakingLeaderboard.ts
+
 export default function useStakingLeaderboard(
   walletAddress: string | null,
-  limit: number = 100,
+  allUserProfilesMetadata: UserProfileMetadata[] = [],
 ): {
   data: StakingLeaderboardData | null;
   isLoading: boolean;
@@ -39,11 +49,12 @@ export default function useStakingLeaderboard(
     setError(null);
 
     try {
-      // Query all staking accounts
+      // Load staking data immediately without waiting for profiles
       const allStaking = await window.adrena.client.loadAllStaking();
 
       if (!allStaking) {
         setData(null);
+        setIsLoading(false);
         return;
       }
 
@@ -53,6 +64,21 @@ export default function useStakingLeaderboard(
       );
 
       const stakingDecimals = window.adrena.client.adxToken.decimals;
+
+      // Create reverse mapping from staking PDA to owner using user profiles
+      const stakingPdaToOwner = new Map<string, UserProfileMetadata>();
+      const stakingPda = window.adrena.client.getStakingPda(
+        window.adrena.client.adxToken.mint,
+      );
+
+      // For each user profile, derive their staking PDA and map it to their profile
+      allUserProfilesMetadata.forEach((profile) => {
+        const userStakingPda = window.adrena.client.getUserStakingPda(
+          profile.owner,
+          stakingPda,
+        );
+        stakingPdaToOwner.set(userStakingPda.toBase58(), profile);
+      });
 
       // Calculate virtual amounts for all stakers
       const stakersWithAmounts = adxStakingAccounts
@@ -72,24 +98,33 @@ export default function useStakingLeaderboard(
           );
           const virtualAmount = liquidStake + lockedStakes;
 
+          // Try to get user profile from mapping
+          const stakingPdaAddress = staking.pubkey.toBase58();
+          const userProfile = stakingPdaToOwner.get(stakingPdaAddress);
+          const ownerAddress = userProfile
+            ? userProfile.owner.toBase58()
+            : stakingPdaAddress;
+
           return {
-            walletAddress: staking.pubkey.toBase58(),
+            walletAddress: ownerAddress,
+            stakingPdaAddress,
             virtualAmount,
             liquidStake,
             lockedStakes,
+            nickname: userProfile?.nickname,
+            profilePicture:
+              (userProfile?.profilePicture as ProfilePicture | null) ?? null,
+            title: (userProfile?.title as UserProfileTitle | null) ?? null,
           };
         })
         .filter((staker) => staker.virtualAmount > 0) // Only include users with stakes
         .sort((a, b) => b.virtualAmount - a.virtualAmount); // Sort by virtual amount descending
 
-      // Add ranks
-      const leaderboard = stakersWithAmounts
-        .slice(0, limit)
-        .map((staker, index) => ({
-          ...staker,
-          rank: index + 1,
-          nickname: undefined, // Will be populated from user profiles later
-        }));
+      // Add ranks (nickname, profilePicture, and title are already populated)
+      const leaderboard = stakersWithAmounts.map((staker, index) => ({
+        ...staker,
+        rank: index + 1,
+      }));
 
       // Find user data if walletAddress is provided
       let userRank: number | undefined;
@@ -136,7 +171,7 @@ export default function useStakingLeaderboard(
     } finally {
       setIsLoading(false);
     }
-  }, [walletAddress, limit, triggerReload]);
+  }, [walletAddress, triggerReload, allUserProfilesMetadata]);
 
   useEffect(() => {
     fetchStakingLeaderboard();
