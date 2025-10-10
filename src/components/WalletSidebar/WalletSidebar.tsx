@@ -545,6 +545,8 @@ export default function WalletSidebar({
                                                         amount,
                                                     });
 
+                                                console.log('transaction to Send', transaction);
+
                                                 try {
                                                     const notification =
                                                         MultiStepNotification.newForRegularTransaction('Send Tokens').fire();
