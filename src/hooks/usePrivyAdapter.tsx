@@ -230,7 +230,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
             );
 
             if (isValidPublicKey(savedWallet) && connectedWallet) {
-              console.log('✅ Found saved wallet in connectedStandardWallets:', savedWallet.slice(0, 8) + '...', connectedWallet.standardWallet.name);
               walletAddress = savedWallet;
             } else {
               console.warn('⚠️ Saved wallet NOT found in connectedStandardWallets!');

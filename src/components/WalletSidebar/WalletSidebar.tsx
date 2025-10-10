@@ -43,15 +43,6 @@ export default function WalletSidebar({
 
     const wallet = useSelector(selectWallet);
 
-    // Debug: Log when wallet state changes
-    useEffect(() => {
-        console.log('🔔 Wallet state changed in WalletSidebar:', {
-            address: wallet?.walletAddress,
-            adapter: wallet?.adapterName,
-            isPrivy: wallet?.isPrivy,
-        });
-    }, [wallet?.walletAddress, wallet?.adapterName, wallet?.isPrivy]);
-
     const connectedAdapter = useMemo(
         () => wallet && adapters.find((x) => x.name === wallet.adapterName),
         [wallet, adapters],
@@ -120,36 +111,21 @@ export default function WalletSidebar({
     }, [wallet?.isPrivy, connectedStandardWallets]);
 
     const enhancedWalletData = useMemo(() => {
-        console.log('🧮 Computing enhancedWalletData...');
-        console.log('   wallet?.walletAddress:', wallet?.walletAddress);
-        console.log('   enhancedWallets.length:', enhancedWallets.length);
-
         if (!wallet?.walletAddress) {
-            console.log('   ❌ No wallet address, returning null');
             return null;
         }
 
         if (enhancedWallets.length === 0) {
-            console.log('   📝 No enhanced wallets, using native wallet data');
             const enhancedWalletData = getWalletDisplayDataForNativeWallet(wallet, getProfilePicture, getDisplayName);
-            console.log('   ✅ Native wallet data:', enhancedWalletData);
             return enhancedWalletData;
         }
 
         const enhancedWallet = enhancedWallets.find(w => w.address === wallet.walletAddress) ?? null;
         if (!enhancedWallet) {
-            console.log('   ⚠️ Wallet not found in enhancedWallets!');
-            console.log('   Available addresses:', enhancedWallets.map(w => w.address));
             return null;
         }
 
         const enhancedWalletData = getWalletDisplayDataForEnhancedWallet(enhancedWallet, getProfilePicture, getDisplayName);
-        console.log('   ✅ Enhanced wallet data:', {
-            address: enhancedWalletData.address,
-            displayName: enhancedWalletData.displayName,
-            isEmbedded: enhancedWalletData.isEmbedded,
-            walletName: enhancedWalletData.walletName,
-        });
         return enhancedWalletData;
     }, [wallet, getProfilePicture, getDisplayName, enhancedWallets]);
 
@@ -159,39 +135,20 @@ export default function WalletSidebar({
         }
 
         const handleWalletSelection = (address: string) => {
-            console.log('🔘 handleWalletSelection called with:', address);
-            console.log('   Current wallet:', wallet?.walletAddress);
-            console.log('   Is same?', wallet?.walletAddress === address);
-
             if (wallet?.walletAddress === address) {
-                console.log('   ⏭️ Same wallet selected, switching to tokens view only');
                 setView("tokens");
                 return;
             }
 
-            console.log('🔍 Looking for wallet in connectedStandardWallets...');
-            console.log('   connectedStandardWallets:', connectedStandardWallets.map(w => ({
-                address: w.address,
-                name: w.standardWallet.name,
-            })));
-
             const newWallet = connectedStandardWallets.find(w => w.address === address);
             if (!newWallet) {
-                console.error('❌ Wallet not found in connectedStandardWallets!');
                 return;
             }
 
-            console.log('✅ Found wallet:', {
-                address: newWallet.address,
-                name: newWallet.standardWallet.name,
-            });
-
             if (typeof window !== 'undefined') {
                 localStorage.setItem('privy:selectedWallet', address);
-                console.log('💾 Set privy:selectedWallet to:', address);
             }
 
-            console.log('📡 Dispatching connect action to Redux...');
             dispatch({
                 type: 'connect',
                 payload: {
@@ -201,7 +158,6 @@ export default function WalletSidebar({
                 },
             });
 
-            console.log('🔄 Switching to tokens view...');
             setView("tokens");
         };
 
