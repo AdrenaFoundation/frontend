@@ -6804,6 +6804,8 @@ export class AdrenaClient {
 
     let versionedTransaction = new VersionedTransaction(transactionMessage);
 
+    console.log('versioned transaction', versionedTransaction);
+
     let serializedTransaction: Uint8Array;
 
     try {
