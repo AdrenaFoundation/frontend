@@ -6764,8 +6764,13 @@ export class AdrenaClient {
       lastValidBlockHeight: number;
     };
 
+    const blockhashFetchStart = Date.now();
     try {
       latestBlockHash = await this.connection.getLatestBlockhash('confirmed');
+      console.log(
+        `✅ Blockhash fetched in ${Date.now() - blockhashFetchStart}ms`,
+        latestBlockHash.blockhash,
+      );
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
 
@@ -6980,11 +6985,28 @@ export class AdrenaClient {
     notification?.currentStepSucceeded();
 
     /////////////////////// Send the transaction ///////////////////////
+    const elapsedSinceBlockhash = Date.now() - blockhashFetchStart;
+    console.log(
+      `📤 Sending transaction (${elapsedSinceBlockhash}ms since blockhash fetch)`,
+    );
+
+    // Check wallet balance before sending
+    try {
+      const balance = await this.connection.getBalance(wallet.publicKey);
+      console.log(
+        `💰 Sender SOL balance: ${balance / 1e9} SOL (${balance} lamports)`,
+      );
+    } catch (e) {
+      console.warn('Could not fetch sender balance:', e);
+    }
+
     try {
       await this.connection.sendRawTransaction(signedTransaction.serialize(), {
         skipPreflight: true,
         maxRetries: 0,
       });
+      console.log(`✅ Transaction sent successfully:`, txSignatureBase58);
+      console.log(`   Blockhash age: ${Date.now() - blockhashFetchStart}ms`);
 
       if (getTransactionLogs) {
         await this.connection.confirmTransaction(
