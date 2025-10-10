@@ -1,8 +1,8 @@
 import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -12,7 +12,9 @@ import { selectWalletAddress } from '@/selectors/walletSelectors';
 import { useSelector } from '@/store/store';
 import { isValidPublicKey, uiToNative } from '@/utils';
 
+import chevronDownIcon from '../../../public/images/Icons/chevron-down.svg';
 import crossIcon from '../../../public/images/Icons/cross.svg';
+import searchIcon from '../../../public/images/Icons/search.svg';
 import CopyButton from '../common/CopyButton/CopyButton';
 import InputNumber from '../common/InputNumber/InputNumber';
 import InputString from '../common/inputString/InputString';
@@ -51,6 +53,7 @@ export function SendTokenView({
     const [error, setError] = useState<string | null>(null);
     const [recipientAddressError, setRecipientAddressError] = useState<string | null>(null);
     const [showWalletDropdown, setShowWalletDropdown] = useState(false);
+    const [searchQuery, setSearchQuery] = useState<string>('');
     const walletAddress = useSelector(selectWalletAddress);
     const { getProfilePicture, getDisplayName, isLoadingProfiles } = useAllUserProfilesMetadata();
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -71,6 +74,51 @@ export function SendTokenView({
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [showWalletDropdown]);
+
+    useEffect(() => {
+        if (!walletAddress || !enhancedWallets) {
+            return;
+        }
+
+        if (recipientAddress && recipientAddress.trim().length > 0) {
+            return;
+        }
+
+        const currentWallet = enhancedWallets.find(w => w.address === walletAddress);
+        if (!currentWallet) return;
+
+        const currentWalletData = getWalletDisplayDataForEnhancedWallet(
+            currentWallet,
+            getProfilePicture,
+            getDisplayName
+        );
+
+        if (!currentWalletData.isEmbedded) {
+            const embeddedWallet = enhancedWallets.find(w => {
+                const walletData = getWalletDisplayDataForEnhancedWallet(w, getProfilePicture, getDisplayName);
+                return walletData.isEmbedded && w.address !== walletAddress;
+            });
+
+            if (embeddedWallet) {
+                setRecipientAddress(embeddedWallet.address);
+                setRecipientAddressPubkey(new PublicKey(embeddedWallet.address));
+                setRecipientAddressError(null);
+            }
+        }
+    }, [walletAddress, enhancedWallets, recipientAddress, getProfilePicture, getDisplayName]);
+
+    const filteredTokens = useMemo(() => {
+        if (!searchQuery.trim()) {
+            return tokenBalancesWithPrices;
+        }
+
+        const query = searchQuery.toLowerCase();
+        return tokenBalancesWithPrices.filter(token =>
+            token.symbol.toLowerCase().includes(query) ||
+            token.name?.toLowerCase().includes(query) ||
+            token.mint.toLowerCase().includes(query)
+        );
+    }, [tokenBalancesWithPrices, searchQuery]);
 
     const handleRecipientAddressChange = (value: string | null) => {
         setRecipientAddress(value);
@@ -134,6 +182,12 @@ export function SendTokenView({
                 amount: uiToNative(amountNumber, selectedToken.decimals),
                 recipientAddress: recipientAddressPubkey
             });
+
+            setRecipientAddress('');
+            setRecipientAddressPubkey(null);
+            setAmount(null);
+            setError(null);
+            setSearchQuery('');
         } catch (err) {
             console.error('Transfer error:', err);
         } finally {
@@ -162,30 +216,106 @@ export function SendTokenView({
                 </button>
             </div>
 
+            <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="relative"
+            >
+                <InputString
+                    value={searchQuery}
+                    onChange={(value) => setSearchQuery(value ?? '')}
+                    placeholder="Search tokens by name or symbol..."
+                    className="p-2 bg-inputcolor rounded-md pl-9"
+                    inputFontSize="0.8em"
+                />
+                <Image
+                    src={searchIcon}
+                    alt="search"
+                    width={16}
+                    height={16}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-50"
+                />
+                {searchQuery && (
+                    <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 transition-opacity"
+                        type="button"
+                    >
+                        <Image
+                            src={crossIcon}
+                            alt="clear"
+                            width={16}
+                            height={16}
+                            className="w-4 h-4"
+                        />
+                    </button>
+                )}
+            </motion.div>
 
-            <div className="gap-2 pl-2 pr-2 flex-1 min-h-0">
+            <div className="flex-1 min-h-0">
                 {isLoadingBalances ? (
                     <div className="h-full overflow-y-auto bg-gray-900 rounded-md" />
+                ) : filteredTokens.length === 0 ? (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.2 }}
+                        className="flex items-center justify-center h-full text-txtfade text-sm"
+                    >
+                        No tokens found matching "{searchQuery}"
+                    </motion.div>
                 ) : (
-                    <div className="flex flex-col gap-1.5 h-full pr-2 overflow-y-auto">
-                        {tokenBalancesWithPrices.map((token: typeof tokenBalancesWithPrices[0], index: number) => (
+                    <motion.div
+                        key={searchQuery}
+                        className="flex flex-col gap-1.5 h-full max-h-[40vh] pr-2 overflow-y-auto"
+                        initial="hidden"
+                        animate="visible"
+                        variants={{
+                            visible: {
+                                opacity: 1,
+                                transition: {
+                                    staggerChildren: 0.03,
+                                    delayChildren: 0.05
+                                }
+                            },
+                            hidden: {
+                                opacity: 0
+                            }
+                        }}
+                    >
+                        {filteredTokens.map((token: typeof tokenBalancesWithPrices[0]) => (
                             <motion.div
                                 key={token.mint}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.05, delay: index * 0.01 }}
+                                variants={{
+                                    visible: {
+                                        opacity: 1,
+                                        y: 0,
+                                        scale: 1,
+                                        transition: {
+                                            type: "spring",
+                                            stiffness: 300,
+                                            damping: 24
+                                        }
+                                    },
+                                    hidden: {
+                                        opacity: 0,
+                                        y: 20,
+                                        scale: 0.95
+                                    }
+                                }}
                             >
                                 <TokenListItem
                                     token={token}
                                     onClick={() => {
                                         setSelectedToken(token);
-                                        setAmount(0);
+                                        setAmount(null);
                                     }}
                                     isSelected={selectedToken?.mint === token.mint}
                                 />
                             </motion.div>
                         ))}
-                    </div>
+                    </motion.div>
                 )}
             </div>
 
@@ -214,81 +344,147 @@ export function SendTokenView({
                             className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-txtfade hover:text-white transition-colors"
                             type="button"
                         >
-                            <svg
-                                className={twMerge("w-4 h-4 transition-transform", showWalletDropdown && "rotate-180")}
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
+                            <Image
+                                src={chevronDownIcon}
+                                alt="chevron down"
+                                width={12}
+                                height={12}
+                                className={twMerge("w-3 h-3 transition-transform duration-200", showWalletDropdown && "rotate-180")}
+                            />
                         </button>
                     )}
                 </div>
 
-                {/* Wallet Dropdown */}
-                {showWalletDropdown && enhancedWallets && enhancedWallets.filter(w => w.address !== walletAddress).length > 0 && (
-                    <div className="w-full bg-secondary border border-bcolor rounded-md shadow-lg max-h-[25vh] overflow-y-auto mt-1">
-                        {enhancedWallets
-                            .filter(w => w.address !== walletAddress)
-                            .map((enhancedWallet) => {
-                                const walletData = getWalletDisplayDataForEnhancedWallet(
-                                    enhancedWallet,
-                                    getProfilePicture,
-                                    getDisplayName
-                                );
-                                const isSelected = enhancedWallet.address === recipientAddress;
-                                return (
-                                    <div
-                                        key={enhancedWallet.address}
-                                        className={twMerge(
-                                            `flex items-center justify-between p-3 transition-all border-b last:border-b-0 border-bcolor`,
-                                            isSelected && 'bg-third',
-                                            !isSelected && 'hover:bg-third/50'
-                                        )}
-                                    >
-                                        <button
-                                            onClick={() => {
-                                                setRecipientAddress(enhancedWallet.address);
-                                                setRecipientAddressPubkey(new PublicKey(enhancedWallet.address));
-                                                setRecipientAddressError(null);
-                                                setShowWalletDropdown(false);
-                                            }}
-                                            className="flex-1 text-left cursor-pointer text-txtfade hover:text-white"
-                                            type="button"
+                <AnimatePresence>
+                    {showWalletDropdown && enhancedWallets && enhancedWallets.filter(w => w.address !== walletAddress).length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                            transition={{ duration: 0.2, ease: "easeOut" }}
+                            className="w-full bg-secondary border border-bcolor rounded-md shadow-lg max-h-[25vh] overflow-y-auto mt-1"
+                        >
+                            {enhancedWallets
+                                .filter(w => w.address !== walletAddress)
+                                .map((enhancedWallet) => {
+                                    const walletData = getWalletDisplayDataForEnhancedWallet(
+                                        enhancedWallet,
+                                        getProfilePicture,
+                                        getDisplayName
+                                    );
+                                    const isSelected = enhancedWallet.address === recipientAddress;
+                                    return (
+                                        <div
+                                            key={enhancedWallet.address}
+                                            className={twMerge(
+                                                `flex items-center justify-between p-3 transition-all border-b last:border-b-0 border-bcolor`,
+                                                isSelected && 'bg-gray-800',
+                                                !isSelected && 'hover:bg-gray-800/50'
+                                            )}
                                         >
-                                            <div className="flex items-start gap-3">
-                                                <div className="flex-shrink-0 scale-125 sm:scale-100">
-                                                    <WalletIcon
-                                                        walletData={walletData}
-                                                        size="md"
-                                                        isLoadingProfiles={isLoadingProfiles}
-                                                    />
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="font-semibold text-lg sm:text-sm text-white">
-                                                        {walletData.displayName}
+                                            <button
+                                                onClick={() => {
+                                                    setRecipientAddress(enhancedWallet.address);
+                                                    setRecipientAddressPubkey(new PublicKey(enhancedWallet.address));
+                                                    setRecipientAddressError(null);
+                                                    setShowWalletDropdown(false);
+                                                }}
+                                                className="flex-1 text-left cursor-pointer text-txtfade hover:text-white"
+                                                type="button"
+                                            >
+                                                <div className="flex items-start gap-3">
+                                                    <div className="flex-shrink-0 scale-125 sm:scale-100">
+                                                        <WalletIcon
+                                                            walletData={walletData}
+                                                            size="md"
+                                                            isLoadingProfiles={isLoadingProfiles}
+                                                        />
                                                     </div>
-                                                    <div className="text-base sm:text-xs text-txtfade flex items-center gap-2 mt-1">
-                                                        <WalletTypeIcon walletData={walletData} size="sm" />
-                                                        <span className="text-base sm:text-xs">
-                                                            {walletData.walletName}
-                                                        </span>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="font-semibold text-lg sm:text-sm text-white">
+                                                            {walletData.displayName}
+                                                        </div>
+                                                        <div className="text-base sm:text-xs text-txtfade flex items-center gap-2 mt-1">
+                                                            <WalletTypeIcon walletData={walletData} size="sm" />
+                                                            <span className="text-base sm:text-xs">
+                                                                {walletData.walletName}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                            </button>
+                                            <div className="flex items-center gap-1 scale-125 sm:scale-100">
+                                                <CopyButton
+                                                    textToCopy={enhancedWallet.address}
+                                                    notificationTitle="Address copied to clipboard"
+                                                />
                                             </div>
-                                        </button>
-                                        <div className="flex items-center gap-1 scale-125 sm:scale-100">
-                                            <CopyButton
-                                                textToCopy={enhancedWallet.address}
-                                                notificationTitle="Address copied to clipboard"
-                                            />
                                         </div>
+                                    );
+                                })}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <AnimatePresence mode="wait">
+                    {recipientAddressPubkey && !recipientAddressError && (() => {
+                        const knownWallet = enhancedWallets?.find(w => w.address === recipientAddress);
+                        if (knownWallet) {
+                            const walletData = getWalletDisplayDataForEnhancedWallet(
+                                knownWallet,
+                                getProfilePicture,
+                                getDisplayName
+                            );
+                            return (
+                                <motion.div
+                                    key="known-wallet"
+                                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                    transition={{ duration: 0.2, ease: "easeOut" }}
+                                    className="flex items-center gap-2 p-2 bg-third/30 border border-bcolor/50 rounded-md"
+                                >
+                                    <div className="scale-90">
+                                        <WalletIcon
+                                            walletData={walletData}
+                                            size="sm"
+                                            isLoadingProfiles={isLoadingProfiles}
+                                        />
                                     </div>
-                                );
-                            })}
-                    </div>
-                )}
+                                    <div className="flex items-center gap-1.5 flex-1">
+                                        <span className="text-xs text-white font-medium">
+                                            {walletData.displayName}
+                                        </span>
+                                        <div className="scale-75">
+                                            <WalletTypeIcon walletData={walletData} size="sm" />
+                                        </div>
+                                        <span className="text-xs text-txtfade">
+                                            {walletData.walletName}
+                                        </span>
+                                    </div>
+                                </motion.div>
+                            );
+                        }
+                        return (
+                            <motion.div
+                                key="unknown-wallet"
+                                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                transition={{ duration: 0.2, ease: "easeOut" }}
+                                className="flex flex-col gap-2 p-2 bg-third/30 border border-yellow/30 rounded-md"
+                            >
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-xs text-txtfade">⚠️</span>
+                                    <span className="text-xs font-medium text-txtfade">Unknown wallet</span>
+                                </div>
+                                <div className="text-xs text-txtfade/70 leading-relaxed">
+                                    Please verify this is a valid Solana address by checking the account exists on the explorer before sending.
+                                </div>
+                            </motion.div>
+                        );
+                    })()}
+                </AnimatePresence>
 
                 {recipientAddressError ? (
                     <div className="flex items-center gap-1 text-red-400 text-xs">
@@ -325,6 +521,7 @@ export function SendTokenView({
                     onChange={(value: number | null) => setAmount(value)}
                     className='bg-inputcolor p-2 rounded-md'
                     inputFontSize='0.8em'
+                    placeholder='Enter amount to send'
                 />
             </div>
 
@@ -338,6 +535,13 @@ export function SendTokenView({
                 <Button
                     title='Cancel'
                     onClick={() => {
+                        // Reset form state so auto-select works next time
+                        setRecipientAddress('');
+                        setRecipientAddressPubkey(null);
+                        setAmount(null);
+                        setError(null);
+                        setRecipientAddressError(null);
+                        setSearchQuery('');
                         cancel();
                     }}
                     variant="outline"

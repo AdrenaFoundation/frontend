@@ -536,12 +536,6 @@ export default function WalletSidebar({
                                                 amount: BN;
                                                 recipientAddress: PublicKey;
                                             }) => {
-                                                console.log('📝 Building transaction:');
-                                                console.log('   Token:', tokenSymbol);
-                                                console.log('   Sender:', senderAddress.toBase58());
-                                                console.log('   Recipient:', recipientAddress.toBase58());
-                                                console.log('   Amount:', amount.toString());
-
                                                 const transaction: Transaction = tokenSymbol === 'SOL' ?
                                                     await window.adrena.client.buildTransferSolTx({
                                                         owner: senderAddress,
@@ -553,8 +547,6 @@ export default function WalletSidebar({
                                                         mint: tokenAddress,
                                                         amount,
                                                     });
-
-                                                console.log('transaction to Send', transaction);
 
                                                 try {
                                                     const notification =
@@ -617,7 +609,6 @@ export default function WalletSidebar({
                             {dom}
                         </div>
 
-                        {/* Wallet Footer - Visible in all views */}
                         {wallet && (
                             <div className="flex items-center justify-between p-3 border-t border-bcolor bg-secondary/50">
                                 {wallet.isPrivy && enhancedWalletData?.isEmbedded && (
