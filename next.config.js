@@ -63,6 +63,7 @@ module.exports = (phase, { defaultConfig }) => {
         googlePay: 'https://google.com/pay',
         googlePayWww: 'https://www.google.com/pay',
         googlePayDirect: 'https://pay.google.com',
+        solanaId: 'https://score.solana.id',
       };
 
       const connectSrcParts = [
@@ -104,6 +105,7 @@ module.exports = (phase, { defaultConfig }) => {
         serviceDomains.googlePay,
         serviceDomains.googlePayWww,
         serviceDomains.googlePayDirect,
+        serviceDomains.solanaId,
       ];
 
       const scriptSrcParts = [
