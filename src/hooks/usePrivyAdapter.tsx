@@ -191,10 +191,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     }
 
     if (!ready || isDisconnecting || isConnecting) {
-      console.log('🔍 AUTO CONNECT ///// NOT READY OR IS DISCONNECTING OR IS CONNECTING', ready, isDisconnecting, isConnecting);
       return;
-    } else {
-      console.log('🔍 AUTO CONNECT ///// READY', ready, isDisconnecting, isConnecting);
     }
 
     try {
@@ -205,12 +202,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       const shouldAutoConnect = authenticated && !currentWalletAddress && adapterRef.current;
 
       if (shouldAutoConnect) {
-        console.log('🔍 AUTO CONNECT ///// Should auto-connect:', {
-          authenticated,
-          currentWalletAddress,
-          publicKey: publicKey?.toBase58(),
-        });
-
         // ⚠️ CRITICAL: Wait for wallets to be ready before auto-connecting
         if (!walletsReady) {
           console.log('⏳ Waiting for Privy wallets to be ready...');
@@ -252,7 +243,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
           if (savedWallet) {
             // Check if saved wallet IS the embedded wallet
             if (embeddedWallet && savedWallet === embeddedWallet.address) {
-              console.log('✅ Saved wallet is embedded wallet, connecting immediately');
               walletAddress = savedWallet;
             } else {
               // Saved wallet is an external wallet that's not loaded yet
@@ -261,7 +251,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
               if (!autoConnectAttemptTime) {
                 // First attempt - start waiting
-                console.log('⏸️ External wallet not ready yet, starting 3s timeout...');
                 setAutoConnectAttemptTime(now);
                 setIsConnecting(false);
                 return;
@@ -270,14 +259,10 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
                 if (elapsed < TIMEOUT_MS) {
                   // Still waiting for external wallet to load
-                  console.log(`⏱️ Waiting... ${Math.round(elapsed / 1000)}s / ${TIMEOUT_MS / 1000}s`);
                   setIsConnecting(false);
                   return;
                 } else {
                   // Timeout reached - external wallet didn't load
-                  console.warn('⏰ Timeout! External wallet extension not found or not connected.');
-                  console.warn('   Saved:', savedWallet.slice(0, 8) + '...');
-                  console.warn('   Clearing localStorage and falling back to embedded wallet');
                   localStorage.removeItem('privy:selectedWallet');
                   setAutoConnectAttemptTime(null);
 
@@ -289,22 +274,18 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
             }
           } else {
             // No saved wallet preference, connect to embedded wallet if available
-            console.log('📭 No saved wallet preference');
             if (embeddedWallet) {
-              console.log('🔍 AUTO CONNECT ///// EMBEDDED WALLET (no saved preference)');
               walletAddress = embeddedWallet.address;
             }
           }
         } else {
           // Wallet found successfully - reset timeout
           if (autoConnectAttemptTime !== null) {
-            console.log('✅ Wallet found! Resetting timeout.');
             setAutoConnectAttemptTime(null);
           }
         }
 
         if (walletAddress) {
-          console.log('🚀 Auto-connecting to wallet:', walletAddress.slice(0, 8) + '...');
           dispatch({
             type: 'connect',
             payload: {
@@ -314,8 +295,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
             },
           });
         } else if (!walletAddress) {
-          console.error('🔌 PRIVY USE EFFECT: Invalid wallet address type or value:', walletAddress, typeof walletAddress);
-          console.warn('⚠️ Removing privy:selectedWallet - no valid wallet address found');
           localStorage.removeItem('privy:selectedWallet');
         }
       }
@@ -332,12 +311,10 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   // called from function connectWalletAction in walletActions.ts
   const connect = useCallback(async () => {
     if (!ready || isConnecting || isDisconnecting) {
-      console.log('🔍 MANUAL CONNECT ///// NOT READY OR IS DISCONNECTING OR IS CONNECTING', ready, isDisconnecting, isConnecting);
       return;
     }
 
     if (!walletsReady) {
-      console.log('⏳ MANUAL CONNECT ///// Waiting for Privy wallets to be ready...');
       return;
     }
 
@@ -415,7 +392,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
       setIsDisconnecting(false);
     } catch (error) {
-      console.error('🔍 DISCONNECT: Error during logout:', error);
+      console.error('DISCONNECT: Error during logout:', error);
     } finally {
       setIsDisconnecting(false);
     }
