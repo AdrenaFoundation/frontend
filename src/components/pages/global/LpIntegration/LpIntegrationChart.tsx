@@ -74,7 +74,7 @@ export default function LpIntegrationChart() {
 
       const res = await fetch(
         // TODO: handle multiple LP tokens
-        `https://datapi.adrena.xyz/${dataEndpoint}?lp_token_mint=${window.adrena.client.lpTokenMint.toBase58()}&start_date=${(() => {
+        `https://datapi.adrena.trade/${dataEndpoint}?lp_token_mint=${window.adrena.client.lpTokenMint.toBase58()}&start_date=${(() => {
           const startDate = new Date();
           startDate.setDate(startDate.getDate() - dataPeriod);
 

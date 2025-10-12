@@ -7,7 +7,7 @@ export default function initConfig() {
   // If the URL is not in the list, it means we are developing in local or we are in vercel preview
   // In that case, use devMode = true
   const config = (() => {
-    const PROD_DOMAINS = ['adrena.xyz', 'adrena.trade', 'adrena.app'];
+    const PROD_DOMAINS = ['adrena.trade', 'adrena.trade', 'adrena.app'];
 
     // Check if current hostname matches any production domain
     const isProd = PROD_DOMAINS.some((domain) =>

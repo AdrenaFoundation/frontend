@@ -13,7 +13,7 @@ export default function useAssetsUnderManagement(): number | null {
     async (retryNb: number) => {
       if (!connected) {
         const res = await fetch(
-          'https://datapi.adrena.xyz/poolinfo?aum_usd=true&sort=DESC&limit=1',
+          'https://datapi.adrena.trade/poolinfo?aum_usd=true&sort=DESC&limit=1',
         );
 
         const { data } = await res.json();

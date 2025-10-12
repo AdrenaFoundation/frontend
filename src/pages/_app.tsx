@@ -316,7 +316,7 @@ function AppComponent({
               );
             }}
             declineTrigger={() => {
-              router.push('https://landing.adrena.xyz/');
+              router.push('https://landing.adrena.trade/');
             }}
             readonly={false}
           />

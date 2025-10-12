@@ -82,7 +82,7 @@ export default function UtilizationChart() {
       })();
 
       const res = await fetch(
-        `https://datapi.adrena.xyz/${dataEndpoint}?owned=true&locked=true&start_date=${(() => {
+        `https://datapi.adrena.trade/${dataEndpoint}?owned=true&locked=true&start_date=${(() => {
           const startDate = new Date();
           startDate.setDate(startDate.getDate() - dataPeriod);
 

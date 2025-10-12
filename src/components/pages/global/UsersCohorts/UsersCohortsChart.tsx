@@ -41,7 +41,7 @@ export default function UsersCohortsChart() {
 
   const getCohortsApiData = async () => {
     try {
-      const res = await fetch(`https://datapi.adrena.xyz/cohorts?end_date=${getLastMondayUTC().toISOString()}`);
+      const res = await fetch(`https://datapi.adrena.trade/cohorts?end_date=${getLastMondayUTC().toISOString()}`);
 
       const { data } = await res.json();
 
