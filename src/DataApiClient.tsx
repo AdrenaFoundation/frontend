@@ -47,7 +47,7 @@ import { hexStringToByteArray } from './utils';
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
   // public static DATAPI_URL = 'http://localhost:8080';
-  public static DATAPI_URL = 'https://datapi.adrena.trade';
+  public static DATAPI_URL = 'https://datapi.adrena.xyz';
 
   public static async getPriceAtDate(date: Date): Promise<{
     adxPrice: number | null;

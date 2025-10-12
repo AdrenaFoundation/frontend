@@ -2,7 +2,7 @@ import { Head, Html, Main, NextScript } from 'next/document';
 import Script from 'next/script';
 
 export const metadata = {
-  metadataBase: new URL('https://app.adrena.trade/'),
+  metadataBase: new URL('https://app.adrena.xyz/'),
   title: 'Adrena Protocol | Trade Perpetuals on Solana',
   description:
     'Trade on Solana with up to 100x leverage. 0 slippage, 0 spread, non-custodial. Earn 10% fees on every referral.',

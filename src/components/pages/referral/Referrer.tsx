@@ -23,7 +23,7 @@ export default function Referrer({
   const link = useMemo(
     () =>
       userProfile
-        ? `https://app.adrena.trade/trade?referral=${encodeURIComponent(userProfile.nickname)}`
+        ? `https://app.adrena.xyz/trade?referral=${encodeURIComponent(userProfile.nickname)}`
         : '',
     [userProfile],
   );

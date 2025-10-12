@@ -76,7 +76,7 @@ export default function CompositionChart() {
       })();
 
       const res = await fetch(
-        `https://datapi.adrena.trade/${dataEndpoint}?assets_value_usd=true&start_date=${(() => {
+        `https://datapi.adrena.xyz/${dataEndpoint}?assets_value_usd=true&start_date=${(() => {
           const startDate = new Date();
           startDate.setDate(startDate.getDate() - dataPeriod);
 

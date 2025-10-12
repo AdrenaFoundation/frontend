@@ -363,7 +363,7 @@ export default function SuperchargedFooter({
 
           <div className="hidden 2xl:flex flex-row items-center gap-4 p-2 px-4 border-l border-inputcolor">
             <Link
-              href="https://docs.adrena.trade/"
+              href="https://docs.adrena.xyz/"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -377,7 +377,7 @@ export default function SuperchargedFooter({
             </Link>
 
             <Link
-              href="https://dao.adrena.trade/"
+              href="https://dao.adrena.xyz/"
               target="_blank"
               rel="noopener noreferrer"
             >

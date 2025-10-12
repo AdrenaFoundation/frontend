@@ -133,7 +133,7 @@ export default function TermsAndConditions({ }: PageProps) {
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <a
-              href="https://docs.adrena.trade/technical-documentation/terms-and-conditions"
+              href="https://docs.adrena.xyz/technical-documentation/terms-and-conditions"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-orange hover:underline"
@@ -141,7 +141,7 @@ export default function TermsAndConditions({ }: PageProps) {
               Terms of Service →
             </a>
             <a
-              href="https://docs.adrena.trade/technical-documentation/token-terms-and-conditions"
+              href="https://docs.adrena.xyz/technical-documentation/token-terms-and-conditions"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-orange hover:underline"

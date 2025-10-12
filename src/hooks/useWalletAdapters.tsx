@@ -61,7 +61,7 @@ export default function useWalletAdapters(): WalletAdapterExtended[] {
         metadata: {
           name: 'Adrena',
           description: 'Perpetuals DEX for the Solana community',
-          url: 'https://app.adrena.trade',
+          url: 'https://app.adrena.xyz',
           icons: ['https://avatars.githubusercontent.com/u/179229932'],
         },
       },

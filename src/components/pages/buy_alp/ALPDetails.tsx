@@ -78,7 +78,7 @@ export default function ALPDetails({ className }: { className?: string }) {
           </div>
 
           <Link
-            href="https://docs.adrena.trade/tokenomics/alp"
+            href="https://docs.adrena.xyz/tokenomics/alp"
             target="_blank"
             rel="noopener noreferrer"
             className="w-fit opacity-50 hover:opacity-100 transition-opacity duration-300 flex flex-row gap-2 items-center mt-3 cursor-pointer"

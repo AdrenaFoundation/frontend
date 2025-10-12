@@ -680,7 +680,7 @@ export default function OwnerBloc({
                 alt="share icon"
                 onClick={() => {
                   navigator.clipboard.writeText(
-                    `https://app.adrena.trade/profile/${userProfile.owner.toBase58()}`,
+                    `https://app.adrena.xyz/profile/${userProfile.owner.toBase58()}`,
                   );
                   addNotification({
                     title: 'Profile link copied to clipboard',

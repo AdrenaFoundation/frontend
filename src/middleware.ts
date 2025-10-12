@@ -7,8 +7,8 @@ export function middleware(request: NextRequest) {
     const referer = request.headers.get('referer');
 
     const allowedOrigins = [
-      'https://app.adrena.trade',
-      'https://www.app.adrena.trade',
+      'https://app.adrena.xyz',
+      'https://www.app.adrena.xyz',
     ];
 
     const isValidVercelPreview = (url: string) => {
