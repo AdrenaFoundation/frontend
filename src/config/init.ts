@@ -16,21 +16,32 @@ export default function initConfig() {
   // If the URL is not in the list, it means we are developing in local or we are in vercel preview
   // In that case, use env variable/query params to determine the configuration
   const config = (() => {
-    // If devMode, adapts the RPCs to use ones that are different from production
-    // Protects from being stolen as the repo and devtools are public
-    const devMode = !window.location.hostname.endsWith('adrena.xyz');
+    const PROD_DOMAINS = ['adrena.xyz', 'adrena.trade', 'adrena.app'];
+
+    // Check if current hostname matches any production domain
+    const isProd = PROD_DOMAINS.some((domain) =>
+      window.location.hostname.endsWith(domain),
+    );
+    const devMode = !isProd;
 
     const mainnetConfiguration = new MainnetConfiguration(devMode);
     const devnetConfiguration = new DevnetConfiguration(devMode);
 
-    // Specific configuration for specific URLs (users front)
-    const specificUrlConfig = (
-      {
-        'app.adrena.xyz': mainnetConfiguration,
-        'devnet.adrena.xyz': devnetConfiguration,
-        'alpha.adrena.xyz': devnetConfiguration,
-      } as Record<string, IConfiguration>
-    )[window.location.hostname];
+    // Pick configuration based on subdomain
+    const hostname = window.location.hostname;
+    const subdomain = hostname.split('.')[0]; // e.g. 'app', 'devnet', 'alpha'
+
+    // Map envs automatically
+    const configMap: Record<string, IConfiguration> = {
+      app: mainnetConfiguration,
+      devnet: devnetConfiguration,
+      alpha: devnetConfiguration,
+    };
+
+    // Use the mapped config if domain is prod; otherwise fallback to devnet (or whatever)
+    const specificUrlConfig = isProd
+      ? configMap[subdomain]
+      : devnetConfiguration;
 
     if (specificUrlConfig) return specificUrlConfig;
 
