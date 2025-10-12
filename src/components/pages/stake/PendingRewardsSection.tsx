@@ -91,8 +91,8 @@ export default function PendingRewardsSection({
             onClick={onClaimAndBuyAdx}
             disabled={
               userPendingUsdcRewards +
-                userPendingAdxRewards +
-                pendingGenesisAdxRewards <=
+              userPendingAdxRewards +
+              pendingGenesisAdxRewards <=
               0
             }
           />
@@ -105,8 +105,8 @@ export default function PendingRewardsSection({
             onClick={onClaim}
             disabled={
               userPendingUsdcRewards +
-                userPendingAdxRewards +
-                pendingGenesisAdxRewards <=
+              userPendingAdxRewards +
+              pendingGenesisAdxRewards <=
               0
             }
           />
