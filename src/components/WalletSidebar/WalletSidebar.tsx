@@ -557,6 +557,8 @@ export default function WalletSidebar({
                                                         notification,
                                                     });
 
+                                                    refreshBalances();
+
                                                     setView('tokens');
                                                 } catch (error) {
                                                     console.log('error', error);
