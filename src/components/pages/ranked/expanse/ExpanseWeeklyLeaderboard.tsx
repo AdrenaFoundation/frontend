@@ -344,7 +344,6 @@ export default function ExpanseWeeklyLeaderboard({
         breakpoint="0" // No breakpoint
         rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
         rowTitleWidth="0%"
-        isFirstColumnId
         data={dataReady}
       />
     </div>

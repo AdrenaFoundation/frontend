@@ -24,7 +24,6 @@ export default function TableLegacy({
   nbItemPerPageWhenBreakpoint = 2,
   rowHovering = false,
   rowClassName,
-  isFirstColumnId = false,
   page: controlledPage,
   onPageChange,
   useAutoAlignment = false,
@@ -54,7 +53,6 @@ export default function TableLegacy({
   nbItemPerPageWhenBreakpoint?: number;
   rowHovering?: boolean;
   rowClassName?: string;
-  isFirstColumnId?: boolean;
   page?: number;
   onPageChange?: (page: number) => void;
   useAutoAlignment?: boolean;
@@ -120,7 +118,9 @@ export default function TableLegacy({
       return { alignment: 'justify-center', truncation: '' };
     }
 
-    if (index === 0 || index === 1)
+    if (index === 0)
+      return { alignment: 'justify-center', truncation: '' };
+    if (index === 1)
       return { alignment: 'justify-start', truncation: 'truncate' };
     return { alignment: 'justify-end', truncation: '' };
   };

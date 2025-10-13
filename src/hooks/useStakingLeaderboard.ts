@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import {
-  ProfilePicture,
-  UserProfileMetadata,
-  UserProfileTitle,
-  UserStakingExtended,
-} from '@/types';
+import { ProfilePicture, UserProfileMetadata, UserProfileTitle } from '@/types';
 import { nativeToUi } from '@/utils';
+
+import { useAllAdxStaking } from './useAllAdxStaking';
 
 export interface StakingLeaderboardEntry {
   rank: number;
@@ -37,30 +34,18 @@ export default function useStakingLeaderboard(
   error: string | null;
   triggerReload: () => void;
 } {
-  const [data, setData] = useState<StakingLeaderboardData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // Use shared cached ADX staking data
+  const {
+    allAdxStaking,
+    triggerReload: triggerAdxReload,
+    isLoading,
+  } = useAllAdxStaking();
   const [error, setError] = useState<string | null>(null);
-  const [triggerReload, setTriggerReload] = useState<number>(0);
 
-  const fetchStakingLeaderboard = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+  const data = useMemo(() => {
+    if (!allAdxStaking) return null;
 
     try {
-      // Load staking data immediately without waiting for profiles
-      const allStaking = await window.adrena.client.loadAllStaking();
-
-      if (!allStaking) {
-        setData(null);
-        setIsLoading(false);
-        return;
-      }
-
-      // Filter only ADX staking accounts
-      const adxStakingAccounts = allStaking.filter(
-        (staking: UserStakingExtended) => staking.stakingType === 1,
-      );
-
       const stakingDecimals = window.adrena.client.adxToken.decimals;
 
       // Create reverse mapping from staking PDA to owner using user profiles
@@ -79,7 +64,7 @@ export default function useStakingLeaderboard(
       });
 
       // Calculate virtual amounts for all stakers
-      const stakersWithAmounts = adxStakingAccounts
+      const stakersWithAmounts = allAdxStaking
         .map((staking) => {
           const liquidStake = nativeToUi(
             staking.liquidStake.amount,
@@ -166,30 +151,24 @@ export default function useStakingLeaderboard(
         }
       }
 
-      setData({
+      return {
         leaderboard,
         userRank,
         userVirtualAmount,
         userAboveAmount,
         totalStakers: stakersWithAmounts.length,
-      });
+      };
     } catch (err) {
-      setError('Error fetching staking leaderboard data');
-      console.error('Error fetching staking leaderboard:', err);
-      setData(null);
-    } finally {
-      setIsLoading(false);
+      setError('Error processing staking leaderboard data');
+      console.error('Error processing staking leaderboard:', err);
+      return null;
     }
-  }, [walletAddress, triggerReload, allUserProfilesMetadata]);
-
-  useEffect(() => {
-    fetchStakingLeaderboard();
-  }, [fetchStakingLeaderboard]);
+  }, [allAdxStaking, walletAddress, allUserProfilesMetadata]);
 
   return {
     data,
     isLoading,
     error,
-    triggerReload: () => setTriggerReload((prev) => prev + 1),
+    triggerReload: triggerAdxReload,
   };
 }

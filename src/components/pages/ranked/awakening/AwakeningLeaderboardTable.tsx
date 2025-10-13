@@ -69,7 +69,6 @@ export default function AwakeningLeaderboardTable({
                     nbItemPerPageWhenBreakpoint={3}
                     rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
                     rowTitleWidth="0%"
-                    isFirstColumnId
                     breakpoint="0"
                     data={(data[division] ?? []).map((d, i) => {
                         return {

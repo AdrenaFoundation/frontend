@@ -1,8 +1,10 @@
 import { PublicKey } from '@solana/web3.js';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { UserStakingExtended } from '@/types';
 import { nativeToUi } from '@/utils';
+
+import { useAllAdxStaking } from './useAllAdxStaking';
 
 export interface StakingRanking {
   userRank?: number;
@@ -15,46 +17,50 @@ export default function useStakingRanking(walletAddress: string | null): {
   isLoading: boolean;
   triggerReload: () => void;
 } {
-  const [stakingRanking, setStakingRanking] = useState<StakingRanking | null>(
-    null,
-  );
-  const [isLoading, setIsLoading] = useState(false);
-  const [trickReload, triggerReload] = useState<number>(0);
+  // Use shared cached ADX staking data
+  const {
+    allAdxStaking,
+    triggerReload,
+    isLoading: adxStakingLoading,
+  } = useAllAdxStaking();
+  const [userStakingAccount, setUserStakingAccount] =
+    useState<UserStakingExtended | null>(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(false);
 
-  const fetchStakingRanking = useCallback(async () => {
+  const fetchUserStaking = useCallback(async () => {
     if (!walletAddress) {
-      setStakingRanking(null);
+      setUserStakingAccount(null);
       return;
     }
 
-    setIsLoading(true);
+    setIsLoadingUser(true);
 
     try {
-      // Use getUserStakingAccount to find the user's account
-      const userStakingAccount =
-        await window.adrena.client.getUserStakingAccount({
-          owner: new PublicKey(walletAddress),
-          stakedTokenMint: window.adrena.client.adxToken.mint,
-        });
+      // Only fetch user's staking account
+      const account = await window.adrena.client.getUserStakingAccount({
+        owner: new PublicKey(walletAddress),
+        stakedTokenMint: window.adrena.client.adxToken.mint,
+      });
 
-      if (!userStakingAccount) {
-        setStakingRanking(null);
-        return;
-      }
+      setUserStakingAccount(account);
+    } catch (error) {
+      console.error('Error loading user staking account:', error);
+      setUserStakingAccount(null);
+    } finally {
+      setIsLoadingUser(false);
+    }
+  }, [walletAddress]);
 
-      // Query all staking accounts for comparison
-      const allStaking = await window.adrena.client.loadAllStaking();
+  useEffect(() => {
+    fetchUserStaking();
+  }, [fetchUserStaking]);
 
-      if (!allStaking) {
-        setStakingRanking(null);
-        return;
-      }
+  const stakingRanking = useMemo(() => {
+    if (!walletAddress || !userStakingAccount || !allAdxStaking) {
+      return null;
+    }
 
-      // Filter only ADX staking accounts
-      const adxStakingAccounts = allStaking.filter(
-        (staking: UserStakingExtended) => staking.stakingType === 1,
-      );
-
+    try {
       const stakingDecimals = window.adrena.client.adxToken.decimals;
 
       // Calculate user's virtual amount
@@ -68,7 +74,7 @@ export default function useStakingRanking(walletAddress: string | null): {
         );
 
       // Calculate all other users' virtual amounts and compare
-      const { betterStakers, totalStakers } = adxStakingAccounts.reduce(
+      const { betterStakers, totalStakers } = allAdxStaking.reduce(
         (acc, staking) => {
           // Skip current user in comparison
           if (staking.pubkey.equals(userStakingAccount.pubkey)) {
@@ -103,28 +109,20 @@ export default function useStakingRanking(walletAddress: string | null): {
 
       const userRank = betterStakers + 1;
 
-      setStakingRanking({
+      return {
         userRank,
         totalStakers,
         userVirtualAmount,
-      });
+      };
     } catch (error) {
       console.error('Error calculating staking ranking:', error);
-      setStakingRanking(null);
-    } finally {
-      setIsLoading(false);
+      return null;
     }
-  }, [walletAddress, trickReload]);
-
-  useEffect(() => {
-    fetchStakingRanking();
-  }, [fetchStakingRanking]);
+  }, [walletAddress, userStakingAccount, allAdxStaking]);
 
   return {
     stakingRanking,
-    isLoading,
-    triggerReload: () => {
-      triggerReload(trickReload + 1);
-    },
+    isLoading: isLoadingUser || adxStakingLoading,
+    triggerReload,
   };
 }

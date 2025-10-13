@@ -246,20 +246,12 @@ export default function PositionBlockV2({
       },
     ],
     [
-      position.openDate,
-      position.collateralUsd,
-      position.pnl,
-      position.currentLeverage,
-      position.sizeUsd,
-      position.price,
-      position.token.symbol,
-      position.liquidationPrice,
-      position.breakEvenPrice,
-      position.stopLossLimitPrice,
-      position.takeProfitLimitPrice,
       tradeTokenPrice,
       triggerEditPositionCollateral,
       triggerStopLossTakeProfit,
+      isMedium,
+      isMini,
+      position,
     ],
   );
 

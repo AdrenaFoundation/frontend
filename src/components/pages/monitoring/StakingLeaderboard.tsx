@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -39,12 +39,15 @@ export default function StakingLeaderboard({
 
   const breakpoint1 = useBetterMediaQuery('(min-width: 768px)'); // md breakpoint
 
-  const handleProfileView = async (pubkey: string) => {
-    if (!setProfile) return;
+  const handleProfileView = useCallback(
+    (pubkey: string) => {
+      if (!setProfile) return;
 
-    const wallet = new PublicKey(pubkey);
-    await setProfile(wallet);
-  };
+      const wallet = new PublicKey(pubkey);
+      setProfile(wallet);
+    },
+    [setProfile],
+  );
 
   // Find the user's row in the leaderboard
   const userRow = useMemo(() => {
@@ -509,7 +512,6 @@ export default function StakingLeaderboard({
           breakpoint="0"
           rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
           rowTitleWidth="0%"
-          isFirstColumnId
           page={currentPage}
           onPageChange={setCurrentPage}
           useAutoAlignment={true}

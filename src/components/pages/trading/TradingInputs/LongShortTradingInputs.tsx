@@ -102,6 +102,9 @@ export default function LongShortTradingInputs({
     usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
   const usdcPrice = tokenPrices['USDC'];
 
+  const positionCustodyKey = positionInfo.custody?.pubkey.toBase58();
+  const usdcCustodyKey = usdcCustody?.pubkey.toBase58();
+
   const custodyArray = useMemo(() => {
     if (side === 'long' && positionInfo.custody) {
       return [positionInfo.custody];
@@ -112,8 +115,10 @@ export default function LongShortTradingInputs({
     return [];
   }, [
     side,
-    positionInfo.custody?.pubkey.toBase58(),
-    usdcCustody?.pubkey.toBase58(),
+    positionCustodyKey,
+    usdcCustodyKey,
+    positionInfo.custody,
+    usdcCustody,
   ]);
 
   const custodyLiquidity = useDynamicCustodyAvailableLiquidity(custodyArray);
@@ -129,7 +134,7 @@ export default function LongShortTradingInputs({
   const availableLiquidityShort =
     (positionInfo.custody &&
       positionInfo.custody.maxCumulativeShortPositionSizeUsd -
-      (positionInfo.custody.oiShortUsd ?? 0)) ??
+        (positionInfo.custody.oiShortUsd ?? 0)) ??
     0;
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
@@ -340,11 +345,11 @@ export default function LongShortTradingInputs({
           inputState.limitOrderSlippage === null
             ? null
             : calculateLimitOrderLimitPrice({
-              limitOrderTriggerPrice: inputState.limitOrderTriggerPrice,
-              tokenDecimals: tokenB.displayPriceDecimalsPrecision,
-              percent: inputState.limitOrderSlippage,
-              side,
-            }),
+                limitOrderTriggerPrice: inputState.limitOrderTriggerPrice,
+                tokenDecimals: tokenB.displayPriceDecimalsPrecision,
+                percent: inputState.limitOrderSlippage,
+                side,
+              }),
         side,
         collateralAmount: uiToNative(inputState.inputA, tokenA.decimals),
         leverage: uiLeverageToNative(inputState.leverage),
@@ -461,33 +466,33 @@ export default function LongShortTradingInputs({
 
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
-          owner: new PublicKey(wallet.publicKey),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: entryPrice,
-          collateralAmount,
-          leverage: uiLeverageToNative(inputState.leverage),
-          notification,
-          stopLossLimitPrice,
-          takeProfitLimitPrice,
-          isIncrease: !!openedPosition,
-          referrerProfile: r ? r.pubkey : undefined,
-          swapSlippage,
-        })
+            owner: new PublicKey(wallet.publicKey),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: entryPrice,
+            collateralAmount,
+            leverage: uiLeverageToNative(inputState.leverage),
+            notification,
+            stopLossLimitPrice,
+            takeProfitLimitPrice,
+            isIncrease: !!openedPosition,
+            referrerProfile: r ? r.pubkey : undefined,
+            swapSlippage,
+          })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
-          owner: new PublicKey(wallet.publicKey),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: entryPrice,
-          collateralAmount,
-          leverage: uiLeverageToNative(inputState.leverage),
-          notification,
-          stopLossLimitPrice,
-          takeProfitLimitPrice,
-          isIncrease: !!openedPosition,
-          referrerProfile: r ? r.pubkey : undefined,
-          swapSlippage,
-        }));
+            owner: new PublicKey(wallet.publicKey),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: entryPrice,
+            collateralAmount,
+            leverage: uiLeverageToNative(inputState.leverage),
+            notification,
+            stopLossLimitPrice,
+            takeProfitLimitPrice,
+            isIncrease: !!openedPosition,
+            referrerProfile: r ? r.pubkey : undefined,
+            swapSlippage,
+          }));
 
       dispatch(fetchWalletTokenBalances());
       setInputState((prev) => ({
@@ -1090,9 +1095,7 @@ export default function LongShortTradingInputs({
                 <Image src={infoIcon} alt="Info" width={12} height={12} />
                 <span className="font-xs">{tokenA.symbol}</span>
                 <span className="font-xs">auto-swapped to</span>
-                <span className="font-xs">
-                  {recommendedToken.symbol}
-                </span>
+                <span className="font-xs">{recommendedToken.symbol}</span>
                 <span className="font-xs">via Jupiter</span>
               </div>
             </Tippy>

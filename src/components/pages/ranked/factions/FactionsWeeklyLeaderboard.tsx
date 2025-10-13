@@ -186,7 +186,7 @@ export default function FactionsWeeklyLeaderboard({
             </div>
           </div>,
 
-          <div className="flex justify-end">
+          <div className="flex justify-end" key={`mutagens-wrapper-${i}`}>
             <FormatNumber
               key={`mutagens-${i}`}
               nb={d.totalPoints}
@@ -321,6 +321,7 @@ export default function FactionsWeeklyLeaderboard({
     team,
     wallet?.walletAddress,
     onClickUserProfile,
+    isMobile,
   ]);
 
   if (!data || !dataReady) {
@@ -506,7 +507,6 @@ export default function FactionsWeeklyLeaderboard({
         breakpoint="0"
         rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
         rowTitleWidth="0%"
-        isFirstColumnId
         data={dataReady}
       />
     </div>
