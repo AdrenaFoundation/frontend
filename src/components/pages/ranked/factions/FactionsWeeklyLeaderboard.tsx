@@ -108,41 +108,36 @@ export default function FactionsWeeklyLeaderboard({
       return {
         rowTitle: '',
         values: [
-          <div
-            className="text-sm text-center flex items-center justify-center w-[5em]"
-            key={`rank-${i}`}
-          >
-            <div className="text-sm text-center" key={`rank-${i}`}>
-              {d.rank}
-            </div>
-          </div>,
+          d.rank,
 
           <div
-            className="flex flex-row gap-2 w-[8em] sm:w-[12em] max-w-[12em] overflow-hidden items-center"
-            key={`rank-${i}`}
+            className="flex items-center gap-2 w-[9em] min-w-0"
+            key={`trader-${i}`}
+            style={{
+              maxWidth: '9em',
+              width: '9em',
+              flexGrow: 0,
+              flexShrink: 0,
+              flexBasis: '9em',
+            }}
           >
             {d.profilePicture !== null ? (
-              <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={PROFILE_PICTURES[d.profilePicture]}
-                  width={30}
-                  height={30}
-                  alt="rank"
-                  className="h-8 w-8 rounded-full opacity-80"
-                  key={`rank-${i}`}
-                />
-              </>
+              <img
+                src={PROFILE_PICTURES[d.profilePicture]}
+                width={30}
+                height={30}
+                alt="rank"
+                className="h-8 w-8 rounded-full opacity-80 flex-shrink-0"
+              />
             ) : (
-              <div className="h-8 w-8 bg-third rounded-full" />
+              <div className="h-8 w-8 bg-third rounded-full flex-shrink-0" />
             )}
 
-            <div id={`user-weekly-${d.userWallet}`}>
+            <div className="flex-1 min-w-0" id={`user-weekly-${d.userWallet}`}>
               {d.nickname ? (
                 <p
-                  key={`trader-${i}`}
                   className={twMerge(
-                    'text-xs font-semibold hover:underline transition duration-300 cursor-pointer',
+                    'text-xs font-semibold hover:underline transition duration-300 cursor-pointer truncate',
                     title
                       ? team === 'A'
                         ? 'text-[#FA6724]'
@@ -153,18 +148,13 @@ export default function FactionsWeeklyLeaderboard({
                     onClickUserProfile(new PublicKey(d.userWallet));
                   }}
                 >
-                  {d.nickname.length > 16
-                    ? `${d.nickname.substring(0, 16)}...`
-                    : d.nickname}
+                  {d.nickname}
                 </p>
               ) : null}
 
               {!d.nickname ? (
                 <p
-                  key={`trader-${i}`}
-                  className={twMerge(
-                    'text-xs text-txtfade font-semibold hover:underline transition duration-300 cursor-pointer',
-                  )}
+                  className="text-xs text-txtfade font-semibold hover:underline transition duration-300 cursor-pointer truncate"
                   onClick={() => {
                     onClickUserProfile(new PublicKey(d.userWallet));
                   }}
@@ -174,15 +164,15 @@ export default function FactionsWeeklyLeaderboard({
               ) : null}
 
               {d.title !== null ? (
-                <div className="text-[0.68em] font-semibold text-nowrap text-txtfade">
+                <div className="text-[0.68em] font-semibold text-txtfade truncate">
                   {USER_PROFILE_TITLES[d.title]}
                 </div>
               ) : null}
             </div>
 
-            {title ? (
-              <Tippy content={title}>
-                <div>
+            <div className="flex-shrink-0 ml-auto">
+              {title ? (
+                <Tippy content={title}>
                   <div
                     className={twMerge(
                       'z-20 bg-contain bg-no-repeat bg-center rounded-full w-[1.3em] h-[1.3em] grayscale',
@@ -191,16 +181,14 @@ export default function FactionsWeeklyLeaderboard({
                       backgroundImage: `url(images/${title.toLowerCase()}-badge.png)`,
                     }}
                   />
-                </div>
-              </Tippy>
-            ) : null}
+                </Tippy>
+              ) : null}
+            </div>
           </div>,
 
-          <div
-            className={twMerge('flex items-center grow p-2')}
-            key={`mutagens-${i}`}
-          >
+          <div className="flex justify-end">
             <FormatNumber
+              key={`mutagens-${i}`}
               nb={d.totalPoints}
               className="text-xs font-semibold text-[#e47dbb]"
               precision={d.totalPoints && d.totalPoints >= 50 ? 0 : 2}
@@ -208,12 +196,10 @@ export default function FactionsWeeklyLeaderboard({
             />
           </div>,
 
-          <div
-            className="hidden sm:flex flex-col items-center justify-center"
-            key={`volume-${i}`}
-          >
-            {d.volume ? (
+          !isMobile && d.volume ? (
+            <div className="flex justify-end">
               <FormatNumber
+                key={`volume-${i}`}
                 nb={d.volume}
                 className="text-xs font-semibold"
                 format="currency"
@@ -222,8 +208,8 @@ export default function FactionsWeeklyLeaderboard({
                 isAbbreviate={true}
                 isAbbreviateIcon={false}
               />
-            ) : null}
-          </div>,
+            </div>
+          ) : null,
 
           <Tippy
             key={`rewards-${i}`}
@@ -292,11 +278,11 @@ export default function FactionsWeeklyLeaderboard({
               </div>
             }
           >
-            <div className="flex flex-col items-center justify-center">
-              {d.volume ? (
+            <div className="flex flex-col items-end">
+              {d.volume && isMobile ? (
                 <FormatNumber
                   nb={d.volume}
-                  className="sm:hidden text-xs font-semibold"
+                  className="text-xs font-semibold"
                   format="currency"
                   prefix="$"
                   isDecimalDimmed={false}
@@ -489,15 +475,12 @@ export default function FactionsWeeklyLeaderboard({
             Trader
           </span>,
 
-          <div className="opacity-50" key="pnl">
+          <div className="opacity-50 flex justify-center w-full" key="pnl">
             mutagen
           </div>,
 
           !isMobile ? (
-            <div
-              className="opacity-50 items-center justify-center flex flex-col"
-              key="volume"
-            >
+            <div className="opacity-50 flex justify-center w-full" key="volume">
               volume
             </div>
           ) : (
@@ -510,10 +493,7 @@ export default function FactionsWeeklyLeaderboard({
               'Rewards are distributed in ADX, JTO, and BONK tokens. USD values are indicative. Prizes are officially attributed at the end of each week and are for information purposes only before then.'
             }
           >
-            <div
-              className="opacity-50 items-center justify-center flex flex-col"
-              key="rewards"
-            >
+            <div className="opacity-50 flex justify-end" key="rewards">
               {isMobile ? 'vol / rewards *' : 'rewards *'}
             </div>
           </Tippy>,
@@ -521,7 +501,7 @@ export default function FactionsWeeklyLeaderboard({
         rowHovering={true}
         pagination={true}
         paginationClassName="scale-[80%] p-0"
-        nbItemPerPage={50}
+        nbItemPerPage={25}
         nbItemPerPageWhenBreakpoint={3}
         breakpoint="0"
         rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"

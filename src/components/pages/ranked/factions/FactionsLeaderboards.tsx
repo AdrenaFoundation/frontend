@@ -468,7 +468,7 @@ export default function FactionsLeaderboards({
 
         <div className="w-full h-[1px] bg-bcolor" />
 
-        <div className="flex  w-full justify-center gap-14 flex-col lg:flex-row gap-y-16 lg:gap-y-4 pb-6">
+        <div className="flex w-full justify-center items-center gap-14 flex-col lg:flex-row gap-y-16 lg:gap-y-4 pb-6">
           <FactionsWeeklyLeaderboard
             team="A"
             userProfile={userProfile}
