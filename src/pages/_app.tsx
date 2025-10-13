@@ -23,6 +23,7 @@ import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { AdrenaClient } from '@/AdrenaClient';
 import RootLayout from '@/components/layouts/RootLayout/RootLayout';
 import MigrateUserProfileV1Tov2Modal from '@/components/pages/profile/MigrateUserProfileV1Tov2Modal';
+import { PrivyLedgerWrapper } from '@/components/PrivyLedgerWrapper';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
 import initConfig from '@/config/init';
 import { WalletSidebarProvider } from '@/contexts/WalletSidebarContext';
@@ -173,26 +174,28 @@ export default function App(props: AppProps) {
       appId={privyConfigDynamic.appId as string}
       config={privyConfigDynamic.config}
     >
-      <Provider store={store}>
-        <CookiesProvider>
-          <WalletSidebarProvider>
-            <MemoizedAppComponent
-              activeRpc={activeRpc}
-              rpcInfos={rpcInfos}
-              autoRpcMode={autoRpcMode}
-              customRpcUrl={customRpcUrl}
-              customRpcLatency={customRpcLatency}
-              favoriteRpc={favoriteRpc}
-              setAutoRpcMode={setAutoRpcMode}
-              setCustomRpcUrl={setCustomRpcUrl}
-              setFavoriteRpc={setFavoriteRpc}
-              {...props}
-            />
-            <Analytics />
-            <SpeedInsights />
-          </WalletSidebarProvider>
-        </CookiesProvider>
-      </Provider>
+      <PrivyLedgerWrapper>
+        <Provider store={store}>
+          <CookiesProvider>
+            <WalletSidebarProvider>
+              <MemoizedAppComponent
+                activeRpc={activeRpc}
+                rpcInfos={rpcInfos}
+                autoRpcMode={autoRpcMode}
+                customRpcUrl={customRpcUrl}
+                customRpcLatency={customRpcLatency}
+                favoriteRpc={favoriteRpc}
+                setAutoRpcMode={setAutoRpcMode}
+                setCustomRpcUrl={setCustomRpcUrl}
+                setFavoriteRpc={setFavoriteRpc}
+                {...props}
+              />
+              <Analytics />
+              <SpeedInsights />
+            </WalletSidebarProvider>
+          </CookiesProvider>
+        </Provider>
+      </PrivyLedgerWrapper>
     </PrivyProvider >
   );
 }
