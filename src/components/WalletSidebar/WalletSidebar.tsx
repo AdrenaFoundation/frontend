@@ -589,7 +589,8 @@ export default function WalletSidebar({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+                        className="fixed inset-0 bg-black/20 backdrop-blur-md z-[60]"
+                        style={{ isolation: 'isolate' }}
                         onClick={() => {
                             closeSidebar();
                             setView('tokens');
