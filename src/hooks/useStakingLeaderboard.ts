@@ -1,29 +1,9 @@
 import { useMemo, useState } from 'react';
 
-import { ProfilePicture, UserProfileMetadata, UserProfileTitle } from '@/types';
+import { ProfilePicture, UserProfileMetadata, UserProfileTitle, StakingLeaderboardData } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import { useAllAdxStaking } from './useAllAdxStaking';
-
-export interface StakingLeaderboardEntry {
-  rank: number;
-  walletAddress: string;
-  stakingPdaAddress?: string;
-  virtualAmount: number;
-  liquidStake: number;
-  lockedStakes: number;
-  nickname?: string;
-  profilePicture: ProfilePicture | null;
-  title: UserProfileTitle | null;
-}
-
-export interface StakingLeaderboardData {
-  leaderboard: StakingLeaderboardEntry[];
-  userRank?: number;
-  userVirtualAmount?: number;
-  userAboveAmount?: number;
-  totalStakers: number;
-}
 
 export default function useStakingLeaderboard(
   walletAddress: string | null,
@@ -63,7 +43,7 @@ export default function useStakingLeaderboard(
         stakingPdaToOwner.set(userStakingPda.toBase58(), profile);
       });
 
-      // Calculate virtual amounts for all stakers
+      // Calculate ADX amounts for all stakers
       const stakersWithAmounts = allAdxStaking
         .map((staking) => {
           const liquidStake = nativeToUi(

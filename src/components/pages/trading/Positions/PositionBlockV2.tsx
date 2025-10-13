@@ -116,9 +116,7 @@ export default function PositionBlockV2({
         notification,
         targetPosition: position.pubkey,
       });
-    } catch {
-      // Ignore error
-    }
+    } catch {}
   };
 
   const positionBorrowFeesShouldBeResolved = useMemo(
@@ -441,13 +439,7 @@ const PnLDetails = ({
         <p className="text-sm sm:text-xs opacity-50 text-center font-semibold">
           PnL{' '}
         </p>
-        <Switch
-          checked={showAfterFees}
-          size="small"
-          onChange={() => {
-            // handle toggle in parent div
-          }}
-        />
+        <Switch checked={showAfterFees} size="small" onChange={() => {}} />
         <span className="text-xs sm:text-xxs opacity-30">
           {showAfterFees ? ' w/ fees' : ' w/o fees'}
         </span>
