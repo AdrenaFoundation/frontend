@@ -36,15 +36,15 @@ export default function TableLegacy({
   columnWrapperClassName?: string;
   data: (
     | {
-      rowTitle: ReactNode;
-      specificRowClassName?: string;
-      values: ReactNode[];
-    }
+        rowTitle: ReactNode;
+        specificRowClassName?: string;
+        values: ReactNode[];
+      }
     | {
-      rowTitle: ReactNode;
-      specificRowClassName?: string;
-      value: ReactNode;
-    }
+        rowTitle: ReactNode;
+        specificRowClassName?: string;
+        value: ReactNode;
+      }
   )[];
   rowTitleWidth?: string;
   pagination?: boolean;
@@ -68,15 +68,15 @@ export default function TableLegacy({
   const [pageData, setPageData] = useState<
     (
       | {
-        rowTitle: ReactNode;
-        values: ReactNode[];
-        specificRowClassName?: string;
-      }
+          rowTitle: ReactNode;
+          values: ReactNode[];
+          specificRowClassName?: string;
+        }
       | {
-        rowTitle: ReactNode;
-        value: ReactNode;
-        specificRowClassName?: string;
-      }
+          rowTitle: ReactNode;
+          value: ReactNode;
+          specificRowClassName?: string;
+        }
     )[]
   >([]);
 
@@ -113,6 +113,15 @@ export default function TableLegacy({
     }
   };
 
+  const getColumnType = (title: ReactNode, index: number) => {
+    // Pure index-based detection - most reliable
+    if (index === 0)
+      return { alignment: 'justify-start', truncation: 'truncate' }; // Rank/ID
+    if (index === 1)
+      return { alignment: 'justify-start', truncation: 'truncate' }; // Name/User
+    return { alignment: 'justify-end', truncation: '' }; // All numeric columns
+  };
+
   return !isBreakpoint ? (
     <StyledSubSubContainer className={twMerge('flex flex-col', className)}>
       <div className="flex pb-2">
@@ -127,14 +136,22 @@ export default function TableLegacy({
           <div
             key={`columns-${title}-${i}`}
             className={twMerge(
-              'text-lg font-semibold overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade',
+              'p-[0.3em] flex grow flex-shrink-0 basis-0 text-txtfade text-sm font-semibold',
               columnTitlesClassName,
             )}
             style={{
-              maxWidth: isFirstColumnId && i == 0 ? '75px' : 'auto',
+              maxWidth: i === 0 ? '3rem' : 'auto',
             }}
           >
-            {title}
+            <div
+              className={twMerge(
+                'w-full flex items-center justify-center',
+                getColumnType(title, i).alignment,
+                getColumnType(title, i).truncation,
+              )}
+            >
+              {title}
+            </div>
           </div>
         ))}
       </div>
@@ -168,12 +185,15 @@ export default function TableLegacy({
             return values.map((value, j) => (
               <div
                 key={`values-${rowTitle}${i}-${j}`}
-                className="p-[0.3em] flex grow flex-shrink-0 basis-0"
+                className={twMerge(
+                  'p-[0.3em] flex grow flex-shrink-0 basis-0 items-center',
+                  getColumnType(value, j).alignment,
+                  getColumnType(value, j).truncation,
+                )}
                 style={{
-                  // must limit here otherwise ChartJS chart can't resize well
                   maxWidth:
-                    isFirstColumnId && j == 0
-                      ? '75px'
+                    j === 0
+                      ? '3rem'
                       : `calc(100% - ${rowTitleWidth ?? '150px'})`,
                 }}
               >

@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -74,15 +75,15 @@ export default function StakingLeaderboard({
         // Rank
         <div
           key={`rank-${index}`}
-          className="text-sm text-center flex items-center justify-center w-[5em]"
+          className="flex items-center justify-start w-full"
         >
-          <span className="text-sm text-center">{entry.rank}</span>
+          <span className="text-sm">{entry.rank}</span>
         </div>,
 
-        // Wallet/Nickname with Profile Picture
+        // Staker
         <div
           key={`wallet-${index}`}
-          className="flex flex-row gap-1.5 sm:gap-2 min-w-0 flex-1 sm:w-[10em] sm:max-w-[10em] overflow-hidden items-center"
+          className="flex items-center justify-start w-full gap-1.5 sm:gap-2 overflow-hidden"
           id={`user-staking-${entry.walletAddress}`}
         >
           {entry.profilePicture !== null ? (
@@ -127,10 +128,10 @@ export default function StakingLeaderboard({
           </div>
         </div>,
 
-        // Total Voting Power (always shown)
+        // Rev. Weight
         <div
           key={`virtual-${index}`}
-          className="flex items-center justify-center grow gap-1"
+          className="flex items-center justify-end w-full"
         >
           <FormatNumber
             nb={entry.virtualAmount}
@@ -144,10 +145,10 @@ export default function StakingLeaderboard({
       // Add Locked and Liquid columns only on md+ screens
       if (breakpoint1) {
         values.push(
-          // Locked Stake
+          // Locked
           <div
             key={`locked-${index}`}
-            className="flex items-center justify-center grow gap-1"
+            className="flex items-center justify-end w-full"
           >
             <FormatNumber
               nb={entry.lockedStakes}
@@ -157,10 +158,10 @@ export default function StakingLeaderboard({
             />
           </div>,
 
-          // Liquid Stake
+          // Liquid
           <div
             key={`liquid-${index}`}
-            className="flex items-center justify-center grow gap-1"
+            className="flex items-center justify-end w-full"
           >
             <FormatNumber
               nb={entry.liquidStake}
@@ -186,23 +187,61 @@ export default function StakingLeaderboard({
 
   const columnsTitles = useMemo(() => {
     const columns = [
-      <div key="rank" className="text-center">
+      <div key="rank" className="flex items-center ">
         #
       </div>,
-      'Staker',
-      <div key="voting-power" className="text-right">
-        Voting Power
+      <div key="staker" className="flex items-center justify-start">
+        Staker
       </div>,
+      <Tippy
+        key="rev-weight-tooltip"
+        content={
+          <div className="text-sm">
+            <div className="mb-2 font-semibold">
+              Revenue Weight Multipliers:
+            </div>
+            <div className="space-y-1 text-xs">
+              <div>
+                • 0 Day Lock: <span className="font-semibold text-sm">1x</span>
+              </div>
+              <div>
+                • 90 Day Lock:{' '}
+                <span className="font-semibold text-sm">1.75x</span>
+              </div>
+              <div>
+                • 180 Day Lock:{' '}
+                <span className="font-semibold text-sm">2.5x</span>
+              </div>
+              <div>
+                • 360 Day Lock:{' '}
+                <span className="font-semibold text-sm">3.25x</span>
+              </div>
+              <div>
+                • 540 Day Lock:{' '}
+                <span className="font-semibold text-sm">4x</span>
+              </div>
+            </div>
+          </div>
+        }
+        placement="auto"
+        arrow={true}
+      >
+        <div
+          key="rev-weight"
+          className="flex items-center justify-end cursor-help border-b border-dashed border-white/50"
+        >
+          Rev. Weight
+        </div>
+      </Tippy>,
     ];
 
-    // Add Locked and Liquid columns only on md+ screens
     if (breakpoint1) {
       columns.push(
-        <div key="locked" className="text-right">
-          Locked
+        <div key="locked" className="flex items-center justify-end">
+          $ADX Locked
         </div>,
-        <div key="liquid" className="text-right">
-          Liquid
+        <div key="liquid" className="flex items-center justify-end">
+          $ADX Liquid
         </div>,
       );
     }
@@ -242,16 +281,15 @@ export default function StakingLeaderboard({
             <div className="h-16 w-16 rounded-full bg-[#0B131D] animate-loader mt-1 mb-1 flex-shrink-0"></div>
             <div className="flex flex-col min-w-0 flex-1">
               <div className="flex items-center min-w-0 gap-3 flex-1">
-                <div className="flex-1 h-6 bg-[#0B131D] animate-loader rounded w-24"></div>
-                <span className="font-semibold text-txtfade text-xl flex-shrink-0">
+                <div className="flex-1 h-6 bg-[#0B131D] animate-loader rounded w-24 hidden sm:flex"></div>
+                <span className="font-semibold text-txtfade text-xl flex-shrink-0 hidden sm:flex">
                   |
                 </span>
                 <div className="h-7 bg-red/50 animate-loader rounded-full flex-shrink-0 w-12"></div>
                 <span className="font-semibold text-txtfade text-xl flex-shrink-0">
                   |
                 </span>
-                <div className="h-6 bg-[#0B131D] animate-loader rounded sm:flex hidden flex-shrink-0 w-24"></div>
-                <div className="h-6 bg-[#0B131D] animate-loader rounded sm:flex hidden flex-shrink-0 w-20"></div>
+                <div className="h-6 bg-[#0B131D] animate-loader rounded flex-shrink-0 w-20"></div>
               </div>
               <div className="h-4 bg-[#0B131D] animate-loader rounded mt-1 opacity-50 max-w-[60%]"></div>
             </div>
@@ -264,30 +302,34 @@ export default function StakingLeaderboard({
         <div className="flex-1 flex flex-col min-h-0">
           <div className="flex flex-col bg-transparent gap-1 border-none p-0">
             {/* Header row */}
-            <div className="flex pb-2">
-              <div className="flex shrink-0 ml-2" style={{ width: '0%' }}></div>
+            <div className="flex pb-2 gap-1">
+              <div className="flex shrink-0" style={{ width: '0%' }}></div>
               {[
-                'RANK',
-                'NAME',
-                'VOTING POWER',
-                ...(breakpoint1 ? ['LOCKED', 'LIQUID'] : []),
+                '#',
+                'Staker',
+                'Rev. Weight',
+                ...(breakpoint1 ? ['$ADX Locked', '$ADX Liquid'] : []),
               ].map((title, i) => (
                 <div
                   key={i}
                   className={`flex grow flex-shrink-0 basis-0 ${i >= 3 ? 'hidden md:flex' : ''}`}
-                  style={{ maxWidth: i === 0 ? '75px' : 'auto' }}
+                  style={{ maxWidth: i === 0 ? '3rem' : 'auto' }}
                 >
                   <div
-                    className={`h-4 bg-[#0B131D] animate-loader rounded opacity-50 ${
+                    className={`h-6 bg-[#0B131D] animate-loader rounded opacity-50 w-full flex items-center ${
                       i === 0
-                        ? 'w-12'
+                        ? 'justify-center'
                         : i === 1
-                          ? 'w-16'
-                          : i === 2
-                            ? 'w-28'
-                            : 'w-16'
+                          ? 'justify-start'
+                          : 'justify-end'
                     }`}
-                  ></div>
+                  >
+                    <div
+                      className={`bg-[#0B131D] animate-loader rounded ${
+                        i === 0 ? 'w-3 h-3' : 'w-10 h-3'
+                      }`}
+                    ></div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -296,7 +338,7 @@ export default function StakingLeaderboard({
             {Array.from({ length: 20 }).map((_, i) => (
               <div
                 key={i}
-                className="flex w-full border border-transparent bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center rounded-md pl-1"
+                className="flex w-full border border-transparent bg-[#0B131D] hover:bg-[#1F2730] py-1 items-center rounded-md pl-1 gap-1"
                 style={{ opacity: 1 - i * 0.05 }}
               >
                 <div
@@ -306,33 +348,36 @@ export default function StakingLeaderboard({
 
                 {/* Rank */}
                 <div
-                  className="p-[0.3em] flex grow flex-shrink-0 basis-0"
-                  style={{ maxWidth: '75px' }}
+                  className="flex grow flex-shrink-0 basis-0 justify-start"
+                  style={{ maxWidth: '3rem' }}
                 >
-                  <div className="w-8 h-5 bg-[#050D14] animate-loader rounded"></div>
+                  <div className="w-4 h-4 bg-[#050D14] animate-loader rounded"></div>
                 </div>
 
                 {/* Name with avatar */}
-                <div className="p-[0.3em] flex grow flex-shrink-0 basis-0">
+                <div className="flex grow flex-shrink-0 basis-0 justify-start">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-[#050D14] animate-loader"></div>
-                    <div className="w-24 h-4 bg-[#050D14] animate-loader rounded"></div>
+                    <div className="flex flex-col gap-1">
+                      <div className="w-16 h-4 bg-[#050D14] animate-loader rounded"></div>
+                      <div className="w-12 h-3 bg-[#050D14] animate-loader rounded opacity-60"></div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Voting Power */}
-                <div className="p-[0.3em] flex grow flex-shrink-0 basis-0">
-                  <div className="w-20 h-4 bg-[#050D14] animate-loader rounded"></div>
+                {/* Rev. Weight */}
+                <div className="flex grow flex-shrink-0 basis-0 justify-end">
+                  <div className="w-24 h-5 bg-[#050D14] animate-loader rounded"></div>
                 </div>
 
-                {/* Locked and Liquid - only show on md+ screens */}
+                {/* ADX Locked and Liquid - only show on md+ screens */}
                 {breakpoint1 && (
                   <>
-                    <div className="p-[0.3em] grow flex-shrink-0 basis-0">
-                      <div className="w-16 h-4 bg-[#050D14] animate-loader rounded"></div>
+                    <div className="flex grow flex-shrink-0 basis-0 justify-end">
+                      <div className="w-20 h-5 bg-[#050D14] animate-loader rounded"></div>
                     </div>
-                    <div className="p-[0.3em] grow flex-shrink-0 basis-0">
-                      <div className="w-16 h-4 bg-[#050D14] animate-loader rounded"></div>
+                    <div className="flex grow flex-shrink-0 basis-0 justify-end">
+                      <div className="w-16 h-5 bg-[#050D14] animate-loader rounded"></div>
                     </div>
                   </>
                 )}
@@ -400,10 +445,10 @@ export default function StakingLeaderboard({
             )}
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-3">
-                <span className="font-semibold text-white text-xl truncate flex-1 min-w-0">
+                <span className="font-semibold text-white text-xl truncate flex-1 min-w-0 hidden sm:flex">
                   {userRow.nickname || 'Anonymous Staker'}
                 </span>
-                <span className="font-semibold text-txtfade text-xl flex-shrink-0">
+                <span className="font-semibold text-txtfade text-xl flex-shrink-0 hidden sm:flex">
                   |
                 </span>
                 <span className="text-sm font-semibold text-white bg-red/50 px-3 py-1 rounded-full shadow flex-shrink-0">
@@ -412,24 +457,35 @@ export default function StakingLeaderboard({
                 <span className="font-semibold text-txtfade text-xl flex-shrink-0">
                   |
                 </span>
-                <span className="font-semibold text-white text-xl sm:flex hidden flex-shrink-0">
-                  Voting Power:
-                </span>
-                <span className="text-xl font-semibold text-redbright sm:flex hidden flex-shrink-0">
+                <span className="text-xl font-semibold text-redbright flex flex-shrink-0">
                   {formatNumber(data?.userVirtualAmount || 0, 0, 0)}
                 </span>
               </div>
               {/* Show amount needed to climb */}
               {data?.userAboveAmount && (
-                <div className="text-sm text-txtfade mt-1">
-                  You need{' '}
-                  {formatNumber(
-                    data.userAboveAmount - (data?.userVirtualAmount || 0),
-                    0,
-                    0,
-                  )}{' '}
-                  more voting power to climb the ladder
-                </div>
+                <>
+                  {/* Mobile version - shorter text */}
+                  <div className="text-sm text-txtfade mt-1 sm:hidden">
+                    {' '}
+                    {formatNumber(
+                      data.userAboveAmount - (data?.userVirtualAmount || 0),
+                      0,
+                      0,
+                    )}{' '}
+                    more to climb!
+                  </div>
+
+                  {/* Desktop version - full text */}
+                  <div className="text-sm text-txtfade mt-1 hidden sm:block">
+                    {' '}
+                    {formatNumber(
+                      data.userAboveAmount - (data?.userVirtualAmount || 0),
+                      0,
+                      0,
+                    )}{' '}
+                    more rev. weight to climb the ladder!
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -442,12 +498,12 @@ export default function StakingLeaderboard({
       <div className="flex-1 flex flex-col min-h-0">
         <Table
           className="bg-transparent gap-1 border-none p-0"
-          columnTitlesClassName="text-sm opacity-50"
+          columnTitlesClassName="text-sm opacity-50 truncate"
           columnsTitles={columnsTitles}
           data={tableData}
           rowHovering={true}
           pagination={true}
-          paginationClassName="scale-[80%] p-0 mt-auto"
+          paginationClassName="p-0 mt-auto"
           nbItemPerPage={itemsPerPage}
           nbItemPerPageWhenBreakpoint={10}
           breakpoint="0"

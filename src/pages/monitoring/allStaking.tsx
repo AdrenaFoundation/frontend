@@ -102,12 +102,12 @@ export default function AllStaking({
     <>
       <div className="flex flex-col gap-2 items-center justify-center">
         {/* Two-column layout: Stats on left, Leaderboard on right */}
-        <div className="flex flex-col lg:flex-row gap-2 w-full items-stretch">
+        <div className="flex flex-col xl:flex-row gap-2 w-full items-stretch">
           {/* Left side - Stats */}
-          <div className="flex flex-col gap-2 w-full lg:w-2/3">
+          <div className="flex flex-col gap-2 w-full xl:w-2/3">
             {/* Top container - smaller, fixed height */}
             <StyledContainer className="p-4">
-              <div className="grid lg:grid-cols-2 gap-[2em] lg:h-[18em]">
+              <div className="grid xl:grid-cols-2 gap-[2em] xl:h-[18em]">
                 <div className="w-full flex h-[18em]">
                   <AprLmChart />
                 </div>
@@ -122,7 +122,7 @@ export default function AllStaking({
               </div>
             </StyledContainer>
 
-            {/* Bottom container - takes remaining space */}
+            {/* Bottom container */}
             <StyledContainer
               className="p-4 flex-1"
               bodyClassName="items-center justify-center flex relative h-full"
@@ -230,7 +230,7 @@ export default function AllStaking({
           </div>
 
           {/* Right side - Staking Leaderboard */}
-          <div className="w-full lg:w-1/3">
+          <div className="w-full xl:w-1/3">
             <StyledContainer className="p-4 flex flex-col h-full">
               <h2 className="text-center mb-4">ADX STAKING LEADERBOARD</h2>
               <div className="flex-1">

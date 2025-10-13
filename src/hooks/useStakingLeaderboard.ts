@@ -85,7 +85,16 @@ export default function useStakingLeaderboard(
             staking.liquidStake.amount,
             stakingDecimals,
           );
-          const lockedStakes = staking.lockedStakes.reduce(
+
+          // Real ADX amounts (for Locked/Liquid columns)
+          const realLockedStakes = staking.lockedStakes.reduce(
+            (acc, lockedStake) =>
+              acc + nativeToUi(lockedStake.amount, stakingDecimals),
+            0,
+          );
+
+          // Voting power amounts (with multipliers for Rev. Weight column)
+          const votingPowerLockedStakes = staking.lockedStakes.reduce(
             (acc, lockedStake) =>
               acc +
               nativeToUi(
@@ -94,7 +103,9 @@ export default function useStakingLeaderboard(
               ),
             0,
           );
-          const virtualAmount = liquidStake + lockedStakes;
+
+          // Total voting power (for Rev. Weight column)
+          const virtualAmount = liquidStake + votingPowerLockedStakes;
 
           // Try to get user profile from mapping
           const stakingPdaAddress = staking.pubkey.toBase58();
@@ -106,9 +117,9 @@ export default function useStakingLeaderboard(
           return {
             walletAddress: ownerAddress,
             stakingPdaAddress,
-            virtualAmount,
-            liquidStake,
-            lockedStakes,
+            virtualAmount, // Voting power (with multipliers)
+            liquidStake, // Real ADX liquid amount
+            lockedStakes: realLockedStakes, // Real ADX locked amount (without multipliers)
             nickname: userProfile?.nickname,
             profilePicture:
               (userProfile?.profilePicture as ProfilePicture | null) ?? null,
@@ -116,7 +127,7 @@ export default function useStakingLeaderboard(
           };
         })
         .filter((staker) => staker.virtualAmount > 0) // Only include users with stakes
-        .sort((a, b) => b.virtualAmount - a.virtualAmount); // Sort by virtual amount descending
+        .sort((a, b) => b.virtualAmount - a.virtualAmount); // Sort by voting power descending
 
       // Add ranks (nickname, profilePicture, and title are already populated)
       const leaderboard = stakersWithAmounts.map((staker, index) => ({
