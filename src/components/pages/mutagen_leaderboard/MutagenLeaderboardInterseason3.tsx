@@ -556,10 +556,10 @@ export default function MutagenLeaderboardInterseason3({
 
     const columns = useMemo(() => {
         const columns = [
-            <span className="ml-[2.2em] opacity-50" key="rank">
+            <span className="opacity-50" key="rank">
                 #
             </span>,
-            'Trader',
+            <span className="opacity-50" key="trader">Trader</span>,
         ];
 
         if (breakpoint4) {
@@ -645,8 +645,8 @@ export default function MutagenLeaderboardInterseason3({
                 paginationClassName="scale-[80%] p-0"
                 nbItemPerPage={itemsPerPage}
                 nbItemPerPageWhenBreakpoint={3}
-                breakpoint="0" // No breakpoint
-                rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
+                breakpoint="0"
+                rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0"
                 rowTitleWidth="0%"
                 isFirstColumnId
                 data={dataReady}

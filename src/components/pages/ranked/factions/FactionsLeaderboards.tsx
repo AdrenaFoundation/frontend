@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import jtoLogo from '@/../../public/images/jito-logo-2.png';

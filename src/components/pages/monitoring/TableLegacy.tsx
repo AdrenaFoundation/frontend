@@ -27,6 +27,7 @@ export default function TableLegacy({
   isFirstColumnId = false,
   page: controlledPage,
   onPageChange,
+  useAutoAlignment = false,
 }: {
   breakpoint?: string | null;
   className?: string;
@@ -56,6 +57,7 @@ export default function TableLegacy({
   isFirstColumnId?: boolean;
   page?: number;
   onPageChange?: (page: number) => void;
+  useAutoAlignment?: boolean;
 }) {
   const isBreakpoint = useBetterMediaQuery(
     `(max-width: ${breakpoint ?? '800px'})`,
@@ -114,12 +116,13 @@ export default function TableLegacy({
   };
 
   const getColumnType = (title: ReactNode, index: number) => {
-    // Pure index-based detection - most reliable
-    if (index === 0)
-      return { alignment: 'justify-start', truncation: 'truncate' }; // Rank/ID
-    if (index === 1)
-      return { alignment: 'justify-start', truncation: 'truncate' }; // Name/User
-    return { alignment: 'justify-end', truncation: '' }; // All numeric columns
+    if (!useAutoAlignment) {
+      return { alignment: 'justify-center', truncation: '' };
+    }
+
+    if (index === 0 || index === 1)
+      return { alignment: 'justify-start', truncation: 'truncate' };
+    return { alignment: 'justify-end', truncation: '' };
   };
 
   return !isBreakpoint ? (
@@ -145,7 +148,7 @@ export default function TableLegacy({
           >
             <div
               className={twMerge(
-                'w-full flex items-center justify-center',
+                'w-full flex items-center',
                 getColumnType(title, i).alignment,
                 getColumnType(title, i).truncation,
               )}

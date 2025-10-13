@@ -75,7 +75,7 @@ export default function StakingLeaderboard({
         // Rank
         <div
           key={`rank-${index}`}
-          className="flex items-center justify-start w-full"
+          className="flex items-center justify-center w-full"
         >
           <span className="text-sm">{entry.rank}</span>
         </div>,
@@ -498,7 +498,7 @@ export default function StakingLeaderboard({
       <div className="flex-1 flex flex-col min-h-0">
         <Table
           className="bg-transparent gap-1 border-none p-0"
-          columnTitlesClassName="text-sm opacity-50 truncate"
+          columnTitlesClassName="text-sm opacity-50"
           columnsTitles={columnsTitles}
           data={tableData}
           rowHovering={true}
@@ -512,6 +512,7 @@ export default function StakingLeaderboard({
           isFirstColumnId
           page={currentPage}
           onPageChange={setCurrentPage}
+          useAutoAlignment={true}
         />
       </div>
     </div>

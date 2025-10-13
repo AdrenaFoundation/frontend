@@ -420,10 +420,10 @@ export default function MutagenLeaderboardAnniversary({
 
     const columns = useMemo(() => {
         const columns = [
-            <span className="ml-[2.2em] opacity-50" key="rank">
+            <span className="opacity-50" key="rank">
                 #
             </span>,
-            'Trader',
+            <span className="opacity-50" key="trader">Trader</span>,
         ];
 
         if (breakpoint4) {

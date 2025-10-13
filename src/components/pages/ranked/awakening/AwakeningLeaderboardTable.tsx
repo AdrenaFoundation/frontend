@@ -56,10 +56,10 @@ export default function AwakeningLeaderboardTable({
                     className="bg-transparent gap-1 border-none p-0"
                     columnTitlesClassName="text-sm opacity-50"
                     columnsTitles={[
-                        <span className='ml-4 opacity-50' key='rank'>#</span>,
-                        'Trader',
-                        <span className='ml-auto mr-auto opacity-50' key='pnl'>PnL</span>,
-                        <span className='ml-auto mr-auto opacity-50' key='volume'>Volume</span>,
+                        <span className='-ml-[0.5rem] opacity-50' key='rank'>#</span>,
+                        <span className='opacity-50' key='trader'>Trader</span>,
+                        <span className='opacity-50' key='pnl'>PnL</span>,
+                        <span className='opacity-50' key='volume'>Volume</span>,
                         <span className='ml-auto opacity-50' key='rewards'>Rewards</span>,
                     ]}
                     rowHovering={true}
@@ -70,6 +70,7 @@ export default function AwakeningLeaderboardTable({
                     rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
                     rowTitleWidth="0%"
                     isFirstColumnId
+                    breakpoint="0"
                     data={(data[division] ?? []).map((d, i) => {
                         return {
                             rowTitle: '',
