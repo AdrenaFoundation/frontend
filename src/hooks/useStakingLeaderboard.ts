@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import { ProfilePicture, UserProfileMetadata, UserProfileTitle, StakingLeaderboardData } from '@/types';
+import { ProfilePicture, StakingLeaderboardData,UserProfileMetadata, UserProfileTitle } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import { useAllAdxStaking } from './useAllAdxStaking';
