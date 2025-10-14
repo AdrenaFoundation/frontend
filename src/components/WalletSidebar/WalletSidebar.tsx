@@ -1,4 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
+import { usePrivy } from '@privy-io/react-auth';
 import { useExportWallet, useFundWallet, useWallets } from '@privy-io/react-auth/solana';
 import { PublicKey, Transaction } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
@@ -14,6 +15,7 @@ import keyIcon from '@/../public/images/Icons/key.png';
 import logOutIcon from '@/../public/images/Icons/log-out.svg';
 import sendIcon from '@/../public/images/Icons/send.png';
 import refreshIcon from '@/../public/images/refresh.png';
+import walletIcon from '@/../public/images/wallet-icon.svg';
 import { disconnectWalletAction } from '@/actions/walletActions';
 import { useWalletSidebar } from '@/contexts/WalletSidebarContext';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
@@ -40,6 +42,7 @@ export default function WalletSidebar({
     const { fundWallet } = useFundWallet();
     const { exportWallet } = useExportWallet();
     const { wallets: connectedStandardWallets } = useWallets();
+    const { connectWallet } = usePrivy();
 
     const wallet = useSelector(selectWallet);
 
@@ -109,6 +112,10 @@ export default function WalletSidebar({
 
         return enhanceWallets(connectedStandardWallets);
     }, [wallet?.isPrivy, connectedStandardWallets]);
+
+    const hasExternalWallets = useMemo(() => {
+        return enhancedWallets.some(w => !w.isEmbedded);
+    }, [enhancedWallets]);
 
     const enhancedWalletData = useMemo(() => {
         if (!wallet?.walletAddress) {
@@ -437,10 +444,37 @@ export default function WalletSidebar({
                                                     </div>
 
                                                     {enhancedWalletData.isEmbedded && (
-                                                        <div className="p-4 bg-third/50 rounded-lg border border-white/10 space-y-2">
+                                                        <div className="p-4 bg-third/50 rounded-lg border border-white/10 space-y-3">
                                                             <div className="text-sm text-white/70 font-semibold">
                                                                 1. Quick Fund (Recommended)
                                                             </div>
+
+                                                            {!hasExternalWallets && (
+                                                                <>
+                                                                    <div className="text-xs text-white/60">
+                                                                        Want to transfer from a wallet? Connect it first, then Fund.
+                                                                    </div>
+                                                                    <button
+                                                                        onClick={() => connectWallet()}
+                                                                        className="w-full px-3 py-2 bg-blue-600/20 text-blue-300 text-sm font-medium rounded-lg hover:bg-blue-600/30 transition-colors flex items-center justify-center gap-2 border border-blue-500/30"
+                                                                    >
+                                                                        <Image
+                                                                            src={walletIcon}
+                                                                            width={14}
+                                                                            height={14}
+                                                                            alt="wallet icon"
+                                                                        />
+                                                                        Connect Wallet
+                                                                    </button>
+
+                                                                    <div className="relative flex items-center py-2">
+                                                                        <div className="flex-grow border-t border-white/10"></div>
+                                                                        <span className="flex-shrink mx-3 text-xs text-white/40">OR</span>
+                                                                        <div className="flex-grow border-t border-white/10"></div>
+                                                                    </div>
+                                                                </>
+                                                            )}
+
                                                             <button
                                                                 onClick={handleFundWallet}
                                                                 className="w-full px-4 py-2 bg-green text-white font-semibold rounded-lg hover:bg-green/80 transition-colors"
@@ -578,7 +612,7 @@ export default function WalletSidebar({
             </AnimatePresence>
         </>;
 
-    }, [isSidebarOpen, wallet, enhancedWalletData, view, enhancedWallets, isLoadingBalances, totalValueUsd, solBalance, refreshBalances, balancesError, tokenBalancesWithPrices, connectedStandardWallets, dispatch, fundWallet, exportWallet, connectedAdapter, closeSidebar, adapters]);
+    }, [isSidebarOpen, wallet, enhancedWalletData, view, enhancedWallets, hasExternalWallets, isLoadingBalances, totalValueUsd, solBalance, refreshBalances, balancesError, tokenBalancesWithPrices, connectedStandardWallets, dispatch, fundWallet, exportWallet, connectedAdapter, closeSidebar, adapters, connectWallet]);
 
     return (
         <AnimatePresence>
