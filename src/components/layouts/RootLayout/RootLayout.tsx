@@ -130,14 +130,14 @@ export default function RootLayout({
     },
     {
       name: 'Vote',
-      link: 'https://dao.adrena.xyz/',
+      link: 'https://dao.adrena.trade/',
       external: true,
       dropdown: true,
       icon: voteIcon,
     },
     {
       name: 'Learn',
-      link: 'https://docs.adrena.xyz/',
+      link: 'https://docs.adrena.trade/',
       external: true,
       dropdown: true,
       icon: bookIcon,

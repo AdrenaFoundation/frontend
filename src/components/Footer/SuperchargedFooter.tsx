@@ -377,7 +377,7 @@ export default function SuperchargedFooter({
             </Link>
 
             <Link
-              href="https://dao.adrena.xyz/"
+              href="https://dao.adrena.trade/"
               target="_blank"
               rel="noopener noreferrer"
             >
