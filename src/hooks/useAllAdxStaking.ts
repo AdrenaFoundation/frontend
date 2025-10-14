@@ -17,7 +17,10 @@ export function useAllAdxStaking(): {
 
   useEffect(() => {
     const loadAllAdxStaking = async () => {
-      setIsLoading(true);
+      if (allAdxStaking === null) {
+        setIsLoading(true);
+      }
+
       try {
         // Fetch all ADX staking accounts (filtered on-chain by stakingType)
         const allStaking = await window.adrena.client.loadAllAdxStaking();
@@ -58,8 +61,9 @@ export function useAllAdxStaking(): {
     const interval = setInterval(loadAllAdxStaking, 60000);
 
     return () => clearInterval(interval);
+    // Remove readonlyConnection from dependencies - it's stable
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trickReload, window.adrena.client.readonlyConnection]);
+  }, [trickReload]);
 
   return {
     allAdxStaking,

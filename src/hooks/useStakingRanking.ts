@@ -10,6 +10,7 @@ export interface StakingRanking {
   userRank?: number;
   totalStakers: number;
   userVirtualAmount?: number;
+  userAboveAmount?: number;
 }
 
 export default function useStakingRanking(walletAddress: string | null): {
@@ -33,7 +34,9 @@ export default function useStakingRanking(walletAddress: string | null): {
       return;
     }
 
-    setIsLoadingUser(true);
+    if (userStakingAccount === null) {
+      setIsLoadingUser(true);
+    }
 
     try {
       // Only fetch user's staking account
@@ -49,7 +52,7 @@ export default function useStakingRanking(walletAddress: string | null): {
     } finally {
       setIsLoadingUser(false);
     }
-  }, [walletAddress]);
+  }, [walletAddress, userStakingAccount]);
 
   useEffect(() => {
     fetchUserStaking();
@@ -73,15 +76,9 @@ export default function useStakingRanking(walletAddress: string | null): {
           0,
         );
 
-      // Calculate all other users' virtual amounts and compare
-      const { betterStakers, totalStakers } = allAdxStaking.reduce(
-        (acc, staking) => {
-          // Skip current user in comparison
-          if (staking.pubkey.equals(userStakingAccount.pubkey)) {
-            return acc;
-          }
-
-          // Calculate virtual amount
+      // Calculate all users' virtual amounts and sort them
+      const allVirtualAmounts = allAdxStaking
+        .map((staking) => {
           const totalVirtualAmount =
             nativeToUi(staking.liquidStake.amount, stakingDecimals) +
             staking.lockedStakes.reduce(
@@ -94,25 +91,30 @@ export default function useStakingRanking(walletAddress: string | null): {
               0,
             );
 
-          // Only count users with actual stakes
-          if (totalVirtualAmount > 0) {
-            acc.totalStakers++;
-            if (totalVirtualAmount > userVirtualAmount) {
-              acc.betterStakers++;
-            }
-          }
+          return {
+            pubkey: staking.pubkey,
+            virtualAmount: totalVirtualAmount,
+          };
+        })
+        .filter((s) => s.virtualAmount > 0)
+        .sort((a, b) => b.virtualAmount - a.virtualAmount);
 
-          return acc;
-        },
-        { betterStakers: 0, totalStakers: 0 },
+      // Find user's rank
+      const userRank = allVirtualAmounts.findIndex((s) =>
+        s.pubkey.equals(userStakingAccount.pubkey),
       );
 
-      const userRank = betterStakers + 1;
+      // Find the amount needed to climb (person above's amount)
+      let userAboveAmount: number | undefined;
+      if (userRank > 0) {
+        userAboveAmount = allVirtualAmounts[userRank - 1].virtualAmount;
+      }
 
       return {
-        userRank,
-        totalStakers,
+        userRank: userRank + 1, // Convert to 1-indexed
+        totalStakers: allVirtualAmounts.length,
         userVirtualAmount,
+        userAboveAmount,
       };
     } catch (error) {
       console.error('Error calculating staking ranking:', error);

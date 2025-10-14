@@ -16,6 +16,7 @@ import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import { useAllStakingStats } from '@/hooks/useAllStakingStats';
+import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 import { getNonUserProfile } from '@/utils';
@@ -94,6 +95,9 @@ export default function AllStaking({
   }, [view]);
 
   const wallet = useSelector((s) => s.walletState.wallet);
+
+  // Lift user profiles to page level - shared by leaderboard
+  const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
 
   const [activeProfile, setActiveProfile] =
     useState<UserProfileExtended | null>(null);
@@ -236,6 +240,7 @@ export default function AllStaking({
               <div className="flex-1">
                 <StakingLeaderboard
                   walletAddress={wallet?.walletAddress || null}
+                  allUserProfilesMetadata={allUserProfilesMetadata}
                   setProfile={async (wallet: PublicKey) => {
                     const p = await window.adrena.client.loadUserProfile({
                       user: wallet,

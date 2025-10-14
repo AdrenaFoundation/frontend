@@ -7,10 +7,10 @@ import { twMerge } from 'tailwind-merge';
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/TableLegacy';
 import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
-import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useStakingLeaderboard from '@/hooks/useStakingLeaderboard';
 import { useSelector } from '@/store/store';
+import { UserProfileMetadata } from '@/types';
 import {
   formatNumber,
   getAbbrevNickname,
@@ -19,14 +19,15 @@ import {
 
 interface StakingLeaderboardProps {
   walletAddress: string | null;
+  allUserProfilesMetadata: UserProfileMetadata[];
   setProfile?: (wallet: PublicKey) => void;
 }
 
 export default function StakingLeaderboard({
   walletAddress,
+  allUserProfilesMetadata,
   setProfile,
 }: StakingLeaderboardProps) {
-  const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
   const { data, isLoading, error } = useStakingLeaderboard(
     walletAddress,
     allUserProfilesMetadata,
