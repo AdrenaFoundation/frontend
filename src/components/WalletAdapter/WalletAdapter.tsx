@@ -163,7 +163,7 @@ export default function WalletAdapter({
                     openSidebar();
                   }
                 }}
-                className="flex flex-row items-center gap-1.5 border border-[#414E5E] rounded-full px-2 py-1.5 hover:bg-third transition-colors cursor-pointer"
+                className="flex flex-row items-center gap-1.5 border border-[#414E5E] rounded-full py-1.5 px-2 hover:bg-third transition-colors cursor-pointer"
               >
                 <Image
                   src={userProfile ? PROFILE_PICTURES[userProfile.profilePicture] : PROFILE_PICTURES[0]}
@@ -191,8 +191,8 @@ export default function WalletAdapter({
                 <Button
                   className={twMerge(
                     className,
-                    'p-1 px-2 hover:bg-third transition-colors cursor-pointer',
-                    'border-bcolor rounded-none rounded-l-lg border-r border-r-[#414E5E] gap-2 text-xs h-auto bg-transparent',
+                    'py-1 px-2 ml-1 xl:ml-0 hover:bg-third transition-colors cursor-pointer',
+                    'border-bcolor rounded-none rounded-l-lg border-r border-r-[#414E5E] gap-1 xl:gap-2 text-xs h-auto bg-transparent',
                     'whitespace-nowrap'
                   )}
                   title={
@@ -213,7 +213,7 @@ export default function WalletAdapter({
                 />
 
                 <div
-                  className="p-1.5 px-2 hover:bg-third transition-colors cursor-pointer rounded-r-lg"
+                  className="py-1.5 px-1 xl:px-2 hover:bg-third transition-colors cursor-pointer rounded-r-lg flex items-center gap-1"
                   onClick={() => {
                     if (isSidebarOpen) {
                       closeSidebar();
@@ -222,6 +222,13 @@ export default function WalletAdapter({
                     }
                   }}
                 >
+                  <Image
+                    src={walletIcon}
+                    alt="Wallet"
+                    className="w-3.5 h-3.5 opacity-70"
+                    width={14}
+                    height={14}
+                  />
                   <Image
                     src={chevronDownIcon}
                     alt="Toggle Sidebar"
@@ -354,7 +361,7 @@ export default function WalletAdapter({
         <Button
           className={twMerge(
             className,
-            'gap-1 p-1 h-auto px-3 pr-4 text-xs border border-[#414E5E] bg-transparent hover:bg-third rounded-md',
+            'gap-1 py-1 px-3 pr-4 h-auto text-xs border border-[#414E5E] bg-transparent hover:bg-third rounded-md',
             isIconOnly && 'p-0 h-8 w-8 rounded-full',
             isConnecting && 'opacity-50 cursor-not-allowed',
           )}

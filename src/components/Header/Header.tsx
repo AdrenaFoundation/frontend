@@ -96,14 +96,14 @@ export default function Header({
   const EXTERNAL_LINKS = PAGES.filter((p) => p.external);
 
   return (
-    <div className="w-full flex flex-row items-center justify-between gap-3 p-3 px-3 xl:px-7 border-b border-b-bcolor bg-secondary z-[51]">
+    <div className="w-full flex flex-row items-center justify-between gap-3 py-3 px-4 lg:px-2 xl:px-4 border-b border-b-bcolor bg-secondary z-[51]">
       <div className="flex flex-row items-center gap-4">
-        <Link className="font-bold uppercase relative p-1.5 -m-1.5" href="/">
+        <Link className="font-bold uppercase flex-shrink-0 block relative" href="/">
           <Image
             src={logo}
             className={twMerge(
-              'shrink-0 relative hidden xl:block',
-              window.adrena.cluster === 'devnet' ? 'bottom-1' : '',
+              'w-20 min-w-20 h-auto hidden xl:block',
+              window.adrena.cluster === 'devnet' ? 'relative bottom-1' : '',
             )}
             alt="logo"
             width={80}
@@ -113,8 +113,8 @@ export default function Header({
           <Image
             src={adxLogo}
             className={twMerge(
-              'shrink-0 relative xl:hidden',
-              window.adrena.cluster === 'devnet' ? 'bottom-1' : '',
+              'w-[25px] min-w-[25px] h-auto xl:hidden',
+              window.adrena.cluster === 'devnet' ? 'relative bottom-1' : '',
             )}
             alt="logo"
             width={25}
@@ -147,6 +147,7 @@ export default function Header({
                   alt="logo"
                   width={12}
                   height={12}
+                  className="hidden xl:block"
                 />
               )}
               <h5 className="whitespace-nowrap font-regular">{page.name}</h5>
@@ -157,7 +158,7 @@ export default function Header({
                   alt="logo"
                   width={12}
                   height={12}
-                  className="scale-x-[-1]"
+                  className="scale-x-[-1] hidden xl:block"
                 />
               )}
 
