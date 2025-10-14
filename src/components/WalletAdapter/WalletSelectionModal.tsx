@@ -7,6 +7,7 @@ import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../public/images/adx.svg';
 import arrowRight from '@/../public/images/arrow-right.svg';
+import infoIcon from '@/../public/images/Icons/info.svg';
 import {
   connectWalletAction,
   openCloseConnectionModalAction,
@@ -40,54 +41,71 @@ export default function WalletSelectionModal({
             {privyAdapter && (
               <div className="w-full px-3 sm:px-4">
                 <div className="space-y-3 sm:space-y-4">
-                  <Tippy content={
-                    <div className="space-y-2">
-                      <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
-                        Your Smart Account is a self-custodial wallet powered by Privy — fully yours, just easier to use.
-                      </p>
-                    </div>
-                  }>
-                    <button
-                      className="overflow-hidden group relative w-full h-24 border border-bcolor rounded-md cursor-pointer group transition-all hover:opacity-90 shadow-md hover:shadow-lg flex items-center justify-between px-3 sm:px-4"
-                      style={{
-                        background: 'linear-gradient(90deg, #1a1b3a, #2f3c7e, #5b3ea8)',
-                      }}
-                      onClick={() => {
-                        dispatch(openCloseConnectionModalAction(false));
-                        dispatch(connectWalletAction(privyAdapter));
-                      }}
-                    >
-                      <div className='flex flex-col gap-1'>
+                  <button
+                    className="overflow-hidden group relative w-full h-24 border border-bcolor rounded-md cursor-pointer group transition-all hover:opacity-90 shadow-md hover:shadow-lg flex items-center justify-between px-3 sm:px-4 focus:outline-none"
+                    style={{
+                      background: 'linear-gradient(90deg, #1a1b3a, #2f3c7e, #5b3ea8)',
+                    }}
+                    onClick={() => {
+                      dispatch(openCloseConnectionModalAction(false));
+                      dispatch(connectWalletAction(privyAdapter));
+                    }}
+                  >
+                    <div className='flex flex-col gap-1'>
+                      <div className="flex items-center gap-1.5">
                         <span className="text-sm sm:text-base text-white font-bold">Smart Account</span>
-
-                        {privyAdapter.beta && (
-                          <span className="px-2 py-0.5 rounded text-[0.65rem] font-bold uppercase tracking-wide bg-white/10 backdrop-blur-sm text-white/90 border border-white/20 shadow-[0_0_4px_rgba(255,255,255,0.1)]">
-                            NEW
-                          </span>
-                        )}
+                        <Tippy
+                          placement='top'
+                          content={
+                            <div className="space-y-2">
+                              <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
+                                Your Smart Account is a self-custodial wallet powered by Privy — fully yours, just easier to use.
+                              </p>
+                            </div>
+                          }
+                        >
+                          <div
+                            onClick={(e) => e.stopPropagation()}
+                            onMouseDown={(e) => e.preventDefault()}
+                          >
+                            <Image
+                              src={infoIcon}
+                              width={14}
+                              height={14}
+                              alt="info icon"
+                              className="opacity-50 hover:opacity-100 transition-opacity cursor-help"
+                            />
+                          </div>
+                        </Tippy>
                       </div>
 
-                      <Image
-                        src={adxLogo}
-                        alt={`ADX logo`}
-                        width={150}
-                        height={150}
-                        className="h-25 w-25 object-contain relative top-4 grayscale opacity-5"
-                      />
+                      {privyAdapter.beta && (
+                        <span className="px-2 py-0.5 rounded text-[0.65rem] font-bold uppercase tracking-wide bg-white/10 backdrop-blur-sm text-white/90 border border-white/20 shadow-[0_0_4px_rgba(255,255,255,0.1)]">
+                          NEW
+                        </span>
+                      )}
+                    </div>
 
-                      <Image
-                        src={arrowRight}
-                        alt={`Arrow right icon`}
-                        width={32}
-                        height={32}
-                        className="h-10 w-10 object-contain group-hover:animate-[arrowSlide_2s_ease-in-out_infinite]"
-                      />
+                    <Image
+                      src={adxLogo}
+                      alt={`ADX logo`}
+                      width={150}
+                      height={150}
+                      className="h-25 w-25 object-contain relative top-4 grayscale opacity-5"
+                    />
 
-                      <div className="absolute bottom-1 right-2 text-xxs font-medium text-[#cbd5e1]/40 mix-blend-screen">
-                        powered by <span className="text-[#cbd5e1]/70">Privy</span>
-                      </div>
-                    </button>
-                  </Tippy>
+                    <Image
+                      src={arrowRight}
+                      alt={`Arrow right icon`}
+                      width={32}
+                      height={32}
+                      className="h-10 w-10 object-contain group-hover:animate-[arrowSlide_2s_ease-in-out_infinite]"
+                    />
+
+                    <div className="absolute bottom-1 right-2 text-xxs font-medium text-[#cbd5e1]/40 mix-blend-screen">
+                      powered by <span className="text-[#cbd5e1]/70">Privy</span>
+                    </div>
+                  </button>
 
                   {/* Benefits */}
                   <div className="flex flex-wrap items-center gap-3 sm:gap-5 pt-1">
