@@ -363,7 +363,7 @@ export default function SuperchargedFooter({
 
           <div className="hidden 2xl:flex flex-row items-center gap-4 p-2 px-4 border-l border-inputcolor">
             <Link
-              href="https://docs.adrena.xyz/"
+              href="https://docs.adrena.trade/"
               target="_blank"
               rel="noopener noreferrer"
             >
