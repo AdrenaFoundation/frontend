@@ -190,8 +190,9 @@ export default function LpIntegrationChart() {
       periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       setPeriod={setPeriod}
       events={[]}
-      formatY='currency'
-      displayYAxis={false}
+      formatY='percentage'
+      formatTooltip='currency'
+      displayYAxis={true}
     />
   );
 }

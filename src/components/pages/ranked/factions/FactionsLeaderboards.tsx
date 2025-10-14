@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import jtoLogo from '@/../../public/images/jito-logo-2.png';
@@ -468,7 +468,7 @@ export default function FactionsLeaderboards({
 
         <div className="w-full h-[1px] bg-bcolor" />
 
-        <div className="flex  w-full justify-center gap-14 flex-col lg:flex-row gap-y-16 lg:gap-y-4 pb-6">
+        <div className="flex w-full justify-center items-center gap-14 flex-col lg:flex-row gap-y-16 lg:gap-y-4 pb-6">
           <FactionsWeeklyLeaderboard
             team="A"
             userProfile={userProfile}

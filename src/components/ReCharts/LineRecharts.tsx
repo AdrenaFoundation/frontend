@@ -61,9 +61,9 @@ export default function LineRechart<T extends string>({
   periods: (
     | T
     | {
-      name: T;
-      disabled?: boolean;
-    }
+        name: T;
+        disabled?: boolean;
+      }
   )[];
   xDomain?: AxisDomain;
   yDomain?: AxisDomain;
@@ -89,7 +89,13 @@ export default function LineRechart<T extends string>({
   >([]);
 
   const activeEvents = useMemo(() => {
-    return (events || []).filter(event => startTimestamp && endTimestamp && event.timestamp >= startTimestamp && event.timestamp <= endTimestamp);
+    return (events || []).filter(
+      (event) =>
+        startTimestamp &&
+        endTimestamp &&
+        event.timestamp >= startTimestamp &&
+        event.timestamp <= endTimestamp,
+    );
   }, [events, startTimestamp, endTimestamp]);
 
   const formatYAxis = (tickItem: number) => {
@@ -135,7 +141,7 @@ export default function LineRechart<T extends string>({
           )}
         </div>
 
-        <div className='flex flex-col'>
+        <div className="flex flex-col">
           {typeof setPeriod !== 'undefined' && typeof period !== 'undefined' ? (
             <PeriodSelector
               period={period}
@@ -148,7 +154,7 @@ export default function LineRechart<T extends string>({
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" style={{ marginLeft: '-1rem' }}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
