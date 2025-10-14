@@ -122,13 +122,13 @@ export default function App(props: AppProps) {
       },
       appearance: {
         theme: 'dark' as const,
-        accentColor: '#6757c6' as const,
+        accentColor: '#f5f5f5' as const,
         logo: '/images/logo.svg',
         showWalletLoginFirst: false,
         walletList: ['detected_wallets' as const],
         walletChainType: 'solana-only' as const,
       },
-      loginMethods: ['email' as const, 'google' as const, 'twitter' as const, 'discord' as const, 'wallet' as const, 'github' as const], // apple, line, tiktok, linkedin have to be configured first
+      //loginMethods: ['email' as const, 'google' as const, 'twitter' as const, 'discord' as const, 'wallet' as const, 'github' as const], // apple, line, tiktok, linkedin have to be configured first // remove to enable whatsapp
       embeddedWallets: {
         solana: {
           createOnLogin: 'all-users' as const,
@@ -149,7 +149,7 @@ export default function App(props: AppProps) {
             paymentMethod: 'credit_debit_card' as const,
             uiConfig: {
               theme: 'dark' as const,
-              accentColor: '#6757c6' as const,
+              accentColor: '#f5f5f5' as const,
             },
           },
         },
@@ -163,6 +163,7 @@ export default function App(props: AppProps) {
         },
       },
       walletConnectCloudProjectId: '549f49d83c4bc0a5c405d8ef6db7972a',
+      whatsAppEnabled: true,
     }
   }), [activeRpc?.connection?.rpcEndpoint]);
 
