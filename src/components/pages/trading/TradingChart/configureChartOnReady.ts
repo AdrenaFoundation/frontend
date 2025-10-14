@@ -18,22 +18,33 @@ export function configureChartOnReady(
   widget: IChartingLibraryWidget,
   savedTimezone: string,
 ) {
-  // Apply chart visual overrides
+  // Apply all chart visual settings
   widget.applyOverrides({
+    // Background settings
     'paneProperties.backgroundType': 'solid',
     'paneProperties.background': CHART_BACKGROUND,
+
+    // Legend properties
     'paneProperties.legendProperties.showStudyArguments': true,
     'paneProperties.legendProperties.showStudyTitles': true,
     'paneProperties.legendProperties.showStudyValues': false,
     'paneProperties.legendProperties.showSeriesTitle': false,
     'paneProperties.legendProperties.showBarChange': false,
     'paneProperties.legendProperties.showSeriesOHLC': true,
+
+    // Price line settings
+    'mainSeriesProperties.priceLineColor': CHART_PRICE_LINE_COLOR,
+
+    // High/Low lines styling
     'mainSeriesProperties.highLowAvgPrice.highLowPriceLinesVisible': true,
     'mainSeriesProperties.highLowAvgPrice.highLowPriceLabelsVisible': true,
-    'mainSeriesProperties.highLowAvgPrice.highLowPriceLinesColor': '#132e61',
+    'mainSeriesProperties.highLowAvgPrice.highLowPriceLinesColor': '#858585', // Grey line
     'mainSeriesProperties.highLowAvgPrice.highLowPriceLinesWidth': 1,
-    'mainSeriesProperties.priceLineColor': CHART_PRICE_LINE_COLOR,
+
+    // Text color
     'scalesProperties.textColor': CHART_TEXT_COLOR,
+
+    // Timezone
     timezone: savedTimezone as Timezone,
   });
 

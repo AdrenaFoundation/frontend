@@ -7,8 +7,8 @@ export const DEFAULT_RESOLUTION = 'H';
 export const DEFAULT_TIMEZONE =
   Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+export const CHART_PRICE_LINE_COLOR = '#10e1a3';
 export const CHART_BACKGROUND = '#061018';
-export const CHART_PRICE_LINE_COLOR = '#FFFF05';
 export const CHART_TEXT_COLOR = '#B3B5BE';
 
 export const FAVORITE_INTERVALS = [
@@ -33,6 +33,9 @@ export const DISABLED_FEATURES = [
   'symbol_info',
   'symbol_info_long_description',
   'symbol_info_price_source',
+  'show_zoom_and_move_hint',
+  'show_chart_property_page',
+  'popup_hints',
 ] as const;
 
 export const ENABLED_FEATURES = [

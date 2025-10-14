@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import { useChartDrawing } from '@/hooks/useChartDrawing';
+import { useSelector } from '@/store/store';
 import { TokenSymbol } from '@/types';
 import { getTokenSymbol } from '@/utils';
 
@@ -27,6 +28,45 @@ export default function TradingChart({
     token,
     getMarksCallback,
   );
+
+  // Get current streaming price
+  const selectedTokenPrice = useSelector(
+    (s) => s.streamingTokenPrices[getTokenSymbol(token.symbol)] ?? null,
+  );
+
+  // Track price movement for color changes
+  const [priceColor, setPriceColor] = useState<string>('#10e1a3'); // Default green
+  const previousPriceRef = useRef<number | null>(null);
+
+  // Update price line color based on price movement
+  useEffect(() => {
+    if (selectedTokenPrice !== null && previousPriceRef.current !== null) {
+      const newColor =
+        selectedTokenPrice > previousPriceRef.current
+          ? '#10e1a3' // Green (same as your green color)
+          : selectedTokenPrice < previousPriceRef.current
+            ? '#f24f4f' // Red (same as your red color)
+            : priceColor; // Keep current color if no change
+
+      if (newColor !== priceColor) {
+        setPriceColor(newColor);
+      }
+    }
+
+    // Update the previous price reference
+    if (selectedTokenPrice !== null) {
+      previousPriceRef.current = selectedTokenPrice;
+    }
+  }, [selectedTokenPrice, priceColor]);
+
+  // Apply price line color to TradingView widget
+  useEffect(() => {
+    if (!widget || !widgetReady) return;
+
+    widget.applyOverrides({
+      'mainSeriesProperties.priceLineColor': priceColor,
+    });
+  }, [widget, widgetReady, priceColor]);
 
   // Use chart drawing hook to draw positions and orders
   useChartDrawing({

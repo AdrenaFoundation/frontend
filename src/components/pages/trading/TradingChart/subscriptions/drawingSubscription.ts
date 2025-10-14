@@ -26,11 +26,10 @@ export function setupDrawingEventSubscription(widget: IChartingLibraryWidget) {
           .getShapeById(line.id)
           .getProperties();
 
-        // Uses text to filter out our drawings
-        // TODO: filter out by title instead of text
         if (
           shape.text.includes('long') ||
           shape.text.includes('short') ||
+          shape.text.includes('liquidation-heatmap-') ||
           shape.title === 'all-active-positions-liquidation-line'
         ) {
           return null;

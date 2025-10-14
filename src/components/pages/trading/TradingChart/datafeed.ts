@@ -356,6 +356,7 @@ export default function datafeed({
                 low: number;
                 close: number;
                 avg: number;
+                volume?: number;
               }
 
               // Filter bars to only include those within the requested time range
@@ -370,6 +371,7 @@ export default function datafeed({
                 high: bar.high,
                 open: bar.open,
                 close: bar.close,
+                volume: bar.volume || 0,
               }));
 
               console.log(
