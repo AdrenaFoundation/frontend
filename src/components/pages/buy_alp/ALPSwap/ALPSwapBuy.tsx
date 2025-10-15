@@ -343,7 +343,7 @@ export default function ALPSwapBuy({
         }}
       />
 
-      {collateralInput && collateralToken.symbol !== 'USDC' && useSwaplessRoute ? (
+      {collateralInput ? (
         <>
           <h5 className="text-white mt-4 mb-1">Fees</h5>
 
