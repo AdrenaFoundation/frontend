@@ -126,7 +126,7 @@ export default function IntegratedTerminalChild({
       },
       branding: {
         name: 'Adrena',
-        logoUri: 'https://app.adrena.xyz/_next/static/media/adx.ed486967.svg',
+        logoUri: 'https://www.adrena.trade/_next/static/media/adx.ed486967.svg',
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

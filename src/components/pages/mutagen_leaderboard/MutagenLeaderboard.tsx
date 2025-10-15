@@ -462,7 +462,7 @@ export default function MutagenLeaderboard({
                 </span>
                 <span className="text-xl font-semibold text-mutagen sm:hidden flex items-center flex-shrink-0">
                   <img
-                    src="https://app.adrena.xyz/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fneedle.fd8822dd.png&w=64&q=75"
+                    src="https://www.adrena.trade/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fneedle.fd8822dd.png&w=64&q=75"
                     alt="Mutagen"
                     className="w-5 h-5 mr-1"
                   />
