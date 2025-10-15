@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { ADRENA_EVENTS } from '@/constant';
+import DataApiClient from '@/DataApiClient';
 import { getGMT, periodModeToSeconds } from '@/utils';
 
 export default function UtilizationChart() {
@@ -82,7 +83,7 @@ export default function UtilizationChart() {
       })();
 
       const res = await fetch(
-        `https://datapi.adrena.xyz/${dataEndpoint}?owned=true&locked=true&start_date=${(() => {
+        `${DataApiClient.DATAPI_URL}/${dataEndpoint}?owned=true&locked=true&start_date=${(() => {
           const startDate = new Date();
           startDate.setDate(startDate.getDate() - dataPeriod);
 

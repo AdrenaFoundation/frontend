@@ -102,7 +102,7 @@ function Inner({
       },
       branding: {
         name: 'Adrena',
-        logoUri: 'https://app.adrena.xyz/_next/static/media/adx.ed486967.svg',
+        logoUri: 'https://www.adrena.trade/_next/static/media/adx.ed486967.svg',
       },
     });
   }, [activeRpc.name, id, defaultOutputMint, activeRpc.connection.rpcEndpoint]);
