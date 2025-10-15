@@ -52,10 +52,7 @@ export default function ALPDetails({ className }: { className?: string }) {
                       Borrowing fees
                     </li>
                     <li className="text-sm list-disc ml-4 mt-1">
-                      ALP redeeming fees
-                    </li>
-                    <li className="text-sm list-disc ml-4 mt-1">
-                      ALP minting fees (non-USDC tokens only)
+                      ALP minting and redeeming fees
                     </li>
                   </ul>
                 </li>
