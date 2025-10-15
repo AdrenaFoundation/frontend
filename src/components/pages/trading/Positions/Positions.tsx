@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
 import { Congrats } from '@/components/Congrats/Congrats';
-import { PositionExtended, Token } from '@/types';
+import { PositionExtended, Token, UserProfileExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import ClosePosition from '../ClosePosition/ClosePosition';
@@ -22,6 +22,7 @@ export default function Positions({
   triggerUserProfileReload,
   isBigScreen,
   setTokenB,
+  userProfile,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -31,6 +32,7 @@ export default function Positions({
   triggerUserProfileReload: () => void;
   isBigScreen: boolean | null;
   setTokenB: (token: Token) => void;
+  userProfile: UserProfileExtended | false | null;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -193,7 +195,10 @@ export default function Positions({
                 return <Congrats />;
               })()}
             </div>
-            <SharePositionModal position={shareClosePosition} />
+            <SharePositionModal
+              position={shareClosePosition}
+              userProfile={userProfile}
+            />
           </Modal>
         )}
       </AnimatePresence>
@@ -209,6 +214,7 @@ export default function Positions({
         triggerEditPositionCollateral={setPositionToEdit}
         setShareClosePosition={setShareClosePosition}
         setTokenB={setTokenB}
+        userProfile={userProfile}
       />
     </>
   );

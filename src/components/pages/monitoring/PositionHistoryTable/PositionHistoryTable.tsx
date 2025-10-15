@@ -11,7 +11,11 @@ import DataApiClient from '@/DataApiClient';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PositionSortOption } from '@/hooks/usePositionHistory';
 import { useSelector } from '@/store/store';
-import { EnrichedPositionApi, EnrichedPositionApiV2 } from '@/types';
+import {
+  EnrichedPositionApi,
+  EnrichedPositionApiV2,
+  UserProfileExtended,
+} from '@/types';
 
 import PositionHistoryBlockV2 from '../../trading/Positions/PositionHistoryBlockV2';
 import Table, { TableHeaderType } from '../Table';
@@ -44,6 +48,7 @@ export default function PositionHistoryTable({
   loadPageData,
   walletAddress,
   breakpoint = '1280px',
+  userProfile,
 }: {
   positionsData: EnrichedPositionApiV2 | null;
   isLoadingPositionsHistory: boolean;
@@ -55,6 +60,7 @@ export default function PositionHistoryTable({
   loadPageData: (page: number) => Promise<void>;
   walletAddress: string | null;
   breakpoint?: string;
+  userProfile?: UserProfileExtended | false | null;
 }) {
   const isMobile = useBetterMediaQuery(`(max-width: ${breakpoint})`);
 
@@ -501,6 +507,7 @@ export default function PositionHistoryTable({
               showShareButton={true}
               showExpanded={true}
               showChart={true}
+              userProfile={userProfile ?? null}
             />
           </Modal>
         ) : null}

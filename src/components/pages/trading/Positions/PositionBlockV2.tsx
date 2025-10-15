@@ -10,7 +10,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
-import { PositionExtended, Token } from '@/types';
+import { PositionExtended, Token, UserProfileExtended } from '@/types';
 import {
   formatTimeDifference,
   getFullTimeDifference,
@@ -35,6 +35,7 @@ interface PositionBlockProps {
   readOnly?: boolean;
   setTokenB?: (token: Token) => void;
   setShareClosePosition?: (p: PositionExtended) => void;
+  userProfile?: UserProfileExtended | false | null;
 }
 
 export default function PositionBlockV2({
