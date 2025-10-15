@@ -5,6 +5,7 @@ import { twMerge } from 'tailwind-merge';
 
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import usePositionsHistory from '@/hooks/usePositionHistory';
+import { UserProfileExtended } from '@/types';
 
 import PositionHistoryTable from '../../monitoring/PositionHistoryTable/PositionHistoryTable';
 
@@ -12,10 +13,12 @@ function PositionsHistory({
   connected,
   walletAddress,
   className,
+  userProfile,
 }: {
   connected: boolean;
   className?: string;
   walletAddress: string | null;
+  userProfile: UserProfileExtended | false | null;
 }) {
   const {
     positionsData,
@@ -51,6 +54,7 @@ function PositionsHistory({
             loadPageData={loadPageData}
             walletAddress={walletAddress}
             breakpoint="1450px"
+            userProfile={userProfile}
           />
         ) : (
           <WalletConnection />

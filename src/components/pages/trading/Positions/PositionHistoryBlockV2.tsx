@@ -9,7 +9,7 @@ import Modal from '@/components/common/Modal/Modal';
 import Switch from '@/components/common/Switch/Switch';
 import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { EnrichedPositionApi, PositionExtended } from '@/types';
+import { EnrichedPositionApi, PositionExtended, UserProfileExtended } from '@/types';
 import {
   formatTimeDifference,
   getFullTimeDifference,
@@ -27,11 +27,13 @@ export default function PositionHistoryBlockV2({
   showShareButton = true,
   showExpanded = false,
   showChart = false,
+  userProfile,
 }: {
   positionHistory: EnrichedPositionApi;
   showShareButton?: boolean;
   showExpanded?: boolean;
   showChart?: boolean;
+  userProfile: UserProfileExtended | false | null;
 }) {
   const [events, setEvents] = useState<FormattedEventsType[][]>([]);
   const [isExpanded, setIsExpanded] = useState(showExpanded);
@@ -272,6 +274,7 @@ export default function PositionHistoryBlockV2({
                   },
                 } as unknown as PositionExtended
               }
+              userProfile={userProfile ?? null}
             />
           </Modal>
         )}
