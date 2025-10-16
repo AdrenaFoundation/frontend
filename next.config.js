@@ -11,7 +11,7 @@ module.exports = (phase, { defaultConfig }) => {
     async headers() {
       const privyDomains = {
         auth: 'https://auth.privy.io',
-        base: 'https://privy.adrena.xyz',
+        base: 'https://privy.adrena.trade',
         api: 'https://api.privy.io',
         rpc: 'https://*.rpc.privy.systems',
       };
@@ -42,7 +42,7 @@ module.exports = (phase, { defaultConfig }) => {
       };
 
       const serviceDomains = {
-        adrenaData: 'https://datapi.adrena.xyz',
+        adrenaData: 'https://datapi.adrena.trade',
         supabaseHttp: 'https://*.supabase.co',
         supabaseWss: 'wss://*.supabase.co',
         oracleHttp: 'https://history.oraclesecurity.org',
