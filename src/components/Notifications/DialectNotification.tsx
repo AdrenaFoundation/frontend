@@ -44,9 +44,9 @@ export const DialectNotification = ({
 
   const isAuthenticated = Boolean(localStorage.getItem(key));
 
-  const adapter = adapters.find((x) => x.name === 'Phantom');
-
-  const isConnected = adapter?.connected || false;
+  const adapter = useMemo(() => {
+    return adapters.find((adapter) => adapter.connected);
+  }, [adapters]);
 
   const customWalletAdapter: DialectSolanaWalletAdapter | null = useMemo(() => {
     if (!adapter || !wallet) return null;
@@ -83,7 +83,8 @@ export const DialectNotification = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 
-  if (!isConnected || !wallet || !customWalletAdapter) return null;
+  // Only render if we have a wallet and a valid adapter
+  if (!wallet || !customWalletAdapter) return null;
 
   return (
     <DialectSolanaSdk
