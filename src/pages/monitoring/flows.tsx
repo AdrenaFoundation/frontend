@@ -144,43 +144,65 @@ export default function Flow({
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
+            transition={{ duration: 0.3 }}
             className="flex flex-col lg:flex-row gap-3"
           >
-            <AnimatePresence>
-              {isInitialLoad &&
-                // Show loading cards while data is being fetched
-                Array.from({ length: 3 }).map((_, index) => (
-                  <motion.div
-                    key={`loading-${index}`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="flex-none lg:flex-1 w-full h-[27.4375rem] animate-loader rounded-md"
-                  />
-                ))}
-              {!isInitialLoad &&
-                groupedStats &&
-                Object.entries(groupedStats).map(
-                  ([symbol, symbolStats], index) => (
-                    <motion.div
-                      key={symbol}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                      className="flex-1"
-                    >
-                      <PositionStatsCard
-                        symbol={symbol}
-                        stats={symbolStats}
-                        custodies={custodies}
-                        isLoading={false}
+            <AnimatePresence mode="wait">
+              {isInitialLoad ? (
+                <motion.section
+                  key="loading-section"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col lg:flex-row gap-3 w-full"
+                >
+                  <AnimatePresence>
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <motion.div
+                        key={`loading-${index}`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                        className="flex-none lg:flex-1 w-full h-[27.4375rem] animate-loader rounded-md"
                       />
-                    </motion.div>
-                  ),
-                )}
+                    ))}
+                  </AnimatePresence>
+                </motion.section>
+              ) : (
+                <motion.section
+                  key="stats-section"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col lg:flex-row gap-3 w-full"
+                >
+                  <AnimatePresence>
+                    {groupedStats &&
+                      Object.entries(groupedStats).map(
+                        ([symbol, symbolStats], index) => (
+                          <motion.div
+                            key={symbol}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3, delay: index * 0.1 }}
+                            className="flex-1"
+                          >
+                            <PositionStatsCard
+                              symbol={symbol}
+                              stats={symbolStats}
+                              custodies={custodies}
+                              isLoading={false}
+                            />
+                          </motion.div>
+                        ),
+                      )}
+                  </AnimatePresence>
+                </motion.section>
+              )}
             </AnimatePresence>
           </motion.div>
 
