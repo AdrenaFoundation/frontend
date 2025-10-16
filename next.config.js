@@ -116,6 +116,7 @@ module.exports = (phase, { defaultConfig }) => {
         "'self'",
         "'unsafe-inline'",
         "'unsafe-eval'",
+        'blob:', // Required for TradingView Web Workers on iOS Safari
         serviceDomains.cloudflare,
         privyDomains.auth,
         serviceDomains.vercelScripts,
@@ -161,7 +162,7 @@ module.exports = (phase, { defaultConfig }) => {
         "object-src 'none'",
         "base-uri 'self'",
         "form-action 'self'",
-        "frame-ancestors 'none'",
+        "frame-ancestors 'self' blob:", // Allow same-origin framing for blob iframes (TradingView)
         `child-src ${childSrcParts.join(' ')}`,
         `frame-src ${frameSrcParts.join(' ')}`,
         `connect-src ${connectSrcParts.join(' ')}`,
@@ -207,7 +208,7 @@ module.exports = (phase, { defaultConfig }) => {
 
       headers.push({
         key: 'Permissions-Policy',
-        value: 'geolocation=()',
+        value: 'fullscreen=(self "https://auth.privy.io")',
       });
 
       return [
