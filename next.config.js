@@ -162,7 +162,7 @@ module.exports = (phase, { defaultConfig }) => {
         "object-src 'none'",
         "base-uri 'self'",
         "form-action 'self'",
-        "frame-ancestors 'self' blob:", // Allow same-origin framing for blob iframes (TradingView)
+        "frame-ancestors 'self'", // Allow same-origin framing (needed for TradingView blob iframes)
         `child-src ${childSrcParts.join(' ')}`,
         `frame-src ${frameSrcParts.join(' ')}`,
         `connect-src ${connectSrcParts.join(' ')}`,
@@ -190,9 +190,10 @@ module.exports = (phase, { defaultConfig }) => {
 
       // Add X-Frame-Options for older browser compatibility
       // This works alongside CSP's frame-ancestors directive
+      // SAMEORIGIN matches frame-ancestors 'self'
       headers.push({
         key: 'X-Frame-Options',
-        value: 'DENY',
+        value: 'SAMEORIGIN',
       });
 
       // Additional security headers recommended by Privy
