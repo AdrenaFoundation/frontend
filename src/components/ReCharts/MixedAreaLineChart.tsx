@@ -151,8 +151,9 @@ export default function MixedAreaLineChart<T extends string>({
                                 </div>
                                 <Image
                                     src={downloadIcon}
-                                    width={14}
-                                    height={12}
+                                    width={0}
+                                    height={0}
+                                    style={{ width: '14px', height: '12px' }}
                                     alt="Download icon"
                                     className="w-3.5 h-3.5"
                                 />
@@ -212,9 +213,11 @@ export default function MixedAreaLineChart<T extends string>({
                                 </div>
                                 <Image
                                     src={downloadIcon}
-                                    width={14}
-                                    height={12}
+                                    width={0}
+                                    height={0}
+                                    style={{ width: '14px', height: '12px' }}
                                     alt="Download icon"
+                                    className="w-3.5 h-3.5"
                                 />
                             </div>
                         ) : null}

@@ -259,9 +259,10 @@ export default function Settings({
           <Image
             src={settingsIcon}
             alt="Settings Icon"
-            width={14}
-            height={14}
-            className="w-[0.875rem] h-[0.875rem]"
+            width={0}
+            height={0}
+            style={{ width: '14px', height: '14px' }}
+            className="w-3.5 h-3.5"
           />
         </div>
       }

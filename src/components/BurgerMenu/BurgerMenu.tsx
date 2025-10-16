@@ -188,8 +188,9 @@ export default function BurgerMenu({
             <Image
               src={fuelIcon}
               alt="Priority Fee"
-              width={12}
-              height={12}
+              width={0}
+              height={0}
+              style={{ width: '12px', height: '12px' }}
               className="w-3 h-3"
             />
           </button>
@@ -202,8 +203,9 @@ export default function BurgerMenu({
             <Image
               src={settingsIcon}
               alt="Settings"
-              width={12}
-              height={12}
+              width={0}
+              height={0}
+              style={{ width: '12px', height: '12px' }}
               className="w-3 h-3"
             />
           </button>
@@ -728,8 +730,9 @@ export default function BurgerMenu({
             <Image
               src={fuelIcon}
               alt="Priority Fee"
-              width={12}
-              height={12}
+              width={0}
+              height={0}
+              style={{ width: '12px', height: '12px' }}
               className="w-3 h-3"
             />
           </button>
@@ -742,8 +745,9 @@ export default function BurgerMenu({
             <Image
               src={settingsIcon}
               alt="Settings"
-              width={12}
-              height={12}
+              width={0}
+              height={0}
+              style={{ width: '12px', height: '12px' }}
               className="w-3 h-3"
             />
           </button>

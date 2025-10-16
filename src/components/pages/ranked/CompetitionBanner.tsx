@@ -332,9 +332,10 @@ export default function CompetitionBanner({
                 <Image
                     src={timerBg}
                     alt="background graphic"
-                    className="w-[300px] h-[300px] rotate-[180deg]"
-                    width={300}
-                    height={300}
+                    className="w-[300px] h-auto rotate-[180deg]"
+                    width={0}
+                    height={0}
+                    style={{ width: '300px', height: 'auto' }}
                 />
             </div>
         </div>);

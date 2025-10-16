@@ -214,8 +214,10 @@ export default function FactionsDocs() {
                 <div className="flex items-center gap-2">
                     <Image src={mutagenIcon}
                         alt="logo"
-                        width={24}
-                        height={24}
+                        width={0}
+                        height={0}
+                        style={{ width: '24px', height: '24px' }}
+                        className="w-6 h-6"
                     />
                     <div className="font-bold text-lg text-white">Earn Mutagens</div>
                 </div>

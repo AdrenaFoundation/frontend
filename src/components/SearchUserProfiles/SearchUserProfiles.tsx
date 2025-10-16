@@ -169,7 +169,7 @@ export default function SearchUserProfiles({
                                 alt="Profile"
                                 width={32}
                                 height={32}
-                                className="rounded-full border border-white/10"
+                                className="rounded-full border border-white/10 w-8 h-8"
                               />
                               {loadingProfile === user.owner.toBase58() && (
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">

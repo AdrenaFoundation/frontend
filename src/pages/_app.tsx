@@ -116,10 +116,10 @@ export default function App(props: AppProps) {
                 .replace('https', 'wss')
             )
           },
-          'solana:devnet': {
-            rpc: createSolanaRpc('https://api.devnet.solana.com'),
-            rpcSubscriptions: createSolanaRpcSubscriptions('wss://api.devnet.solana.com')
-          },
+          /*  'solana:devnet': {
+             rpc: createSolanaRpc('https://api.devnet.solana.com'),
+             rpcSubscriptions: createSolanaRpcSubscriptions('wss://api.devnet.solana.com')
+           }, */
         }
       },
       appearance: {
@@ -134,9 +134,6 @@ export default function App(props: AppProps) {
       embeddedWallets: {
         solana: {
           createOnLogin: 'all-users' as const,
-        },
-        ethereum: {
-          createOnLogin: 'off' as const,
         },
         fundingConfig: {
           methods: ['moonpay', 'external'] as const,
