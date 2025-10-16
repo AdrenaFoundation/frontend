@@ -91,8 +91,8 @@ export default function PendingRewardsSection({
             onClick={onClaimAndBuyAdx}
             disabled={
               userPendingUsdcRewards +
-                userPendingAdxRewards +
-                pendingGenesisAdxRewards <=
+              userPendingAdxRewards +
+              pendingGenesisAdxRewards <=
               0
             }
           />
@@ -105,8 +105,8 @@ export default function PendingRewardsSection({
             onClick={onClaim}
             disabled={
               userPendingUsdcRewards +
-                userPendingAdxRewards +
-                pendingGenesisAdxRewards <=
+              userPendingAdxRewards +
+              pendingGenesisAdxRewards <=
               0
             }
           />
@@ -140,7 +140,7 @@ export default function PendingRewardsSection({
                   {' '}
                   (see
                   <Link
-                    href="https://docs.adrena.xyz/tokenomics/adx/staked-adx-rewards-emissions-schedule"
+                    href="https://docs.adrena.trade/tokenomics/adx/staked-adx-rewards-emissions-schedule"
                     className="underline ml-1"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -254,7 +254,7 @@ export default function PendingRewardsSection({
 
             <div className="justify-end ml-2 hidden sm:flex">
               <Link
-                href="https://docs.adrena.xyz/tokenomics/adx/staking-and-duration-locked-parameters-for-adx"
+                href="https://docs.adrena.trade/tokenomics/adx/staking-and-duration-locked-parameters-for-adx"
                 className="text-xs text-txtfade underline opacity-40 hover:opacity-100 transition-opacity"
                 target="_blank"
                 rel="noopener noreferrer"

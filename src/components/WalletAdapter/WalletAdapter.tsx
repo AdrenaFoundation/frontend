@@ -292,7 +292,7 @@ export default function WalletAdapter({
                 <MenuSeparator />
 
                 <MenuItem
-                  href="https://docs.adrena.xyz/"
+                  href="https://docs.adrena.trade/"
                   target="_blank"
                   linkClassName="py-2"
                 >
@@ -302,7 +302,7 @@ export default function WalletAdapter({
                 <MenuSeparator />
 
                 <MenuItem
-                  href="https://dao.adrena.xyz/"
+                  href="https://dao.adrena.trade/"
                   target="_blank"
                   linkClassName="py-2"
                 >

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { USD_DECIMALS } from '@/constant';
+import DataApiClient from '@/DataApiClient';
 import { useSelector } from '@/store/store';
 import { nativeToUi } from '@/utils';
 
@@ -13,7 +14,7 @@ export default function useAssetsUnderManagement(): number | null {
     async (retryNb: number) => {
       if (!connected) {
         const res = await fetch(
-          'https://datapi.adrena.xyz/poolinfo?aum_usd=true&sort=DESC&limit=1',
+          `${DataApiClient.DATAPI_URL}/poolinfo?aum_usd=true&sort=DESC&limit=1`,
         );
 
         const { data } = await res.json();

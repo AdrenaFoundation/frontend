@@ -62,7 +62,7 @@ const walletAdapterInstances = [
       metadata: {
         name: 'Adrena',
         description: 'Perpetuals DEX for the Solana community',
-        url: 'https://app.adrena.xyz',
+        url: 'https://www.adrena.trade',
         icons: ['https://avatars.githubusercontent.com/u/179229932'],
       },
     },
