@@ -627,13 +627,11 @@ export default function Anniversary() {
   return (
     <div className="w-full mx-auto relative flex flex-col pb-4">
       {/* Background image */}
-      <Image
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src="https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/hb-3.jpg"
         alt="anniversary bg"
         className="absolute inset-0 w-full h-[calc(100%+3em)] object-cover opacity-10 -top-[3em]"
-        fill
-        sizes="100vw"
-        priority
       />
 
       <div className="flex flex-col gap-2 items-center justify-center text-center mx-auto max-w-[100em] w-full">
