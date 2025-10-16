@@ -220,16 +220,44 @@ export default function AllUserProfiles() {
                 </div>
 
                 <div className="flex flex-wrap flex-col gap-2 mb-3">
-                  <AnimatePresence>
-                    {paginatedProfiles.length > 0 &&
-                      paginatedProfiles.map((superchargedProfile) => (
-                        <UserProfileBlock
-                          key={superchargedProfile.wallet.toBase58()}
-                          superchargedProfile={superchargedProfile}
-                          setActiveProfile={setActiveProfile}
-                        />
-                      ))}
-                    {paginatedProfiles.length === 0 && <LoaderState />}
+                  <AnimatePresence mode="wait">
+                    {paginatedProfiles.length > 0 ? (
+                      <motion.section
+                        key="profiles-section"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex flex-col gap-2 w-full"
+                      >
+                        <AnimatePresence>
+                          {paginatedProfiles.map((superchargedProfile, index) => (
+                            <motion.div
+                              key={superchargedProfile.wallet.toBase58()}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -20 }}
+                              transition={{ duration: 0.3, delay: index * 0.05 }}
+                            >
+                              <UserProfileBlock
+                                superchargedProfile={superchargedProfile}
+                                setActiveProfile={setActiveProfile}
+                              />
+                            </motion.div>
+                          ))}
+                        </AnimatePresence>
+                      </motion.section>
+                    ) : (
+                      <motion.section
+                        key="loader-section"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <LoaderState />
+                      </motion.section>
+                    )}
                   </AnimatePresence>
                 </div>
 

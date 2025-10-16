@@ -442,7 +442,7 @@ const PnLDetails = ({
   return (
     <div className="flex flex-col justify-end items-end md:justify-center md:items-center">
       <div
-        className="hidden md:flex items-center gap-1 mb-1 cursor-pointer select-none"
+        className="flex items-center gap-1 mb-1 cursor-pointer select-none"
         onClick={() => {
           setIsPnlWithFees(!showAfterFees);
         }}
