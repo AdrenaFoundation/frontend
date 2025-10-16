@@ -208,7 +208,7 @@ export default function Mutagen({
 
   if (isMobile) {
     return (
-      <AnimatePresence>
+      <>
         <div className='gap-x-1 sm:gap-x-2 flex items-center justify-center rounded-full p-1 px-2 pl-3 sm:p-2 sm:px-4
                         bg-gradient-to-br from-mutagenDark/40 to-mutagenBg/80
                         border border-mutagen/40
@@ -223,21 +223,23 @@ export default function Mutagen({
           <Image
             src={needle}
             alt={'needle'}
-            width="30"
-            height="30"
+            width={30}
+            height={30}
             className={'w-3 h-3 sm:w-4 sm:h-4 grayscale'}
           />
         </div>
 
-        {isModalOpen && (
-          <Modal
-            close={() => setIsModalOpen(false)}
-            className="flex flex-col w-full p-5 relative overflow-visible"
-          >
-            {content}
-          </Modal>
-        )}
-      </AnimatePresence>
+        <AnimatePresence>
+          {isModalOpen && (
+            <Modal
+              close={() => setIsModalOpen(false)}
+              className="flex flex-col w-full p-5 relative overflow-visible"
+            >
+              {content}
+            </Modal>
+          )}
+        </AnimatePresence>
+      </>
     );
   }
 
@@ -259,8 +261,8 @@ export default function Mutagen({
             <Image
               src={needle}
               alt={'needle'}
-              width='30'
-              height='30'
+              width={30}
+              height={30}
               className={'w-4 h-4 grayscale'}
             />
           </div>

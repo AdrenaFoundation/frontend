@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCookies } from 'react-cookie';
-import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts';
+import { Line, LineChart, YAxis } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
 import bonkLogo from '@/../public/images/bonk.png';
@@ -278,7 +278,7 @@ export default function FooterStats({
     >
       <div className="hidden group-hover:block absolute w-full h-2 -top-2 left-0" />
       <AnimatePresence>
-        {showDetails ? (
+        {showDetails && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -291,7 +291,7 @@ export default function FooterStats({
           >
             <motion.p
               initial={{ opacity: 0, x: '-1rem', filter: 'blur(2px)' }}
-              animate={{ opacity: 1, x: 0, filter: 'blur(0)' }}
+              animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
               exit={{ opacity: 0, x: '-1rem', filter: 'blur(2px)' }}
               transition={{ duration: 0.3 }}
               className="text-sm font-regular"
@@ -300,7 +300,7 @@ export default function FooterStats({
             </motion.p>
             <motion.span
               initial={{ opacity: 0, x: '1rem', filter: 'blur(2px)' }}
-              animate={{ opacity: 1, x: 0, filter: 'blur(0)' }}
+              animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
               exit={{ opacity: 0, x: '1rem', filter: 'blur(2px)' }}
               transition={{ duration: 0.3 }}
             >
@@ -313,7 +313,7 @@ export default function FooterStats({
               />
             </motion.span>
           </motion.div>
-        ) : null}
+        )}
       </AnimatePresence>
       <div className="w-5 h-full bg-gradient-to-r from-secondary to-transparent absolute left-0 top-0 z-20" />
       <div className="w-5 h-full bg-gradient-to-l from-secondary to-transparent absolute right-0 top-0 z-20" />
@@ -345,7 +345,7 @@ export default function FooterStats({
       </InfiniteScroll>
 
       <AnimatePresence>
-        {showDetails ? (
+        {showDetails && (
           <motion.div
             initial={{ opacity: 0, y: '-2rem' }}
             animate={{ opacity: 1, y: '-2.5rem' }}
@@ -460,58 +460,60 @@ export default function FooterStats({
                     {custodyLiquidity !== null &&
                       tokenPrice &&
                       custody &&
-                      !isTokenDataLoading ? (
-                      <motion.span
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        key={`${activeToken}-available-liq`}
-                      >
-                        <FormatNumber
-                          nb={custodyLiquidity * tokenPrice}
-                          format="currency"
-                          precision={2}
-                          className="text-xs opacity-50 transition-opacity duration-300"
-                          isDecimalDimmed={false}
-                          isAbbreviate
-                          isAbbreviateIcon
+                      !isTokenDataLoading && (
+                        <motion.span
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          key={`${activeToken}-available-liq`}
+                        >
+                          <FormatNumber
+                            nb={custodyLiquidity * tokenPrice}
+                            format="currency"
+                            precision={2}
+                            className="text-xs opacity-50 transition-opacity duration-300"
+                            isDecimalDimmed={false}
+                            isAbbreviate
+                            isAbbreviateIcon
+                          />
+                        </motion.span>
+                      )}
+                    {(custodyLiquidity === null ||
+                      !tokenPrice ||
+                      !custody ||
+                      isTokenDataLoading) && (
+                        <motion.div
+                          key="adx-staking-loader"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="bg-[#050D14] h-[1.125rem] w-[3rem] animate-loader rounded-md"
                         />
-                      </motion.span>
-                    ) : (
-                      <motion.div
-                        key="adx-staking-loader"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="bg-[#050D14] h-[1.125rem] w-[3rem] animate-loader rounded-md"
-                      />
-                    )}
+                      )}
                   </AnimatePresence>
                 </div>
               </div>
-              <ResponsiveContainer width={100} height={50}>
-                <LineChart data={tokenHistoricalData[activeToken]}>
-                  <YAxis
-                    domain={[
-                      (dataMin: number) => dataMin * 0.999, // add a little padding
-                      (dataMax: number) => dataMax * 1.001,
-                    ]}
-                    tickFormatter={(v) => `$${v.toFixed(2)}`}
-                    hide={true}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="close"
-                    stroke={
-                      priceColor === 'text-green' ? ADRENA_GREEN : ADRENA_RED
-                    }
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <LineChart data={tokenHistoricalData[activeToken]} width={100} height={50}>
+                <YAxis
+                  domain={[
+                    (dataMin: number) => dataMin * 0.999, // add a little padding
+                    (dataMax: number) => dataMax * 1.001,
+                  ]}
+                  tickFormatter={(v) => `$${v.toFixed(2)}`}
+                  hide={true}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="close"
+                  stroke={
+                    priceColor === 'text-green' ? ADRENA_GREEN : ADRENA_RED
+                  }
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
             </div>
 
             <div className="flex flex-col border border-inputcolor rounded-md overflow-hidden mt-3">
@@ -533,17 +535,15 @@ export default function FooterStats({
                     isDecimalDimmed={false}
                   />
                 </div>
-                <ResponsiveContainer width={100} height={50}>
-                  <LineChart data={volumeData}>
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#07956b"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <LineChart data={volumeData} width={100} height={50}>
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#07956b"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
               </div>
 
               <div
@@ -561,17 +561,15 @@ export default function FooterStats({
                     isDecimalDimmed={false}
                   />
                 </div>
-                <ResponsiveContainer width={100} height={50}>
-                  <LineChart data={aumData}>
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#07956b"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <LineChart data={aumData} width={100} height={50}>
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#07956b"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
               </div>
 
               <div
@@ -593,21 +591,19 @@ export default function FooterStats({
                     isDecimalDimmed={false}
                   />
                 </div>
-                <ResponsiveContainer width={100} height={50}>
-                  <LineChart data={totalOpenInterestData}>
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#07956b"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <LineChart data={totalOpenInterestData} width={100} height={50}>
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#07956b"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
               </div>
             </div>
           </motion.div>
-        ) : null}
+        )}
       </AnimatePresence>
     </motion.div>
   );

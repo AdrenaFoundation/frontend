@@ -229,7 +229,7 @@ export default function TradingChartHeaderStats({
             width={16}
             height={16}
             className={twMerge(
-              'transition-transform duration-200',
+              'transition-transform duration-200 w-4 h-4',
               statsExpanded ? 'rotate-180' : '',
             )}
           />
@@ -365,6 +365,8 @@ export default function TradingChartHeaderStats({
                   src={getTokenImage(selected)}
                   alt={selected.symbol}
                   className="w-[20px] h-[20px]"
+                  width={20}
+                  height={20}
                 />
               )}
               <span className="text-lg font-boldy">

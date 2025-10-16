@@ -24,13 +24,15 @@ export const useStakingClaimableRewards = (tokenSymbol: 'ADX' | 'ALP') => {
   const wallet = useSelector((s) => s.walletState.wallet);
 
   const fetchRewards = useCallback(async () => {
-    const walletAddress = wallet ? new PublicKey(wallet.walletAddress) : null;
+    // Early return if no wallet or connection
+    if (!wallet || !window.adrena?.client?.connection) {
+      return;
+    }
 
-    if (
-      !walletAddress ||
-      !window.adrena.client ||
-      !window.adrena.client.connection
-    ) {
+    // Additional check: ensure the connection is actually available
+    const walletAddress = new PublicKey(wallet.walletAddress);
+
+    if (!walletAddress) {
       return;
     }
 
@@ -73,13 +75,20 @@ export const useStakingClaimableRewards = (tokenSymbol: 'ADX' | 'ALP') => {
   }, [wallet, tokenSymbol]);
 
   useEffect(() => {
-    const walletAddress = wallet ? new PublicKey(wallet.walletAddress) : null;
+    // Early return if no wallet or connection
+    if (!wallet || !window.adrena?.client?.connection) {
+      return;
+    }
 
-    if (
-      !walletAddress ||
-      !window.adrena.client ||
-      !window.adrena.client.connection
-    ) {
+    // Additional check: ensure the connection is actually available
+    if (!window.adrena.client.connection.getLatestBlockhash) {
+      console.warn('Connection not properly initialized for rewards useEffect');
+      return;
+    }
+
+    const walletAddress = new PublicKey(wallet.walletAddress);
+
+    if (!walletAddress) {
       return;
     }
 
@@ -90,9 +99,9 @@ export const useStakingClaimableRewards = (tokenSymbol: 'ADX' | 'ALP') => {
   }, [
     fetchRewards,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    !!window.adrena.client.connection,
+    !!window.adrena?.client?.connection,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    !!window.adrena.client,
+    !!window.adrena?.client,
     wallet,
   ]);
 

@@ -36,7 +36,7 @@ export default function ALPStakingRecap({
       (sum, claim) =>
         sum +
         (claim.rewards_adx + claim.rewards_adx_genesis) *
-          claim.adx_price_at_claim,
+        claim.adx_price_at_claim,
       0,
     ) ?? 0;
 
@@ -92,7 +92,7 @@ export default function ALPStakingRecap({
                   src={alpLogo}
                   width={100}
                   height={100}
-                  className="opacity-10 absolute right-0 top-0"
+                  className="opacity-10 absolute right-0 top-0 w-[100px] h-[100px]"
                   alt={`ALP logo`}
                 />
               </div>

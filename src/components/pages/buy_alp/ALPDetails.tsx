@@ -84,7 +84,7 @@ export default function ALPDetails({ className }: { className?: string }) {
             className="w-fit opacity-50 hover:opacity-100 transition-opacity duration-300 flex flex-row gap-2 items-center mt-3 cursor-pointer"
           >
             <p className="text-sm">Learn more</p>
-            <Image src={arrowIcon} alt="arrow icon" className="w-2 h-2" />
+            <Image src={arrowIcon} alt="arrow icon" className="w-2 h-2" width={8} height={8} />
           </Link>
         </div>
       </div>

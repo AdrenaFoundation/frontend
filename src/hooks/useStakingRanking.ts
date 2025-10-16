@@ -114,17 +114,17 @@ export default function useStakingRanking(walletAddress: string | null): {
     } finally {
       setIsLoading(false);
     }
-  }, [walletAddress, trickReload]);
+  }, [walletAddress]);
 
   useEffect(() => {
     fetchStakingRanking();
-  }, [fetchStakingRanking]);
+  }, [fetchStakingRanking, trickReload]);
 
   return {
     stakingRanking,
     isLoading,
     triggerReload: () => {
-      triggerReload(trickReload + 1);
+      triggerReload((prev) => prev + 1);
     },
   };
 }

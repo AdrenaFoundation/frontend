@@ -293,6 +293,8 @@ export default function WalletDigger({
                     src={snsBadgeIcon}
                     alt="SNS badge"
                     className="w-3 h-3"
+                    width={12}
+                    height={12}
                   />
                   <p className="text-[0.625rem] font-mono bg-[linear-gradient(110deg,#96B47C_40%,#C8E3B0_60%,#96B47C)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]">
                     {snsDomain}.sol

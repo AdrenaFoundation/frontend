@@ -97,7 +97,7 @@ export default function FilterSidebar({
       )}
     >
       <div className="flex flex-row gap-2 mb-3">
-        <Image src={filterIcon} alt="filter icon" className="opacity-50" />
+        <Image src={filterIcon} alt="filter icon" className="opacity-50 w-4 h-4" width={16} height={16} />
 
         <p className="text-base font-semibold">Filter</p>
       </div>
@@ -171,7 +171,7 @@ export default function FilterSidebar({
       )}
     >
       <div className="flex flex-row gap-2 mb-3">
-        <Image src={sortIcon} alt="sort icon" className="opacity-50" />
+        <Image src={sortIcon} alt="sort icon" className="opacity-50 w-4 h-4" width={16} height={16} />
 
         <p className="text-base font-semibold">Sort</p>
       </div>
@@ -185,7 +185,7 @@ export default function FilterSidebar({
             )}
             onClick={() => sortOptions.handleChange(opt.label)}
           >
-            {opt.icon && <Image src={opt.icon} alt="sort icon" />}
+            {opt.icon && <Image src={opt.icon} alt="sort icon" width={12} height={12} className="w-3 h-3" />}
             <p className="text-sm font-semibold">{opt.label}</p>
 
             <motion.div
@@ -198,7 +198,7 @@ export default function FilterSidebar({
                 alt="arrow icon"
                 width={12}
                 height={12}
-                className="flex-none h-3 w-3"
+                className="flex-none w-3 h-3"
               />
             </motion.div>
           </div>
@@ -220,9 +220,11 @@ export default function FilterSidebar({
                   alt="view icon"
                   onClick={() => handleViewChange?.(view.title)}
                   className={twMerge(
-                    'opacity-25 hover:opacity-100 transition-opacity duration-300 cursor-pointer',
+                    'opacity-25 hover:opacity-100 transition-opacity duration-300 cursor-pointer w-4 h-4',
                     activeView === view.title && 'opacity-100',
                   )}
+                  width={16}
+                  height={16}
                 />
               ))}
             </div>
@@ -300,13 +302,13 @@ export default function FilterSidebar({
             className="w-full p-4"
             onClick={() => setIsFilterModalOpen(true)}
           >
-            <Image src={filterIcon} alt="filter icon" className="m-auto" />
+            <Image src={filterIcon} alt="filter icon" className="m-auto w-4 h-4" width={16} height={16} />
           </div>
           <div
             className="w-full p-4 border-l"
             onClick={() => setIsSortModalOpen(true)}
           >
-            <Image src={sortIcon} alt="sort icon" className="m-auto" />
+            <Image src={sortIcon} alt="sort icon" className="m-auto w-4 h-4" width={16} height={16} />
           </div>
         </div>
 
@@ -397,9 +399,10 @@ export const Checkbox: React.FC<CheckboxProps> = ({
         <Image
           src={checkIcon}
           alt="check icon"
-          width="24"
-          height="24"
-          className={twMerge('absolute peer-checked:opacity-100 opacity-0')}
+          width={0}
+          height={0}
+          style={{ width: '24px', height: '24px' }}
+          className="absolute peer-checked:opacity-100 opacity-0 w-6 h-6"
         />
       </div>
 
@@ -410,7 +413,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
           labelClassName,
         )}
       >
-        {img && <Image src={img} alt="token icon" width="12" height="12" />}
+        {img && <Image src={img} alt="token icon" width={12} height={12} className="w-3 h-3" />}
         {label}
       </label>
     </div>
@@ -458,7 +461,7 @@ export const Radio: React.FC<RadioProps> = ({
           ['loss', 'short'].includes(label) && 'text-red',
         )}
       >
-        {img && <Image src={img} alt="token icon" width="12" height="12" />}
+        {img && <Image src={img} alt="token icon" width={12} height={12} className="w-3 h-3" />}
         {label}
       </label>
     </div>

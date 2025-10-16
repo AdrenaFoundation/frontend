@@ -62,6 +62,8 @@ export default function Referral({ userProfile, connected }: PageProps) {
                     alt="referral banner"
                     className="absolute top-0 left-0 w-full h-full object-cover opacity-30 rounded-tl-xl rounded-tr-xl"
                     style={{ objectPosition: '50% 80%' }}
+                    width={1000}
+                    height={1000}
                   />
                 </motion.span>
               </AnimatePresence>
