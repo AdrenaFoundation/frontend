@@ -50,10 +50,10 @@ export default function ALPSwapSell({
 
     return (
       collateralTokenCustodyLiquidity[
-        collateralTokenCustody.pubkey.toBase58()
+      collateralTokenCustody.pubkey.toBase58()
       ] * tokenPrice
     );
-  }, [tokenPrices, collateralToken.symbol, collateralTokenCustodyLiquidity]);
+  }, [tokenPrices, collateralToken.symbol, collateralTokenCustodyLiquidity, collateralTokenCustody.pubkey]);
 
   const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
   const [collateralInputUsd, setCollateralInputUsd] = useState<number | null>(
@@ -64,13 +64,16 @@ export default function ALPSwapSell({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fee, setFee] = useState<number | null>(null);
 
+  // Extract complex expression for dependency array
+  const walletAddress = wallet?.walletAddress;
+
   const executeSellAlp = useCallback(async () => {
     if (!connected) {
       dispatch(openCloseConnectionModalAction(true));
       return;
     }
 
-    if (!wallet?.walletAddress || !alpInput) {
+    if (!walletAddress || !alpInput) {
       console.log('Missing some info');
       return;
     }
@@ -80,7 +83,7 @@ export default function ALPSwapSell({
 
     try {
       await window.adrena.client.removeLiquidity({
-        owner: new PublicKey(wallet.walletAddress),
+        owner: new PublicKey(walletAddress),
         lpAmountIn: uiToNative(
           alpInput,
           window.adrena.client.alpToken.decimals,
@@ -104,7 +107,7 @@ export default function ALPSwapSell({
     collateralToken.decimals,
     collateralToken.mint,
     connected,
-    wallet && wallet.walletAddress,
+    walletAddress,
   ]);
 
   const estimateRemoveLiquidityAndFee = useCallback(async () => {
@@ -297,6 +300,8 @@ export default function ALPSwapSell({
               src={collateralToken?.image}
               className="w-4 h-4"
               alt="token logo"
+              width={16}
+              height={16}
             />
             <p className="text-base font-semibold">{collateralToken?.symbol}</p>
           </div>

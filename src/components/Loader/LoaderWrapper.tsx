@@ -17,7 +17,7 @@ export default function LoaderWrapper({
 }) {
   return (
     <AnimatePresence mode="wait">
-      {!isLoading ? (
+      {!isLoading && (
         <motion.div
           key="children"
           initial={{ opacity: 0 }}
@@ -28,7 +28,8 @@ export default function LoaderWrapper({
         >
           {children}
         </motion.div>
-      ) : (
+      )}
+      {isLoading && (
         <motion.div
           key="loader"
           initial={{ opacity: 0 }}

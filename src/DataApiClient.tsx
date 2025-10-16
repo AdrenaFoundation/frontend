@@ -850,7 +850,14 @@ export default class DataApiClient {
       );
 
       if (!response.ok) {
-        console.log('API response was not ok');
+        if (response.status !== 404) {
+          const errorText = await response.text();
+          console.log('API response was not ok:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText,
+          });
+        }
         return null;
       }
 
@@ -962,7 +969,14 @@ export default class DataApiClient {
       );
 
       if (!response.ok) {
-        console.log('API response was not ok');
+        if (response.status !== 404) {
+          const errorText = await response.text();
+          console.log('API response was not ok:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText,
+          });
+        }
         return null;
       }
 
@@ -1026,7 +1040,14 @@ export default class DataApiClient {
       );
 
       if (!response.ok) {
-        console.log('API response was not ok');
+        if (response.status !== 404) {
+          const errorText = await response.text();
+          console.log('API response was not ok:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText,
+          });
+        }
         return null;
       }
 
@@ -1164,7 +1185,14 @@ export default class DataApiClient {
       );
 
       if (!response.ok) {
-        console.log('API response was not ok');
+        if (response.status !== 404) {
+          const errorText = await response.text();
+          console.log('API response was not ok:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText,
+          });
+        }
         return null;
       }
 
@@ -1209,7 +1237,14 @@ export default class DataApiClient {
       const response = await fetch(url);
 
       if (!response.ok) {
-        console.log('API response was not ok');
+        if (response.status !== 404) {
+          const errorText = await response.text();
+          console.log('API response was not ok:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText,
+          });
+        }
         return null;
       }
 
@@ -1255,7 +1290,14 @@ export default class DataApiClient {
     const response = await fetch(url);
 
     if (!response.ok) {
-      console.log('API response was not ok');
+      if (response.status !== 404) {
+        const errorText = await response.text();
+        console.log('API response was not ok:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText,
+        });
+      }
       return null;
     }
 

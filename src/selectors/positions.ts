@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { selectWalletPublicKey } from './wallet';
+import { selectWalletPublicKey } from './walletSelectors';
 
 /**
  * Memoize the computation of all possible user position addresses.

@@ -20,20 +20,22 @@ export function enrichUserMutagens(
     totalBorrowFees: userMutagens.data.total_borrow_fees,
     totalCloseFees: userMutagens.data.total_close_fees,
     totalFees: userMutagens.data.total_fees,
-    seasons: userMutagens.data.seasons.map((season) => ({
-      ...season,
-      seasonName: season.season_name,
-      pointsTrading: season.points_trading,
-      pointsMutations: season.points_mutations,
-      pointsStreaks: season.points_streaks,
-      pointsQuests: season.points_quests,
-      totalPoints: season.total_points,
-      volume: season.volume,
-      pnl: season.pnl,
-      borrowFees: season.borrow_fees,
-      closeFees: season.close_fees,
-      fees: season.fees,
-    })).reverse(),
+    seasons: userMutagens.data.seasons
+      .map((season) => ({
+        ...season,
+        seasonName: season.season_name,
+        pointsTrading: season.points_trading,
+        pointsMutations: season.points_mutations,
+        pointsStreaks: season.points_streaks,
+        pointsQuests: season.points_quests,
+        totalPoints: season.total_points,
+        volume: season.volume,
+        pnl: season.pnl,
+        borrowFees: season.borrow_fees,
+        closeFees: season.close_fees,
+        fees: season.fees,
+      }))
+      .reverse(),
   };
 }
 

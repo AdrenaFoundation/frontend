@@ -12,7 +12,6 @@ import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
 import PositionStatsCard from '@/components/pages/monitoring/PositionStatsCard';
 import TopTraders from '@/components/pages/monitoring/TopTraders';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import usePositionStats from '@/hooks/usePositionStats';
 import { CustodyExtended, UserProfileExtended } from '@/types';
 
@@ -34,7 +33,6 @@ export default function Flow({
   } = usePositionStats();
 
   const [selectedRange, setSelectedRange] = useState('All time');
-  const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
   const [profile, setProfile] = useState<UserProfileExtended | null>(null);
   const [showTopTraders, setShowTopTraders] = useState(false);
 
@@ -149,9 +147,9 @@ export default function Flow({
             transition={{ duration: 0.3, delay: 0.1 }}
             className="flex flex-col lg:flex-row gap-3"
           >
-            <AnimatePresence mode="wait">
-              {isInitialLoad
-                ? // Show loading cards while data is being fetched
+            <AnimatePresence>
+              {isInitialLoad &&
+                // Show loading cards while data is being fetched
                 Array.from({ length: 3 }).map((_, index) => (
                   <motion.div
                     key={`loading-${index}`}
@@ -161,28 +159,28 @@ export default function Flow({
                     transition={{ duration: 0.3, delay: index * 0.1 }}
                     className="flex-none lg:flex-1 w-full h-[27.4375rem] animate-loader rounded-md"
                   />
-                ))
-                : groupedStats
-                  ? Object.entries(groupedStats).map(
-                    ([symbol, symbolStats], index) => (
-                      <motion.div
-                        key={symbol}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3, delay: index * 0.1 }}
-                        className="flex-1"
-                      >
-                        <PositionStatsCard
-                          symbol={symbol}
-                          stats={symbolStats}
-                          custodies={custodies}
-                          isLoading={false}
-                        />
-                      </motion.div>
-                    ),
-                  )
-                  : null}
+                ))}
+              {!isInitialLoad &&
+                groupedStats &&
+                Object.entries(groupedStats).map(
+                  ([symbol, symbolStats], index) => (
+                    <motion.div
+                      key={symbol}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                      className="flex-1"
+                    >
+                      <PositionStatsCard
+                        symbol={symbol}
+                        stats={symbolStats}
+                        custodies={custodies}
+                        isLoading={false}
+                      />
+                    </motion.div>
+                  ),
+                )}
             </AnimatePresence>
           </motion.div>
 
@@ -233,7 +231,6 @@ export default function Flow({
                   <TopTraders
                     startDate={startDate}
                     endDate={endDate}
-                    allUserProfilesMetadata={allUserProfilesMetadata}
                     setProfile={setProfile}
                   />
                 </motion.div>

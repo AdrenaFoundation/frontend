@@ -45,6 +45,12 @@ export default function usePositions(walletAddress: string | null) {
   const positionsTokenPrices = useSelector(positionsTokenPricesSelector);
 
   useEffect(() => {
+    if (!walletAddress) {
+      console.log('🔌 Clearing positions due to wallet disconnect');
+      setPositions(null);
+      return;
+    }
+
     const [positionsPromise, unsubscribe] = dispatch(
       fetchAndSubscribeToFullUserPositions(
         function onPositionUpdated(position) {

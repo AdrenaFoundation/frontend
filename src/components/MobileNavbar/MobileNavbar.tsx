@@ -17,7 +17,7 @@ export default function MobileNavbar({
   const pathname = usePathname();
 
   return (
-    <div className="fixed bottom-0 left-0  z-50 flex flex-row justify-between items-center w-full bg-secondary/80 backdrop-blur-md border-t border-bcolor">
+    <div className="fixed bottom-0 left-0 z-50 flex flex-row justify-between items-center w-full bg-secondary/80 backdrop-blur-md border-t border-bcolor pb-[env(safe-area-inset-bottom)]">
       {PAGES.filter(
         (p) =>
           ![

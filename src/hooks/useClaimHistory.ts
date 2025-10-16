@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import DataApiClient from '@/DataApiClient';
+import { useSelector } from '@/store/store';
 import {
   ClaimHistoryExtended,
   ClaimHistoryExtendedApi,
@@ -62,6 +63,9 @@ export default function useClaimHistory({
   const [isLoadingClaimHistory, setIsLoadingClaimHistory] =
     useState<boolean>(false);
 
+  // Get wallet state to check if wallet is connected
+  const { wallet } = useSelector((s) => s.walletState);
+
   // Refs - to maintain values across renders without causing re-renders
   const walletAddressRef = useRef<string | null>(walletAddress);
   const symbolRef = useRef<'ADX' | 'ALP'>(symbol);
@@ -79,7 +83,7 @@ export default function useClaimHistory({
   const loadClaimsData = useCallback(
     async (offset: number, forceRefresh = false) => {
       // Guard clauses for early returns
-      if (!walletAddressRef.current || isLoadingClaimHistory) return;
+      if (!walletAddressRef.current || isLoadingClaimHistory || !wallet) return;
 
       // Cache handling
       const currentToken = symbolRef.current;
@@ -164,14 +168,14 @@ export default function useClaimHistory({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [batchSize, isLoadingClaimHistory],
+    [batchSize, isLoadingClaimHistory, wallet],
   );
 
   /**
    * Load claim history graph data
    */
   const loadGraphData = useCallback(async () => {
-    if (!walletAddressRef.current) return;
+    if (!walletAddressRef.current || !wallet) return;
 
     setIsLoadingGraphData(true);
     try {
@@ -187,7 +191,7 @@ export default function useClaimHistory({
     } finally {
       setIsLoadingGraphData(false);
     }
-  }, []);
+  }, [wallet]);
 
   // Update currentPageRef when currentPage changes
   useEffect(() => {
@@ -196,8 +200,8 @@ export default function useClaimHistory({
 
   // Update refs when props change and force refresh if wallet changes
   useEffect(() => {
-    // Check if wallet address has changed
-    if (walletAddressRef.current !== walletAddress && walletAddress) {
+    // Check if wallet address has changed and wallet is connected
+    if (walletAddressRef.current !== walletAddress && walletAddress && wallet) {
       console.log(
         `Wallet changed from ${walletAddressRef.current} to ${walletAddress} - forcing refresh for ${symbol}`,
       );
@@ -219,23 +223,23 @@ export default function useClaimHistory({
       walletAddressRef.current = walletAddress;
       symbolRef.current = symbol;
     }
-  }, [walletAddress, symbol, loadClaimsData]);
+  }, [walletAddress, symbol, loadClaimsData, wallet]);
 
   /**
    * Load graph data when wallet or symbol changes
    */
   useEffect(() => {
-    if (walletAddress) {
+    if (walletAddress && wallet) {
       loadGraphData();
     }
-  }, [walletAddress, symbol, loadGraphData]);
+  }, [walletAddress, symbol, loadGraphData, wallet]);
 
   /**
    * Initialize data loading and set up refresh interval
    * Only runs once when component mounts
    */
   useEffect(() => {
-    if (!walletAddress || isInitializedRef.current) return;
+    if (!walletAddress || !wallet || isInitializedRef.current) return;
 
     // Mark as initialized
     isInitializedRef.current = true;

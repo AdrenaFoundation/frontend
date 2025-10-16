@@ -75,8 +75,9 @@ export const NotificationBell = ({
       <Image
         src={notificationIcon}
         alt="Notification Bell"
-        width={12}
-        height={12}
+        width={0}
+        height={0}
+        style={{ width: '12px', height: '12px' }}
         className='w-3 h-3'
       />
 

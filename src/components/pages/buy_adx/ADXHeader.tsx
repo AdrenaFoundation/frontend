@@ -57,6 +57,8 @@ export default function ADXHeader() {
             src={window.adrena.client.adxToken.image}
             alt="adx icon"
             className="w-5 sm:w-7 h-5 sm:h-7"
+            width={28}
+            height={28}
           />
           <div className="flex flex-row items-center gap-4">
             <h1 className="font-bold text-[1.5rem] sm:text-4xl">ADX</h1>

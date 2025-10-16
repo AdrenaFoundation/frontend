@@ -205,6 +205,7 @@ export default function ALPSwapBuy({
     collateralToken.mint,
     doJupiterSwap,
     swapSlippage,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     !!tokenPrices[usdcToken.symbol],
     usdcToken,
   ]);
@@ -360,6 +361,8 @@ export default function ALPSwapBuy({
                   }
                   className="w-4 h-4"
                   alt="token logo"
+                  width={16}
+                  height={16}
                 />
                 <p className="text-base font-semibold">
                   {useSwaplessRoute
