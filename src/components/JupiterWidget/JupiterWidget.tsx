@@ -205,7 +205,7 @@ export default function JupiterWidget({
             },
             branding: {
                 name: 'Adrena',
-                logoUri: 'https://app.adrena.xyz/_next/static/media/adx.ed486967.svg',
+                logoUri: 'https://www.adrena.trade/_next/static/media/adx.ed486967.svg',
             },
             onRequestConnectWallet: walletContext.connect,
             onRequestDisconnectWallet: walletContext.disconnect,
