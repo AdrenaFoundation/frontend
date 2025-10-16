@@ -83,11 +83,6 @@ export const DialectNotification = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 
-  console.log('isDialectSubscriber', isDialectSubscriber);
-  console.log('isAuthenticated', isAuthenticated);
-  console.log('adapter', adapter);
-  console.log('customWalletAdapter', customWalletAdapter);
-
   // Only render if we have a wallet and a valid adapter
   if (!wallet || !customWalletAdapter) return null;
 
