@@ -332,8 +332,9 @@ export default function OwnerBloc({
               <Image
                 className="absolute bottom-2 right-2 opacity-60 h-5 w-5 rounded-md"
                 src={lockIcon}
-                width={18}
-                height={20}
+                width={0}
+                height={0}
+                style={{ width: '18px', height: '20px' }}
                 alt="lock icon"
               />
             ) : null}
@@ -422,8 +423,9 @@ export default function OwnerBloc({
               <Image
                 className="absolute bottom-2 right-2 opacity-60 h-5 w-5 rounded-md"
                 src={lockIcon}
-                width={18}
-                height={20}
+                width={0}
+                height={0}
+                style={{ width: '18px', height: '20px' }}
                 alt="lock icon"
               />
             ) : null}
@@ -689,6 +691,8 @@ export default function OwnerBloc({
                     duration: 'regular',
                   });
                 }}
+                width={16}
+                height={16}
               />
             </Tippy>
 
@@ -705,6 +709,8 @@ export default function OwnerBloc({
                   src={editIcon}
                   alt="Edit nickname"
                   className="w-4 h-4 opacity-70 cursor-pointer hover:opacity-100 transition-opacity duration-300"
+                  width={16}
+                  height={16}
                 />
               </Tippy>
             ) : null}
@@ -720,6 +726,8 @@ export default function OwnerBloc({
                     src={snsBadgeIcon}
                     alt="SNS badge"
                     className="w-3 h-3"
+                    width={12}
+                    height={12}
                   />
                   <p className="text-xs font-mono bg-[linear-gradient(110deg,#96B47C_40%,#C8E3B0_60%,#96B47C)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]">
                     {snsDomain}.sol
@@ -809,6 +817,8 @@ export default function OwnerBloc({
                     src={adxLogo}
                     alt="ADX logo"
                     className="w-[1.2em] h-[1.2em]"
+                    width={18}
+                    height={18}
                   />
                   500 ADX
                 </div>
@@ -927,6 +937,8 @@ export default function OwnerBloc({
                           src={icon}
                           alt="settings icon"
                           className="w-[0.7em] h-[0.7em]"
+                          width={12}
+                          height={12}
                         />
                         <p className="text-nowrap font-semibold text-sm">{name}</p>
                       </div>

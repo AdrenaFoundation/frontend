@@ -632,6 +632,7 @@ export default function Anniversary() {
         alt="anniversary bg"
         className="absolute inset-0 w-full h-[calc(100%+3em)] object-cover opacity-10 -top-[3em]"
         fill
+        sizes="100vw"
         priority
       />
 
@@ -648,6 +649,7 @@ export default function Anniversary() {
             alt="raffle"
             className="absolute inset-0 w-full h-full object-cover"
             fill
+            sizes="(min-width: 640px) 40em, 100vw"
             priority
           />
           <video

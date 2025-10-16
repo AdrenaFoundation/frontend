@@ -114,7 +114,7 @@ export default function AddressLookupTable({ }: {
                 'top-2 right-2 absolute w-6 h-6 p-1 rounded-full cursor-pointer opacity-50 hover:opacity-100 transition duration-300',
             )}
         >
-            <Image src={refreshIcon} alt="Refresh" className="w-4" />
+            <Image src={refreshIcon} alt="Refresh" className="w-4 h-4" width={16} height={16} />
         </div>
 
         <div className="tracking-widest">Existing Lookup Table</div>

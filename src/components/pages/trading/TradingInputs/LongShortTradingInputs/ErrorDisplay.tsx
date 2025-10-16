@@ -27,6 +27,8 @@ export const ErrorDisplay = ({ errorMessage, className }: ErrorDisplayProps) => 
                         className="w-auto h-[1.5em] mr-3 flex-shrink-0"
                         src={errorImg}
                         alt="Error icon"
+                        width={16}
+                        height={16}
                     />
                     <div className="flex-1 text-sm 2xl:text-center">
                         {errorMessage}

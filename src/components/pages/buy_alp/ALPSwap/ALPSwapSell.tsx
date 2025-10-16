@@ -50,7 +50,7 @@ export default function ALPSwapSell({
 
     return (
       collateralTokenCustodyLiquidity[
-        collateralTokenCustody.pubkey.toBase58()
+      collateralTokenCustody.pubkey.toBase58()
       ] * tokenPrice
     );
   }, [tokenPrices, collateralToken.symbol, collateralTokenCustodyLiquidity, collateralTokenCustody.pubkey]);
@@ -300,6 +300,8 @@ export default function ALPSwapSell({
               src={collateralToken?.image}
               className="w-4 h-4"
               alt="token logo"
+              width={16}
+              height={16}
             />
             <p className="text-base font-semibold">{collateralToken?.symbol}</p>
           </div>

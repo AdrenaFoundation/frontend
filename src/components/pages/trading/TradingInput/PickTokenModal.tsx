@@ -91,8 +91,8 @@ export function PickTokenModal({
                                 className='h-4 w-4'
                                 src={recommendedToken.image}
                                 alt="logo"
-                                width="40"
-                                height="40"
+                                width={40}
+                                height={40}
                             />
 
                             <div className='flex items-center justify-center text-sm'>
@@ -132,8 +132,8 @@ export function PickTokenModal({
                             className='h-5 w-5'
                             src={token.image}
                             alt="logo"
-                            width="40"
-                            height="40"
+                            width={40}
+                            height={40}
                         />
 
                         <div className='flex flex-col items-start'>

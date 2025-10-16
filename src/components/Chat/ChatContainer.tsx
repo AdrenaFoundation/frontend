@@ -338,7 +338,7 @@ function ChatTitle({
             }
           }}
         >
-          <Image src={collapseIcon} alt="collapse logo" width={6} height={6} />
+          <Image src={collapseIcon} alt="collapse logo" width={6} height={6} className='w-1.5 h-1.5' />
         </div>
       </div>
     </div>

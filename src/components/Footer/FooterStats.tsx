@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCookies } from 'react-cookie';
-import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts';
+import { Line, LineChart, YAxis } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
 import bonkLogo from '@/../public/images/bonk.png';
@@ -495,27 +495,25 @@ export default function FooterStats({
                   </AnimatePresence>
                 </div>
               </div>
-              <ResponsiveContainer width={100} height={50}>
-                <LineChart data={tokenHistoricalData[activeToken]}>
-                  <YAxis
-                    domain={[
-                      (dataMin: number) => dataMin * 0.999, // add a little padding
-                      (dataMax: number) => dataMax * 1.001,
-                    ]}
-                    tickFormatter={(v) => `$${v.toFixed(2)}`}
-                    hide={true}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="close"
-                    stroke={
-                      priceColor === 'text-green' ? ADRENA_GREEN : ADRENA_RED
-                    }
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <LineChart data={tokenHistoricalData[activeToken]} width={100} height={50}>
+                <YAxis
+                  domain={[
+                    (dataMin: number) => dataMin * 0.999, // add a little padding
+                    (dataMax: number) => dataMax * 1.001,
+                  ]}
+                  tickFormatter={(v) => `$${v.toFixed(2)}`}
+                  hide={true}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="close"
+                  stroke={
+                    priceColor === 'text-green' ? ADRENA_GREEN : ADRENA_RED
+                  }
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
             </div>
 
             <div className="flex flex-col border border-inputcolor rounded-md overflow-hidden mt-3">
@@ -537,17 +535,15 @@ export default function FooterStats({
                     isDecimalDimmed={false}
                   />
                 </div>
-                <ResponsiveContainer width={100} height={50}>
-                  <LineChart data={volumeData}>
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#07956b"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <LineChart data={volumeData} width={100} height={50}>
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#07956b"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
               </div>
 
               <div
@@ -565,17 +561,15 @@ export default function FooterStats({
                     isDecimalDimmed={false}
                   />
                 </div>
-                <ResponsiveContainer width={100} height={50}>
-                  <LineChart data={aumData}>
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#07956b"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <LineChart data={aumData} width={100} height={50}>
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#07956b"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
               </div>
 
               <div
@@ -597,17 +591,15 @@ export default function FooterStats({
                     isDecimalDimmed={false}
                   />
                 </div>
-                <ResponsiveContainer width={100} height={50}>
-                  <LineChart data={totalOpenInterestData}>
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#07956b"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <LineChart data={totalOpenInterestData} width={100} height={50}>
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#07956b"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
               </div>
             </div>
           </motion.div>

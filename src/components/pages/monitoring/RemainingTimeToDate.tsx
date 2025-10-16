@@ -39,6 +39,8 @@ export default function RemainingTimeToDate({
             className="w-auto h-[1.5em] mr-1"
             src={warningImg}
             alt="Error icon"
+            width={16}
+            height={16}
           />
         </Tippy>
       ) : null}

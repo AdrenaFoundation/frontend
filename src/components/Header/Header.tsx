@@ -102,23 +102,25 @@ export default function Header({
           <Image
             src={logo}
             className={twMerge(
-              'w-20 min-w-20 h-auto hidden xl:block',
+              'hidden xl:block',
               window.adrena.cluster === 'devnet' ? 'relative bottom-1' : '',
             )}
             alt="logo"
-            width={80}
-            height={25}
+            width={0}
+            height={0}
+            style={{ width: '80px', height: 'auto' }}
           />
 
           <Image
             src={adxLogo}
             className={twMerge(
-              'w-[25px] min-w-[25px] h-auto xl:hidden',
+              'xl:hidden',
               window.adrena.cluster === 'devnet' ? 'relative bottom-1' : '',
             )}
             alt="logo"
-            width={25}
-            height={25}
+            width={0}
+            height={0}
+            style={{ width: '25px', height: 'auto' }}
           />
 
           {window.adrena.cluster === 'devnet' ? (
@@ -147,7 +149,7 @@ export default function Header({
                   alt="logo"
                   width={12}
                   height={12}
-                  className="hidden xl:block"
+                  className="hidden xl:block w-3 h-3"
                 />
               )}
               <h5 className="whitespace-nowrap font-regular">{page.name}</h5>
@@ -158,7 +160,7 @@ export default function Header({
                   alt="logo"
                   width={12}
                   height={12}
-                  className="scale-x-[-1] hidden xl:block"
+                  className="scale-x-[-1] hidden xl:block w-3 h-3"
                 />
               )}
 
@@ -189,7 +191,7 @@ export default function Header({
               <Image
                 src={alpLogo}
                 alt="ALP Logo"
-                className="opacity-50"
+                className="opacity-50 w-3 h-3"
                 width={12}
                 height={12}
               />
@@ -227,7 +229,7 @@ export default function Header({
               <Image
                 src={adxLogo}
                 alt="ALP Logo"
-                className="opacity-50"
+                className="opacity-50 w-3 h-3"
                 width={12}
                 height={12}
               />

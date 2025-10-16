@@ -223,8 +223,8 @@ export default function Mutagen({
           <Image
             src={needle}
             alt={'needle'}
-            width="30"
-            height="30"
+            width={30}
+            height={30}
             className={'w-3 h-3 sm:w-4 sm:h-4 grayscale'}
           />
         </div>
@@ -261,8 +261,8 @@ export default function Mutagen({
             <Image
               src={needle}
               alt={'needle'}
-              width='30'
-              height='30'
+              width={30}
+              height={30}
               className={'w-4 h-4 grayscale'}
             />
           </div>

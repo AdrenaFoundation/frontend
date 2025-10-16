@@ -37,14 +37,14 @@ export default function ViewsWarning() {
                     style={{ background: msg.color || '#b45309' }}
                 >
                     <div className="flex flex-row items-center gap-2">
-                        <Image src={infoIcon} alt="Warning" width={14} height={14} />
+                        <Image src={infoIcon} alt="Warning" width={14} height={14} className="w-3.5 h-3.5" />
                         <p className="text-sm font-semibold max-w-[300px] sm:max-w-max text-center">
                             {msg.message}
                         </p>
                     </div>
                     <Image
                         src={crossIcon}
-                        className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-300"
+                        className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-300 w-3.5 h-3.5"
                         alt="close btn"
                         width={14}
                         height={14}
@@ -61,7 +61,7 @@ export default function ViewsWarning() {
                     onClick={openSidebar}
                 >
                     <div className="flex flex-row items-center gap-2">
-                        <Image src={infoIcon} alt="Warning" width={14} height={14} />
+                        <Image src={infoIcon} alt="Warning" width={14} height={14} className="w-3.5 h-3.5" />
                         <span className="text-sm font-semibold text-center">
                             You need at least{' '}
                             <FormatNumber nb={0.001} precision={3} isDecimalDimmed={false} />{' '}
@@ -70,7 +70,7 @@ export default function ViewsWarning() {
                     </div>
                     <Image
                         src={crossIcon}
-                        className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-300"
+                        className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-300 w-3.5 h-3.5"
                         alt="close btn"
                         width={14}
                         height={14}

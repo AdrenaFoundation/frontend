@@ -51,8 +51,10 @@ function Loader(): JSX.Element {
         src={logo}
         className="max-w-[40%] animate-pulse"
         alt="logo"
-        width={350}
-        height={50}
+        width={0}
+        height={0}
+        style={{ width: '350px', height: 'auto', maxWidth: '40%' }}
+        priority={true}
       />
     </div>
   );

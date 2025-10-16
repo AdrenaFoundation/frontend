@@ -100,6 +100,8 @@ export default function QuestMenu({
                     src={monster10}
                     className={twMerge('w-[8em] scale-x-[-1] cursor-pointer')}
                     alt="monster illustration"
+                    width={128}
+                    height={128}
                     onClick={() => {
                         setIsOpen(!isOpen);
                     }}
@@ -281,6 +283,8 @@ export default function QuestMenu({
                             )}
                             alt="monster illustration"
                             key={isOpen ? 'monster-10' : 'monster-10-2'}
+                            width={128}
+                            height={128}
                         />
 
                         <p

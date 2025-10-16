@@ -278,7 +278,7 @@ export default function BurgerMenu({
                   alt="Adrena"
                   width={20}
                   height={20}
-                  className="opacity-90 ml-1 xl:ml-2"
+                  className="opacity-90 ml-1 xl:ml-2 w-5 h-5"
                   priority
                 />
                 <button
@@ -633,8 +633,8 @@ export default function BurgerMenu({
                       <Image
                         src={discordLogo}
                         alt="Discord"
-                        width="18"
-                        height="18"
+                        width={18}
+                        height={18}
                         className="opacity-40 group-hover:opacity-80 transition-opacity"
                       />
                     </Link>
@@ -646,8 +646,8 @@ export default function BurgerMenu({
                       <Image
                         src={twitterLogo}
                         alt="Twitter"
-                        width="18"
-                        height="18"
+                        width={18}
+                        height={18}
                         className="opacity-40 group-hover:opacity-80 transition-opacity"
                       />
                     </Link>
@@ -659,8 +659,8 @@ export default function BurgerMenu({
                       <Image
                         src={githubLogo}
                         alt="GitHub"
-                        width="18"
-                        height="18"
+                        width={18}
+                        height={18}
                         className="opacity-40 group-hover:opacity-80 transition-opacity"
                       />
                     </Link>
@@ -977,8 +977,8 @@ export default function BurgerMenu({
             <Image
               src={discordLogo}
               alt="Discord"
-              width="16"
-              height="16"
+              width={16}
+              height={16}
               className="opacity-40 hover:opacity-80 transition-opacity"
             />
           </Link>
@@ -991,8 +991,8 @@ export default function BurgerMenu({
             <Image
               src={twitterLogo}
               alt="Twitter"
-              width="16"
-              height="16"
+              width={16}
+              height={16}
               className="opacity-40 hover:opacity-80 transition-opacity"
             />
           </Link>
@@ -1005,8 +1005,8 @@ export default function BurgerMenu({
             <Image
               src={githubLogo}
               alt="GitHub"
-              width="16"
-              height="16"
+              width={16}
+              height={16}
               className="opacity-40 hover:opacity-80 transition-opacity"
             />
           </Link>

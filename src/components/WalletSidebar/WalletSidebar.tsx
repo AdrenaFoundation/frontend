@@ -383,8 +383,8 @@ export default function WalletSidebar({
                                                     src={logOutIcon}
                                                     alt="Disconnect Icon"
                                                     className="w-4 h-4"
-                                                    width={30}
-                                                    height={30}
+                                                    width={16}
+                                                    height={16}
                                                 />
                                             </div>
                                         </Tippy>
@@ -410,7 +410,7 @@ export default function WalletSidebar({
                                                     onClick={refreshBalances}
                                                     className="text-xs text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1"
                                                 >
-                                                    <Image src={refreshIcon} alt="Refresh" className="w-3 opacity-60" />
+                                                    <Image src={refreshIcon} alt="Refresh" className="w-3 h-3 opacity-60" width={12} height={12} />
                                                     Retry
                                                 </button>
                                             </div>
@@ -463,6 +463,7 @@ export default function WalletSidebar({
                                                                             width={14}
                                                                             height={14}
                                                                             alt="wallet icon"
+                                                                            className="w-3.5 h-3.5"
                                                                         />
                                                                         Connect Wallet
                                                                     </button>

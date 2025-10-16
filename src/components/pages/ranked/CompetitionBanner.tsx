@@ -229,7 +229,7 @@ export default function CompetitionBanner({
 
                             {jtoRewards ? <>
                                 <div className="flex flex-row gap-1 items-center justify-center">
-                                    <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" />
+                                    <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" width={20} height={20} />
 
                                     <FormatNumber
                                         format='number'
@@ -249,7 +249,7 @@ export default function CompetitionBanner({
                                 <div className='flex text-md text-txtfade'>/</div>
 
                                 <div className="flex flex-row gap-1 items-center justify-center">
-                                    <Image src={bonkLogo} alt="BONK logo" className="w-4 h-4" />
+                                    <Image src={bonkLogo} alt="BONK logo" className="w-4 h-4" width={16} height={16} />
 
                                     <FormatNumber
                                         format='number'
@@ -280,6 +280,8 @@ export default function CompetitionBanner({
                         src={jitoLogo}
                         alt="jito logo"
                         className="w-[3em] md:w-[4em]"
+                        width={48}
+                        height={48}
                     />
 
                     {seasonName === 'factions' || seasonName === 'interseason3' ? <>
@@ -289,6 +291,8 @@ export default function CompetitionBanner({
                             src={bonkLogo}
                             alt="BONK logo"
                             className="w-[1.7em] md:w-[2.5em]"
+                            width={28}
+                            height={28}
                         />
                     </> : null}
                 </div> : null}
@@ -328,7 +332,9 @@ export default function CompetitionBanner({
                 <Image
                     src={timerBg}
                     alt="background graphic"
-                    className="w-[300px] rotate-[180deg]"
+                    className="w-[300px] h-[300px] rotate-[180deg]"
+                    width={300}
+                    height={300}
                 />
             </div>
         </div>);

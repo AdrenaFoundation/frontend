@@ -41,6 +41,8 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
             src={solanaIDMonster}
             alt="solana-id-monster"
             className="absolute top-0 right-0 w-full opacity-30 object-contain"
+            width={100}
+            height={100}
           />
         </div>
 
@@ -51,6 +53,8 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
                 src={solanaIDLogo}
                 alt="solana-id-logo"
                 className="w-[100px]"
+                width={100}
+                height={100}
               />
               <div className="font-bold text-[#F4BD1C] uppercase text-sm relative top-[0.05em]">
                 {SOLANA_ID_TIERS_MUTAGEN[solanaID.solidUser.tierGroup].title}
@@ -72,7 +76,7 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
 
 
           <div className="flex flex-row gap-1 items-center mt-2">
-            <Image src={mutagenIcon} alt="mutagen" className="w-3 mr-1" />
+            <Image src={mutagenIcon} alt="mutagen" className="w-3 mr-1" width={12} height={12} />
 
             <p className="font-semibold">
               Get{' '}

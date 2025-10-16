@@ -121,8 +121,8 @@ export default function SuperchargedFooter({
               src={adrenaLogo}
               alt="Adrena Logo"
               className="w-4 h-4"
-              height={12}
-              width={12}
+              height={16}
+              width={16}
             />
           </div>
 
@@ -139,16 +139,16 @@ export default function SuperchargedFooter({
               src={ottersecLogo}
               alt="OtterSec Logo"
               className="w-4 h-4"
-              height={12}
-              width={12}
+              height={16}
+              width={16}
             />
 
             <Image
               src={offsideLabsLogo}
               alt="Offside Labs Logo"
               className="w-4 h-4"
-              height={12}
-              width={12}
+              height={16}
+              width={16}
             />
 
             <AnimatePresence>
@@ -170,8 +170,8 @@ export default function SuperchargedFooter({
                       <Image
                         src={documentIcon}
                         alt="Document Icon"
-                        width={14}
-                        height={14}
+                        width={12}
+                        height={12}
                         className="w-3 h-3"
                       />
                     </div>
@@ -196,8 +196,8 @@ export default function SuperchargedFooter({
                       <Image
                         src={documentIcon}
                         alt="Document Icon"
-                        width={14}
-                        height={14}
+                        width={12}
+                        height={12}
                         className="w-3 h-3"
                       />
                     </div>
@@ -249,8 +249,8 @@ export default function SuperchargedFooter({
               src={rpcIcon}
               alt="RPC Settings"
               className="w-4 h-4 opacity-50"
-              height={12}
-              width={12}
+              height={16}
+              width={16}
             />
             <p className="text-xs font-regular"> {activeRpc.name} </p>
             <div
@@ -326,9 +326,10 @@ export default function SuperchargedFooter({
                     <Image
                       src={onlineCountBg}
                       alt="Online Count Background"
-                      className="absolute top-0 right-0 w-full h-[1.625rem]"
-                      height={26}
-                      width={26}
+                      className="absolute top-0 right-0"
+                      height={0}
+                      width={0}
+                      style={{ width: '100%', height: '1.625rem' }}
                     />
                     <div className="flex flex-row items-center justify-between w-[4.3rem] absolute top-[0.44rem] left-[3.3rem]">
                       <div className="flex flex-row items-center gap-1 opacity-50">
@@ -336,8 +337,8 @@ export default function SuperchargedFooter({
                           src={pplIcon}
                           alt="Chat Icon"
                           className="w-2.5 h-2.5"
-                          height={12}
-                          width={12}
+                          height={10}
+                          width={10}
                         />
                         <p className="text-xxs font-mono mt-[0.068rem]">
                           {onlineCount ? onlineCount : '-'}
@@ -359,8 +360,8 @@ export default function SuperchargedFooter({
               src={searchIcon}
               alt="Search Icon"
               className="w-3.5 h-3.5"
-              height={12}
-              width={12}
+              height={14}
+              width={14}
             />
           </div>
 

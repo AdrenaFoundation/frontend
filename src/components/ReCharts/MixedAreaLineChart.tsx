@@ -154,6 +154,7 @@ export default function MixedAreaLineChart<T extends string>({
                                     width={14}
                                     height={12}
                                     alt="Download icon"
+                                    className="w-3.5 h-3.5"
                                 />
                             </div>
                         ) : null}
