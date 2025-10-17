@@ -390,9 +390,7 @@ export default function SuperchargedFooter({
               />
             </Link>
 
-            <Link
-              href="/terms_and_conditions"
-            >
+            <Link href="/terms_and_conditions">
               <Image
                 src={documentIcon}
                 alt="Terms & Privacy"

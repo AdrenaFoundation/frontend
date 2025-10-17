@@ -1,5 +1,5 @@
-import 'tippy.js/dist/tippy.css';
 import 'react-toastify/dist/ReactToastify.css';
+import 'tippy.js/dist/tippy.css';
 
 import { Connection } from '@solana/web3.js';
 import Head from 'next/head';
@@ -163,7 +163,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      {window.location.pathname === '/genesis' ? null : isBigScreen ? (
+      {window.location.pathname === '/landing' ? null : isBigScreen ? (
         <Header
           userVest={userVest}
           userDelegatedVest={userDelegatedVest}
@@ -207,11 +207,20 @@ export default function RootLayout({
       )}
       <ViewsWarning />
 
-      <div className="w-full grow flex justify-center sm:pb-[2em]">
+      <div
+        className={twMerge(
+          'w-full grow flex justify-center ',
+          window.location.pathname === '/landing' ? 'pb-0' : 'sm:pb-[2em]',
+        )}
+      >
         <div
           className={twMerge(
             'w-full flex flex-col max-w-[200em]',
-            !isBigScreen ? 'pb-[100px]' : 'sm:pb-0',
+            window.location.pathname === '/landing'
+              ? 'pb-0'
+              : !isBigScreen
+                ? 'pb-[100px]'
+                : 'sm:pb-0',
           )}
         >
           {children}
@@ -226,7 +235,7 @@ export default function RootLayout({
         onClose={() => setIsSearchUserProfilesOpen(false)}
       />
 
-      {!isBigScreen ? (
+      {window.location.pathname === '/landing' ? null : !isBigScreen ? (
         <MobileNavbar
           PAGES={pages}
           userVest={userVest}
