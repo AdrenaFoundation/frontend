@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
+import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
 import { getLastMondayUTC } from '@/utils';
 
@@ -41,7 +42,7 @@ export default function UsersCohortsChart() {
 
   const getCohortsApiData = async () => {
     try {
-      const res = await fetch(`https://datapi.adrena.xyz/cohorts?end_date=${getLastMondayUTC().toISOString()}`);
+      const res = await fetch(`${DataApiClient.DATAPI_URL}/cohorts?end_date=${getLastMondayUTC().toISOString()}`);
 
       const { data } = await res.json();
 

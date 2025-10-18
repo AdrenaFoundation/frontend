@@ -35,8 +35,8 @@ export default function OnchainAccountInfo({
         <span className={twMerge('text-xs sm:text-[0.9em]', addressClassName)}>
           {shorten
             ? `${address.toBase58().slice(0, shortenSize)}..${address
-                .toBase58()
-                .slice(-shortenSize)}`
+              .toBase58()
+              .slice(-shortenSize)}`
             : address.toBase58()}
         </span>
       )}
@@ -45,8 +45,8 @@ export default function OnchainAccountInfo({
         className={twMerge('ml-1 w-[6px] h-[6px]', iconClassName)}
         src="/images/Icons/arrow-sm-45.svg"
         alt="external link icon"
-        width="6"
-        height="6"
+        width={6}
+        height={6}
       />
     </Link>
   );

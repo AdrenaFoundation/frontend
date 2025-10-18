@@ -96,10 +96,12 @@ export default function SearchUserProfiles({
               </div>
 
               <div className="flex-1 overflow-y-auto">
-                {!searchQuery.trim() ? (
+                {!searchQuery.trim() && (
                   <motion.div
+                    key="empty-state"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                     className="flex flex-col items-center justify-center h-full text-center p-4 pb-10"
                   >
                     <div className="text-6xl mb-2">🔍</div>
@@ -110,10 +112,14 @@ export default function SearchUserProfiles({
                       Enter a username or wallet address to find user profiles
                     </p>
                   </motion.div>
-                ) : filteredUsers.length === 0 ? (
+                )}
+
+                {searchQuery.trim() && filteredUsers.length === 0 && (
                   <motion.div
+                    key="no-results"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                     className="flex flex-col items-center justify-center h-full text-center p-4 pb-10"
                   >
                     <div className="text-6xl mb-2">😔</div>
@@ -124,10 +130,14 @@ export default function SearchUserProfiles({
                       Try searching with a different username or wallet address
                     </p>
                   </motion.div>
-                ) : (
+                )}
+
+                {searchQuery.trim() && filteredUsers.length > 0 && (
                   <motion.div
+                    key="results"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                     className="p-2 px-4 mt-2"
                   >
                     <div className="flex flex-col gap-2">
@@ -159,7 +169,7 @@ export default function SearchUserProfiles({
                                 alt="Profile"
                                 width={32}
                                 height={32}
-                                className="rounded-full border border-white/10"
+                                className="rounded-full border border-white/10 w-8 h-8"
                               />
                               {loadingProfile === user.owner.toBase58() && (
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">

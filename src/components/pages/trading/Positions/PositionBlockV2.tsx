@@ -160,7 +160,6 @@ export default function PositionBlockV2({
             nb={position.collateralAmount}
             format="number"
             className={POSITION_BLOCK_STYLES.text.white}
-            precision={position.collateralToken.displayAmountDecimalsPrecision}
             suffix={`${getTokenSymbol(
               position.collateralToken.symbol,
             )} (at init.)`}
@@ -180,7 +179,6 @@ export default function PositionBlockV2({
             }
             format="number"
             className={POSITION_BLOCK_STYLES.text.white}
-            precision={position.token.displayAmountDecimalsPrecision}
             suffix={getTokenSymbol(position.token.symbol)}
           />
         ),
@@ -231,6 +229,7 @@ export default function PositionBlockV2({
         format: 'currency',
         color: 'text-blue',
         isDecimalDimmed: false,
+        precision: position.token.displayPriceDecimalsPrecision,
         onEditClick: () => triggerStopLossTakeProfit?.(position),
       },
       {
@@ -242,9 +241,11 @@ export default function PositionBlockV2({
         format: 'currency',
         color: 'text-blue',
         isDecimalDimmed: false,
+        precision: position.token.displayPriceDecimalsPrecision,
         onEditClick: () => triggerStopLossTakeProfit?.(position),
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       position.openDate,
       position.collateralUsd,
@@ -294,7 +295,7 @@ export default function PositionBlockV2({
           readOnly={readOnly}
           itemClassName={twMerge(
             isMini &&
-              'border-0 flex-row justify-between items-center w-full p-0',
+            'border-0 flex-row justify-between items-center w-full p-0',
           )}
         />
 
@@ -441,7 +442,7 @@ const PnLDetails = ({
   return (
     <div className="flex flex-col justify-end items-end md:justify-center md:items-center">
       <div
-        className="hidden md:flex items-center gap-1 mb-1 cursor-pointer select-none"
+        className="flex items-center gap-1 mb-1 cursor-pointer select-none"
         onClick={() => {
           setIsPnlWithFees(!showAfterFees);
         }}

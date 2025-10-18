@@ -74,11 +74,12 @@ export default function CompetitionBanner({
                                     backgroundOrigin: 'border-box',
                                     backgroundPosition: 'center 20%'
                                 }}
-                            // eslint-disable-next-line @next/next/no-img-element
-                            /> : <img
+                            /> : <Image
                                 src={banner}
                                 alt="competition banner"
                                 className="absolute top-0 left-0 w-full h-full object-cover opacity-30"
+                                width={1040}
+                                height={1040}
                             />}
                         </motion.span>
                     </AnimatePresence>
@@ -207,6 +208,8 @@ export default function CompetitionBanner({
                                         src={window.adrena.client.adxToken.image}
                                         alt="ADX logo"
                                         className="w-4 h-4"
+                                        width={16}
+                                        height={16}
                                     />
 
                                     <FormatNumber
@@ -226,7 +229,7 @@ export default function CompetitionBanner({
 
                             {jtoRewards ? <>
                                 <div className="flex flex-row gap-1 items-center justify-center">
-                                    <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" />
+                                    <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" width={20} height={20} />
 
                                     <FormatNumber
                                         format='number'
@@ -246,7 +249,7 @@ export default function CompetitionBanner({
                                 <div className='flex text-md text-txtfade'>/</div>
 
                                 <div className="flex flex-row gap-1 items-center justify-center">
-                                    <Image src={bonkLogo} alt="BONK logo" className="w-4 h-4" />
+                                    <Image src={bonkLogo} alt="BONK logo" className="w-4 h-4" width={16} height={16} />
 
                                     <FormatNumber
                                         format='number'
@@ -277,6 +280,8 @@ export default function CompetitionBanner({
                         src={jitoLogo}
                         alt="jito logo"
                         className="w-[3em] md:w-[4em]"
+                        width={48}
+                        height={48}
                     />
 
                     {seasonName === 'factions' || seasonName === 'interseason3' ? <>
@@ -286,6 +291,8 @@ export default function CompetitionBanner({
                             src={bonkLogo}
                             alt="BONK logo"
                             className="w-[1.7em] md:w-[2.5em]"
+                            width={28}
+                            height={28}
                         />
                     </> : null}
                 </div> : null}
@@ -325,7 +332,10 @@ export default function CompetitionBanner({
                 <Image
                     src={timerBg}
                     alt="background graphic"
-                    className="w-[300px] rotate-[180deg]"
+                    className="w-[300px] h-auto rotate-[180deg]"
+                    width={0}
+                    height={0}
+                    style={{ width: '300px', height: 'auto' }}
                 />
             </div>
         </div>);

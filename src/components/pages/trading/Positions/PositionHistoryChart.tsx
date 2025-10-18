@@ -487,7 +487,12 @@ export default function PositionHistoryChart({
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={chartData}
-            margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+            margin={{
+              top: 5,
+              right: positionHistory.token.symbol === 'SOL' ? 5 : 30,
+              left: 5,
+              bottom: 5,
+            }}
           >
             <CartesianGrid
               strokeDasharray="8 8"

@@ -51,7 +51,7 @@ export default function ADXStakeToken({
               }}
             >
               <Image
-                className="mr-1 opacity-60 relative"
+                className="mr-1 opacity-60 relative w-3 h-3"
                 src={walletImg}
                 height={18}
                 width={18}
@@ -85,7 +85,7 @@ export default function ADXStakeToken({
         <div>
           <div className="flex flex-row gap-1 mb-2">
             <Image
-              className="relative"
+              className="relative w-4 h-4"
               src={lockIcon}
               width={14}
               height={18}

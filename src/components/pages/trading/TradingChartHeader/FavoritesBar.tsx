@@ -46,7 +46,7 @@ function ArrowButton({
             width={16}
             height={16}
             className={twMerge(
-              'transition-transform duration-200',
+              'transition-transform duration-200 w-4 h-4',
               isLeft ? 'rotate-90' : '-rotate-90',
             )}
           />

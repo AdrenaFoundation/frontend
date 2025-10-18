@@ -440,7 +440,7 @@ export default function ExpanseLeaderboards() {
       </div>
 
       <AnimatePresence>
-        {activeProfile ? (
+        {activeProfile && (
           <Modal
             className="h-[80vh] w-full overflow-y-auto"
             wrapperClassName="items-start w-full max-w-[70em] sm:mt-0  bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]"
@@ -453,7 +453,7 @@ export default function ExpanseLeaderboards() {
               close={() => setActiveProfile(null)}
             />
           </Modal>
-        ) : null}
+        )}
       </AnimatePresence>
     </>
   );

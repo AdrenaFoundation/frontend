@@ -37,8 +37,8 @@ export default function AUMBreakdown({
                 <Image
                   src={custody.tokenInfo.image}
                   alt="token icon"
-                  width="24"
-                  height="24"
+                  width={24}
+                  height={24}
                 />
 
                 <p className={twMerge(titleClassName, 'opacity-100')}>{custody.tokenInfo.symbol}</p>

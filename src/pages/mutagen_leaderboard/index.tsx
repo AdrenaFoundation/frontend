@@ -41,6 +41,8 @@ export default function Index() {
                     src={banner}
                     alt="competition banner"
                     className="absolute top-0 left-0 w-full h-full object-cover opacity-30"
+                    width={1000}
+                    height={1000}
                   />
                 </motion.span>
               </AnimatePresence>
@@ -96,7 +98,7 @@ export default function Index() {
       </div>
 
       <AnimatePresence>
-        {activeProfile ? (
+        {activeProfile && (
           <Modal
             className="h-[80vh] w-full overflow-y-auto"
             wrapperClassName="items-start w-full max-w-[70em] sm:mt-0"
@@ -109,7 +111,7 @@ export default function Index() {
               close={() => setActiveProfile(null)}
             />
           </Modal>
-        ) : null}
+        )}
       </AnimatePresence>
     </>
   );

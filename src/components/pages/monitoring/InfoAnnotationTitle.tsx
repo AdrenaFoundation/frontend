@@ -28,8 +28,8 @@ export default function InfoAnnotationTitle({
           className={twMerge('opacity-50 hover:opacity-100', className)}
           src={infoIcon}
           alt="info icon"
-          width="16"
-          height="16"
+          width={16}
+          height={16}
         />
       </div>
     </Tippy>

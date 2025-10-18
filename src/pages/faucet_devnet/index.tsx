@@ -196,8 +196,8 @@ export default function FaucetDevnet({
                 className="ml-1 h-3 w-3"
                 src="/images/external-link-logo.png"
                 alt="external link icon"
-                width="12"
-                height="10"
+                width={12}
+                height={10}
               />
             </Link>
           </StyledSubContainer>

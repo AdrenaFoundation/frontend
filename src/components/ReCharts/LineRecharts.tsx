@@ -48,6 +48,7 @@ export default function LineRechart<T extends string>({
   showLegend = true,
   startTimestamp,
   endTimestamp,
+  extraHeaderContent,
 }: {
   title: string;
   data: RechartsData[];
@@ -81,6 +82,7 @@ export default function LineRechart<T extends string>({
   showLegend?: boolean;
   startTimestamp?: number;
   endTimestamp?: number;
+  extraHeaderContent?: ReactNode;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -133,13 +135,17 @@ export default function LineRechart<T extends string>({
           )}
         </div>
 
-        {typeof setPeriod !== 'undefined' && typeof period !== 'undefined' ? (
-          <PeriodSelector
-            period={period}
-            setPeriod={setPeriod}
-            periods={periods}
-          />
-        ) : null}
+        <div className='flex flex-col'>
+          {typeof setPeriod !== 'undefined' && typeof period !== 'undefined' ? (
+            <PeriodSelector
+              period={period}
+              setPeriod={setPeriod}
+              periods={periods}
+            />
+          ) : null}
+
+          {extraHeaderContent ? extraHeaderContent : null}
+        </div>
       </div>
 
       <ResponsiveContainer width="100%" height="100%">

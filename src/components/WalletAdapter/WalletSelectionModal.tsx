@@ -1,15 +1,20 @@
+import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import adxLogo from '@/../public/images/adx.svg';
+import arrowRight from '@/../public/images/arrow-right.svg';
+import infoIcon from '@/../public/images/Icons/info.svg';
 import {
   connectWalletAction,
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
-import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
-import { ImageRef, WalletAdapterExtended } from '@/types';
+import { WalletAdapterExtended } from '@/types';
+import { BulletPoint } from '@/utils';
 
 import Modal from '../common/Modal/Modal';
 
@@ -21,118 +26,174 @@ export default function WalletSelectionModal({
   const dispatch = useDispatch();
   const { modalIsOpen } = useSelector((s) => s.walletState);
 
+  const privyAdapter = adapters.find(adapter => adapter.name === 'Privy');
+  const nativeAdapters = adapters.filter(adapter => adapter.name !== 'Privy');
+
   return (
     <AnimatePresence>
       {modalIsOpen && (
         <Modal
           close={() => dispatch(openCloseConnectionModalAction(false))}
-          className="flex flex-col w-full items-center relative overflow-visible"
-          title="Pick a wallet"
+          className="flex flex-col w-full sm:w-[90vw] md:w-[28em] max-w-[30em] items-center relative overflow-visible"
+          title="Connect now"
         >
-          <div className={twMerge("flex flex-col min-w-[25em] grow items-center gap-4 pb-4 pt-4")}>
-            {adapters.map((adapter) => {
-              return <WalletBlock
-                key={adapter.name}
-                name={adapter.name}
-                bgColor={adapter.color}
-                beta={adapter.beta}
-                recommended={adapter.recommended}
-                logo={adapter.iconOverride ?? adapter.icon}
-                imgClassName={({
-                  // Add custom classes here for each wallet if needed
-                  'Phantom': 'w-[10em] left-14',
-                  'Coinbase Wallet': 'w-[6em] left-6 top-6',
-                  Solflare: 'w-[6em] -left-2 top-12',
-                  'Backpack': 'w-[5em] left-2 top-6',
-                  'WalletConnect': 'w-[7em] left-8 top-2',
-                  SquadsX: 'w-[6em] left-4 top-10',
-                } as Record<WalletAdapterName, Partial<string>>)[adapter.name as WalletAdapterName] ?? ''}
-                onClick={() => {
-                  dispatch(connectWalletAction(adapter));
-                  dispatch(openCloseConnectionModalAction(false));
-                }}
-              />
-            })}
+          <div className={twMerge("flex flex-col grow items-start gap-6 pb-4 pt-4 w-full")}>
+            {privyAdapter && (
+              <div className="w-full px-3 sm:px-4">
+                <div className="space-y-3 sm:space-y-4">
+                  <button
+                    className="overflow-hidden group relative w-full h-24 border border-bcolor rounded-md cursor-pointer group transition-all hover:opacity-90 shadow-md hover:shadow-lg flex items-center justify-between px-3 sm:px-4 focus:outline-none"
+                    style={{
+                      background: 'linear-gradient(90deg, #1a1b3a, #2f3c7e, #5b3ea8)',
+                    }}
+                    onClick={() => {
+                      dispatch(openCloseConnectionModalAction(false));
+                      dispatch(connectWalletAction(privyAdapter));
+                    }}
+                  >
+                    <div className='flex flex-col gap-1'>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm sm:text-base text-white font-bold">Smart Account</span>
+                        <Tippy
+                          placement='top'
+                          content={
+                            <div className="space-y-2">
+                              <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
+                                Your Smart Account is a self-custodial wallet powered by Privy — fully yours, just easier to use.
+                              </p>
+                            </div>
+                          }
+                        >
+                          <div
+                            onClick={(e) => e.stopPropagation()}
+                            onMouseDown={(e) => e.preventDefault()}
+                          >
+                            <Image
+                              src={infoIcon}
+                              width={14}
+                              height={14}
+                              alt="info icon"
+                              className="opacity-50 hover:opacity-100 transition-opacity cursor-help"
+                            />
+                          </div>
+                        </Tippy>
+                      </div>
+
+                      {privyAdapter.beta && (
+                        <span className="px-2 py-0.5 rounded text-[0.65rem] font-bold uppercase tracking-wide bg-white/10 backdrop-blur-sm text-white/90 border border-white/20 shadow-[0_0_4px_rgba(255,255,255,0.1)]">
+                          NEW
+                        </span>
+                      )}
+                    </div>
+
+                    <Image
+                      src={adxLogo}
+                      alt={`ADX logo`}
+                      width={150}
+                      height={150}
+                      className="h-25 w-25 object-contain relative top-4 grayscale opacity-5"
+                    />
+
+                    <Image
+                      src={arrowRight}
+                      alt={`Arrow right icon`}
+                      width={32}
+                      height={32}
+                      className="h-10 w-10 object-contain group-hover:animate-[arrowSlide_2s_ease-in-out_infinite]"
+                    />
+
+                    <div className="absolute bottom-1 right-2 text-xxs font-medium text-[#cbd5e1]/40 mix-blend-screen">
+                      powered by <span className="text-[#cbd5e1]/70">Privy</span>
+                    </div>
+                  </button>
+
+                  {/* Benefits */}
+                  <div className="flex flex-wrap items-center gap-3 sm:gap-5 pt-1">
+                    <BulletPoint text="Auto-confirm" />
+                    <BulletPoint text="Secure" />
+                    <BulletPoint text="Easy to use" />
+
+                    <Link
+                      href='https://www.privy.io/wallets'
+                      target="_blank"
+                      className={twMerge(
+                        'text-xs opacity-50 hover:opacity-100 transition-opacity duration-300 hover:grayscale-0 flex ml-auto',
+                      )}
+                    >
+                      Learn more about Privy
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Separator */}
+            {privyAdapter && nativeAdapters.length > 0 && (
+              <div className="w-full px-3 sm:px-4">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-white/10"></div>
+                  </div>
+
+                  <Tippy content='Connect directly to your wallet without any intermediaries.'>
+                    <div className="relative flex justify-center text-xs cursor-help">
+                      <span className="px-3 bg-secondary text-white/50">Direct Connect</span>
+                    </div>
+                  </Tippy>
+                </div>
+              </div>
+            )}
+
+            {/* Native Adapters Grid */}
+            {nativeAdapters.length > 0 && (
+              <div className="w-full px-3 sm:px-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+                  {nativeAdapters.map((adapter) => (
+                    <button
+                      key={adapter.name}
+                      className="relative overflow-hidden rounded-md transition-all group flex items-center gap-2 border border-bcolor pt-1 pb-1 pl-2 pr-1 opacity-90 hover:opacity-100"
+                      style={{
+                        background: `linear-gradient(90deg, ${adapter.color}08 0%, ${adapter.color}03 100%)`,
+                      }}
+                      onClick={() => {
+                        dispatch(connectWalletAction(adapter));
+                        dispatch(openCloseConnectionModalAction(false));
+                      }}
+                    >
+                      {/* Enhanced color on hover */}
+                      <div
+                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        style={{
+                          background: `linear-gradient(90deg, ${adapter.color}20 0%, ${adapter.color}08 100%)`,
+                        }}
+                      />
+
+                      {/* Logo */}
+                      {adapter.iconOverride ?? adapter.icon ? (
+                        <div className="w-4 h-4 flex-shrink-0 relative z-10 flex items-center justify-center">
+                          <Image
+                            src={adapter.iconOverride ?? adapter.icon}
+                            alt={`${adapter.name} icon`}
+                            width={32}
+                            height={32}
+                            className="max-w-full max-h-full object-contain"
+                          />
+                        </div>
+                      ) : null}
+
+                      {/* Name */}
+                      <span className="text-sm font-semibold text-white relative z-10">
+                        {adapter.name}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        </Modal>
-      )}
-    </AnimatePresence>
+        </Modal >
+      )
+      }
+    </AnimatePresence >
   );
 }
-
-const WalletBlock = ({
-  name,
-  logo,
-  recommended,
-  onClick,
-  imgClassName,
-  beta,
-  bgColor,
-  className,
-  disabled,
-}: {
-  name: string;
-  logo?: string | ImageRef;
-  imgClassName?: string;
-  beta?: boolean;
-  recommended?: boolean;
-  onClick: () => void;
-  bgColor: string;
-  className?: string;
-  disabled?: boolean;
-}) => {
-  const walletBlock = (
-    <div className={twMerge(
-      'flex relative overflow-hidden border-bcolor rounded-full border w-[80%] h-[3.7em]',
-      className,
-    )}
-      key={name}
-    >
-      <div
-        className={twMerge('absolute top-0 left-0 w-full h-full flex items-end justify-end opacity-80 grayscale-0')}
-        style={{
-          backgroundColor: bgColor,
-        }}
-      >
-        {logo ? <Image src={logo} alt={`${name} icon`} width="150" height="150" className={twMerge(
-          "w-[9em] h-auto relative left-8 top-16 scale-x-[-1]",
-          imgClassName,
-        )} /> : null}
-      </div>
-
-      <div
-        className={twMerge(
-          'flex p-3 w-full h-full relative items-center justify-center',
-          disabled
-            ? 'cursor-not-allowed opacity-40'
-            : 'cursor-pointer duration-300',
-        )}
-        onClick={() => {
-          if (disabled) return;
-
-          onClick();
-        }}
-      >
-        <div className='flex relative flex-col items-center justify-center'>
-          <div className="text-lg font-semibold flex items-center justify-center pt-1 pl-3 pr-3">{name}</div>
-
-          {recommended ?
-            <div className={twMerge(
-              'flex text-[0.6em] font-semibold rounded-full bg-black text-yellow-200 border-2 pt-0 pl-3 pr-3 pb-0 border-yellow-200 opacity-80',
-            )}>
-              Recommended
-            </div> : null}
-
-          {beta ?
-            <div className={twMerge(
-              'flex text-[0.55em] font-semibold rounded-full bg-black text-yellow-200 border-2 pt-0 pl-3 pr-3 pb-0 border-yellow-200 opacity-80',
-            )}>
-              Beta
-            </div> : null}
-        </div>
-      </div>
-    </div>
-  );
-
-  return walletBlock;
-};
