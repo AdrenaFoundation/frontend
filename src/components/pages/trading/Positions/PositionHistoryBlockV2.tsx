@@ -67,7 +67,6 @@ export default function PositionHistoryBlockV2({
     : positionHistory.pnl + positionHistory.fees;
 
   const totalFees = positionHistory.exitFees + positionHistory.borrowFees;
-
   return (
     <>
       <AnimatePresence>
@@ -136,14 +135,16 @@ export default function PositionHistoryBlockV2({
                   value: positionHistory.entryPrice,
                   format: 'currency',
                   isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
-                  precision: positionHistory.token.symbol === 'BONK' ? 8 : 2,
+                  precision:
+                    positionHistory.token.displayPriceDecimalsPrecision,
                 },
                 {
                   title: 'Exit',
                   value: positionHistory.exitPrice,
                   format: 'currency',
                   isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
-                  precision: positionHistory.token.symbol === 'BONK' ? 8 : 2,
+                  precision:
+                    positionHistory.token.displayPriceDecimalsPrecision,
                 },
                 {
                   title: 'Fees',
@@ -172,13 +173,14 @@ export default function PositionHistoryBlockV2({
           </div>
 
           <AnimatePresence>
-            {isExpanded ? (
+            {isExpanded && (
               <EventBlocks
                 positionId={positionHistory.positionId}
+                token={positionHistory.token}
                 events={events}
                 setEvents={setEvents}
               />
-            ) : null}
+            )}
           </AnimatePresence>
           <div className="flex flex-row items-center justify-between">
             <div className={'p-1.5 px-2 sm:border-r border-r-bcolor'}>

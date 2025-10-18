@@ -338,7 +338,7 @@ function ChatTitle({
             }
           }}
         >
-          <Image src={collapseIcon} alt="collapse logo" width={6} height={6} />
+          <Image src={collapseIcon} alt="collapse logo" width={6} height={6} className='w-1.5 h-1.5' />
         </div>
       </div>
     </div>
@@ -384,7 +384,7 @@ function ChatContainerWrapper({
 
   return (
     <AnimatePresence>
-      {isChatOpen ? (
+      {isChatOpen && (
         <motion.div
           initial={{ opacity: 0, y: '-2rem' }}
           animate={{ opacity: 1, y: '-2.5rem' }}
@@ -405,7 +405,7 @@ function ChatContainerWrapper({
           />
           {children}
         </motion.div>
-      ) : null}
+      )}
     </AnimatePresence>
   );
 }

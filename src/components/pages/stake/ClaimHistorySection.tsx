@@ -38,6 +38,7 @@ interface ExportOptions {
 
 interface ClaimHistorySectionProps {
   walletAddress: string | null;
+  token?: 'ADX' | 'ALP';
   batchSize?: number;
   itemsPerPage?: number;
   optimisticClaim?: ClaimHistoryExtended | null;
@@ -46,6 +47,7 @@ interface ClaimHistorySectionProps {
 
 export default function ClaimHistorySection({
   walletAddress,
+  token = 'ADX',
   batchSize = 1000,
   itemsPerPage = 2,
   optimisticClaim,
@@ -81,7 +83,7 @@ export default function ClaimHistorySection({
     walletAddress,
     batchSize,
     itemsPerPage,
-    symbol: 'ADX',
+    symbol: token,
   });
 
   // Reset optimistic claim when fresh data is loaded
@@ -151,12 +153,12 @@ export default function ClaimHistorySection({
 
   // Calculate the all-time claimed amounts
   const allTimeClaimedUsdc =
-    (claimsHistory?.symbols.find((symbol) => symbol.symbol === 'ADX')
+    (claimsHistory?.symbols.find((symbol) => symbol.symbol === token)
       ?.allTimeRewardsUsdc ?? 0) + (optimisticClaim?.rewards_usdc ?? 0);
   const allTimeClaimedAdx =
-    (claimsHistory?.symbols.find((symbol) => symbol.symbol === 'ADX')
+    (claimsHistory?.symbols.find((symbol) => symbol.symbol === token)
       ?.allTimeRewardsAdx ?? 0) +
-    (claimsHistory?.symbols.find((symbol) => symbol.symbol === 'ADX')
+    (claimsHistory?.symbols.find((symbol) => symbol.symbol === token)
       ?.allTimeRewardsAdxGenesis ?? 0) +
     (optimisticClaim?.rewards_adx ?? 0);
 
@@ -203,7 +205,7 @@ export default function ClaimHistorySection({
         // Server uses large default page size (500,000), so most users get everything in one request
         const exportParams: Parameters<typeof DataApiClient.exportClaims>[0] = {
           userWallet: walletAddress,
-          symbol: 'ADX',
+          symbol: token,
         };
 
         if (options.type === 'year' && options.year) {
@@ -264,7 +266,7 @@ export default function ClaimHistorySection({
         }
 
         // Create filename based on options
-        let filename = `claims-adx-${walletAddress.slice(0, 8)}`;
+        let filename = `claims-${token.toLowerCase()}-${walletAddress.slice(0, 8)}`;
         if (options.type === 'year' && options.year) {
           filename += `-${options.year}`;
         } else if (options.type === 'dateRange') {
@@ -292,7 +294,7 @@ export default function ClaimHistorySection({
         setIsDownloading(false);
       }
     },
-    [walletAddress, isDownloading],
+    [walletAddress, isDownloading, token],
   );
 
   const handleExportSubmit = async () => {
@@ -330,7 +332,7 @@ export default function ClaimHistorySection({
       {/* Export Modal */}
       {showExportModal && (
         <Modal
-          title="Export Claim History - ADX"
+          title={`Export Claim History - ${token}`}
           close={() => {
             setExportWarning(''); // Clear warning when closing modal
             setShowExportModal(false);
@@ -498,10 +500,10 @@ export default function ClaimHistorySection({
                 >
                   <Image
                     src={downloadIcon}
-                    width={18}
+                    width={16}
                     height={16}
                     alt="Download icon"
-                    className="relative bottom-1"
+                    className="relative bottom-1 w-4 h-4"
                     style={{ width: 'auto/2', height: 'auto/2' }}
                   />
                 </div>

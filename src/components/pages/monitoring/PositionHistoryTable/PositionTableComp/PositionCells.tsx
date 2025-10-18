@@ -63,9 +63,11 @@ export const TokenCell = ({
 export const CurrencyCell = ({
   value,
   isCurrency = true,
+  precision,
 }: {
   value: number | null;
   isCurrency?: boolean;
+  precision?: number;
 }) => {
   return (
     <div>
@@ -75,6 +77,7 @@ export const CurrencyCell = ({
         prefix={
           value !== null && value > 10_000 && isCurrency ? '$' : undefined
         }
+        precision={precision}
         isDecimalDimmed={false}
         isAbbreviate={value !== null ? value > 10_000 : false}
         className="relative"

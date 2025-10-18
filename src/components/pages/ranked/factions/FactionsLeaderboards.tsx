@@ -520,7 +520,7 @@ export default function FactionsLeaderboards({
       </div>
 
       <AnimatePresence>
-        {activeProfile ? (
+        {activeProfile && (
           <Modal
             className="h-[80vh] w-full overflow-y-auto"
             wrapperClassName="items-start w-full max-w-[70em] sm:mt-0"
@@ -533,7 +533,7 @@ export default function FactionsLeaderboards({
               close={() => setActiveProfile(null)}
             />
           </Modal>
-        ) : null}
+        )}
       </AnimatePresence>
     </>
   );

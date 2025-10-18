@@ -9,6 +9,7 @@ export function middleware(request: NextRequest) {
     const allowedOrigins = [
       'https://app.adrena.xyz',
       'https://www.app.adrena.xyz',
+      'https://www.adrena.trade',
     ];
 
     const isValidVercelPreview = (url: string) => {

@@ -155,7 +155,7 @@ export default function UpgradeLockedStake({
                 }}
               >
                 <Image
-                  className="mr-1 opacity-60 relative"
+                  className="mr-1 opacity-60 relative w-3 h-3"
                   src={walletImg}
                   height={18}
                   width={18}

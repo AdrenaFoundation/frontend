@@ -56,8 +56,8 @@ export default function PoolRatios({
                     <Image
                       src={token.image}
                       alt="token icon"
-                      width="24"
-                      height="24"
+                      width={24}
+                      height={24}
                     />
 
                     <p className="text-lg font-semibold">{token.symbol}</p>

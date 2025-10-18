@@ -9,6 +9,7 @@ import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Loader from '@/components/Loader/Loader';
 import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
+import ALPStakingRecap from '@/components/pages/stake/ALPStakingRecap';
 import FullyLiquidALPStaking from '@/components/pages/stake/FullyLiquidALPStaking';
 import StakeApr from '@/components/pages/stake/StakeApr';
 import StakeLanding from '@/components/pages/stake/StakeLanding';
@@ -75,6 +76,9 @@ export default function Stake({ connected }: PageProps) {
     null;
 
   const [optimisticClaimAdx, setOptimisticClaimAdx] =
+    useState<ClaimHistoryExtended | null>(null);
+
+  const [optimisticClaimAlp, setOptimisticClaimAlp] =
     useState<ClaimHistoryExtended | null>(null);
 
   const [adxDetails, setAdxDetails] = useState<ADXTokenDetails>({
@@ -410,7 +414,6 @@ export default function Stake({ connected }: PageProps) {
             : undefined,
       });
 
-      // No alp claim anymore since it became liquid
       if (tokenSymbol === 'ADX') {
         const optimisticClaim = {
           claim_id: new BN(Date.now()).toString(),
@@ -431,6 +434,26 @@ export default function Stake({ connected }: PageProps) {
         adxRewards.pendingGenesisAdxRewards = 0;
         fetchAdxRewards();
         setOptimisticClaimAdx(optimisticClaim);
+      } else if (tokenSymbol === 'ALP') {
+        const optimisticClaim = {
+          claim_id: new BN(Date.now()).toString(),
+          rewards_adx: alpRewards.pendingAdxRewards,
+          rewards_adx_genesis: alpRewards.pendingGenesisAdxRewards,
+          rewards_usdc: alpRewards.pendingUsdcRewards,
+          signature: 'optimistic',
+          transaction_date: new Date(),
+          created_at: new Date(),
+          stake_mint: stakedTokenMint,
+          symbol: tokenSymbol,
+          source: 'optimistic',
+        } as unknown as ClaimHistoryExtended;
+
+        // Reset rewards in the ui until next fetch
+        alpRewards.pendingUsdcRewards = 0;
+        alpRewards.pendingAdxRewards = 0;
+        alpRewards.pendingGenesisAdxRewards = 0;
+        fetchAlpRewards();
+        setOptimisticClaimAlp(optimisticClaim);
       }
     } catch (error) {
       console.error('error', error);
@@ -694,9 +717,9 @@ export default function Stake({ connected }: PageProps) {
   // The rewards pending for the user
   const { rewards: adxRewards, fetchRewards: fetchAdxRewards } =
     useStakingClaimableRewards('ADX');
-  // Remove this line since ALP staking doesn't exist anymore
-  // const { rewards: alpRewards, fetchRewards: fetchAlpRewards } =
-  //   useStakingClaimableRewards('ALP');
+
+  const { rewards: alpRewards, fetchRewards: fetchAlpRewards } =
+    useStakingClaimableRewards('ALP');
 
   // The rewards pending collection in the current round
   const alpStakingCurrentRoundRewards = useStakingAccountRewardsAccumulated(
@@ -824,16 +847,18 @@ export default function Stake({ connected }: PageProps) {
                   handleClickOnClaimRewardsAndRedeem={() =>
                     handleClaimRewardsAndRedeemALP()
                   }
-                  userPendingUsdcRewards={0}
-                  userPendingAdxRewards={0}
+                  userPendingUsdcRewards={alpRewards.pendingUsdcRewards}
+                  userPendingAdxRewards={alpRewards.pendingAdxRewards}
                   roundPendingUsdcRewards={
                     alpStakingCurrentRoundRewards.usdcRewards ?? 0
                   }
                   roundPendingAdxRewards={
                     alpStakingCurrentRoundRewards.adxRewards ?? 0
                   }
-                  pendingGenesisAdxRewards={0}
+                  pendingGenesisAdxRewards={alpRewards.pendingGenesisAdxRewards}
                   walletAddress={wallet?.walletAddress ?? null}
+                  optimisticClaim={optimisticClaimAlp}
+                  setOptimisticClaim={setOptimisticClaimAlp}
                 />
               </div>
             ) : null}
@@ -916,6 +941,8 @@ export default function Stake({ connected }: PageProps) {
             </AnimatePresence>
           </>
         </div>
+
+        <ALPStakingRecap walletAddress={wallet?.walletAddress ?? null} />
       </div>
     </div>
   );

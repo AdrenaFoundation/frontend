@@ -266,21 +266,21 @@ export default function Mutagen({ isMobile = false }: { isMobile?: boolean }) {
           <Image
             src={needle}
             alt={'needle'}
-            width="30"
-            height="30"
+            width={30}
+            height={30}
             className={'w-3 h-3 sm:w-4 sm:h-4 grayscale'}
           />
         </div>
 
-        {isModalOpen && (
-          <Modal
-            close={() => setIsModalOpen(false)}
-            className="flex flex-col w-full p-5 relative overflow-visible"
-          >
-            {content}
-          </Modal>
-        )}
-      </AnimatePresence>
+          {isModalOpen && (
+            <Modal
+              close={() => setIsModalOpen(false)}
+              className="flex flex-col w-full p-5 relative overflow-visible"
+            >
+              {content}
+            </Modal>
+          )}
+        </AnimatePresence>
     );
   }
 
@@ -313,8 +313,8 @@ export default function Mutagen({ isMobile = false }: { isMobile?: boolean }) {
             <Image
               src={needle}
               alt={'needle'}
-              width="30"
-              height="30"
+              width={30}
+              height={30}
               className={'w-4 h-4 grayscale'}
             />
           </div>

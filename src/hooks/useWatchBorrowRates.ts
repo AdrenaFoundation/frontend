@@ -6,8 +6,6 @@ import { RATE_DECIMALS } from '@/constant';
 import { useDispatch } from '@/store/store';
 import { nativeToUi } from '@/utils';
 
-let borrowRateInterval: NodeJS.Timeout | null = null;
-
 const BORROW_RATE_LOADING_INTERVAL_IN_MS = 20_000;
 
 export default function useWatchBorrowRates() {
@@ -53,19 +51,14 @@ export default function useWatchBorrowRates() {
       console.error('error happened loading borrow rates', e),
     );
 
-    borrowRateInterval = setInterval(() => {
+    const intervalId = setInterval(() => {
       loadBorrowRates().catch((e) =>
         console.error('error happened loading borrow rates', e),
       );
     }, BORROW_RATE_LOADING_INTERVAL_IN_MS);
 
     return () => {
-      if (!borrowRateInterval) {
-        return;
-      }
-
-      clearInterval(borrowRateInterval);
-      borrowRateInterval = null;
+      clearInterval(intervalId);
     };
 
     // Manually handle dependencies to avoid unwanted refresh

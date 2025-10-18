@@ -120,6 +120,8 @@ export default function Achievements({
                                     alt="Achievements banner"
                                     className="absolute top-0 left-0 w-full h-full object-cover opacity-30 rounded-tl-xl rounded-tr-xl"
                                     style={{ objectPosition: "50% 50%" }}
+                                    width={1000}
+                                    height={1000}
                                 />
                             </motion.span>
                         </AnimatePresence>

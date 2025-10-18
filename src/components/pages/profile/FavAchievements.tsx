@@ -29,67 +29,87 @@ export default function FavAchievements({
         >
           <AnimatePresence mode="wait">
             {isFavoriteLoading ? (
-              <div className="scale-[0.7] sm:scale-[0.9] mt-1.5 sm:mt-0 flex flex-row transform translate-x-[1.7rem] sm:translate-x-[9rem] md:translate-x-[4rem] translate-y-[2rem]  sm:translate-y-[1rem]">
-                {Array.from({ length: 3 }, (_, i) => i + 1).map(
-                  (skeleton, i) => (
-                    <motion.div
-                      key={`skeleton-${skeleton}`}
+              <motion.section
+                key="loading-section"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="scale-[0.7] sm:scale-[0.9] mt-1.5 sm:mt-0 flex flex-row transform translate-x-[1.7rem] sm:translate-x-[9rem] md:translate-x-[4rem] translate-y-[2rem] sm:translate-y-[1rem]"
+              >
+                <AnimatePresence>
+                  {Array.from({ length: 3 }, (_, i) => i + 1).map(
+                    (skeleton, i) => (
+                      <motion.div
+                        key={`skeleton-${skeleton}`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3, delay: i * 0.05 }}
+                        className={twMerge(
+                          'bg-[#050D14] animate-loader rounded-md w-[8rem] h-[9.5rem] md:w-[6.5rem] md:h-[9rem] border border-white/10 scale-[0.6] lg:scale-[0.8] lg:w-[9rem] lg:h-[11rem]',
+                          i === 0 ? 'rotate-[-30deg] relative top-6 left-4' : '',
+                          i === 2 ? 'rotate-[20deg] relative top-6' : '',
+                        )}
+                        style={{
+                          transform: `translateX(${i * -2.1875}rem) ${i === 0 ? 'rotate(-30deg)' : i === 2 ? 'rotate(20deg)' : ''}`,
+                        }}
+                      />
+                    ),
+                  )}
+                </AnimatePresence>
+              </motion.section>
+            ) : (
+              <motion.section
+                key="achievements-section"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="flex flex-row"
+              >
+                <AnimatePresence>
+                  {achievements.map((achievement, i) => (
+                    <motion.span
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3, delay: i * 0.05 }}
-                      className={twMerge(
-                        'bg-[#050D14] animate-loader rounded-md w-[8rem] h-[9.5rem] md:w-[6.5rem] md:h-[9rem] border border-white/10 scale-[0.6] lg:scale-[0.8] lg:w-[9rem] lg:h-[11rem]',
-                        i === 0 ? 'rotate-[-30deg] relative top-6 left-4' : '',
-                        i === 2 ? 'rotate-[20deg] relative top-6' : '',
-                      )}
-                      style={{
-                        transform: `translateX(${i * -2.1875}rem) ${i === 0 ? 'rotate(-30deg)' : i === 2 ? 'rotate(20deg)' : ''}`,
-                      }}
-                    />
-                  ),
-                )}
-              </div>
-            ) : (
-              achievements.map((achievement, i) => (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3, delay: i * 0.05 }}
-                  key={`achievement-${achievement.index}`}
-                >
-                  <Achievement
-                    unlocked={true}
-                    achievement={achievement as AchievementInfoExtended}
-                    statPlacement="top"
-                    className={twMerge(
-                      'w-[4rem] h-[10rem] scale-[0.6] lg:scale-[0.8] lg:w-[8rem] lg:h-[10rem]',
-                      achievements.length === 3
-                        ? twMerge(
-                          i === 0
-                            ? 'rotate-[-30deg] relative top-6 left-4'
-                            : '',
-                          i === 2 ? 'rotate-[20deg] relative top-6' : '',
-                        )
-                        : achievements.length === 2
-                          ? twMerge(
-                            i === 0
-                              ? 'rotate-[-30deg] relative top-6 left-4'
+                      key={`achievement-${achievement.index}`}
+                    >
+                      <Achievement
+                        unlocked={true}
+                        achievement={achievement as AchievementInfoExtended}
+                        statPlacement="top"
+                        className={twMerge(
+                          'w-[4rem] h-[10rem] scale-[0.6] lg:scale-[0.8] lg:w-[8rem] lg:h-[10rem]',
+                          achievements.length === 3
+                            ? twMerge(
+                              i === 0
+                                ? 'rotate-[-30deg] relative top-6 left-4'
+                                : '',
+                              i === 2 ? 'rotate-[20deg] relative top-6' : '',
+                            )
+                            : achievements.length === 2
+                              ? twMerge(
+                                i === 0
+                                  ? 'rotate-[-30deg] relative top-6 left-4'
+                                  : '',
+                                i === 1 ? 'rotate-[20deg] relative top-6' : '',
+                              )
                               : '',
-                            i === 1 ? 'rotate-[20deg] relative top-6' : '',
-                          )
-                          : '',
-                    )}
-                  />
-                </motion.span>
-              ))
+                        )}
+                      />
+                    </motion.span>
+                  ))}
+                </AnimatePresence>
+              </motion.section>
             )}
           </AnimatePresence>
         </div>
       </div>
       <AnimatePresence>
-        {isModalOpen ? (
+        {isModalOpen && (
           <Modal
             close={() => setIsModalOpen(false)}
             title="Favorite Achievements"
@@ -105,7 +125,7 @@ export default function FavAchievements({
               ))}
             </div>
           </Modal>
-        ) : null}
+        )}
       </AnimatePresence>
     </>
   );

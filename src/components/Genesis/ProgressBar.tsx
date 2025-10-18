@@ -110,6 +110,8 @@ export default function ProgressBar({
             src={GensisStepsBGImg}
             alt="Steps background"
             className="max-w-[1040px] z-0 hidden sm:block"
+            height={1040}
+            width={1040}
           />
           <div className="sm:absolute flex flex-row justify-center top-2 w-full sm:max-w-[920px] px-5 pt-5 sm:px-[50px] sm:pt-0">
             {steps.map((_, index) =>
@@ -173,6 +175,8 @@ export default function ProgressBar({
                 isOpen && 'rotate-180',
               )}
               onClick={() => setIsOpen(true)}
+              height={34}
+              width={34}
             />
           </div>
 

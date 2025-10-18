@@ -292,8 +292,8 @@ function RaffleAdditionalPrize({
       const profile = profileMap.get(wallet);
       return profile
         ? PROFILE_PICTURES[
-            profile.profilePicture as keyof typeof PROFILE_PICTURES
-          ]
+        profile.profilePicture as keyof typeof PROFILE_PICTURES
+        ]
         : PROFILE_PICTURES[0];
     },
     [profileMap],
@@ -519,7 +519,7 @@ export default function Anniversary() {
   );
 
   const getUserComparison = useCallback(
-    (title: string, currentValue: number) => {
+    (title: string, currentValue: number, leaderWallet?: string) => {
       if (!anniversaryData?.user_stats || !walletAddress) {
         return null;
       }
@@ -578,6 +578,7 @@ export default function Anniversary() {
       const difference = userValue - currentValue;
       const isAhead = difference > 0;
       const isSame = difference === 0;
+      const isLeader = isSame && walletAddress === leaderWallet;
 
       const formattedUserValue = isConsecutive
         ? Math.floor(userValue).toString()
@@ -606,9 +607,14 @@ export default function Anniversary() {
                 vs leader
               </div>
             )}
-            {isSame && (
+            {isSame && !isLeader && (
               <div className="text-xs mt-1 text-yellow-400">
                 Tied with leader!
+              </div>
+            )}
+            {isSame && isLeader && (
+              <div className="text-xs mt-1 font-semibold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#10B981,45%,#34D399,55%,#10B981)]">
+                You are the leader! 🏆
               </div>
             )}
           </div>
@@ -621,6 +627,7 @@ export default function Anniversary() {
   return (
     <div className="w-full mx-auto relative flex flex-col pb-4">
       {/* Background image */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/hb-3.jpg"
         alt="anniversary bg"
@@ -635,10 +642,13 @@ export default function Anniversary() {
         </div>
 
         <div className="relative w-full sm:max-w-[40em] h-[15em] border-t-2 border-b-2 sm:border-2 sm:border-white/100 overflow-hidden">
-          <img
+          <Image
             src="https://iyd8atls7janm7g4.public.blob.vercel-storage.com/anniversary/raffle-3.jpg"
             alt="raffle"
             className="absolute inset-0 w-full h-full object-cover"
+            fill
+            sizes="(min-width: 640px) 40em, 100vw"
+            priority
           />
           <video
             className="absolute inset-0 w-full h-full object-cover"
@@ -705,7 +715,13 @@ export default function Anniversary() {
                       record={anniversaryData?.records?.[prize.recordKey]}
                       profileMap={profileMap}
                       onClickProfile={handleProfileClick}
-                      getUserComparison={getUserComparison}
+                      getUserComparison={(title, currentValue) =>
+                        getUserComparison(
+                          title,
+                          currentValue,
+                          anniversaryData?.records?.[prize.recordKey]?.wallet,
+                        )
+                      }
                     />
                   ))}
                 </div>

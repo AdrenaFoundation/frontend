@@ -65,48 +65,38 @@ export default function CompetitionBanner({
     usdcRewards,
   ]);
 
-  return (
-    <div className="relative z-20">
-      <div
-        className={twMerge(
-          'relative flex flex-col items-center w-full border-b',
-          bannerClassName,
-        )}
-      >
-        <div className="mt-[4em]">
-          <AnimatePresence>
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{}}
-              key={title}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              {seasonName === 'interseason3' ||
-              seasonName === 'anniversary1' ? (
-                <div
-                  className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-60"
-                  style={{
-                    backgroundImage: `url(${banner})`,
-                    backgroundOrigin: 'border-box',
-                    backgroundPosition: 'center 20%',
-                  }}
-                  // eslint-disable-next-line @next/next/no-img-element
-                />
-              ) : (
-                <img
-                  src={banner}
-                  alt="competition banner"
-                  className="absolute top-0 left-0 w-full h-full object-cover opacity-30"
-                />
-              )}
-            </motion.span>
-          </AnimatePresence>
-          <div className="absolute bottom-0 left-0 w-full h-[10em] bg-gradient-to-b from-transparent to-secondary z-10" />
-          <div className="absolute top-0 right-0 w-[10em] h-full bg-gradient-to-r from-transparent to-secondary z-10" />
-          <div className="absolute top-0 left-0 w-[10em] h-full bg-gradient-to-l from-transparent to-secondary z-10" />
-        </div>
+    return (
+        <div className="relative z-20">
+            <div className={twMerge("relative flex flex-col items-center w-full border-b", bannerClassName)}>
+                <div className="mt-[4em]">
+                    <AnimatePresence>
+                        <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{}}
+                            key={title}
+                        >
+                            {seasonName === 'interseason3' || seasonName === 'anniversary1' ? <div
+                                className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-60"
+                                style={{
+                                    backgroundImage: `url(${banner})`,
+                                    backgroundOrigin: 'border-box',
+                                    backgroundPosition: 'center 20%'
+                                }}
+                            /> : <Image
+                                src={banner}
+                                alt="competition banner"
+                                className="absolute top-0 left-0 w-full h-full object-cover opacity-30"
+                                width={1040}
+                                height={1040}
+                            />}
+                        </motion.span>
+                    </AnimatePresence>
+                    <div className="absolute bottom-0 left-0 w-full h-[10em] bg-gradient-to-b from-transparent to-secondary z-10" />
+                    <div className="absolute top-0 right-0 w-[10em] h-full bg-gradient-to-r from-transparent to-secondary z-10" />
+                    <div className="absolute top-0 left-0 w-[10em] h-full bg-gradient-to-l from-transparent to-secondary z-10" />
+                </div>
 
         {seasonName !== 'factions' ? (
           <div className="z-10 text-center">
@@ -242,13 +232,15 @@ export default function CompetitionBanner({
                   </div>
                 ) : null}
 
-                {adxRewards > 0 ? (
-                  <div className="flex flex-row gap-1 items-center justify-center">
-                    <Image
-                      src={window.adrena.client.adxToken.image}
-                      alt="ADX logo"
-                      className="w-4 h-4"
-                    />
+                            {adxRewards > 0 ?
+                                <div className="flex flex-row gap-1 items-center justify-center">
+                                    <Image
+                                        src={window.adrena.client.adxToken.image}
+                                        alt="ADX logo"
+                                        className="w-4 h-4"
+                                        width={16}
+                                        height={16}
+                                    />
 
                     <FormatNumber
                       format="number"
@@ -265,13 +257,12 @@ export default function CompetitionBanner({
                     {jtoRewards || bonkRewards ? (
                       <div className="flex text-md text-txtfade">/</div>
                     ) : null}
-                  </div>
-                ) : null}
+                  </div> : null}
 
                 {jtoRewards ? (
                   <>
                     <div className="flex flex-row gap-1 items-center justify-center">
-                      <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" />
+                      <Image src={jtoLogo} alt="JTO logo" className="w-5 h-5" width={20} height={20} />
 
                       <FormatNumber
                         format="number"
@@ -297,7 +288,8 @@ export default function CompetitionBanner({
                         src={bonkLogo}
                         alt="BONK logo"
                         className="w-4 h-4"
-                      />
+                        width={16}
+                        height={16} />
 
                       <FormatNumber
                         format="number"
@@ -333,6 +325,8 @@ export default function CompetitionBanner({
               src={jitoLogo}
               alt="jito logo"
               className="w-[3em] md:w-[4em]"
+              width={48}
+              height={48}
             />
 
             {seasonName === 'factions' || seasonName === 'interseason3' ? (
@@ -343,6 +337,8 @@ export default function CompetitionBanner({
                   src={bonkLogo}
                   alt="BONK logo"
                   className="w-[1.7em] md:w-[2.5em]"
+                  width={28}
+                  height={28}
                 />
               </>
             ) : null}
@@ -386,12 +382,14 @@ export default function CompetitionBanner({
           )}
         </div>
 
-        <Image
-          src={timerBg}
-          alt="background graphic"
-          className="w-[300px] rotate-[180deg]"
-        />
-      </div>
-    </div>
-  );
+                <Image
+                    src={timerBg}
+                    alt="background graphic"
+                    className="w-[300px] h-auto rotate-[180deg]"
+                    width={0}
+                    height={0}
+                    style={{ width: '300px', height: 'auto' }}
+                />
+            </div>
+        </div>);
 }

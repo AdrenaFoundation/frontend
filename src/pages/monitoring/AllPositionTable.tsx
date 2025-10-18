@@ -137,9 +137,17 @@ export default function AllPositionTable({
             isCurrency={!isNative}
           />
         ),
-        entryPrice: <CurrencyCell value={position.price} />,
+        entryPrice: (
+          <CurrencyCell
+            value={position.price}
+            precision={position.token.displayPriceDecimalsPrecision}
+          />
+        ),
         liquidationPrice: (
-          <CurrencyCell value={position.liquidationPrice ?? null} />
+          <CurrencyCell
+            value={position.liquidationPrice ?? null}
+            precision={position.token.displayPriceDecimalsPrecision}
+          />
         ),
         openDate: <DateCell date={position.openDate} />,
         resolve: positionBorrowFeesShouldBeResolved(position) ? (
@@ -147,7 +155,10 @@ export default function AllPositionTable({
             size="sm"
             variant="lightbg"
             title="Resolve Borrow Fees"
-            onClick={() => borrowResolve(position)}
+            onClick={(e) => {
+              e?.stopPropagation();
+              borrowResolve(position);
+            }}
             className="text-xxs text-nowrap"
           />
         ) : (

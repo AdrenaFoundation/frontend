@@ -38,8 +38,8 @@ export default function Filter({
                         <Image
                             src={option.icon}
                             alt={'icon'}
-                            width="12"
-                            height="12"
+                            width={12}
+                            height={12}
                             className={iconClassName}
                         />
                     ) : null}

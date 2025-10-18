@@ -1,5 +1,6 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
+import { useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import AutoScalableDiv from '@/components/common/AutoScalableDiv/AutoScalableDiv';
@@ -34,6 +35,8 @@ export const FeesSection = ({
     newPositionInfo,
     isInfoLoading,
 }: FeesSectionProps) => {
+    const [displayBorrowRateAsApr, setDisplayBorrowRateAsApr] = useState(false);
+
     const highSwapFeeTippyContent = (
         <div className="gap-4 flex flex-col">
             <div className='text-txtfade text-sm'>
@@ -41,6 +44,14 @@ export const FeesSection = ({
             </div>
         </div>
     );
+
+    const borrowRateHourly = useMemo(() => {
+        return ((custody && usdcCustody && (borrowRates[side === "long" ? custody.pubkey.toBase58() : usdcCustody.pubkey.toBase58()])) ?? 0) * 100;
+    }, [borrowRates, custody, side, usdcCustody]);
+
+    const borrowRateApr = useMemo(() => {
+        return borrowRateHourly * 24 * 365.4;
+    }, [borrowRateHourly]);
 
     return (
         <>
@@ -158,15 +169,23 @@ export const FeesSection = ({
                             <TextExplainWrapper
                                 title="Dynamic Borrow Rate"
                                 className="flex-col"
+                                onClick={() => setDisplayBorrowRateAsApr(!displayBorrowRateAsApr)}
                             >
-                                <FormatNumber
-                                    nb={((custody && usdcCustody && (borrowRates[side === "long" ? custody.pubkey.toBase58() : usdcCustody.pubkey.toBase58()])) ?? 0) * 100}
-                                    precision={RATE_DECIMALS}
-                                    minimumFractionDigits={4}
-                                    suffix="%/hr"
+                                {displayBorrowRateAsApr ? <FormatNumber
+                                    nb={borrowRateApr}
+                                    precision={2}
+                                    suffix="%"
                                     isDecimalDimmed={false}
                                     className="text-base"
                                 />
+                                    : <FormatNumber
+                                        nb={borrowRateHourly}
+                                        precision={RATE_DECIMALS}
+                                        minimumFractionDigits={4}
+                                        suffix="%/hr"
+                                        isDecimalDimmed={false}
+                                        className="text-base"
+                                    />}
                             </TextExplainWrapper>
                         </AutoScalableDiv>
                     ) : (

@@ -38,7 +38,7 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
     setTotalStakedAmount(totalALP);
   }, [stakingAccounts, connected]);
 
-  const url = 'https://app.adrena.xyz/genesis';
+  const url = 'https://www.adrena.trade/genesis';
 
   const text =
     totalStakedAmount !== null && totalStakedAmount > 0 && connected ? (
@@ -83,6 +83,8 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
           src={adrenaMonsters}
           alt="Adrena monsters"
           className="w-full max-w-[400px] m-auto"
+          width={400}
+          height={400}
         />
         <div className="absolute bottom-0 h-[120px] w-full bg-gradient-to-b from-secondary/0 to-secondary" />
       </div>
