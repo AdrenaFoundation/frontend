@@ -500,10 +500,10 @@ export default function ClaimHistorySection({
                 >
                   <Image
                     src={downloadIcon}
-                    width={18}
+                    width={16}
                     height={16}
                     alt="Download icon"
-                    className="relative bottom-1"
+                    className="relative bottom-1 w-4 h-4"
                     style={{ width: 'auto/2', height: 'auto/2' }}
                   />
                 </div>

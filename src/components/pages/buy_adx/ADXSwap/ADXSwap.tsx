@@ -1,10 +1,9 @@
 import { Connection } from '@solana/web3.js';
 import { twMerge } from 'tailwind-merge';
 
+import JupiterWidget from '@/components/JupiterWidget/JupiterWidget';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { WalletAdapterExtended } from '@/types';
-
-import ADXJupiterWidget from './ADXJupiterWidget';
 
 export default function ADXSwap({
   className,
@@ -28,13 +27,12 @@ export default function ADXSwap({
       )}
     >
       <div className={!connected ? 'blur-sm' : ''}>
-        <ADXJupiterWidget
-          defaultOutputMint={adxMint}
-          connected={connected}
+        <JupiterWidget
           adapters={adapters}
           activeRpc={activeRpc}
           id="adx-swap-widget"
           className="bg-transparent border-transparent min-w-[300px] w-full min-h-[550px]"
+          defaultOutputMint={adxMint}
         />
       </div>
 

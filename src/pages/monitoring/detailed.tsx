@@ -161,7 +161,7 @@ export default function DetailedMonitoring({
 
             {selectedTab === 'All' || selectedTab === 'Staking' ? (
               <AnimatePresence mode="wait">
-                {adxStakingAccount ? (
+                {adxStakingAccount && (
                   <motion.div
                     key="adx-staking-data"
                     initial={{ opacity: 0 }}
@@ -181,7 +181,8 @@ export default function DetailedMonitoring({
                       className="bg-[#050D14]"
                     />
                   </motion.div>
-                ) : (
+                )}
+                {!adxStakingAccount && (
                   <motion.div
                     key="adx-staking-loader"
                     initial={{ opacity: 0 }}
@@ -196,7 +197,7 @@ export default function DetailedMonitoring({
 
             {selectedTab === 'All' || selectedTab === 'Fees' ? (
               <AnimatePresence mode="wait">
-                {mainPool ? (
+                {mainPool && (
                   <motion.div
                     key="fees-data"
                     initial={{ opacity: 0 }}
@@ -213,7 +214,8 @@ export default function DetailedMonitoring({
                       className="bg-[#050D14]"
                     />
                   </motion.div>
-                ) : (
+                )}
+                {!mainPool && (
                   <motion.div
                     key="fees-loader"
                     initial={{ opacity: 0 }}
@@ -237,7 +239,7 @@ export default function DetailedMonitoring({
             className="flex flex-col lg:flex-row gap-3"
           >
             <AnimatePresence mode="wait">
-              {mainPool ? (
+              {mainPool && (
                 <motion.div
                   key="positions-now-data"
                   initial={{ opacity: 0 }}
@@ -251,7 +253,8 @@ export default function DetailedMonitoring({
                     mainPool={mainPool}
                   />
                 </motion.div>
-              ) : (
+              )}
+              {!mainPool && (
                 <motion.div
                   key="positions-now-loader"
                   initial={{ opacity: 0 }}
@@ -264,7 +267,7 @@ export default function DetailedMonitoring({
             </AnimatePresence>
 
             <AnimatePresence mode="wait">
-              {mainPool ? (
+              {mainPool && (
                 <motion.div
                   key="positions-alltime-data"
                   initial={{ opacity: 0 }}
@@ -278,7 +281,8 @@ export default function DetailedMonitoring({
                     mainPool={mainPool}
                   />
                 </motion.div>
-              ) : (
+              )}
+              {!mainPool && (
                 <motion.div
                   key="positions-alltime-loader"
                   initial={{ opacity: 0 }}

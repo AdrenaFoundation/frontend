@@ -13,6 +13,7 @@ import useCountDown from '@/hooks/useCountDown';
 import { useDispatch } from '@/store/store';
 import { PageProps } from '@/types';
 import { nativeToUi } from '@/utils';
+import { getWalletAddress } from '@/utils';
 
 export default function UserVest({
   userVest: paramUserVest,
@@ -33,7 +34,7 @@ export default function UserVest({
     userVest ? new Date(userVest.unlockEndTimestamp.toNumber() * 1000) : new Date(),
   );
 
-  const isDelegate = userVest && wallet && userVest?.delegate.toBase58() === wallet?.publicKey.toBase58();
+  const isDelegate = userVest && wallet && userVest?.delegate.toBase58() === getWalletAddress(wallet);
 
   const [updatedDelegate, setUpdatedDelegate] = useState<string | null>(null);
   const [proofedUpdatedDelegate, setProofedUpdatedDelegate] = useState<PublicKey | null>(null);
@@ -79,7 +80,7 @@ export default function UserVest({
       try {
         setProofedUpdatedDelegate(new PublicKey(trimmed));
 
-        if (trimmed === wallet?.publicKey.toBase58()) {
+        if (trimmed === getWalletAddress(wallet)) {
           setDelegateError('Cannot delegate to yourself');
         } else {
           setDelegateError(null);
@@ -92,7 +93,7 @@ export default function UserVest({
       setProofedUpdatedDelegate(null);
       setDelegateError(null);
     }
-  }, [updatedDelegate, wallet?.publicKey]);
+  }, [updatedDelegate, wallet]);
 
   const setDelegate = useCallback(async () => {
     if (delegateError) return;

@@ -40,7 +40,7 @@ export default function StatsDisplay({
             alt="Live icon"
             width={12}
             height={12}
-            className="animate-pulse"
+            className="animate-pulse w-3 h-3"
           />
         )}
       </div>

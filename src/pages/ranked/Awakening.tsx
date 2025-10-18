@@ -97,7 +97,7 @@ const CompetitionStats = memo(
             </div>
 
             <div className="flex gap-2 items-center justify-center w-full">
-              <Image src={jtoImage} alt="adx logo" width={22} height={22} />
+              <Image src={jtoImage} alt="adx logo" className="w-6 h-6" width={22} height={22} />
 
               <div className="text-lg font-semibold w-[6.2em]">25,000 JTO</div>
             </div>
@@ -108,10 +108,10 @@ const CompetitionStats = memo(
       <div className="flex flex-col items-center bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow h-[7.5em]">
         <div className="flex flex-col w-full items-center h-auto grow-0">
           <div className="flex items-center p-2">
-            <Image src={jitoLogo} alt="jito logo" width={24} height={24} />
+            <Image src={jitoLogo} alt="jito logo" className="w-6 h-6" width={24} height={24} />
             <div className="font-semibold text-base ml-1">Airdrop</div>
             <span className="text-sm text-txtfade font-semibold ml-1">(6,000</span>
-            <Image src={jtoImage} alt="JTOlogo" width={24} height={24} />
+            <Image src={jtoImage} alt="JTOlogo" className="w-6 h-6" width={24} height={24} />
             <span className="text-sm text-txtfade font-semibold">)</span>
             {eligibleJitosolAirdropWallets.includes(
               wallet?.walletAddress ?? '',

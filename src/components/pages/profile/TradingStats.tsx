@@ -134,7 +134,7 @@ export default function TradingStats({
   return (
     <div className={className}>
       <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 items-center justify-between gap-2 p-3">
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {STATS.map((stat) =>
             stat.nb ? (
               <li

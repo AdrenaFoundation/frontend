@@ -205,6 +205,7 @@ export default function ALPSwapBuy({
     collateralToken.mint,
     doJupiterSwap,
     swapSlippage,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     !!tokenPrices[usdcToken.symbol],
     usdcToken,
   ]);
@@ -284,7 +285,7 @@ export default function ALPSwapBuy({
       {eligibleToSwaplessRoute ? (
         <Tippy
           content={
-            'Use the swapless route to mint ALP directly with this token. Fees are higher when minting with non-stable assets.'
+            'Use the swapless route to mint ALP directly with this token. No fees when minting with USDC. Fees apply when minting with non-stable assets.'
           }
           placement="top"
         >
@@ -360,6 +361,8 @@ export default function ALPSwapBuy({
                   }
                   className="w-4 h-4"
                   alt="token logo"
+                  width={16}
+                  height={16}
                 />
                 <p className="text-base font-semibold">
                   {useSwaplessRoute

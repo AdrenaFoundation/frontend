@@ -112,6 +112,8 @@ export default function StakeTimerAnimation({
             }
             className="w-6 h-6"
             alt={isADX ? 'adx logo' : 'alp logo'}
+            width={24}
+            height={24}
           />
           <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-3">
             <FormatNumber
@@ -120,7 +122,7 @@ export default function StakeTimerAnimation({
               suffix={isADX ? ' ADX' : ' ALP'}
             />
             <div className="flex flex-row gap-1 items-center opacity-50">
-              <Image src={lockIcon} className="w-3 h-3" alt="lock icon" />
+              <Image src={lockIcon} className="w-3 h-3" alt="lock icon" width={12} height={12} />
               <FormatNumber
                 nb={initial.daysLocked}
                 className="text-sm lg:text-base"
@@ -158,7 +160,7 @@ export default function StakeTimerAnimation({
             className="absolute flex-none"
             key={index}
           >
-            {token && <Image src={token} className="w-4 h-4" alt="lock icon" />}
+            {token && <Image src={token} className="w-4 h-4" alt="lock icon" width={16} height={16} />}
           </motion.span>
         ))}
       </div>

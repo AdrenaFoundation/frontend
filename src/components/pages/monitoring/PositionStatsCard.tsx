@@ -61,8 +61,8 @@ export default function PositionStatsCard({
             )?.tokenInfo.image || ''
           }
           alt="token icon"
-          width="20"
-          height="20"
+          width={20}
+          height={20}
           className="min-w-[20px]"
         />
         {symbol}

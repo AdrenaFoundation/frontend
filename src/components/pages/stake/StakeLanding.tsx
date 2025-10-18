@@ -69,7 +69,9 @@ export default function StakeLanding({
       <Image
         src={adxMonster}
         alt="ADX Monster"
-        className="absolute bottom-10 right-32 grayscale select-none opacity-40"
+        className="absolute bottom-10 right-32 grayscale select-none opacity-40 w-[100px] h-[100px]"
+        width={100}
+        height={100}
       />
 
       <div
@@ -97,6 +99,8 @@ export default function StakeLanding({
               src={token.logo}
               alt="logo"
               className="w-10 h-10 opacity-10"
+              width={40}
+              height={40}
             />
           </div>
           <p
@@ -130,7 +134,7 @@ export default function StakeLanding({
                 idx !== token.sellingPoints.length - 1 && 'mb-5',
               )}
             >
-              <Image src={sp.icon} alt="icon" className="w-4 h-4" />
+              <Image src={sp.icon} alt="icon" className="w-4 h-4" width={16} height={16} />
               <div>
                 <h3 className="text-lg mb-1">{sp.title}</h3>
                 <p className="text-base opacity-75">{sp.desc}</p>

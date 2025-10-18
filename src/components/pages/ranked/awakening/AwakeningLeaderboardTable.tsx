@@ -85,10 +85,11 @@ export default function AwakeningLeaderboardTable({
                                                         ? thirdImage
                                                         : ''
                                         }
-                                        width={40}
-                                        height={40}
+                                        width={0}
+                                        height={0}
+                                        style={{ width: '40px', height: '40px' }}
                                         alt="rank"
-                                        className='h-8 w-8'
+                                        className='w-8 h-8'
                                         key={`rank-${i}`}
                                     />
                                 ) : (
