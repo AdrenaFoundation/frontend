@@ -37,6 +37,7 @@ export default function ViewsWarning() {
     if (validClosedIds.length !== closedIds.length) {
       setClosedIds(validClosedIds);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
 
   // Persist closedIds to localStorage whenever it changes
