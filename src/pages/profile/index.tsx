@@ -18,7 +18,7 @@ import usePositions from '@/hooks/usePositions';
 import usePositionStats from '@/hooks/usePositionStats';
 import useTraderInfo from '@/hooks/useTraderInfo';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
-import { selectWalletAddress } from '@/selectors/wallet';
+import { selectWalletAddress } from '@/selectors/walletSelectors';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 

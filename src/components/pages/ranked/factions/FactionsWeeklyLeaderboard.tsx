@@ -122,12 +122,12 @@ export default function FactionsWeeklyLeaderboard({
             }}
           >
             {d.profilePicture !== null ? (
-              <img
+              <Image
                 src={PROFILE_PICTURES[d.profilePicture]}
-                width={30}
-                height={30}
                 alt="rank"
                 className="h-8 w-8 rounded-full opacity-80 flex-shrink-0"
+                width={30}
+                height={30}
               />
             ) : (
               <div className="h-8 w-8 bg-third rounded-full flex-shrink-0" />

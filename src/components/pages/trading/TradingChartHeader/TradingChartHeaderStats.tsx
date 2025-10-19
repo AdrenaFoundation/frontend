@@ -41,7 +41,7 @@ export default function TradingChartHeaderStats({
   isStatsExpanded?: boolean;
   setIsStatsExpanded?: (expanded: boolean) => void;
 }) {
-  const [displayBorrowRateAsApr, setDisplayBorrowRateAsApr] = useState(true);
+  const [displayBorrowRateAsApr, setDisplayBorrowRateAsApr] = useState(false);
   const selectedTokenPrice = useSelector(
     (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
   );
@@ -122,14 +122,20 @@ export default function TradingChartHeaderStats({
 
   const dailyChange = stats?.[selected.symbol]?.dailyChange ?? null;
 
-  const borrowRateToDisplay = useMemo(() => {
-    return <span className="font-mono text-sm sm:text-xs text-white ml-1 cursor-help" onClick={() => setDisplayBorrowRateAsApr(!displayBorrowRateAsApr)}>
-      {displayBorrowRateAsApr ? borrowRateApr !== null
-        ? `${(borrowRateApr).toFixed(0)}% APR`
-        : '-' : borrowRateHourly !== null
-        ? `${(borrowRateHourly).toFixed(4)}%/h`
-        : '-'}
-    </span>
+  const {
+    borrowRateToDisplay,
+    borrowRateTippy,
+  } = useMemo(() => {
+    return {
+      borrowRateToDisplay: <span className="font-mono text-sm sm:text-xs text-white ml-1 cursor-help" onClick={() => setDisplayBorrowRateAsApr(!displayBorrowRateAsApr)}>
+        {displayBorrowRateAsApr ? borrowRateApr !== null
+          ? `${(borrowRateApr).toFixed(0)}% APR`
+          : '-' : borrowRateHourly !== null
+          ? `${(borrowRateHourly).toFixed(4)}%/h`
+          : '-'}
+      </span>,
+      borrowRateTippy: displayBorrowRateAsApr ? 'Annual borrow rate in % of position size' : 'Hourly borrow rate in % of position size',
+    };
   }, [borrowRateApr, borrowRateHourly, displayBorrowRateAsApr]);
 
   if (showExpandedStatsOnly) {
@@ -170,7 +176,7 @@ export default function TradingChartHeaderStats({
               <Tippy
                 content={
                   <div className="text-sm">
-                    Hourly borrow rate in % of position size
+                    {borrowRateTippy}
                   </div>
                 }
                 placement="bottom"
@@ -223,7 +229,7 @@ export default function TradingChartHeaderStats({
             width={16}
             height={16}
             className={twMerge(
-              'transition-transform duration-200',
+              'transition-transform duration-200 w-4 h-4',
               statsExpanded ? 'rotate-180' : '',
             )}
           />
@@ -330,7 +336,7 @@ export default function TradingChartHeaderStats({
               <Tippy
                 content={
                   <div className="text-sm">
-                    Hourly borrow rate in % of position size
+                    {borrowRateTippy}
                   </div>
                 }
                 placement="bottom"
@@ -359,6 +365,8 @@ export default function TradingChartHeaderStats({
                   src={getTokenImage(selected)}
                   alt={selected.symbol}
                   className="w-[20px] h-[20px]"
+                  width={20}
+                  height={20}
                 />
               )}
               <span className="text-lg font-boldy">
@@ -444,7 +452,7 @@ export default function TradingChartHeaderStats({
                 <Tippy
                   content={
                     <div className="text-sm">
-                      Hourly borrow rate in % of position size
+                      {borrowRateTippy}
                     </div>
                   }
                   placement="bottom"
@@ -560,7 +568,7 @@ export default function TradingChartHeaderStats({
             <Tippy
               content={
                 <div className="text-sm">
-                  Hourly borrow rate in % of position size
+                  {borrowRateTippy}
                 </div>
               }
               placement="bottom"

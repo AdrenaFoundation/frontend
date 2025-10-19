@@ -47,7 +47,7 @@ export const WalletBalance = ({ tokenA, walletTokenBalances, onMax, onPercentage
             <div className="w-0.5 h-3 bg-txtfade opacity-20 mr-1" />
             <div className='flex' onClick={onMax}>
                 <Image
-                    className="mr-1 opacity-60 relative group-hover:opacity-100"
+                    className="mr-1 opacity-60 relative group-hover:opacity-100 w-3 h-3"
                     src={walletImg}
                     height={14}
                     width={14}

@@ -1,6 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-import { ProfilePicture, StakingLeaderboardData,UserProfileMetadata, UserProfileTitle } from '@/types';
+import {
+  ProfilePicture,
+  StakingLeaderboardData,
+  UserProfileMetadata,
+  UserProfileTitle,
+} from '@/types';
 import { nativeToUi } from '@/utils';
 
 import { useAllAdxStaking } from './useAllAdxStaking';
@@ -18,9 +23,17 @@ export default function useStakingLeaderboard(
   const {
     allAdxStaking,
     triggerReload: triggerAdxReload,
-    isLoading,
+    isLoading: adxStakingLoading,
   } = useAllAdxStaking();
   const [error, setError] = useState<string | null>(null);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+
+  // Track if we've loaded data at least once
+  useEffect(() => {
+    if (allAdxStaking && !hasLoadedOnce) {
+      setHasLoadedOnce(true);
+    }
+  }, [allAdxStaking, hasLoadedOnce]);
 
   const data = useMemo(() => {
     if (!allAdxStaking) return null;
@@ -143,11 +156,12 @@ export default function useStakingLeaderboard(
       console.error('Error processing staking leaderboard:', err);
       return null;
     }
-  }, [allAdxStaking, walletAddress, allUserProfilesMetadata]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allAdxStaking, walletAddress]);
 
   return {
     data,
-    isLoading,
+    isLoading: adxStakingLoading && !hasLoadedOnce, // Only show loading if we haven't loaded once
     error,
     triggerReload: triggerAdxReload,
   };

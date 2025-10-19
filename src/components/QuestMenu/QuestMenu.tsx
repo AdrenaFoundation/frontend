@@ -100,6 +100,8 @@ export default function QuestMenu({
                     src={monster10}
                     className={twMerge('w-[8em] scale-x-[-1] cursor-pointer')}
                     alt="monster illustration"
+                    width={128}
+                    height={128}
                     onClick={() => {
                         setIsOpen(!isOpen);
                     }}
@@ -260,12 +262,12 @@ export default function QuestMenu({
         <div
             className={twMerge(
                 'fixed z-20',
-                isMobile ? window.location.pathname === '/trade' ? 'bottom-[7.7rem] sm:bottom-[4.3rem] left-4' : 'bottom-[4.3rem] left-4' : 'bottom-0 left-0',
+                isMobile ? window.location.pathname === '/trade' ? 'bottom-[calc(7.7rem+env(safe-area-inset-bottom))] sm:bottom-[calc(4.3rem+env(safe-area-inset-bottom))] left-4' : 'bottom-[calc(4.3rem+env(safe-area-inset-bottom))] left-4' : 'bottom-0 left-0',
                 className,
             )}
         >
             <AnimatePresence>
-                {!isOpen ? (
+                {!isOpen && (
                     <motion.div
                         key="closed-state"
                         className={twMerge("-translate-x-6 translate-y-6 cursor-pointer", !isMobile && 'hover:translate-x-0 hover:translate-y-0 transition-transform duration-300')}
@@ -281,6 +283,8 @@ export default function QuestMenu({
                             )}
                             alt="monster illustration"
                             key={isOpen ? 'monster-10' : 'monster-10-2'}
+                            width={128}
+                            height={128}
                         />
 
                         <p
@@ -292,9 +296,9 @@ export default function QuestMenu({
                             Quests
                         </p>
                     </motion.div>
-                ) : null}
+                )}
 
-                {(isOpen && !isMobile) ? (
+                {(isOpen && !isMobile) && (
                     <motion.div
                         key="open-state"
                         ref={ref}
@@ -331,13 +335,13 @@ export default function QuestMenu({
                     >
                         {body}
                     </motion.div>
-                ) : null}
+                )}
 
-                {(isMobile && isOpen) ? (
+                {(isMobile && isOpen) && (
                     <Modal close={() => setIsOpen(!isOpen)} className="p-0 w-full" key="modal">
                         {body}
                     </Modal>
-                ) : null}
+                )}
             </AnimatePresence>
         </div>
     );

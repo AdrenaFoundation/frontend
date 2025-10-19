@@ -234,7 +234,7 @@ export default function AllStaking({
           </div>
 
           {/* Right side - Staking Leaderboard */}
-          <div className="w-full xl:w-1/3">
+          <div className="w-full xl:w-1/3 max-w-3xl xl:max-w-none mx-auto">
             <StyledContainer className="p-4 flex flex-col h-full">
               <h2 className="text-center mb-4">ADX STAKING LEADERBOARD</h2>
               <div className="flex-1">

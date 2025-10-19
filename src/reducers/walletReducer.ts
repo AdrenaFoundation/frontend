@@ -7,6 +7,8 @@ export type WalletState = {
     adapterName: WalletAdapterName;
     // Cannot use Pubkey here because Redux require serializeable values
     walletAddress: string;
+    // Track whether this connection came from Privy (default: false = native)
+    isPrivy: boolean;
   } | null;
   modalIsOpen: boolean;
 };
@@ -25,7 +27,10 @@ export default function walletReducer(
   switch (action.type) {
     case 'connect':
       return {
-        wallet: action.payload,
+        wallet: {
+          ...action.payload,
+          isPrivy: action.payload.isPrivy ?? false, // Default to false (native)
+        },
         modalIsOpen: state.modalIsOpen,
       };
     // avoid dispatching multiple Redux actions sequentially

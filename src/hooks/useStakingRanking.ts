@@ -34,6 +34,7 @@ export default function useStakingRanking(walletAddress: string | null): {
       return;
     }
 
+    // Only show loading on initial load (when we have no data yet)
     if (userStakingAccount === null) {
       setIsLoadingUser(true);
     }
@@ -52,10 +53,16 @@ export default function useStakingRanking(walletAddress: string | null): {
     } finally {
       setIsLoadingUser(false);
     }
-  }, [walletAddress, userStakingAccount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletAddress]);
 
   useEffect(() => {
     fetchUserStaking();
+
+    // Refresh user staking every 60 seconds (silently)
+    const interval = setInterval(fetchUserStaking, 60000);
+
+    return () => clearInterval(interval);
   }, [fetchUserStaking]);
 
   const stakingRanking = useMemo(() => {

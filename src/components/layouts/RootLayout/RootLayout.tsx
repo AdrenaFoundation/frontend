@@ -19,10 +19,12 @@ import voteIcon from '@/../public/images/Icons/vote-icon.svg';
 import mutagenIcon from '@/../public/images/mutagen.png';
 import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
+import ChatContainer from '@/components/Chat/ChatContainer';
 import SuperchargedFooter from '@/components/Footer/SuperchargedFooter';
 import MobileNavbar from '@/components/MobileNavbar/MobileNavbar';
 import QuestMenu from '@/components/QuestMenu/QuestMenu';
 import SearchUserProfiles from '@/components/SearchUserProfiles/SearchUserProfiles';
+import WalletSidebar from '@/components/WalletSidebar/WalletSidebar';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import {
@@ -74,8 +76,9 @@ export default function RootLayout({
   adapters: WalletAdapterExtended[];
   mainPool: PageProps['mainPool'];
 }) {
-  const isBigScreen = useBetterMediaQuery('(min-width: 955px)');
+  const isBigScreen = useBetterMediaQuery('(min-width: 1024px)');
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
+  const isTablet = useBetterMediaQuery('(min-width: 640px) and (max-width: 1023px)');
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [isPriorityFeeOpen, setIsPriorityFeeOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
@@ -130,14 +133,14 @@ export default function RootLayout({
     },
     {
       name: 'Vote',
-      link: 'https://dao.adrena.xyz/',
+      link: 'https://dao.adrena.trade/',
       external: true,
       dropdown: true,
       icon: voteIcon,
     },
     {
       name: 'Learn',
-      link: 'https://docs.adrena.xyz/',
+      link: 'https://docs.adrena.trade/',
       external: true,
       dropdown: true,
       icon: bookIcon,
@@ -152,7 +155,7 @@ export default function RootLayout({
     }
   }, []);
 
-  if (isBigScreen === null || isMobile === null) {
+  if (isBigScreen === null || isMobile === null || isTablet === null) {
     return null;
   }
 
@@ -203,6 +206,7 @@ export default function RootLayout({
           adapters={adapters}
           isChatOpen={isChatOpen}
           setIsChatOpen={setIsChatOpen}
+          isTablet={isTablet}
         />
       )}
       <ViewsWarning />
@@ -211,7 +215,8 @@ export default function RootLayout({
         <div
           className={twMerge(
             'w-full flex flex-col max-w-[200em]',
-            !isBigScreen ? 'pb-[100px]' : 'sm:pb-0',
+            isMobile ? 'pb-[calc(100px+env(safe-area-inset-bottom))]' : 'sm:pb-0',
+            isTablet ? 'pl-16' : '',
           )}
         >
           {children}
@@ -226,13 +231,15 @@ export default function RootLayout({
         onClose={() => setIsSearchUserProfilesOpen(false)}
       />
 
-      {!isBigScreen ? (
+      {isMobile ? (
         <MobileNavbar
           PAGES={pages}
           userVest={userVest}
           userDelegatedVest={userDelegatedVest}
         />
-      ) : (
+      ) : null}
+
+      {isBigScreen ? (
         <SuperchargedFooter
           disableChat={disableChat}
           isMobile={!isBigScreen}
@@ -245,9 +252,23 @@ export default function RootLayout({
           setIsSettingsOpen={setIsSettingsOpen}
           setIsPriorityFeeOpen={setIsPriorityFeeOpen}
         />
+      ) : null}
+
+      {!isBigScreen && !disableChat && (
+        <ChatContainer
+          title="Chat"
+          setTitle={() => { }}
+          setIsNewNotification={() => { }}
+          isMobile={true}
+          isChatOpen={isChatOpen}
+          setIsChatOpen={setIsChatOpen}
+          setOnlineCount={() => { }}
+        />
       )}
 
       <QuestMenu isMobile={!isBigScreen} />
+
+      <WalletSidebar adapters={adapters} />
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>

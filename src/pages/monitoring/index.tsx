@@ -6,6 +6,7 @@ import { ADRENA_TEAM_WALLET } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
+import { getWalletAddress } from '@/utils';
 
 import AddressLookupTable from './AddressLookupTable';
 import AllPositions from './allPositions';
@@ -30,11 +31,10 @@ export default function Monitoring(pageProps: PageProps) {
   );
 
   useEffect(() => {
-    console.log('Wallet:', pageProps.wallet?.publicKey.toBase58());
     setShowLookupTablePage(
-      pageProps.wallet?.publicKey.toBase58() === ADRENA_TEAM_WALLET.toBase58(),
+      getWalletAddress(pageProps.wallet) === ADRENA_TEAM_WALLET.toBase58(),
     );
-  }, [pageProps.wallet?.publicKey]);
+  }, [pageProps.wallet]);
 
   const initialView = (() => {
     const searchParamsView = searchParams.get('view') ?? 'lite';
@@ -133,40 +133,54 @@ export default function Monitoring(pageProps: PageProps) {
     <>
       <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-30 bg-cover bg-center bg-no-repeat bg-[url('/images/wallpaper.jpg')]" />
 
-      <div className="m-1 sm:mx-auto mt-2 flex flex-col bg-main border rounded-md z-10 p-1 px-3 select-none">
-        <div className="flex flex-col sm:flex-row items-center justify-evenly w-[22em] sm:w-[45em] ml-auto mr-auto">
+      <div className="m-1 mx-2 lg:mx-auto mt-2 flex flex-col bg-main border rounded-md z-10 p-1 px-3 select-none">
+        <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-0 w-full max-w-none ml-auto mr-auto">
           {MonitoringHeaderLink('lite')}
 
-          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+          <span className="opacity-20 text-sm sm:text-2xl mx-0.5 sm:mx-1">
+            /
+          </span>
 
           {MonitoringHeaderLink('livePositions')}
 
-          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+          <span className="opacity-20 text-sm sm:text-2xl mx-0.5 sm:mx-1">
+            /
+          </span>
 
           {MonitoringHeaderLink('allStaking')}
 
-          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+          <span className="opacity-20 text-sm sm:text-2xl mx-0.5 sm:mx-1">
+            /
+          </span>
 
           {MonitoringHeaderLink('flows')}
 
-          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+          <span className="opacity-20 text-sm sm:text-2xl mx-0.5 sm:mx-1">
+            /
+          </span>
 
           {MonitoringHeaderLink('userProfiles')}
 
-          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+          <span className="opacity-20 text-sm sm:text-2xl mx-0.5 sm:mx-1">
+            /
+          </span>
 
           {MonitoringHeaderLink('tokenomics')}
 
-          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+          <span className="opacity-20 text-sm sm:text-2xl mx-0.5 sm:mx-1">
+            /
+          </span>
 
           {MonitoringHeaderLink('full')}
-          <span className="opacity-20 text-2xl hidden sm:block mx-1">/</span>
+          <span className="opacity-20 text-sm sm:text-2xl mx-0.5 sm:mx-1">
+            /
+          </span>
 
           {MonitoringHeaderLink('walletDigger')}
 
           {showLookupTablePage ? (
             <>
-              <span className="opacity-20 text-2xl hidden sm:block mx-1">
+              <span className="opacity-20 text-sm sm:text-2xl mx-0.5 sm:mx-1">
                 /
               </span>
 
@@ -200,7 +214,7 @@ export default function Monitoring(pageProps: PageProps) {
     return (
       <span
         className={twMerge(
-          'uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer md:hover:opacity-100',
+          'uppercase h-6 sm:h-8 flex items-center justify-center opacity-40 cursor-pointer md:hover:opacity-100 text-xs sm:text-sm px-0.5 sm:px-1 whitespace-nowrap',
           view === searchParam ? 'opacity-100' : '',
         )}
         onClick={() => {

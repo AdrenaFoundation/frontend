@@ -22,13 +22,15 @@ export default function BorrowRateChart() {
 
   const [period, setPeriod] = useState<'1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null>('6M');
   const [apiResult, setApiResult] = useState<CustodyInfoResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
-  const [displayBorrowRateAsApr, setDisplayBorrowRateAsApr] = useState(true);
+  const [displayBorrowRateAsApr, setDisplayBorrowRateAsApr] = useState(false);
 
   useEffect(() => {
     periodRef.current = period;
+    setIsLoading(true);
 
     getCustodyInfo();
 
@@ -94,14 +96,19 @@ export default function BorrowRateChart() {
       );
 
       setApiResult(result);
+      setIsLoading(false);
     } catch (e) {
       console.error('Error fetching borrow rate data:', e);
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
+    // Only log error if we've attempted to fetch but got no data
     if (!apiResult) {
-      console.error('Could not fetch borrow rate data');
+      if (!isLoading) {
+        console.error('Could not fetch borrow rate data');
+      }
       return;
     }
 
@@ -156,7 +163,7 @@ export default function BorrowRateChart() {
         end: Date.now() / 1000,
       });
     }
-  }, [apiResult, displayBorrowRateAsApr]);
+  }, [apiResult, displayBorrowRateAsApr, isLoading]);
 
   if (!infos) {
     return (
@@ -168,7 +175,7 @@ export default function BorrowRateChart() {
 
   return (
     <LineRechart
-      title="hourly Borrow Rate"
+      title="Borrow Rate"
       extraHeaderContent={
         <div className="text-xs flex gap-2 ml-auto mt-1">
           <div
