@@ -292,7 +292,7 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                                 variant="outline"
                                 size="lg"
                                 onClick={() => {
-                                    window.open('https://docs.adrena.xyz/tokenomics/adx');
+                                    window.open('https://docs.adrena.trade/tokenomics/adx');
                                 }}
                             />
 

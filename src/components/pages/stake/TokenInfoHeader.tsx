@@ -42,7 +42,7 @@ export default function TokenInfoHeader({
             src={adxLogo}
             width={50}
             height={50}
-            className="opacity-10 hidden sm:block"
+            className="opacity-10 hidden sm:block w-[50px] h-[50px]"
             alt="ADX logo"
           />
         </div>

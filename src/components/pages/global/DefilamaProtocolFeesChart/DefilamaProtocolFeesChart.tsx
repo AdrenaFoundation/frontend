@@ -100,7 +100,7 @@ export default function DefilamaProtocolFeesChart({ }: FeesChartProps) {
       title={<div className='flex flex-col'>
         <Tippy content="Powered by DefiLlama API" placement="auto">
           <div className='flex gap-2 items-center'>
-            <Image src={defillamaImg} alt="DefiLlama" className='h-6 w-6' />
+            <Image src={defillamaImg} alt="DefiLlama" className='h-6 w-6' width={24} height={24} />
 
             <h2>SOLANA PERPS FEES</h2>
           </div>

@@ -483,64 +483,65 @@ export default function Table({
               </tr>
             </thead>
             <tbody className="rounded-t-lg">
-              <AnimatePresence mode="wait">
-                {isLoading
-                  ? Array.from({ length: 10 }).map((_, rowIdx) => (
-                      <motion.tr
-                        key={`loader-row-${rowIdx}`}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                      >
-                        {headers.map((_, colIdx) => (
+              <AnimatePresence>
+                {isLoading &&
+                  Array.from({ length: 10 }).map((_, rowIdx) => (
+                    <motion.tr
+                      key={`loader-row-${rowIdx}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      {headers.map((_, colIdx) => (
+                        <td
+                          key={`loader-cell-${rowIdx}-${colIdx}`}
+                          className="p-4 h-[2.351875rem] bg-[#050D14] animate-loader border border-white/10"
+                        />
+                      ))}
+                    </motion.tr>
+                  ))}
+                {!isLoading &&
+                  data.map((row, rowIndex) => (
+                    <motion.tr
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      key={`row-${rowIndex}`}
+                      className={twMerge(
+                        'group border-b border-bcolor hover:bg-third transition-colors',
+                        onRowClick ? 'cursor-pointer' : '',
+                        data.length > 7 ? 'last:border-b-0' : '',
+                      )}
+                      onClick={() => {
+                        if (onRowClick) onRowClick(row.id as string | number);
+                      }}
+                    >
+                      {headers.map((header, colIndex) => {
+                        const key = header.key ?? header.title;
+                        const sticky = getStickyProps(colIndex, false);
+                        return (
                           <td
-                            key={`loader-cell-${rowIdx}-${colIdx}`}
-                            className="p-4 h-[2.351875rem] bg-[#050D14] animate-loader border border-white/10"
-                          />
-                        ))}
-                      </motion.tr>
-                    ))
-                  : data.map((row, rowIndex) => (
-                      <motion.tr
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        key={`row-${rowIndex}`}
-                        className={twMerge(
-                          'group border-b border-bcolor hover:bg-third transition-colors',
-                          onRowClick ? 'cursor-pointer' : '',
-                          data.length > 7 ? 'last:border-b-0' : '',
-                        )}
-                        onClick={() => {
-                          if (onRowClick) onRowClick(row.id as string | number);
-                        }}
-                      >
-                        {headers.map((header, colIndex) => {
-                          const key = header.key ?? header.title;
-                          const sticky = getStickyProps(colIndex, false);
-                          return (
-                            <td
-                              key={`cell-${rowIndex}-${colIndex}`}
-                              className={twMerge(
-                                'relative p-2 px-2 text-sm sm:text-base border-r border-bcolor last:border-r-0',
-                                alignClass(header.align),
-                                sticky.className,
-                              )}
-                              style={sticky.style}
-                              onMouseOver={() => {
-                                if (setActiveCol)
-                                  setActiveCol(header.key ?? header.title);
-                              }}
-                              onMouseOut={() => {
-                                if (setActiveCol) setActiveCol(null);
-                              }}
-                            >
-                              {row[key]}
-                            </td>
-                          );
-                        })}
-                      </motion.tr>
-                    ))}
+                            key={`cell-${rowIndex}-${colIndex}`}
+                            className={twMerge(
+                              'relative p-2 px-2 text-sm sm:text-base border-r border-bcolor last:border-r-0',
+                              alignClass(header.align),
+                              sticky.className,
+                            )}
+                            style={sticky.style}
+                            onMouseOver={() => {
+                              if (setActiveCol)
+                                setActiveCol(header.key ?? header.title);
+                            }}
+                            onMouseOut={() => {
+                              if (setActiveCol) setActiveCol(null);
+                            }}
+                          >
+                            {row[key]}
+                          </td>
+                        );
+                      })}
+                    </motion.tr>
+                  ))}
               </AnimatePresence>
             </tbody>
           </table>

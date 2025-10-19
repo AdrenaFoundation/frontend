@@ -241,13 +241,15 @@ export default function SharePositionModal({
         ref={cardRef}
         data-card-ref
       >
-        <Image src={adrenaLogo} alt="Adrena Logo" height={8} className="mb-3" />
+        <Image src={adrenaLogo} alt="Adrena Logo" width={0} height={0} style={{ width: 'auto', height: '8px' }} className="mb-3" />
         <div className="flex flex-row gap-3 items-center relative z-10">
           <div className="flex flex-row items-center gap-2">
             <Image
               src={getTokenImage(position.token)}
               alt="Adrena Logo"
-              height={20}
+              width={0}
+              height={0}
+              style={{ width: 'auto', height: '20px' }}
             />
             <h2 className="font-archivoblack">
               {getTokenSymbol(position.token.symbol)}
@@ -304,12 +306,12 @@ export default function SharePositionModal({
             <span className="font-archivoblack text-sm sm:text-lg">
               {position?.exitPrice
                 ? formatPriceInfo(
-                    position.exitPrice,
-                    position.token.displayPriceDecimalsPrecision,
-                  )
+                  position.exitPrice,
+                  position.token.displayPriceDecimalsPrecision,
+                )
                 : formatPriceInfo(
-                    tokenPrices[getTokenSymbol(position.token.symbol)],
-                  )}
+                  tokenPrices[getTokenSymbol(position.token.symbol)],
+                )}
             </span>
           </li>
           <li className="flex flex-col gap-1">
@@ -381,6 +383,7 @@ export default function SharePositionModal({
                 src={opt.img}
                 alt="Monster"
                 width={200}
+                height={200}
                 loading="eager"
                 draggable="false"
                 className="opacity-50 ml-auto mt-[1.875rem] hover:translate-y-[-0.625rem] transition duration-300"

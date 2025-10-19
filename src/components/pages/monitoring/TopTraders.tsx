@@ -7,18 +7,14 @@ import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/TableLegacy';
 import DataApiClient from '@/DataApiClient';
+import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { Trader, UserProfileExtended, UserProfileMetadata } from '@/types';
-import {
-  getAbbrevNickname,
-  getAbbrevWalletAddress,
-  getNonUserProfile,
-} from '@/utils';
+import { Trader, UserProfileExtended } from '@/types';
+import { getNonUserProfile } from '@/utils';
 
 interface TopTradersProps {
   startDate: string;
   endDate: string;
-  allUserProfilesMetadata: UserProfileMetadata[];
   setProfile: (profile: UserProfileExtended | null) => void;
 }
 
@@ -38,7 +34,6 @@ type SortDirection = 'asc' | 'desc';
 export default function TopTraders({
   startDate,
   endDate,
-  allUserProfilesMetadata,
   setProfile,
 }: TopTradersProps) {
   const [traders, setTraders] = useState<Trader[]>([]);
@@ -47,19 +42,10 @@ export default function TopTraders({
   const [sortField, setSortField] = useState<SortField>('pnl_minus_fees');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const isExtraLargeScreen = useBetterMediaQuery('(min-width: 1500px)');
-  // const isLargeScreen = useBetterMediaQuery('(min-width: 1024px)');
 
   const numberTraders = 100;
 
-  const userProfilesMap = useMemo(() => {
-    return allUserProfilesMetadata.reduce(
-      (acc, profile) => {
-        acc[profile.owner.toBase58()] = profile.nickname;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-  }, [allUserProfilesMetadata]);
+  const { getDisplayName } = useAllUserProfilesMetadata();
 
   useEffect(() => {
     const fetchTraders = async () => {
@@ -289,23 +275,13 @@ export default function TopTraders({
                 values: [
                   <p
                     key={`trader-${i}`}
-                    className={twMerge(
-                      'flex items-center justify-end lg:justify-center text-xs grow hover:underline transition duration-300 cursor-pointer',
-                      userProfilesMap[trader.user_pubkey] ? '' : 'opacity-50',
-                    )}
+                    className="flex items-center justify-end lg:justify-center text-xs grow hover:underline transition duration-300 cursor-pointer"
                     onClick={() => {
                       handleProfileView(trader.user_pubkey);
                     }}
                   >
                     <Tippy content="View profile">
-                      <span>
-                        {userProfilesMap[trader.user_pubkey]
-                          ? getAbbrevNickname(
-                            userProfilesMap[trader.user_pubkey],
-                            9,
-                          )
-                          : getAbbrevWalletAddress(trader.user_pubkey, 4)}
-                      </span>
+                      <span>{getDisplayName(trader.user_pubkey)}</span>
                     </Tippy>
                   </p>,
                   <div

@@ -16,7 +16,7 @@ export const ShortWarning = () => (
             Max payout on short is equivalent to the borrowed USDC (size). <br />
             More about the peer2pool perp model
             <Link
-                href="https://docs.adrena.xyz/technical-documentation/peer-to-pool-perp-model-and-the-risks-as-a-liquidity-provider"
+                href="https://docs.adrena.trade/technical-documentation/peer-to-pool-perp-model-and-the-risks-as-a-liquidity-provider"
                 className="underline ml-1 text-sm"
                 target='_blank'
             >

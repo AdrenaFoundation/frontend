@@ -30,6 +30,8 @@ export default function QuestComp({
                         src={wing}
                         alt="wing"
                         className="w-[73px] h-[43px] -translate-x-4"
+                        width={73}
+                        height={43}
                     />
                 </div>
             ) : null}
@@ -58,6 +60,8 @@ export default function QuestComp({
                                             src={wing}
                                             alt="wing"
                                             className="w-[73px] h-[43px] -translate-x-4"
+                                            width={73}
+                                            height={43}
                                         />
                                     </div>
                                 ) : null}
@@ -103,6 +107,8 @@ export default function QuestComp({
                                             src={wing}
                                             alt="wing"
                                             className="w-[73px] h-[43px] -translate-x-4"
+                                            width={73}
+                                            height={43}
                                         />
                                     </div>
                                 ) : null}

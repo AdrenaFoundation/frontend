@@ -27,11 +27,15 @@ export default function useUserProfile(walletAddress: string | null): {
 
     setIsUserProfileLoading(true);
     try {
-      const profile = await window.adrena.client.loadUserProfile({
-        user: new PublicKey(walletAddress),
-        onProfileChange: setUserProfile,
-      });
-      setUserProfile(profile);
+      setUserProfile(
+        await window.adrena.client.loadUserProfile({
+          user: new PublicKey(walletAddress),
+          onProfileChange: setUserProfile,
+        }),
+      );
+    } catch (error) {
+      console.error('Failed to load user profile:', error);
+      setUserProfile(null);
     } finally {
       setIsUserProfileLoading(false);
     }

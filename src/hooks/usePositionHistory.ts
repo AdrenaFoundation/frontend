@@ -123,6 +123,27 @@ export default function usePositionsHistory({
   const isInitializedRef = useRef<boolean>(false);
   const currentPageRef = useRef<number>(1);
 
+  // Clear cache when wallet changes
+  useEffect(() => {
+    if (walletAddressRef.current !== walletAddress) {
+      // Clear cache for the previous wallet
+      if (walletAddressRef.current) {
+        delete apiResponseCache[walletAddressRef.current];
+        delete lastKnownTotalCounts[walletAddressRef.current];
+      }
+
+      // Reset local state
+      setPositionsData(null);
+      setCurrentPage(1);
+      setTotalItems(0);
+      isInitializedRef.current = false;
+      currentPageRef.current = 1;
+
+      // Update ref
+      walletAddressRef.current = walletAddress;
+    }
+  }, [walletAddress]);
+
   // Derived values
   const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
 
@@ -197,10 +218,6 @@ export default function usePositionsHistory({
           previousTotalCount !== 0 &&
           previousTotalCount !== result.totalCount
         ) {
-          console.log(
-            `DEBUG SHIFT: Total count changed from ${previousTotalCount} to ${result.totalCount}, difference: ${result.totalCount - previousTotalCount}`,
-          );
-
           // Calculate how many new items have been added
           const countDifference = result.totalCount - previousTotalCount;
 
@@ -290,18 +307,16 @@ export default function usePositionsHistory({
               });
             });
 
-            if (duplicates.length > 0) {
-              console.error(
-                `DEBUG SHIFT: Found ${duplicates.length} duplicates across batches: ${duplicates.join(', ')}`,
-              );
-            }
-
             // Replace the old cache with the new one
             apiResponseCache[walletKey] = newCache;
           }
         }
 
         // Update cache and state
+        // Ensure wallet cache exists before setting data
+        if (!apiResponseCache[walletAddressRef.current]) {
+          apiResponseCache[walletAddressRef.current] = {};
+        }
         apiResponseCache[walletAddressRef.current][offset] = result;
         setPositionsData(result);
 

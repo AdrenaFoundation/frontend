@@ -94,6 +94,8 @@ export const Notifications = ({
                     src={dialectLogo}
                     alt="Dialect Logo"
                     className="w-[5rem] mb-1"
+                    width={50}
+                    height={50}
                   />
                   <Button
                     title="Enable"

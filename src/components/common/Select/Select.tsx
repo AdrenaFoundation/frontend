@@ -58,7 +58,6 @@ export default function Select<T extends string>({
         src={selectedImg.img}
         className={twMerge(
           'w-[20px] h-[20px]',
-
           selectedImg.imgClassName,
         )}
         alt="logo"
@@ -67,11 +66,12 @@ export default function Select<T extends string>({
       <Image
         src={selectedImg.img}
         className={twMerge(
-          'w-[20px] h-[20px]',
-
+          'w-5 h-5',
           selectedImg.imgClassName,
         )}
         alt="logo"
+        width={20}
+        height={20}
       />
     )
   ) : null;
@@ -79,7 +79,7 @@ export default function Select<T extends string>({
   const chevron =
     options.length > 1 ? (
       <div className="flex h-2 w-2 items-center justify-center shrink-0 mr-1 ml-1">
-        <Image src={chevronDownIcon} alt="chevron down" />
+        <Image src={chevronDownIcon} alt="chevron down" width={8} height={8} className="w-2 h-2" />
       </div>
     ) : null;
 
@@ -172,14 +172,14 @@ export default function Select<T extends string>({
                       <Image
                         src={option.img}
                         className={twMerge(
-                          'absolute top-auto left-[-32px] z-10 grayscale',
+                          'absolute top-auto left-[-32px] z-10 grayscale w-20 h-20',
                           optionHover === i
                             ? 'opacity-60 grayscale-0'
                             : 'opacity-20',
                         )}
                         alt="logo"
-                        width="80"
-                        height="80"
+                        width={80}
+                        height={80}
                       />
                     ) : null}
 

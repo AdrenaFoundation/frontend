@@ -47,7 +47,7 @@ import { hexStringToByteArray } from './utils';
 // Useful to call Data API endpoints easily
 export default class DataApiClient {
   // public static DATAPI_URL = 'http://localhost:8080';
-  public static DATAPI_URL = 'https://datapi.adrena.xyz';
+  public static DATAPI_URL = 'https://datapi.adrena.trade';
 
   public static async getPriceAtDate(date: Date): Promise<{
     adxPrice: number | null;
@@ -850,7 +850,14 @@ export default class DataApiClient {
       );
 
       if (!response.ok) {
-        console.log('API response was not ok');
+        if (response.status !== 404) {
+          const errorText = await response.text();
+          console.log('API response was not ok:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText,
+          });
+        }
         return null;
       }
 
@@ -962,7 +969,14 @@ export default class DataApiClient {
       );
 
       if (!response.ok) {
-        console.log('API response was not ok');
+        if (response.status !== 404) {
+          const errorText = await response.text();
+          console.log('API response was not ok:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText,
+          });
+        }
         return null;
       }
 
@@ -1026,7 +1040,14 @@ export default class DataApiClient {
       );
 
       if (!response.ok) {
-        console.log('API response was not ok');
+        if (response.status !== 404) {
+          const errorText = await response.text();
+          console.log('API response was not ok:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText,
+          });
+        }
         return null;
       }
 
@@ -1164,7 +1185,14 @@ export default class DataApiClient {
       );
 
       if (!response.ok) {
-        console.log('API response was not ok');
+        if (response.status !== 404) {
+          const errorText = await response.text();
+          console.log('API response was not ok:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText,
+          });
+        }
         return null;
       }
 
@@ -1209,7 +1237,14 @@ export default class DataApiClient {
       const response = await fetch(url);
 
       if (!response.ok) {
-        console.log('API response was not ok');
+        if (response.status !== 404) {
+          const errorText = await response.text();
+          console.log('API response was not ok:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText,
+          });
+        }
         return null;
       }
 
@@ -1255,7 +1290,14 @@ export default class DataApiClient {
     const response = await fetch(url);
 
     if (!response.ok) {
-      console.log('API response was not ok');
+      if (response.status !== 404) {
+        const errorText = await response.text();
+        console.log('API response was not ok:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText,
+        });
+      }
       return null;
     }
 

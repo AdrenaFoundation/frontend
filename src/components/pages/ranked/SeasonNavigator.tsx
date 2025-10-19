@@ -41,24 +41,20 @@ export default function SeasonNavigator({
             {TRADING_COMPETITION_SEASONS[season].bannerTitle}
           </p>
 
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          {season === 'interseason3' || season === 'anniversary1' ? (
-            <div
-              className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-60"
+          {season === 'interseason3' || season === 'anniversary1' ?
+            <div className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-60"
               style={{
                 backgroundImage: `url(${TRADING_COMPETITION_SEASONS[season].img})`,
                 backgroundOrigin: 'border-box',
-                backgroundPosition: 'center 20%',
+                backgroundPosition: 'center 20%'
               }}
-              // eslint-disable-next-line @next/next/no-img-element
-            />
-          ) : (
-            <img
+            /> : <Image
               src={TRADING_COMPETITION_SEASONS[season].img}
               alt="competition banner"
+              width={1040}
+              height={1040}
               className="absolute top-0 left-0 w-full h-full object-cover opacity-70"
-            />
-          )}
+            />}
         </div>
       ))}
 
@@ -72,7 +68,7 @@ export default function SeasonNavigator({
             alt="lock icon"
             width={12}
             height={12}
-            className="relative z-20"
+            className="relative z-20 w-3 h-3"
           />
         </div>
       ))}
