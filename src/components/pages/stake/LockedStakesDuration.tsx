@@ -109,7 +109,7 @@ export default function LockedStakesDuration({
       }}>
         <div className={twMerge('border-b items-center justify-center bg-secondary w-full flex pl-4 pt-2 pb-2 pr-4')}>
           <div className='flex gap-1'>
-            <Image src={lockIcon} width={14} height={14} alt="Lock icon" />
+            <Image src={lockIcon} width={14} height={14} alt="Lock icon" className="w-3.5 h-3.5" />
 
             <div className='text-sm flex gap-1 font-semibold text-txtfade cursor-pointer'>
               {Number(lockDuration) / 3600 / 24} days lock
@@ -285,7 +285,7 @@ export default function LockedStakesDuration({
               </div> : null}
             </div>
 
-            <Image src={chevronDownIcon} width={20} height={20} alt="Chevron icon" className={twMerge('opacity-20', detailOpen ? 'rotate-180' : '')} />
+            <Image src={chevronDownIcon} width={20} height={20} alt="Chevron icon" className={twMerge('w-5 h-5 opacity-20', detailOpen ? 'rotate-180' : '')} />
           </div>
 
           {!readonly ? <div className='flex w-full'>

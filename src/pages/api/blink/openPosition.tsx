@@ -258,7 +258,7 @@ export default async function handler(
 
         res.writeHead(200, ACTIONS_CORS_HEADERS).json({
             type: 'action',
-            icon: `https://app.adrena.xyz/api/og?opt=${opt}&pnl=${pnl}&pnlUsd=${pnlUsd}&isPnlUsd=${isPnlUsd}&side=${side}&symbol=${symbol}&mark=${mark}&price=${price}&opened=${opened}&size=${size}&leverage=${leverage}exitPrice=${exitPrice}&collateral=${collateralUsd}`,
+            icon: `https://www.adrena.trade/api/og?opt=${opt}&pnl=${pnl}&pnlUsd=${pnlUsd}&isPnlUsd=${isPnlUsd}&side=${side}&symbol=${symbol}&mark=${mark}&price=${price}&opened=${opened}&size=${size}&leverage=${leverage}exitPrice=${exitPrice}&collateral=${collateralUsd}`,
             title: `Copy Trade | ${side === 'long' ? 'Long' : 'Short'} – ${tokenSymbolA}/${getTokenSymbol(tokenSymbolB as string)}`,
             description: `
     Position token: ${getTokenSymbol(tokenSymbolB as string)}

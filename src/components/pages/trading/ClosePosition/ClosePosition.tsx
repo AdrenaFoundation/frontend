@@ -633,7 +633,7 @@ export default function ClosePosition({
                       'flex h-2 w-2 items-center justify-center shrink-0',
                     )}
                   >
-                    <Image src={chevronDownIcon} alt="chevron down" />
+                    <Image src={chevronDownIcon} alt="chevron down" width={8} height={8} className="w-2 h-2" />
                   </div>
 
                   <div className="font-regular">
@@ -644,8 +644,8 @@ export default function ClosePosition({
                     className="h-4 w-4"
                     src={redeemToken.image}
                     alt="logo"
-                    width="20"
-                    height="20"
+                    width={20}
+                    height={20}
                   />
                 </div>
 

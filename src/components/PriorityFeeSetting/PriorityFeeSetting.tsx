@@ -204,9 +204,10 @@ export default function PriorityFeeSetting({
           <Image
             src={prioFeeSettingsIcon}
             alt="Priority Fee Settings"
-            width={12}
-            height={12}
-            className="w-2.5 h-2.5"
+            width={0}
+            height={0}
+            style={{ width: '12px', height: '12px' }}
+            className="w-3 h-3"
           />
         </div>
       }

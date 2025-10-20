@@ -23,7 +23,7 @@ export default function Referrer({
   const link = useMemo(
     () =>
       userProfile
-        ? `https://app.adrena.xyz/trade?referral=${encodeURIComponent(userProfile.nickname)}`
+        ? `https://www.adrena.trade/trade?referral=${encodeURIComponent(userProfile.nickname)}`
         : '',
     [userProfile],
   );
@@ -72,7 +72,7 @@ export default function Referrer({
               precision={6}
             />
 
-            <Image src={usdcLogo} alt="USDC logo" className="w-5 h-5" />
+            <Image src={usdcLogo} alt="USDC logo" className="w-5 h-5" width={20} height={20} />
           </div>
 
           <Button
@@ -115,7 +115,7 @@ export default function Referrer({
               precision={6}
             />
 
-            <Image src={usdcLogo} alt="USDC logo" className="w-5 h-5" />
+            <Image src={usdcLogo} alt="USDC logo" className="w-5 h-5" width={20} height={20} />
           </div>
         </div>
       </div>

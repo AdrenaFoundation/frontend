@@ -83,10 +83,11 @@ export default async function handler(
       .single();
 
     if (!existingUser) {
+      // Use upsert instead of insert to handle race conditions
       const { data: newUserData, error: createError } =
         await supabaseServiceClient
           .from('settings')
-          .insert({
+          .upsert({
             wallet_address,
             preferences,
           })

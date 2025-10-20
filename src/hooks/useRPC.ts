@@ -1,5 +1,5 @@
 import { Connection } from '@solana/web3.js';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCookies } from 'react-cookie';
 
 import IConfiguration from '@/config/IConfiguration';
@@ -238,40 +238,59 @@ export default function useRpc(config: IConfiguration | null): {
     return () => clearInterval(interval);
   }, [autoRpcMode, pickRpc]);
 
-  return {
-    rpcInfos:
+  // Memoize rpcInfos to prevent unnecessary re-renders when only latencies change
+  const memoizedRpcInfos = useMemo(() => {
+    return (
       config?.rpcOptions.map((rpc, index) => ({
         name: rpc.name,
         latency: rpcLatencies?.[index] ?? null,
-      })) ?? [],
+      })) ?? []
+    );
+  }, [config?.rpcOptions, rpcLatencies]);
 
-    activeRpc: activeRpc
+  // Memoize activeRpc to prevent re-renders when only internal state changes
+  const memoizedActiveRpc = useMemo(() => {
+    return activeRpc
       ? {
           name: activeRpc.name,
           connection: activeRpc.connection,
         }
-      : null,
+      : null;
+  }, [activeRpc]);
 
-    customRpcLatency,
-    autoRpcMode,
-    customRpcUrl,
-    favoriteRpc,
+  // Memoize setter functions to prevent re-renders
+  const memoizedSetAutoRpcMode = useCallback((newAutoRpcMode: boolean) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, newAutoRpcMode.toString());
+    }
+    setAutoRpcMode(newAutoRpcMode);
+  }, []);
 
-    setAutoRpcMode: (newAutoRpcMode: boolean) => {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(STORAGE_KEY, newAutoRpcMode.toString());
-      }
-      setAutoRpcMode(newAutoRpcMode);
-    },
-
-    setCustomRpcUrl: (newCustomRpcUrl: string | null) => {
+  const memoizedSetCustomRpcUrl = useCallback(
+    (newCustomRpcUrl: string | null) => {
       setCustomRpcConnection(null);
       setCustomRpcLatency(null);
       setCookies('customRpc', newCustomRpcUrl);
     },
+    [setCookies],
+  );
 
-    setFavoriteRpc: (newFavoriteRpc: string) => {
+  const memoizedSetFavoriteRpc = useCallback(
+    (newFavoriteRpc: string) => {
       setCookies('favoriteRpc', newFavoriteRpc);
     },
+    [setCookies],
+  );
+
+  return {
+    rpcInfos: memoizedRpcInfos,
+    activeRpc: memoizedActiveRpc,
+    customRpcLatency,
+    autoRpcMode,
+    customRpcUrl,
+    favoriteRpc,
+    setAutoRpcMode: memoizedSetAutoRpcMode,
+    setCustomRpcUrl: memoizedSetCustomRpcUrl,
+    setFavoriteRpc: memoizedSetFavoriteRpc,
   };
 }

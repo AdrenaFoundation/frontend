@@ -164,6 +164,8 @@ export default function ExpanseChampionshipLeaderboard({
                                         src={adxLogo}
                                         alt="ADX logo"
                                         className="w-[1.5em] h-[1.5em]"
+                                        width={24}
+                                        height={24}
                                     />
 
                                     <FormatNumber
@@ -182,6 +184,8 @@ export default function ExpanseChampionshipLeaderboard({
                                         src={jtoImage}
                                         alt="jito logo"
                                         className="w-[2em] h-[2em]"
+                                        width={32}
+                                        height={32}
                                     />
 
                                     <FormatNumber

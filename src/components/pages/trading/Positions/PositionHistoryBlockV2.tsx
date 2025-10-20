@@ -173,14 +173,14 @@ export default function PositionHistoryBlockV2({
           </div>
 
           <AnimatePresence>
-            {isExpanded ? (
+            {isExpanded && (
               <EventBlocks
                 positionId={positionHistory.positionId}
                 token={positionHistory.token}
                 events={events}
                 setEvents={setEvents}
               />
-            ) : null}
+            )}
           </AnimatePresence>
           <div className="flex flex-row items-center justify-between">
             <div className={'p-1.5 px-2 sm:border-r border-r-bcolor'}>

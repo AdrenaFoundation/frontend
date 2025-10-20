@@ -180,6 +180,7 @@ function ChatSidebar({
               alt="Add Friend Icon"
               width={16}
               height={16}
+              className='w-4 h-4'
             />
             <p
               className={twMerge(

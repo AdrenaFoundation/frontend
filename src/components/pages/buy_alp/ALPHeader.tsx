@@ -46,6 +46,8 @@ export default function ALPHeader() {
             src={window.adrena.client.alpToken.image}
             alt="alp icon"
             className="w-5 sm:w-7 h-5 sm:h-7"
+            width={28}
+            height={28}
           />
 
           <div className="flex flex-row items-center gap-4">

@@ -108,13 +108,13 @@ export default function RankingStats({
               className="border border-inputcolor rounded-md flex-1 overflow-hidden"
               key={index}
             >
-              <div className="relative  border-inputcolor">
+              <div className="relative border-inputcolor">
                 <Image
                   key={index}
                   src={season.img}
                   alt={season.name}
-                  width={300}
-                  height={100}
+                  width={1040}
+                  height={347}
                   className="w-full h-[6em] object-cover opacity-70"
                 />
                 <div className="absolute bottom-0 bg-gradient-to-t from-main to-transparent w-full h-[6em]" />

@@ -63,7 +63,7 @@ const AwardHeader = memo(({ title, type }: { title: string; type: 'reward' | 'ti
             src={type === 'ticket' ? diceImage : firstImage}
             alt="first place logo"
             className={twMerge(
-                'h-10',
+                'w-10 h-10',
                 type === 'ticket' ? 'opacity-80' : '',
             )}
             width={40}
@@ -100,6 +100,8 @@ const TicketCount = memo(({ connectedWalletTickets, totalTickets, trader, handle
                     src={ticketImage}
                     alt="ticket image"
                     className="w-10 h-8"
+                    width={40}
+                    height={40}
                 />
             </>
         ) : (

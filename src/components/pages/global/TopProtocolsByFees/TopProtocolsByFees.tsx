@@ -118,7 +118,7 @@ export default function TopProtocolsByFees() {
       <div className='flex flex-col mb-3'>
         <div className='flex justify-between items-center'>
           <div className='flex gap-2 items-center'>
-            <Image src={defillamaImg} alt="DefiLlama" className='h-6 w-6' />
+            <Image src={defillamaImg} alt="DefiLlama" className='h-6 w-6' width={24} height={24} />
 
             <h2>TOP PROTOCOLS BY FEES</h2>
           </div>
@@ -153,7 +153,7 @@ export default function TopProtocolsByFees() {
             <div className="flex items-center gap-2">
               <div className={`text-sm font-semibold w-6 text-left ${name === 'Adrena Protocol' ? 'text-[#6ebeff]' : ''}`}>{rank}</div>
               { /* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={logo} alt={`${name} logo`} className={`h-4 w-4 ${name === 'Adrena Protocol' ? 'grayscale' : 'grayscale'}`} />
+              <img src={logo} alt={`${name} logo`} className={`h-4 w-4 ${name === 'Adrena Protocol' ? 'grayscale' : 'grayscale'}`} width={16} height={16} />
 
               <div className={`text-sm font-semibold ${name === 'Adrena Protocol' ? 'text-[#6ebeff]' : ''}`}>{name}</div>
             </div>

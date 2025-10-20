@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import DataApiClient from '@/DataApiClient';
 import { AnniversaryResponse } from '@/types';
@@ -14,7 +14,7 @@ export default function useAnniversaryRecords(userWallet?: string | null): {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRecords = async () => {
+  const fetchRecords = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -32,11 +32,11 @@ export default function useAnniversaryRecords(userWallet?: string | null): {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userWallet]);
 
   useEffect(() => {
     fetchRecords();
-  }, [userWallet]);
+  }, [fetchRecords]);
 
   return {
     anniversaryData,

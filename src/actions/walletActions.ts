@@ -10,6 +10,7 @@ export type ConnectWalletAction = {
   payload: {
     adapterName: WalletAdapterName;
     walletAddress: string;
+    isPrivy?: boolean; // Optional, defaults to false (native)
   };
 };
 
@@ -45,6 +46,7 @@ export const autoConnectWalletAction =
         payload: {
           adapterName: adapter.name as WalletAdapterName,
           walletAddress: walletPubkey.toBase58(),
+          // isPrivy defaults to false (native connection)
         },
       });
 
@@ -85,6 +87,7 @@ export const connectWalletAction =
         payload: {
           adapterName: adapter.name as WalletAdapterName,
           walletAddress: walletPubkey.toBase58(),
+          // isPrivy defaults to false (native connection)
         },
       });
 
@@ -94,12 +97,14 @@ export const connectWalletAction =
       });
     };
 
-    adapter.once('connect', connectFn);
+    if (adapter.name !== 'Privy') {
+      // Privy handles its own connection, so we don't need to listen for it
+      adapter.once('connect', connectFn);
+    }
 
     try {
       await adapter.connect();
       localStorage.setItem('autoConnectAuthorized', 'true');
-
       localStorage.setItem('lastConnectedWallet', adapter.name);
     } catch (err: unknown) {
       localStorage.setItem('autoConnectAuthorized', 'false');

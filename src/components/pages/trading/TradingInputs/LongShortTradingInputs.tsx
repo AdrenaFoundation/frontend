@@ -69,6 +69,16 @@ export default function LongShortTradingInputs({
   const borrowRates = useSelector((s) => s.borrowRates);
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const walletState = useSelector((s) => s.walletState.wallet);
+
+  const walletAddress = useMemo(() => {
+    if (walletState?.walletAddress) {
+      return walletState.walletAddress;
+    }
+
+    return null
+  }, [walletState?.walletAddress]);
+
   const [takeProfitInput, setTakeProfitInput] = useState<number | null>(null);
   const [stopLossInput, setStopLossInput] = useState<number | null>(null);
   const [swapSlippage, setSwapSlippage] = useState<number>(0.3); // Default swap slippage
@@ -112,8 +122,8 @@ export default function LongShortTradingInputs({
     return [];
   }, [
     side,
-    positionInfo.custody?.pubkey.toBase58(),
-    usdcCustody?.pubkey.toBase58(),
+    positionInfo.custody,
+    usdcCustody,
   ]);
 
   const custodyLiquidity = useDynamicCustodyAvailableLiquidity(custodyArray);
@@ -376,7 +386,7 @@ export default function LongShortTradingInputs({
   };
 
   const handleExecuteButton = async (): Promise<void> => {
-    if (!connected || !dispatch || !wallet) {
+    if (!connected || !dispatch || !walletAddress) {
       dispatch(openCloseConnectionModalAction(true));
       return;
     }
@@ -462,7 +472,7 @@ export default function LongShortTradingInputs({
 
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
-          owner: new PublicKey(wallet.publicKey),
+          owner: new PublicKey(walletAddress),
           collateralMint: tokenA.mint,
           mint: tokenB.mint,
           price: entryPrice,
@@ -477,7 +487,7 @@ export default function LongShortTradingInputs({
           poolKey: window.adrena.client.mainPool.pubkey, // TODO: handle multiple pool
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
-          owner: new PublicKey(wallet.publicKey),
+          owner: new PublicKey(walletAddress),
           collateralMint: tokenA.mint,
           mint: tokenB.mint,
           price: entryPrice,
@@ -1175,7 +1185,7 @@ export default function LongShortTradingInputs({
               onInputBChange={handleInputBChange}
               onExecute={handleExecuteButton}
               tokenPriceBTrade={tokenPriceBTrade}
-              walletAddress={wallet?.publicKey?.toBase58() ?? null}
+              walletAddress={walletAddress}
               custodyLiquidity={availableLiquidity}
               favorites={favorites}
               onToggleFavorite={toggleFavorite}

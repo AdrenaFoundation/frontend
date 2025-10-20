@@ -4,6 +4,7 @@ import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { TokenInfo } from '@/config/IConfiguration';
 import { ADRENA_EVENTS } from '@/constant';
+import DataApiClient from '@/DataApiClient';
 import { RechartsData } from '@/types';
 import { getCustodyByMint, getGMT, periodModeToSeconds } from '@/utils';
 
@@ -76,7 +77,7 @@ export default function CompositionChart() {
       })();
 
       const res = await fetch(
-        `https://datapi.adrena.xyz/${dataEndpoint}?assets_value_usd=true&start_date=${(() => {
+        `${DataApiClient.DATAPI_URL}/${dataEndpoint}?assets_value_usd=true&start_date=${(() => {
           const startDate = new Date();
           startDate.setDate(startDate.getDate() - dataPeriod);
 

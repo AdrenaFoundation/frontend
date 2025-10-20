@@ -200,13 +200,13 @@ export default function TokenSelector({
     () =>
       asModal
         ? () => {
-            onClose?.();
-            setSearchTerm('');
-          }
+          onClose?.();
+          setSearchTerm('');
+        }
         : () => {
-            setInternalIsOpen(false);
-            setSearchTerm('');
-          },
+          setInternalIsOpen(false);
+          setSearchTerm('');
+        },
     [asModal, onClose],
   );
 

@@ -6,7 +6,7 @@ import { ALTERNATIVE_SWAP_TOKENS, SOL_DECIMALS } from '@/constant';
 import type { TokenPricesState } from '@/reducers/streamingTokenPricesReducer';
 import { selectPossibleUserPositions } from '@/selectors/positions';
 import { selectStreamingTokenPricesFallback } from '@/selectors/streamingTokenPrices';
-import { selectWalletPublicKey } from '@/selectors/wallet';
+import { selectWalletPublicKey } from '@/selectors/walletSelectors';
 import type { Dispatch, RootState } from '@/store/store';
 import type { PositionExtended, TokenSymbol } from '@/types';
 import { findATAAddressSync, nativeToUi } from '@/utils';

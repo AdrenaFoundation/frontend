@@ -14,6 +14,7 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
   createAssociatedTokenAccountInstruction,
+  createTransferInstruction,
   NATIVE_MINT,
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
@@ -208,8 +209,10 @@ export class AdrenaClient {
   async checkATAAddressInitializedAndCreatePreInstruction({
     mint,
     owner,
+    payer = owner,
     preInstructions,
   }: {
+    payer?: PublicKey;
     mint: PublicKey;
     owner: PublicKey;
     preInstructions: TransactionInstruction[];
@@ -225,10 +228,10 @@ export class AdrenaClient {
 
       preInstructions.push(
         createAssociatedTokenAccountIdempotentInstruction(
-          owner, // payer
-          ataAddress, // associated token address
-          owner, // owner
-          mint, // mint
+          payer,
+          ataAddress,
+          owner,
+          mint,
         ),
       );
 
@@ -1667,6 +1670,75 @@ export class AdrenaClient {
         tokenProgram: TOKEN_PROGRAM_ID,
         adrenaProgram: this.adrenaProgram.programId,
       });
+  }
+
+  public async buildTransferSolTx({
+    owner,
+    recipient,
+    amountLamports,
+  }: {
+    owner: PublicKey;
+    recipient: PublicKey;
+    amountLamports: BN;
+  }) {
+    if (!this.connection) {
+      throw new Error('Connection not ready');
+    }
+
+    const transferInstruction = SystemProgram.transfer({
+      fromPubkey: owner,
+      toPubkey: recipient,
+      lamports: amountLamports.toNumber(),
+    });
+
+    const transaction = new Transaction().add(transferInstruction);
+
+    transaction.feePayer = owner;
+    const { blockhash } = await this.connection.getLatestBlockhash('confirmed');
+    transaction.recentBlockhash = blockhash;
+
+    return transaction;
+  }
+
+  public async buildTransferTokenTx({
+    owner,
+    recipient,
+    mint,
+    amount,
+  }: {
+    owner: PublicKey;
+    recipient: PublicKey;
+    mint: PublicKey;
+    amount: BN;
+  }) {
+    if (!this.connection) {
+      throw new Error('Connection not ready');
+    }
+
+    const senderTokenAddress = findATAAddressSync(owner, mint);
+    const recipientTokenAddress = findATAAddressSync(recipient, mint);
+
+    const preInstructions: TransactionInstruction[] = [];
+
+    await this.checkATAAddressInitializedAndCreatePreInstruction({
+      mint,
+      payer: owner,
+      owner: recipient,
+      preInstructions,
+    });
+
+    const transferInstruction = createTransferInstruction(
+      senderTokenAddress,
+      recipientTokenAddress,
+      owner,
+      amount.toNumber(),
+    );
+
+    const allInstructions = [...preInstructions, transferInstruction];
+    const transaction = new Transaction().add(...allInstructions);
+    transaction.feePayer = owner;
+
+    return transaction;
   }
 
   // Swap tokenA for tokenB
@@ -6708,7 +6780,7 @@ export class AdrenaClient {
       }
 
       transaction.instructions[1] = ComputeBudgetProgram.setComputeUnitLimit({
-        units: computeUnitToUse,
+        units: Math.ceil(computeUnitToUse),
       });
     }
 
