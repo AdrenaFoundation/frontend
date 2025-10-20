@@ -3,6 +3,7 @@ import '../../../styles/Animation.css';
 import { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
+import { AllAdxStakingProvider } from '@/contexts/AllAdxStakingContext';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import {
   DEFAULT_LOCKED_STAKE_LOCK_DURATION,
@@ -71,10 +72,10 @@ export default function StakeOverview({
     return savedConfig
       ? JSON.parse(savedConfig)
       : {
-          size: 'desc',
-          duration: 'asc',
-          lastClicked: 'duration',
-        };
+        size: 'desc',
+        duration: 'asc',
+        lastClicked: 'duration',
+      };
   });
 
   const [roundPassed, setRoundPassed] = useState<boolean>(false);
@@ -157,55 +158,57 @@ export default function StakeOverview({
     (Number(totalLockedStake) || 0) + (Number(totalLiquidStaked) || 0);
 
   return (
-    <div className="flex flex-col bg-main rounded-md border">
-      {/* Token info header */}
-      <TokenInfoHeader
-        totalStakeAmount={totalStakeAmount}
-        walletAddress={walletAddress}
-      />
-
-      <div className="flex flex-col h-full">
-        <div className="h-[1px] bg-bcolor w-full my-3" />
-
-        <PendingRewardsSection
-          userPendingUsdcRewards={userPendingUsdcRewards}
-          userPendingAdxRewards={userPendingAdxRewards}
-          pendingGenesisAdxRewards={pendingGenesisAdxRewards}
-          isClaimingRewards={isClaimingRewards}
-          isClaimingAndBuyAdxRewards={isClaimingAndBuyAdxRewards}
-          roundPassed={roundPassed}
-          onClaim={handleClaim}
-          onResolveStakingRound={triggerResolveStakingRound}
-          onClaimAndBuyAdx={handleClaimAndBuyAdx}
-        />
-
-        <div className="h-[1px] bg-bcolor w-full my-4" />
-
-        <ClaimHistorySection
+    <AllAdxStakingProvider>
+      <div className="flex flex-col bg-main rounded-md border">
+        {/* Token info header */}
+        <TokenInfoHeader
+          totalStakeAmount={totalStakeAmount}
           walletAddress={walletAddress}
-          optimisticClaim={optimisticClaim}
-          setOptimisticClaim={setOptimisticClaim}
-          itemsPerPage={4}
-        />
-        <div className="h-[1px] bg-bcolor w-full my-4" />
-
-        <LockedStakesSection
-          lockedStakes={lockedStakes}
-          sortConfig={sortConfig}
-          onSort={handleSort}
-          onAddStake={handleClickOnStakeMore}
-          onRedeem={handleLockedStakeRedeem}
-          onUpdate={handleClickOnUpdateLockedStake}
-          defaultLockPeriod={DEFAULT_LOCKED_STAKE_LOCK_DURATION}
         />
 
-        <LiquidStakeSection
-          totalLiquidStaked={totalLiquidStaked ?? 0}
-          onRedeem={handleClickOnRedeem}
-          onStake={handleClickOnStakeMore}
-          liquidStakeLockDuration={LIQUID_STAKE_LOCK_DURATION}
-        />
+        <div className="flex flex-col h-full">
+          <div className="h-[1px] bg-bcolor w-full my-3" />
+
+          <PendingRewardsSection
+            userPendingUsdcRewards={userPendingUsdcRewards}
+            userPendingAdxRewards={userPendingAdxRewards}
+            pendingGenesisAdxRewards={pendingGenesisAdxRewards}
+            isClaimingRewards={isClaimingRewards}
+            isClaimingAndBuyAdxRewards={isClaimingAndBuyAdxRewards}
+            roundPassed={roundPassed}
+            onClaim={handleClaim}
+            onResolveStakingRound={triggerResolveStakingRound}
+            onClaimAndBuyAdx={handleClaimAndBuyAdx}
+          />
+
+          <div className="h-[1px] bg-bcolor w-full my-4" />
+
+          <ClaimHistorySection
+            walletAddress={walletAddress}
+            optimisticClaim={optimisticClaim}
+            setOptimisticClaim={setOptimisticClaim}
+            itemsPerPage={4}
+          />
+          <div className="h-[1px] bg-bcolor w-full my-4" />
+
+          <LockedStakesSection
+            lockedStakes={lockedStakes}
+            sortConfig={sortConfig}
+            onSort={handleSort}
+            onAddStake={handleClickOnStakeMore}
+            onRedeem={handleLockedStakeRedeem}
+            onUpdate={handleClickOnUpdateLockedStake}
+            defaultLockPeriod={DEFAULT_LOCKED_STAKE_LOCK_DURATION}
+          />
+
+          <LiquidStakeSection
+            totalLiquidStaked={totalLiquidStaked ?? 0}
+            onRedeem={handleClickOnRedeem}
+            onStake={handleClickOnStakeMore}
+            liquidStakeLockDuration={LIQUID_STAKE_LOCK_DURATION}
+          />
+        </div>
       </div>
-    </div>
+    </AllAdxStakingProvider>
   );
 }

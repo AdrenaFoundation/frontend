@@ -1100,7 +1100,7 @@ export interface StakingLeaderboardEntry {
   liquidStake: number;
   lockedStakes: number;
   nickname?: string;
-  profilePicture: ProfilePicture | null;
+  profilePicture: ProfilePicture; // Always has a value (default 0 for monster)
   title: UserProfileTitle | null;
 }
 

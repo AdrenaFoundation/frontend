@@ -13,6 +13,7 @@ import { AprLmChart } from '@/components/pages/global/Apr/AprLmChart';
 import StakingChart from '@/components/pages/global/Staking/StakingChart';
 import StakingLeaderboard from '@/components/pages/monitoring/StakingLeaderboard';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
+import { AllAdxStakingProvider } from '@/contexts/AllAdxStakingContext';
 import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import { useAllStakingStats } from '@/hooks/useAllStakingStats';
@@ -21,7 +22,7 @@ import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 import { getNonUserProfile } from '@/utils';
 
-export default function AllStaking({
+function AllStakingContent({
   view,
 }: {
   isSmallScreen: boolean;
@@ -235,8 +236,8 @@ export default function AllStaking({
 
           {/* Right side - Staking Leaderboard */}
           <div className="w-full xl:w-1/3 max-w-3xl xl:max-w-none mx-auto">
-            <StyledContainer className="p-4 flex flex-col h-full">
-              <h2 className="text-center mb-4">ADX STAKING LEADERBOARD</h2>
+            <StyledContainer className="p-4 flex flex-col h-full" bodyClassName="gap-0">
+              <h2 className="text-center">ADX STAKING LEADERBOARD</h2>
               <div className="flex-1">
                 <StakingLeaderboard
                   walletAddress={wallet?.walletAddress || null}
@@ -276,5 +277,17 @@ export default function AllStaking({
         ) : null}
       </AnimatePresence>
     </>
+  );
+}
+
+// Wrap with the provider to share data across all hooks
+export default function AllStaking(props: {
+  isSmallScreen: boolean;
+  view: string;
+}) {
+  return (
+    <AllAdxStakingProvider>
+      <AllStakingContent {...props} />
+    </AllAdxStakingProvider>
   );
 }

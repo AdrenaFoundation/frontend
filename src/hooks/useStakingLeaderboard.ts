@@ -92,6 +92,14 @@ export default function useStakingLeaderboard(
             ? userProfile.owner.toBase58()
             : stakingPdaAddress;
 
+          // Get profile picture with default fallback
+          const profilePictureIndex =
+            userProfile?.profilePicture as ProfilePicture | null;
+          const profilePicture =
+            profilePictureIndex !== null && profilePictureIndex !== undefined
+              ? profilePictureIndex
+              : 0; // Default to monster profile picture
+
           return {
             walletAddress: ownerAddress,
             stakingPdaAddress,
@@ -99,8 +107,7 @@ export default function useStakingLeaderboard(
             liquidStake, // Real ADX liquid amount
             lockedStakes: realLockedStakes, // Real ADX locked amount (without multipliers)
             nickname: userProfile?.nickname,
-            profilePicture:
-              (userProfile?.profilePicture as ProfilePicture | null) ?? null,
+            profilePicture: profilePicture, // Always has a value (default 0)
             title: (userProfile?.title as UserProfileTitle | null) ?? null,
           };
         })

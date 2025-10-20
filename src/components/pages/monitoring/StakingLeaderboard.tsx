@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
+import StakingProfileCard from '@/components/pages/monitoring/StakingProfileCard';
 import Table from '@/components/pages/monitoring/TableLegacy';
 import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
@@ -12,7 +13,6 @@ import useStakingLeaderboard from '@/hooks/useStakingLeaderboard';
 import { useSelector } from '@/store/store';
 import { UserProfileMetadata } from '@/types';
 import {
-  formatNumber,
   getAbbrevNickname,
   getAbbrevWalletAddress,
 } from '@/utils';
@@ -263,8 +263,7 @@ export default function StakingLeaderboard({
 
   if (
     isLoading ||
-    !data ||
-    (walletAddress && !userRow && data.leaderboard.length > 0)
+    !data
   ) {
     return (
       <div className="w-full h-full flex flex-col">
@@ -320,18 +319,16 @@ export default function StakingLeaderboard({
                   style={{ maxWidth: i === 0 ? '3rem' : 'auto' }}
                 >
                   <div
-                    className={`h-6 bg-[#0B131D] animate-loader rounded opacity-50 w-full flex items-center ${
-                      i === 0
-                        ? 'justify-center'
-                        : i === 1
-                          ? 'justify-start'
-                          : 'justify-end'
-                    }`}
+                    className={`h-6 bg-[#0B131D] animate-loader rounded opacity-50 w-full flex items-center ${i === 0
+                      ? 'justify-center'
+                      : i === 1
+                        ? 'justify-start'
+                        : 'justify-end'
+                      }`}
                   >
                     <div
-                      className={`bg-[#0B131D] animate-loader rounded ${
-                        i === 0 ? 'w-3 h-3' : 'w-10 h-3'
-                      }`}
+                      className={`bg-[#0B131D] animate-loader rounded ${i === 0 ? 'w-3 h-3' : 'w-10 h-3'
+                        }`}
                     ></div>
                   </div>
                 </div>
@@ -408,93 +405,25 @@ export default function StakingLeaderboard({
   return (
     <div className="w-full h-full flex flex-col">
       {/* User Profile Card */}
-      {userRow && data?.userRank && data?.userVirtualAmount && (
-        <div
-          className="
-             relative flex flex-col gap-2 px-4 rounded-md
-             max-w-3xl mx-auto mb-6 ml-2 mr-2 md:ml-auto md:mr-auto
-             bg-gradient-to-br from-red/30 to-red/10
-             border border-red/80
-             shadow-redBig
-             animate-fade-in
-             cursor-pointer
-             transition hover:border-red hover:shadow-redHoverBig
-           "
-          title="Click to scroll to your row"
-          onClick={() => {
-            if (!wallet || !data?.leaderboard) return;
-            setCurrentPage(
-              Math.floor(
-                data.leaderboard.findIndex(
-                  (entry) => entry.walletAddress === wallet.walletAddress,
-                ) / itemsPerPage,
-              ) + 1,
-            );
-            scrollToUserRowRef.current = true;
-          }}
-        >
-          <div className="flex items-center justify-center gap-4">
-            {userRow.profilePicture !== null ? (
-              <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={PROFILE_PICTURES[userRow.profilePicture]}
-                  alt="Profile"
-                  className="h-16 w-16 rounded-full object-cover shadow mt-1 mb-1"
-                  key={`profile-picture-${userRow.nickname}`}
-                />
-              </>
-            ) : (
-              <div className="h-16 w-16 bg-third rounded-full" />
-            )}
-            <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-3">
-                <span className="font-semibold text-white text-xl truncate flex-1 min-w-0 hidden sm:flex">
-                  {userRow.nickname || 'Anonymous Staker'}
-                </span>
-                <span className="font-semibold text-txtfade text-xl flex-shrink-0 hidden sm:flex">
-                  |
-                </span>
-                <span className="text-sm font-semibold text-white bg-red/50 px-3 py-1 rounded-full shadow flex-shrink-0">
-                  #{data?.userRank}
-                </span>
-                <span className="font-semibold text-txtfade text-xl flex-shrink-0">
-                  |
-                </span>
-                <span className="text-xl font-semibold text-redbright flex flex-shrink-0">
-                  {formatNumber(data?.userVirtualAmount || 0, 0, 0)}
-                </span>
-              </div>
-              {/* Show amount needed to climb */}
-              {data?.userAboveAmount && (
-                <>
-                  {/* Mobile version - shorter text */}
-                  <div className="text-sm text-txtfade mt-1 sm:hidden">
-                    {' '}
-                    {formatNumber(
-                      data.userAboveAmount - (data?.userVirtualAmount || 0),
-                      0,
-                      0,
-                    )}{' '}
-                    more to climb!
-                  </div>
-
-                  {/* Desktop version - full text */}
-                  <div className="text-sm text-txtfade mt-1 hidden sm:block">
-                    {' '}
-                    {formatNumber(
-                      data.userAboveAmount - (data?.userVirtualAmount || 0),
-                      0,
-                      0,
-                    )}{' '}
-                    more rev. weight to climb the ladder!
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <StakingProfileCard
+        userRow={userRow}
+        userRank={data?.userRank}
+        userVirtualAmount={data?.userVirtualAmount}
+        userAboveAmount={data?.userAboveAmount}
+        totalStakers={data?.totalStakers}
+        walletAddress={walletAddress}
+        onCardClick={() => {
+          if (!wallet || !data?.leaderboard) return;
+          setCurrentPage(
+            Math.floor(
+              data.leaderboard.findIndex(
+                (entry) => entry.walletAddress === wallet.walletAddress,
+              ) / itemsPerPage,
+            ) + 1,
+          );
+          scrollToUserRowRef.current = true;
+        }}
+      />
 
       <div className="h-[1px] bg-bcolor w-full mt-4 mb-4" />
 
