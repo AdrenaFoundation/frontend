@@ -620,6 +620,7 @@ export default function WalletDigger({
                   <PositionsHistory
                     walletAddress={targetWalletPubkey?.toBase58() ?? null}
                     connected={true}
+                    userProfile={userProfile ?? null}
                   />
                 </div>
               </>
