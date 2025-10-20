@@ -378,6 +378,15 @@ function AppComponent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTermsAndConditionModalOpen, !!userProfile]);
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const referralCode = urlParams.get('referral');
+
+    if (referralCode && referralCode.trim() !== '') {
+      sessionStorage.setItem('adrena_referral_code', referralCode);
+    }
+  }, []);
+
   return (
     <>
       <Head>
