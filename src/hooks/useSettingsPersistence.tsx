@@ -23,7 +23,7 @@ export default function useSettingsPersistence() {
     'disable-friend-req',
     // Persistence for trading actions
     'open-position-collateral-symbol',
-    'close-position-collateral-symbol',
+    'close-position-collateral-symbols',
     'deposit-collateral-symbol',
     'withdraw-collateral-symbol',
     'enable-adrena-notifications',
@@ -84,9 +84,9 @@ export default function useSettingsPersistence() {
 
     {
       const v =
-        preferences?.closePositionCollateralSymbol ??
-        cookies['close-position-collateral-symbol'];
-      updatedSettings.closePositionCollateralSymbol = v;
+        preferences?.closePositionCollateralSymbols ??
+        cookies['close-position-collateral-symbols'];
+      updatedSettings.closePositionCollateralSymbols = v || {};
     }
 
     {
@@ -159,7 +159,7 @@ export default function useSettingsPersistence() {
             priorityFeeOption: 'priority-fee',
             disableFriendReq: 'disable-friend-req',
             openPositionCollateralSymbol: 'open-position-collateral-symbol',
-            closePositionCollateralSymbol: 'close-position-collateral-symbol',
+            closePositionCollateralSymbols: 'close-position-collateral-symbols',
             depositCollateralSymbol: 'deposit-collateral-symbol',
             withdrawCollateralSymbol: 'withdraw-collateral-symbol',
             enableAdrenaNotifications: 'enable-adrena-notifications',
