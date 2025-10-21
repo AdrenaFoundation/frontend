@@ -110,9 +110,16 @@ export default function App(props: AppProps) {
       solana: {
         rpcs: {
           'solana:mainnet': {
-            rpc: createSolanaRpc(activeRpc?.connection?.rpcEndpoint || `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`),
+            // TODO: Remove before going to production
+            // rpc: createSolanaRpc(activeRpc?.connection?.rpcEndpoint || `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`),
+            // rpcSubscriptions: createSolanaRpcSubscriptions(
+            //   (activeRpc?.connection?.rpcEndpoint || `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`)
+            //     .replace('https', 'wss')
+            // )
+
+            rpc: createSolanaRpc(`https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`),
             rpcSubscriptions: createSolanaRpcSubscriptions(
-              (activeRpc?.connection?.rpcEndpoint || `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`)
+              (`https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`)
                 .replace('https', 'wss')
             )
           },

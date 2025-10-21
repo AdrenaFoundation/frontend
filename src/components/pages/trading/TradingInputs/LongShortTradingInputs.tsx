@@ -596,7 +596,7 @@ export default function LongShortTradingInputs({
       try {
         let infos: Awaited<
           ReturnType<
-            typeof window.adrena.client.getOpenPositionWithConditionalSwapInfos
+            typeof window.adrena.client.getOpenPositionInfos
           >
         > | null = null;
 
@@ -636,7 +636,7 @@ export default function LongShortTradingInputs({
           }
 
           infos =
-            await window.adrena.client.getOpenPositionWithConditionalSwapInfos({
+            await window.adrena.client.getOpenPositionInfos({
               tokenA: tokenB,
               tokenB,
               collateralAmount,
@@ -679,7 +679,7 @@ export default function LongShortTradingInputs({
           }
 
           infos =
-            await window.adrena.client.getOpenPositionWithConditionalSwapInfos({
+            await window.adrena.client.getOpenPositionInfos({
               tokenA: usdcToken,
               tokenB,
               collateralAmount,
@@ -701,9 +701,8 @@ export default function LongShortTradingInputs({
           ...prev,
           newPositionInfo: {
             ...infos,
-            highSwapFees:
-              infos.swapFeeUsd !== null &&
-              (infos.swapFeeUsd * 100) / infos.collateralUsd > 1,
+            swapFeeUsd: 0,
+            highSwapFees: false,
           },
         }));
       } catch (err) {

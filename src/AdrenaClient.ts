@@ -67,7 +67,6 @@ import {
   LimitOrderBookExtended,
   LockedStakeExtended,
   NewPositionPricesAndFee,
-  OpenPositionWithSwapAmountAndFees,
   Pool,
   PoolExtended,
   Position,
@@ -2616,8 +2615,8 @@ export class AdrenaClient {
     });
   }
 
-  // Estimate the fee + other infos that will be paid by user if opening a new position with conditional swap
-  public async getOpenPositionWithConditionalSwapInfos({
+  // Estimate the fee + other infos that will be paid by user if opening a new position
+  public async getOpenPositionInfos({
     tokenA,
     tokenB,
     collateralAmount,
@@ -2637,7 +2636,6 @@ export class AdrenaClient {
     collateralUsd: number;
     sizeUsd: number;
     size: number;
-    swapFeeUsd: number | null;
     entryPrice: number;
     liquidationPrice: number;
     exitFeeUsd: number;
@@ -2656,9 +2654,9 @@ export class AdrenaClient {
     if (!usdcTokenPrice)
       throw new Error(`needs find ${usdcToken.symbol} price to calculate fees`);
 
-    const info = await this.getOpenPositionWithSwapAmountAndFees({
-      mint: tokenB.mint,
-      collateralMint: tokenA.mint,
+    const info = await this.getEntryPriceAndFee({
+      token: tokenB,
+      collateralToken: tokenA,
       collateralAmount,
       leverage,
       side,
@@ -2671,8 +2669,6 @@ export class AdrenaClient {
       size: nativeSize,
       entryPrice,
       liquidationPrice,
-      swapFeeIn,
-      swapFeeOut,
       exitFee,
       liquidationFee,
     } = info;
@@ -2687,10 +2683,6 @@ export class AdrenaClient {
             swappedTokenDecimals: usdcToken.decimals,
             swappedTokenPrice: usdcTokenPrice,
           };
-
-    const swapFeeUsd =
-      nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
-      nativeToUi(swapFeeOut, swappedTokenDecimals) * swappedTokenPrice;
 
     const exitFeeUsd =
       nativeToUi(exitFee, swappedTokenDecimals) * swappedTokenPrice;
@@ -2714,7 +2706,6 @@ export class AdrenaClient {
       collateralUsd,
       size,
       sizeUsd,
-      swapFeeUsd,
       exitFeeUsd,
       liquidationFeeUsd,
       entryPrice: nativeToUi(entryPrice, PRICE_DECIMALS),
@@ -5199,64 +5190,6 @@ export class AdrenaClient {
     );
   }
 
-  public async getOpenPositionWithSwapAmountAndFees({
-    mint,
-    collateralMint,
-    collateralAmount,
-    leverage,
-    side,
-    poolKey,
-  }: {
-    mint: PublicKey;
-    collateralMint: PublicKey;
-    collateralAmount: BN;
-    leverage: number;
-    side: 'long' | 'short';
-    poolKey: PublicKey;
-  }): Promise<OpenPositionWithSwapAmountAndFees | null> {
-    if (this.adrenaProgram === null) {
-      return null;
-    }
-
-    const principalCustody = this.getCustodyByMint(mint);
-    const receivingCustody = this.getCustodyByMint(collateralMint);
-    const instructionCollateralMint = (() => {
-      if (side === 'long') {
-        return principalCustody.mint;
-      }
-
-      return this.getUsdcToken().mint;
-    })();
-
-    const collateralCustody = this.getCustodyByMint(instructionCollateralMint);
-
-    // Anchor is bugging when calling a view, that is making CPI calls inside
-    // Need to do it manually, so we can get the correct amounts
-    const instruction = await this.adrenaProgram.methods
-      .getOpenPositionWithSwapAmountAndFees({
-        collateralAmount,
-        leverage,
-        side: side === 'long' ? 1 : 2,
-      })
-      .accountsStrict({
-        oracle: AdrenaClient.oraclePda,
-        cortex: AdrenaClient.cortexPda,
-        pool: poolKey,
-        receivingCustody: receivingCustody.pubkey,
-        collateralCustody: collateralCustody.pubkey,
-        principalCustody: principalCustody.pubkey,
-        adrenaProgram: this.readonlyAdrenaProgram.programId,
-      })
-      .instruction();
-
-    const preInstructions: TransactionInstruction[] = [];
-
-    return this.simulateInstructions<OpenPositionWithSwapAmountAndFees>(
-      [...preInstructions, instruction],
-      'OpenPositionWithSwapAmountAndFees',
-    );
-  }
-
   public async getEntryPriceAndFee({
     token,
     collateralToken,
@@ -5282,13 +5215,29 @@ export class AdrenaClient {
       return null;
     }
 
+    console.log('Getting entry price and fee with:', {
+      oracle: AdrenaClient.oraclePda.toBase58(),
+      cortex: AdrenaClient.cortexPda.toBase58(),
+      collateralAmount: collateralAmount.toString(),
+      leverage,
+      side,
+      poolKey: poolKey.toBase58(),
+      token: token.symbol,
+      tokenMint: token.mint.toBase58(),
+      tokenMintBytes: token.mint.toBytes(),
+      collateralToken: collateralToken.symbol,
+      custody: token.custody.toBase58(),
+      collateralCustody: collateralToken.custody.toBase58(),
+      custodySeed: this.getCustodyByPubkey(token.custody)?.nativeObject.seed,
+      collateralCustodySeed: this.getCustodyByPubkey(collateralToken.custody)
+        ?.nativeObject.seed,
+    });
+
     const instruction = await this.adrenaProgram.methods
       .getEntryPriceAndFee({
         collateral: collateralAmount,
         leverage,
-        // use any to force typing to be accepted - anchor typing is broken
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        side: { [side]: {} } as any,
+        side: side === 'long' ? 1 : 2,
       })
       .accountsStrict({
         oracle: AdrenaClient.oraclePda,
@@ -6245,22 +6194,21 @@ export class AdrenaClient {
       return null;
     }
 
-    // TODO: Should have the oraclePrices passed as parameter
-    // const oraclePrices: ChaosLabsPricesExtended | null =
-    //   await DataApiClient.getChaosLabsPrices();
+    const oraclePrices: ChaosLabsPricesExtended | null =
+      await DataApiClient.getChaosLabsPrices();
 
     const lpTokenMint = this.getLpTokenMintForPool(poolKey);
 
     const instruction = await this.adrenaProgram.methods
       .getRemoveLiquidityAmountAndFee({
         lpAmountIn,
-        // oraclePrices: oraclePrices
-        //   ? {
-        //       prices: oraclePrices.prices,
-        //       signature: oraclePrices.signatureByteArray,
-        //       recoveryId: oraclePrices.recoveryId,
-        //     }
-        //   : null,
+        oraclePrices: oraclePrices
+          ? {
+              prices: oraclePrices.prices,
+              signature: oraclePrices.signatureByteArray,
+              recoveryId: oraclePrices.recoveryId,
+            }
+          : null,
       })
       .accountsStrict({
         oracle: AdrenaClient.oraclePda,
