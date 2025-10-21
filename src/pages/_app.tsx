@@ -123,7 +123,7 @@ export default function App(props: AppProps) {
         accentColor: '#f5f5f5' as const,
         logo: '/images/logo.svg',
         showWalletLoginFirst: false,
-        walletList: ['detected_ethereum_wallets', 'detected_solana_wallets'] as WalletListEntry[],
+        walletList: ['detected_solana_wallets'] as WalletListEntry[],
         walletChainType: 'solana-only' as const,
       },
       //loginMethods: ['email' as const, 'google' as const, 'twitter' as const, 'discord' as const, 'wallet' as const, 'github' as const], // apple, line, tiktok, linkedin have to be configured first // remove to enable whatsapp
