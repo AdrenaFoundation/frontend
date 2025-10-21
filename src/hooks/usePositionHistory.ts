@@ -338,7 +338,6 @@ export default function usePositionsHistory({
         setIsLoadingPositionsHistory(false);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [batchSize, isLoadingPositionsHistory],
   );
 

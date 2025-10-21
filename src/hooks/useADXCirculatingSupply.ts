@@ -45,7 +45,6 @@ export default function useADXCirculatingSupply({
       clearInterval(interval);
       interval = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadTokenTreasuryBalance]);
 
   const circulatingSupply = useMemo(() => {

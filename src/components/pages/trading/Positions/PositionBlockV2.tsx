@@ -72,7 +72,6 @@ export default function PositionBlockV2({
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const tradeTokenPrice = useSelector((s) =>
@@ -124,7 +123,6 @@ export default function PositionBlockV2({
 
   const positionBorrowFeesShouldBeResolved = useMemo(
     () => (position.borrowFeeUsd ?? 0) - (position.paidInterestUsd ?? 0) > 50,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [position.borrowFeeUsd, position.paidInterestUsd],
   );
 

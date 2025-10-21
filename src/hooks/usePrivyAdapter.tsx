@@ -294,7 +294,6 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     } finally {
       setIsConnecting(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [publicKey, authenticated, ready, isDisconnecting, isConnecting, dispatch, eventEmitter, adapterInitialized, connectedStandardWallets, walletsReady, currentWalletAddress, autoConnectAttemptTime, timeoutCheckTrigger]);
 
   // called from function connectWalletAction in walletActions.ts

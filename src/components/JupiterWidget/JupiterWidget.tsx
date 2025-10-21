@@ -231,7 +231,6 @@ export default function JupiterWidget({
             passthroughWalletContextState: walletContext
         });
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         id,
         rpcEndpoint,

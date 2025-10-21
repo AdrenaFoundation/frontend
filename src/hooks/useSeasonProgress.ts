@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 
-import { TRADING_COMPETITION_SEASONS } from "@/constant";
-import DataApiClient from "@/DataApiClient";
+import { TRADING_COMPETITION_SEASONS } from '@/constant';
+import DataApiClient from '@/DataApiClient';
 import {
   EnrichedUserSeasonProgress,
   UserSeasonProgressReturnType,
-} from "@/types";
+} from '@/types';
 
 const transformToEnrichedProgress = (
   response: UserSeasonProgressReturnType,
@@ -122,7 +122,7 @@ export default function useUserSeasonProgress({
     try {
       const response = await DataApiClient.getUserSeasonProgress({
         userWallet: walletAddress,
-        season: "expanse",
+        season: 'expanse',
       });
 
       if (!response) {
@@ -132,7 +132,7 @@ export default function useUserSeasonProgress({
 
       setUserSeasonProgress(transformToEnrichedProgress(response));
     } catch (e) {
-      console.error("Error loading user season progress:", e);
+      console.error('Error loading user season progress:', e);
     }
   }, [walletAddress]);
 
@@ -151,7 +151,6 @@ export default function useUserSeasonProgress({
     return () => {
       clearInterval(interval);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadUserSeasonProgress]);
 
   return {

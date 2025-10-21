@@ -1,7 +1,7 @@
 import '@/styles/globals.scss';
 
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
-import { PrivyProvider, usePrivy } from '@privy-io/react-auth';
+import { PrivyProvider, usePrivy, WalletListEntry } from '@privy-io/react-auth';
 import { toSolanaWalletConnectors } from '@privy-io/react-auth/solana';
 import { createSolanaRpc, createSolanaRpcSubscriptions } from '@solana/kit';
 import { Connection } from '@solana/web3.js';
@@ -116,10 +116,6 @@ export default function App(props: AppProps) {
                 .replace('https', 'wss')
             )
           },
-          /*  'solana:devnet': {
-             rpc: createSolanaRpc('https://api.devnet.solana.com'),
-             rpcSubscriptions: createSolanaRpcSubscriptions('wss://api.devnet.solana.com')
-           }, */
         }
       },
       appearance: {
@@ -127,7 +123,7 @@ export default function App(props: AppProps) {
         accentColor: '#f5f5f5' as const,
         logo: '/images/logo.svg',
         showWalletLoginFirst: false,
-        walletList: ['detected_wallets' as const],
+        walletList: ['detected_solana_wallets'] as WalletListEntry[],
         walletChainType: 'solana-only' as const,
       },
       //loginMethods: ['email' as const, 'google' as const, 'twitter' as const, 'discord' as const, 'wallet' as const, 'github' as const], // apple, line, tiktok, linkedin have to be configured first // remove to enable whatsapp
