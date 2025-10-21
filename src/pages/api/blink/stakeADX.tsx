@@ -3,10 +3,9 @@ import { PublicKey } from '@solana/web3.js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { ADX_LOCK_PERIODS } from '@/constant';
+import { adrenaClient, getSeriliazedTransaction } from '@/lib/blink/utils';
 import { AdxLockPeriod } from '@/types';
 import { AdrenaTransactionError, isValidPublicKey } from '@/utils';
-
-import { adrenaClient, getSeriliazedTransaction } from './utils';
 
 
 export default async function handler(

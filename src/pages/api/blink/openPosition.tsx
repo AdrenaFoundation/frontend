@@ -14,6 +14,7 @@ import {
 import BN from 'bn.js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { adrenaClient } from '@/lib/blink/utils';
 import { PositionExtended } from '@/types';
 import {
     AdrenaTransactionError,
@@ -25,8 +26,6 @@ import {
     uiLeverageToNative,
     uiToNative,
 } from '@/utils';
-
-import { adrenaClient } from './utils';
 
 export default async function handler(
     req: NextApiRequest,

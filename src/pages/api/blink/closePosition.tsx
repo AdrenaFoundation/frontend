@@ -7,12 +7,11 @@ import { ComputeBudgetProgram, Connection, PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { adrenaClient } from '@/lib/blink/utils';
 import {
     AdrenaTransactionError,
     isValidPublicKey,
 } from '@/utils';
-
-import { adrenaClient } from './utils';
 
 export default async function handler(
     req: NextApiRequest,
