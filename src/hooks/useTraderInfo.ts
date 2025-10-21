@@ -175,55 +175,51 @@ export default function useTraderInfo({
     };
   }, [factionLeaderboard, walletAddress]);
 
-  const loadTraderInfo = useCallback(
-    async () => {
-      if (!walletAddress) {
-        setIsTraderInfoLoading(false);
-        // Set initial load to false only once
-        if (isInitialLoad) {
-          setIsInitialLoad(false);
-        }
-        return;
+  const loadTraderInfo = useCallback(async () => {
+    if (!walletAddress) {
+      setIsTraderInfoLoading(false);
+      // Set initial load to false only once
+      if (isInitialLoad) {
+        setIsInitialLoad(false);
+      }
+      return;
+    }
+
+    setIsTraderInfoLoading(true);
+
+    async function fetchTraderInfo(): Promise<EnrichedTraderInfo | null> {
+      if (!walletAddress) return null;
+
+      const traderInfo = await DataApiClient.getTraderInfo({
+        walletAddress,
+      });
+
+      if (!traderInfo) {
+        return null;
       }
 
-      setIsTraderInfoLoading(true);
+      return traderInfo;
+    }
 
-      async function fetchTraderInfo(): Promise<EnrichedTraderInfo | null> {
-        if (!walletAddress) return null;
+    try {
+      setTraderInfo(await fetchTraderInfo());
 
-        const traderInfo = await DataApiClient.getTraderInfo({
-          walletAddress,
-        });
-
-        if (!traderInfo) {
-          return null;
-        }
-
-        return traderInfo;
+      // Set initial load to false only once after first successful fetch
+      if (isInitialLoad) {
+        setIsInitialLoad(false);
       }
+    } catch (e) {
+      console.log('Error loading trader info', e, String(e));
 
-      try {
-        setTraderInfo(await fetchTraderInfo());
-
-        // Set initial load to false only once after first successful fetch
-        if (isInitialLoad) {
-          setIsInitialLoad(false);
-        }
-      } catch (e) {
-        console.log('Error loading trader info', e, String(e));
-
-        // Set initial load to false even on error to prevent infinite loading state
-        if (isInitialLoad) {
-          setIsInitialLoad(false);
-        }
-        throw e;
-      } finally {
-        setIsTraderInfoLoading(false);
+      // Set initial load to false even on error to prevent infinite loading state
+      if (isInitialLoad) {
+        setIsInitialLoad(false);
       }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [walletAddress, isInitialLoad],
-  );
+      throw e;
+    } finally {
+      setIsTraderInfoLoading(false);
+    }
+  }, [walletAddress, isInitialLoad]);
 
   useEffect(() => {
     loadTraderInfo();

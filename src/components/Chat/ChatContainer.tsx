@@ -105,7 +105,6 @@ function ChatContainer({
         UserProfileMetadata & { isOnline?: boolean; profilePictureUrl?: string }
       >,
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connectedUsers, allUserProfilesMetadata]);
 
   useEffect(() => {

@@ -46,7 +46,6 @@ export default function UpgradeLockedStake({
   );
 
   // Force typing for now, need to do something clean with templates
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const LOCK_PERIODS =
     lockedStake.tokenSymbol === 'ALP' ? ALP_LOCK_PERIODS : ADX_LOCK_PERIODS;
 
