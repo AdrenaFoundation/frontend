@@ -12,10 +12,7 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useStakingLeaderboard from '@/hooks/useStakingLeaderboard';
 import { useSelector } from '@/store/store';
 import { UserProfileMetadata } from '@/types';
-import {
-  getAbbrevNickname,
-  getAbbrevWalletAddress,
-} from '@/utils';
+import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
 interface StakingLeaderboardProps {
   walletAddress: string | null;
@@ -74,7 +71,7 @@ export default function StakingLeaderboard({
   const tableData = useMemo(() => {
     if (!data?.leaderboard) return [];
 
-    return data.leaderboard.map((entry, index) => {
+    const actualRows = data.leaderboard.map((entry, index) => {
       const values = [
         // Rank
         <div
@@ -187,6 +184,92 @@ export default function StakingLeaderboard({
         values,
       };
     });
+
+    // Calculate how many rows on current page after pagination
+    const totalRows = actualRows.length;
+
+    // If we're not on the last page, return as-is
+    // If we're on last page with fewer rows, add empty placeholder rows
+    const rowsOnLastPage = totalRows % itemsPerPage;
+    const shouldAddPlaceholders = rowsOnLastPage > 0;
+
+    if (!shouldAddPlaceholders) {
+      return actualRows;
+    }
+
+    // Add invisible placeholder rows to fill to itemsPerPage
+    // These must match the exact structure of real rows
+    const placeholdersNeeded = itemsPerPage - rowsOnLastPage;
+    const placeholderRows = Array.from(
+      { length: placeholdersNeeded },
+      (_, i) => ({
+        rowTitle: '',
+        specificRowClassName: 'opacity-0 pointer-events-none select-none', // Invisible but maintains space
+        values: [
+          // Rank - matches line 77-82
+          <div
+            key={`ph-rank-${i}`}
+            className="flex items-center justify-center w-full"
+          >
+            <span className="text-sm">0</span>
+          </div>,
+
+          // Staker - matches line 84-130
+          <div
+            key={`ph-wallet-${i}`}
+            className="flex items-center justify-start w-full gap-1.5 sm:gap-2 overflow-hidden"
+          >
+            <div className="h-6 w-6 sm:h-8 sm:w-8 bg-third rounded-full flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold truncate">Placeholder</p>
+            </div>
+          </div>,
+
+          // Rev. Weight - matches line 132-143
+          <div
+            key={`ph-virtual-${i}`}
+            className="flex items-center justify-end w-full"
+          >
+            <FormatNumber
+              nb={0}
+              precision={0}
+              className="text-xs font-semibold text-rose-400"
+              isDecimalDimmed={false}
+            />
+          </div>,
+
+          // Locked and Liquid (only on md+ screens) - matches line 147-177
+          ...(breakpoint1
+            ? [
+                <div
+                  key={`ph-locked-${i}`}
+                  className="flex items-center justify-end w-full"
+                >
+                  <FormatNumber
+                    nb={0}
+                    precision={0}
+                    className="text-xs font-semibold text-txtfade"
+                    isDecimalDimmed={false}
+                  />
+                </div>,
+                <div
+                  key={`ph-liquid-${i}`}
+                  className="flex items-center justify-end w-full"
+                >
+                  <FormatNumber
+                    nb={0}
+                    precision={0}
+                    className="text-xs font-semibold text-txtfade"
+                    isDecimalDimmed={false}
+                  />
+                </div>,
+              ]
+            : []),
+        ],
+      }),
+    );
+
+    return [...actualRows, ...placeholderRows];
   }, [data?.leaderboard, handleProfileView, walletAddress, breakpoint1]);
 
   const columnsTitles = useMemo(() => {
@@ -261,24 +344,22 @@ export default function StakingLeaderboard({
     );
   }
 
-  if (
-    isLoading ||
-    !data
-  ) {
+  if (isLoading || !data) {
     return (
       <div className="w-full h-full flex flex-col">
         {/* User profile card skeleton */}
         <div
           className="
-          relative flex flex-col gap-2 px-4 rounded-md
-          max-w-3xl mx-auto mb-6 ml-2 mr-2 md:ml-auto md:mr-auto
+          relative flex flex-col gap-2 px-4 py-2 rounded-md
+          max-w-3xl mx-auto mb-4 ml-2 mr-2 md:ml-auto md:mr-auto
           bg-gradient-to-br from-red/30 to-red/10
           border border-red/80
           shadow-redBig
           animate-fade-in
           cursor-pointer
           transition hover:border-red hover:shadow-redHoverBig
-        "
+          mt-4
+"
         >
           <div className="flex items-center justify-center gap-4">
             <div className="h-16 w-16 rounded-full bg-[#0B131D] animate-loader mt-1 mb-1 flex-shrink-0"></div>
@@ -319,16 +400,18 @@ export default function StakingLeaderboard({
                   style={{ maxWidth: i === 0 ? '3rem' : 'auto' }}
                 >
                   <div
-                    className={`h-6 bg-[#0B131D] animate-loader rounded opacity-50 w-full flex items-center ${i === 0
-                      ? 'justify-center'
-                      : i === 1
-                        ? 'justify-start'
-                        : 'justify-end'
-                      }`}
+                    className={`h-6 bg-[#0B131D] animate-loader rounded opacity-50 w-full flex items-center ${
+                      i === 0
+                        ? 'justify-center'
+                        : i === 1
+                          ? 'justify-start'
+                          : 'justify-end'
+                    }`}
                   >
                     <div
-                      className={`bg-[#0B131D] animate-loader rounded ${i === 0 ? 'w-3 h-3' : 'w-10 h-3'
-                        }`}
+                      className={`bg-[#0B131D] animate-loader rounded ${
+                        i === 0 ? 'w-3 h-3' : 'w-10 h-3'
+                      }`}
                     ></div>
                   </div>
                 </div>

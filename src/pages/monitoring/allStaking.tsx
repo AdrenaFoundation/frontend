@@ -22,12 +22,7 @@ import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 import { getNonUserProfile } from '@/utils';
 
-function AllStakingContent({
-  view,
-}: {
-  isSmallScreen: boolean;
-  view: string;
-}) {
+function AllStakingContent({ view }: { isSmallScreen: boolean; view: string }) {
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
     null;
@@ -117,10 +112,10 @@ function AllStakingContent({
                   <AprLmChart />
                 </div>
 
-                <div className="flex flex-col items-center justify-center gap-1 w-full">
-                  <h2 className="flex">LOCKED STAKE REPARTITION</h2>
+                <div className="flex flex-col w-full ml-1">
+                  <h2 className="flex mb-5">LOCKED STAKE REPARTITION</h2>
 
-                  <div className="w-full flex h-[15em] -ml-[0.75rem]">
+                  <div className="w-full flex h-[15em] -ml-[0.5rem] items-center justify-center">
                     <StakingChart />
                   </div>
                 </div>
@@ -130,10 +125,10 @@ function AllStakingContent({
             {/* Bottom container */}
             <StyledContainer
               className="p-4 flex-1"
-              bodyClassName="items-center justify-center flex relative h-full"
+              bodyClassName="flex relative h-full"
             >
               <div
-                className="flex flex-col items-center justify-center gap-1 cursor-pointer"
+                className="flex flex-col sm:flex-row sm:gap-3 cursor-pointer"
                 onClick={() =>
                   setDisplayStakedAdxAs(
                     displayStakedAdxAs === 'usd' ? 'amount' : 'usd',
@@ -146,12 +141,12 @@ function AllStakingContent({
                   <Tippy
                     content={
                       <div className="text-sm flex">
-                        Total staked ADX / Circulating supply ADX
+                        Total ADX staked / ADX circulating supply
                       </div>
                     }
                     placement="auto"
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 cursor-help">
                       <FormatNumber
                         nb={totalStakedADX}
                         prefix={displayStakedAdxAs === 'usd' ? '$' : ''}
@@ -193,7 +188,7 @@ function AllStakingContent({
                 ) : null}
               </div>
 
-              <div className="absolute top-2 right-4 text-sm flex gap-2">
+              <div className="justify-end -mb-4 md:absolute md:top-7 md:right-2 text-sm flex gap-2 ">
                 <div className="text-txtfade">Display as: </div>
 
                 <div
@@ -217,14 +212,14 @@ function AllStakingContent({
                 </div>
               </div>
 
-              <div className="flex w-full min-h-[15em] h-[20em] grow">
+              <div className="flex w-full min-h-[15em] h-[20em] grow mt-2 mb-4">
                 <AllStakingChartADX
                   allStakingStats={allStakingStats}
                   displayAs={displayStakedAdxAs}
                 />
               </div>
 
-              <div className="flex flex-col items-center justify-center gap-1 w-full mt-4">
+              <div className="flex flex-col gap-1 w-full mt-4">
                 <h2 className="flex">ADX STAKING REMAINING TIME</h2>
 
                 <div className="w-full flex h-[20em]">
@@ -236,7 +231,10 @@ function AllStakingContent({
 
           {/* Right side - Staking Leaderboard */}
           <div className="w-full xl:w-1/3 max-w-3xl xl:max-w-none mx-auto">
-            <StyledContainer className="p-4 flex flex-col h-full" bodyClassName="gap-0">
+            <StyledContainer
+              className="p-4 flex flex-col h-full"
+              bodyClassName="gap-0"
+            >
               <h2 className="text-center">ADX STAKING LEADERBOARD</h2>
               <div className="flex-1">
                 <StakingLeaderboard
