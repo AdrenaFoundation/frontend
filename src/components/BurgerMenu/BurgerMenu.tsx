@@ -7,15 +7,18 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { twMerge } from 'tailwind-merge';
 
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import useAPR from '@/hooks/useAPR';
+import { useSelector } from '@/store/store';
 import {
   LinksType,
   UserProfileExtended,
   VestExtended,
   WalletAdapterExtended,
 } from '@/types';
+import { formatPriceInfo } from '@/utils';
 
 import adxLogo from '../../../public/images/adrena_logo_adx_white.svg';
+import alpLogo from '../../../public/images/adrena_logo_alp_white.svg';
 import chatIcon from '../../../public/images/chat-text.svg';
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import discordLogo from '../../../public/images/discord.png';
@@ -29,8 +32,8 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
-import Mutagen from '../Mutagen/Mutagen';
 import { NotificationBell } from '../Notifications';
+import FormatNumber from '../Number/FormatNumber';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
@@ -86,7 +89,9 @@ export default function BurgerMenu({
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [hasMenuLoadedOnce, setHasMenuLoadedOnce] = useState(false);
 
-  const isSmallTablet = useBetterMediaQuery('(max-width: 700px)');
+  const tokenPriceALP = useSelector((s) => s.tokenPrices.ALP);
+  const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
+  const { aprs } = useAPR();
 
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
 
@@ -133,7 +138,7 @@ export default function BurgerMenu({
 
   if (!isTablet) {
     return <>
-      <div className="w-full flex flex-row items-center justify-between gap-3 p-3 px-3 border-b border-bcolor bg-secondary z-[51]">
+      <div className="w-full flex flex-row items-center justify-between gap-3 p-1 sm:p-2 lg:p-3 px-2 sm:px-2 lg:px-3 border-b border-bcolor bg-secondary z-[51]">
         <div className="flex flex-row items-center gap-1">
           <Link href="/trade" className="flex h-9 flex-shrink-0 items-center">
             <Image
@@ -169,7 +174,117 @@ export default function BurgerMenu({
         </div>
 
         <div className="flex flex-row items-center gap-1">
-          <Mutagen />
+          <Link href="/buy_alp">
+            {tokenPriceALP ? (
+              <>
+                {/* Compact version: < 500px */}
+                <div className="flex [@media(min-width:500px)]:hidden flex-col items-center gap-0.5 border border-bcolor px-1.5 py-1 rounded hover:bg-third transition-colors duration-300">
+                  <Image
+                    src={alpLogo}
+                    alt="ALP"
+                    className="opacity-50 w-3 h-3"
+                    width={12}
+                    height={12}
+                  />
+                  <div className="text-xxs font-mono">
+                    {formatPriceInfo(
+                      tokenPriceALP,
+                      window.adrena.client.alpToken.displayPriceDecimalsPrecision,
+                      window.adrena.client.alpToken.displayPriceDecimalsPrecision,
+                    )}
+                  </div>
+                </div>
+
+                {/* With APR: 500px-640px */}
+                <div className="hidden [@media(min-width:500px)]:flex [@media(min-width:640px)]:hidden flex-row items-center gap-2 border p-2 py-1 rounded-md hover:bg-third transition-colors duration-300">
+                  <Image
+                    src={alpLogo}
+                    alt="ALP"
+                    className="opacity-50 w-3 h-3"
+                    width={12}
+                    height={12}
+                  />
+                  <div className="flex flex-col lg:flex-row gap-0 lg:gap-1">
+                    <div className="text-xxs sm:text-xs font-mono">
+                      {formatPriceInfo(
+                        tokenPriceALP,
+                        window.adrena.client.alpToken.displayPriceDecimalsPrecision,
+                        window.adrena.client.alpToken.displayPriceDecimalsPrecision,
+                      )}
+                    </div>
+                    <div className="self-stretch bg-bcolor w-[1px] flex-none" />
+                    <FormatNumber
+                      nb={aprs?.lp}
+                      format="percentage"
+                      precision={0}
+                      suffix="APR"
+                      suffixClassName="text-[0.625rem] sm:text-xs font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      className="text-[0.625rem] sm:text-xs font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      isDecimalDimmed={false}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="w-12 h-10 bg-gray-800 rounded" />
+            )}
+          </Link>
+
+          <Link href="/buy_adx">
+            {tokenPriceADX ? (
+              <>
+                {/* Compact version: < 500px */}
+                <div className="flex [@media(min-width:500px)]:hidden flex-col items-center gap-0.5 border border-bcolor px-1.5 py-1 rounded hover:bg-third transition-colors duration-300">
+                  <Image
+                    src={adxLogo}
+                    alt="ADX"
+                    className="opacity-50 w-3 h-3"
+                    width={12}
+                    height={12}
+                  />
+                  <div className="text-xxs font-mono">
+                    {formatPriceInfo(
+                      tokenPriceADX,
+                      window.adrena.client.adxToken.displayPriceDecimalsPrecision,
+                      window.adrena.client.adxToken.displayPriceDecimalsPrecision,
+                    )}
+                  </div>
+                </div>
+
+                {/* With APR: 500px-640px */}
+                <div className="hidden [@media(min-width:500px)]:flex [@media(min-width:640px)]:hidden flex-row items-center gap-2 border p-2 py-1 rounded-md hover:bg-third transition-colors duration-300">
+                  <Image
+                    src={adxLogo}
+                    alt="ADX"
+                    className="opacity-50 w-3 h-3"
+                    width={12}
+                    height={12}
+                  />
+                  <div className="flex flex-col lg:flex-row gap-0 lg:gap-1">
+                    <div className="text-xxs sm:text-xs font-mono">
+                      {formatPriceInfo(
+                        tokenPriceADX,
+                        window.adrena.client.adxToken.displayPriceDecimalsPrecision,
+                        window.adrena.client.adxToken.displayPriceDecimalsPrecision,
+                      )}
+                    </div>
+                    <div className="self-stretch bg-bcolor w-[1px] flex-none" />
+                    <FormatNumber
+                      nb={aprs?.lm}
+                      format="percentage"
+                      precision={0}
+                      suffix="APR"
+                      suffixClassName="text-[0.625rem] sm:text-xs font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      className="text-[0.625rem] sm:text-xs font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      isDecimalDimmed={false}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="w-12 h-10 bg-gray-800 rounded" />
+            )}
+          </Link>
 
           {
             <NotificationBell
@@ -183,7 +298,7 @@ export default function BurgerMenu({
           <button
             type="button"
             onClick={() => setIsPriorityFeeModalOpen(true)}
-            className="border border-[#414E5E] p-2 rounded-full hover:bg-third transition-colors cursor-pointer"
+            className="hidden md:flex border border-[#414E5E] p-2 rounded-full hover:bg-third transition-colors cursor-pointer"
           >
             <Image
               src={fuelIcon}
@@ -383,6 +498,31 @@ export default function BurgerMenu({
                         </div>
                       </button>
                     )}
+
+                    <button
+                      onClick={() => {
+                        setIsPriorityFeeModalOpen(true);
+                        setIsOpen(false);
+                      }}
+                      className={twMerge(MENU_ITEM_CLASSES, 'text-left w-full')}
+                    >
+                      <div className={ICON_CONTAINER}>
+                        <Image
+                          src={fuelIcon}
+                          alt=""
+                          {...ICON_SIZE}
+                          className="brightness-0 invert opacity-90"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className={twMerge(TITLE_CLASSES, TITLE_DEFAULT)}>
+                          Priority Fee
+                        </div>
+                        <div className={SUBTITLE_CLASSES}>
+                          Adjust transaction priority
+                        </div>
+                      </div>
+                    </button>
 
                     {PAGES.find((p) => p.name === 'Achievements') && (() => {
                       const page = PAGES.find((p) => p.name === 'Achievements')!;
@@ -679,7 +819,7 @@ export default function BurgerMenu({
   // Tablet view
   return (
     <>
-      <div className="w-full flex flex-row items-center justify-between gap-3 p-3 px-3 border-b border-bcolor bg-secondary z-[51]">
+      <div className="w-full flex flex-row items-center justify-between gap-3 p-2 md:p-3 px-2 md:px-3 border-b border-bcolor bg-secondary z-[51]">
         <div className="flex flex-row items-center gap-4">
           <Link className="relative p-1.5 -m-1.5 shrink-0 flex" href="/">
             <Image
@@ -711,7 +851,117 @@ export default function BurgerMenu({
         </div>
 
         <div className="flex flex-row items-center gap-1">
-          {!isSmallTablet ? <Mutagen /> : null}
+          <Link href="/buy_alp">
+            {tokenPriceALP ? (
+              <>
+                {/* Compact version: 640px-770px and > 1024px */}
+                <div className="flex [@media(min-width:770px)]:hidden [@media(min-width:1024px)]:flex flex-col items-center gap-0.5 border border-bcolor px-1.5 py-1 rounded hover:bg-third transition-colors duration-300">
+                  <Image
+                    src={alpLogo}
+                    alt="ALP"
+                    className="opacity-50 w-3 h-3"
+                    width={12}
+                    height={12}
+                  />
+                  <div className="text-xxs font-mono">
+                    {formatPriceInfo(
+                      tokenPriceALP,
+                      window.adrena.client.alpToken.displayPriceDecimalsPrecision,
+                      window.adrena.client.alpToken.displayPriceDecimalsPrecision,
+                    )}
+                  </div>
+                </div>
+
+                {/* With APR: 770px-1024px */}
+                <div className="hidden [@media(min-width:770px)]:flex [@media(min-width:1024px)]:hidden flex-row items-center gap-2 border p-2 py-1 rounded-md hover:bg-third transition-colors duration-300">
+                  <Image
+                    src={alpLogo}
+                    alt="ALP"
+                    className="opacity-50 w-3 h-3"
+                    width={12}
+                    height={12}
+                  />
+                  <div className="flex flex-col lg:flex-row gap-0 lg:gap-1">
+                    <div className="text-xxs sm:text-xs font-mono">
+                      {formatPriceInfo(
+                        tokenPriceALP,
+                        window.adrena.client.alpToken.displayPriceDecimalsPrecision,
+                        window.adrena.client.alpToken.displayPriceDecimalsPrecision,
+                      )}
+                    </div>
+                    <div className="self-stretch bg-bcolor w-[1px] flex-none" />
+                    <FormatNumber
+                      nb={aprs?.lp}
+                      format="percentage"
+                      precision={0}
+                      suffix="APR"
+                      suffixClassName="text-[0.625rem] sm:text-xs font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      className="text-[0.625rem] sm:text-xs font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      isDecimalDimmed={false}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="w-12 h-10 bg-gray-800 rounded" />
+            )}
+          </Link>
+
+          <Link href="/buy_adx">
+            {tokenPriceADX ? (
+              <>
+                {/* Compact version: 640px-770px and > 1024px */}
+                <div className="flex [@media(min-width:770px)]:hidden [@media(min-width:1024px)]:flex flex-col items-center gap-0.5 border border-bcolor px-1.5 py-1 rounded hover:bg-third transition-colors duration-300">
+                  <Image
+                    src={adxLogo}
+                    alt="ADX"
+                    className="opacity-50 w-3 h-3"
+                    width={12}
+                    height={12}
+                  />
+                  <div className="text-xxs font-mono">
+                    {formatPriceInfo(
+                      tokenPriceADX,
+                      window.adrena.client.adxToken.displayPriceDecimalsPrecision,
+                      window.adrena.client.adxToken.displayPriceDecimalsPrecision,
+                    )}
+                  </div>
+                </div>
+
+                {/* With APR: 770px-1024px */}
+                <div className="hidden [@media(min-width:770px)]:flex [@media(min-width:1024px)]:hidden flex-row items-center gap-2 border p-2 py-1 rounded-md hover:bg-third transition-colors duration-300">
+                  <Image
+                    src={adxLogo}
+                    alt="ADX"
+                    className="opacity-50 w-3 h-3"
+                    width={12}
+                    height={12}
+                  />
+                  <div className="flex flex-col lg:flex-row gap-0 lg:gap-1">
+                    <div className="text-xxs sm:text-xs font-mono">
+                      {formatPriceInfo(
+                        tokenPriceADX,
+                        window.adrena.client.adxToken.displayPriceDecimalsPrecision,
+                        window.adrena.client.adxToken.displayPriceDecimalsPrecision,
+                      )}
+                    </div>
+                    <div className="self-stretch bg-bcolor w-[1px] flex-none" />
+                    <FormatNumber
+                      nb={aprs?.lm}
+                      format="percentage"
+                      precision={0}
+                      suffix="APR"
+                      suffixClassName="text-[0.625rem] sm:text-xs font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      className="text-[0.625rem] sm:text-xs font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      isDecimalDimmed={false}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="w-12 h-10 bg-gray-800 rounded" />
+            )}
+          </Link>
 
           {
             <NotificationBell
@@ -725,7 +975,7 @@ export default function BurgerMenu({
           <button
             type="button"
             onClick={() => setIsPriorityFeeModalOpen(true)}
-            className="border border-[#414E5E] p-2 rounded-full hover:bg-third transition-colors cursor-pointer"
+            className="hidden border border-[#414E5E] p-2 rounded-full hover:bg-third transition-colors cursor-pointer"
           >
             <Image
               src={fuelIcon}
@@ -839,6 +1089,20 @@ export default function BurgerMenu({
               />
             </button>
           )}
+
+          <button
+            onClick={() => setIsPriorityFeeModalOpen(true)}
+            className="flex items-center justify-center w-12 h-12 rounded-lg transition-all opacity-50 hover:opacity-100 hover:bg-white/5"
+            title="Priority Fee"
+          >
+            <Image
+              src={fuelIcon}
+              alt="Priority Fee"
+              width={20}
+              height={20}
+              className="brightness-0 invert opacity-90"
+            />
+          </button>
 
           {PAGES.find((p) => p.name === 'Achievements') && (() => {
             const page = PAGES.find((p) => p.name === 'Achievements')!;
