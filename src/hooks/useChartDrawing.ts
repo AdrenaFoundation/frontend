@@ -634,17 +634,13 @@ export function useChartDrawing({
   positionsRef.current = positions;
   chartPreferencesRef.current = chartPreferences;
 
-  useEffect(
-    () => {
-      // Means chart got reset
-      if (!widgetReady) {
-        setPositionChartLines([]);
-        setAllActivePositionChartLines([]);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [widgetReady],
-  );
+  useEffect(() => {
+    // Means chart got reset
+    if (!widgetReady) {
+      setPositionChartLines([]);
+      setAllActivePositionChartLines([]);
+    }
+  }, [widgetReady]);
 
   // Redraw what was saved in local storage
   useEffect(() => {

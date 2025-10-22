@@ -236,10 +236,12 @@ export default function ExpanseChampionshipLeaderboard({
 
     const columnsTitles = useMemo(() => {
         const columnsTitles = [
-            <span className="ml-[2.2em] opacity-50" key="rank">
+            <span className="-ml-[0.5rem] opacity-50" key="rank">
                 #
             </span>,
-            'Trader',
+            <span className="opacity-50" key="trader">
+                Trader
+            </span>,
         ];
 
         if (isLarge) {
@@ -281,7 +283,6 @@ export default function ExpanseChampionshipLeaderboard({
                 breakpoint="0" // No breakpoint
                 rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
                 rowTitleWidth="0%"
-                isFirstColumnId
                 data={dataReady}
             />
         </div>

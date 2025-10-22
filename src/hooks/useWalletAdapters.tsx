@@ -1,8 +1,6 @@
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { CoinbaseWalletAdapter } from '@solana/wallet-adapter-coinbase';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
-import { WalletConnectWalletAdapter } from '@solana/wallet-adapter-walletconnect';
 import { useStandardWalletAdapters } from '@solana/wallet-standard-wallet-adapter-react';
 import { useMemo } from 'react';
 
@@ -13,14 +11,12 @@ import coinbaseLogo from '../../public/images/coinbase.png';
 import phantomLogo from '../../public/images/phantom.svg';
 import solflareLogo from '../../public/images/solflare.png';
 import squadxLogo from '../../public/images/squadx-logo.png';
-import walletconnectLogo from '../../public/images/walletconnect.png';
 import { usePrivyAdapter } from "./usePrivyAdapter";
 
 export const WALLET_ICONS = {
   Phantom: phantomLogo,
   Backpack: backpackLogo,
   Solflare: solflareLogo,
-  WalletConnect: walletconnectLogo,
   'Coinbase Wallet': coinbaseLogo,
   SquadsX: squadxLogo,
   Privy: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiByeD0iNjQiIGZpbGw9IiM2QTU5RkYiLz4KPHBhdGggZD0iTTY0IDMyQzQ1LjIgMzIgMzAgNDcuMiAzMCA2NkMzMCA4NC44IDQ1LjIgMTAwIDY0IDEwMEM4Mi44IDEwMCA5OCA4NC44IDk4IDY2Qzk4IDQ3LjIgODIuOCAzMiA2NCAzMlpNNjQgODhDNTEuOSA4OCA0MiA3OC4xIDQyIDY2QzQyIDUzLjkgNTEuOSA0NCA2NCA0NEM3Ni4xIDQ0IDg2IDUzLjkgODYgNjZDODYgNzguMSA3Ni4xIDg4IDY0IDg4WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+',
@@ -30,7 +26,6 @@ const SUPPORTED_WALLETS = [
   'Phantom',
   'Coinbase Wallet',
   'Solflare',
-  'WalletConnect',
   'Backpack',
   'SquadsX',
   'Privy',
@@ -43,7 +38,6 @@ export const WALLET_COLORS = {
   Phantom: '#ab9ff2',
   Backpack: '#E33E3F',
   Solflare: '#FFEF46',
-  WalletConnect: '#0798fe',
   'Coinbase Wallet': '#072b79',
   SquadsX: '#000000',
   Privy: '#6A59FF',
@@ -54,19 +48,6 @@ const walletAdapterInstances = [
   new PhantomWalletAdapter(),
   new CoinbaseWalletAdapter(),
   new SolflareWalletAdapter(),
-  new WalletConnectWalletAdapter({
-    network: WalletAdapterNetwork.Mainnet,
-    options: {
-      projectId: '549f49d83c4bc0a5c405d8ef6db7972a',
-      relayUrl: 'wss://relay.walletconnect.org',
-      metadata: {
-        name: 'Adrena',
-        description: 'Perpetuals DEX for the Solana community',
-        url: 'https://www.adrena.trade',
-        icons: ['https://avatars.githubusercontent.com/u/179229932'],
-      },
-    },
-  }),
 ];
 
 export default function useWalletAdapters(): WalletAdapterExtended[] {

@@ -64,7 +64,6 @@ function pickDefaultToken(positions: PositionExtended[] | null): Token {
 
   const maxPositionSize = Math.max(...Object.values(positionsPerToken));
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const tokenWithMaxSize = tokens.find(
     (t) =>
       t.symbol ===
@@ -80,6 +79,7 @@ export default function Trade({
   wallet,
   connected,
   triggerUserProfileReload,
+  userProfile,
   activeRpc,
   adapters,
 }: PageProps) {
@@ -585,6 +585,7 @@ export default function Trade({
                     walletAddress={getWalletAddress(wallet)}
                     connected={connected}
                     key={`history-${getWalletAddress(wallet) || 'none'}`}
+                    userProfile={userProfile}
                   />
                 </div>
               ) : null}
@@ -597,6 +598,7 @@ export default function Trade({
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
                     setTokenB={setTokenB}
+                    userProfile={userProfile}
                   />
                 </div>
               ) : null}
@@ -634,6 +636,7 @@ export default function Trade({
                     walletAddress={getWalletAddress(wallet)}
                     connected={connected}
                     key={`history-${getWalletAddress(wallet) || 'none'}`}
+                    userProfile={userProfile}
                   />
                 </div>
               ) : null}
@@ -656,6 +659,7 @@ export default function Trade({
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
                     setTokenB={setTokenB}
+                    userProfile={userProfile}
                   />
                 </div>
               ) : null}

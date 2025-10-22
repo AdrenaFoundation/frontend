@@ -118,7 +118,7 @@ export default function Modal({
           {header ? (
             <div
               className={twMerge(
-                'h-12 w-full flex items-center justify-start border-b  pl-4 pr-4 relative overflow-hidden bg-secondary',
+                'h-12 w-full flex items-center justify-start border-b pl-4 pr-4 relative overflow-hidden bg-secondary',
                 !isWrapped && 'sm:hidden',
               )}
               onPointerDown={isMobile ? startDrag : undefined}

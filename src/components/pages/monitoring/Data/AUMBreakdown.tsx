@@ -52,7 +52,6 @@ export default function AUMBreakdown({
 
               {tokenPrices[custody.tokenInfo.symbol] ? (<NumberDisplay
                 nb={
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   custody.owned * tokenPrices[custody.tokenInfo.symbol]!
                 }
                 precision={0}

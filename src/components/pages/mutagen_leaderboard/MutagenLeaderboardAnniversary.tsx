@@ -420,10 +420,10 @@ export default function MutagenLeaderboardAnniversary({
 
     const columns = useMemo(() => {
         const columns = [
-            <span className="ml-[2.2em] opacity-50" key="rank">
+            <span className="opacity-50" key="rank">
                 #
             </span>,
-            'Trader',
+            <span className="opacity-50" key="trader">Trader</span>,
         ];
 
         if (breakpoint4) {
@@ -512,7 +512,6 @@ export default function MutagenLeaderboardAnniversary({
                 breakpoint="0" // No breakpoint
                 rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
                 rowTitleWidth="0%"
-                isFirstColumnId
                 data={dataReady}
                 page={currentPage}
                 onPageChange={setCurrentPage}

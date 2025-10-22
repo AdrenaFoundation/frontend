@@ -40,7 +40,6 @@ export default function usePositionsByAddress({
     positions.forEach((position) => {
       calculatePnLandLiquidationPrice(position, tokenPrices);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenPrices, positions]);
 
   return positions;

@@ -10,7 +10,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
-import { PositionExtended, Token } from '@/types';
+import { PositionExtended, Token, UserProfileExtended } from '@/types';
 import {
   formatTimeDifference,
   getFullTimeDifference,
@@ -35,6 +35,7 @@ interface PositionBlockProps {
   readOnly?: boolean;
   setTokenB?: (token: Token) => void;
   setShareClosePosition?: (p: PositionExtended) => void;
+  userProfile?: UserProfileExtended | false | null;
 }
 
 export default function PositionBlockV2({
@@ -71,7 +72,6 @@ export default function PositionBlockV2({
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const tradeTokenPrice = useSelector((s) =>
@@ -116,14 +116,11 @@ export default function PositionBlockV2({
         notification,
         targetPosition: position.pubkey,
       });
-    } catch {
-      // Ignore error
-    }
+    } catch {}
   };
 
   const positionBorrowFeesShouldBeResolved = useMemo(
     () => (position.borrowFeeUsd ?? 0) - (position.paidInterestUsd ?? 0) > 50,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [position.borrowFeeUsd, position.paidInterestUsd],
   );
 
@@ -247,20 +244,12 @@ export default function PositionBlockV2({
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      position.openDate,
-      position.collateralUsd,
-      position.pnl,
-      position.currentLeverage,
-      position.sizeUsd,
-      position.price,
-      position.token.symbol,
-      position.liquidationPrice,
-      position.breakEvenPrice,
-      position.stopLossLimitPrice,
-      position.takeProfitLimitPrice,
       tradeTokenPrice,
       triggerEditPositionCollateral,
       triggerStopLossTakeProfit,
+      isMedium,
+      isMini,
+      position,
     ],
   );
 
@@ -450,13 +439,7 @@ const PnLDetails = ({
         <p className="text-sm sm:text-xs opacity-50 text-center font-semibold">
           PnL{' '}
         </p>
-        <Switch
-          checked={showAfterFees}
-          size="small"
-          onChange={() => {
-            // handle toggle in parent div
-          }}
-        />
+        <Switch checked={showAfterFees} size="small" onChange={() => {}} />
         <span className="text-xs sm:text-xxs opacity-30">
           {showAfterFees ? ' w/ fees' : ' w/o fees'}
         </span>

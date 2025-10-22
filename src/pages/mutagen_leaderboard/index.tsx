@@ -7,6 +7,7 @@ import { twMerge } from 'tailwind-merge';
 import banner from '@/../public/images/mutagen-leaderboard.jpg';
 import Modal from '@/components/common/Modal/Modal';
 import Loader from '@/components/Loader/Loader';
+import MutagenMechanicsButton from '@/components/Mutagen/MutagenMechanicsButton';
 import MutagenLeaderboard from '@/components/pages/mutagen_leaderboard/MutagenLeaderboard';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
@@ -63,6 +64,11 @@ export default function Index() {
               <p className="text-lg tracking-[0.2rem] uppercase">
                 {'Mutagen leaderboard'}
               </p>
+            </div>
+
+            {/* Mutagen Mechanics Button */}
+            <div className="absolute bottom-4 items-center sm:left-4 z-20">
+              <MutagenMechanicsButton />
             </div>
           </div>
         </div>

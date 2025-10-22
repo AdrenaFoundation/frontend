@@ -269,10 +269,10 @@ export default function MutagenLeaderboard({
 
   const columns = useMemo(() => {
     const columns = [
-      <span className="ml-[2.2em] opacity-50" key="rank">
+      <span className="opacity-50" key="rank">
         #
       </span>,
-      'Trader',
+      <span className="opacity-50" key="trader">Trader</span>,
     ];
 
     if (breakpoint5) {
@@ -485,13 +485,12 @@ export default function MutagenLeaderboard({
         columnsTitles={columns}
         rowHovering={true}
         pagination={true}
-        paginationClassName="scale-[80%] p-0"
+        paginationClassName="scale-[80%] p-0 pb-4"
         nbItemPerPage={itemsPerPage}
         nbItemPerPageWhenBreakpoint={3}
         breakpoint="0"
         rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
         rowTitleWidth="0%"
-        isFirstColumnId
         data={dataReady}
         page={currentPage}
         onPageChange={setCurrentPage}

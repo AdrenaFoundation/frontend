@@ -63,7 +63,6 @@ export function useMarks({
   }, [chartPreferences]);
 
   const getMarksCallback = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (
       _symbolInfo: LibrarySymbolInfo,
       _from: number,

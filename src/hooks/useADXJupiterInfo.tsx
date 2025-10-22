@@ -29,8 +29,7 @@ export default function useADXJupiterInfo(): JupiterInfo | null {
         } catch (e) {
             console.log('Error loading Jupiter info about ADX token', e);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [window.adrena.client.readonlyConnection]);
+    }, []);
 
     useEffect(() => {
         loadJupiterInfo();
@@ -47,7 +46,6 @@ export default function useADXJupiterInfo(): JupiterInfo | null {
             clearInterval(interval);
             interval = null;
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loadJupiterInfo]);
 
     return JupiterInfo;
