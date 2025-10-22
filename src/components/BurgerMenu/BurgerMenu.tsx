@@ -205,7 +205,7 @@ export default function BurgerMenu({
                     height={12}
                   />
                   <div className="flex flex-col lg:flex-row gap-0 lg:gap-1">
-                    <div className="text-xxs sm:text-sm font-mono">
+                    <div className="text-xxs sm:text-xs font-mono">
                       {formatPriceInfo(
                         tokenPriceALP,
                         window.adrena.client.alpToken.displayPriceDecimalsPrecision,
@@ -218,8 +218,8 @@ export default function BurgerMenu({
                       format="percentage"
                       precision={0}
                       suffix="APR"
-                      suffixClassName="text-[0.625rem] sm:text-sm font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
-                      className="text-[0.625rem] sm:text-sm font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      suffixClassName="text-[0.625rem] sm:text-xs font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      className="text-[0.625rem] sm:text-xs font-mono bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
                       isDecimalDimmed={false}
                     />
                   </div>
@@ -261,7 +261,7 @@ export default function BurgerMenu({
                     height={12}
                   />
                   <div className="flex flex-col lg:flex-row gap-0 lg:gap-1">
-                    <div className="text-xxs sm:text-sm font-mono">
+                    <div className="text-xxs sm:text-xs font-mono">
                       {formatPriceInfo(
                         tokenPriceADX,
                         window.adrena.client.adxToken.displayPriceDecimalsPrecision,
@@ -274,8 +274,8 @@ export default function BurgerMenu({
                       format="percentage"
                       precision={0}
                       suffix="APR"
-                      suffixClassName="text-[0.625rem] sm:text-sm font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
-                      className="text-[0.625rem] sm:text-sm font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      suffixClassName="text-[0.625rem] sm:text-xs font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
+                      className="text-[0.625rem] sm:text-xs font-mono bg-[linear-gradient(110deg,#FF344E_40%,#FFB9B9_60%,#FF344E)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]"
                       isDecimalDimmed={false}
                     />
                   </div>
