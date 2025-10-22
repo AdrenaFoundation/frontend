@@ -6133,6 +6133,32 @@ export class AdrenaClient {
     }));
   }
 
+  public async loadAllAdxStaking(): Promise<UserStakingExtended[] | null> {
+    if (!this.readonlyAdrenaProgram) {
+      throw new Error('adrena program not ready');
+    }
+
+    // Optimized: Only fetch ADX staking accounts using on-chain filter
+    // stakingType field is at offset 10 (8 discriminator + 1 bump + 1 unused)
+    // ADX staking type = 1
+    const adxStakingAccounts =
+      await this.readonlyAdrenaProgram.account.userStaking.all([
+        {
+          memcmp: {
+            offset: 10,
+            bytes: bs58.encode(Buffer.from([1])),
+          },
+        },
+      ]);
+
+    if (!adxStakingAccounts) return null;
+
+    return adxStakingAccounts.map((staking) => ({
+      pubkey: staking.publicKey,
+      ...staking.account,
+    }));
+  }
+
   public async loadAllUserProfileWithReferrer(
     referrerProfileFilter: PublicKey | null,
   ): Promise<UserProfileExtended[] | null> {

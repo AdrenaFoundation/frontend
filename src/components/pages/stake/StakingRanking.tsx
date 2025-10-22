@@ -25,7 +25,8 @@ export default function StakingRanking({
     );
   }
 
-  const { userRank, totalStakers, userVirtualAmount } = stakingRanking;
+  const { userRank, totalStakers, userVirtualAmount, userAboveAmount } =
+    stakingRanking;
 
   // Special logic for top 50 stakers
   let rankDisplay: React.ReactNode;
@@ -49,7 +50,9 @@ export default function StakingRanking({
       ) : (
         <>
           <span className="text-base sm:text-2xl">Top </span>
-          <span className="font-mono text-base sm:text-2xl">{topPercentage + 1}%</span>
+          <span className="font-mono text-base sm:text-2xl">
+            {topPercentage + 1}%
+          </span>
         </>
       );
   }
@@ -70,6 +73,12 @@ export default function StakingRanking({
                 Voting Power:{' '}
                 <FormatNumber nb={userVirtualAmount || 0} precision={0} />
               </div>
+              {userAboveAmount && userVirtualAmount && (
+                <div className="text-txtfade mt-2 pt-2 border-t border-white/10">
+                  {formatNumber(userAboveAmount - userVirtualAmount, 0, 0)} more
+                  rev. weight to climb!
+                </div>
+              )}
             </div>
           </div>
         }

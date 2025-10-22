@@ -1092,6 +1092,26 @@ export type RankedRewards = {
   jtoRewards: number[];
 };
 
+export interface StakingLeaderboardEntry {
+  rank: number;
+  walletAddress: string;
+  stakingPdaAddress?: string;
+  virtualAmount: number;
+  liquidStake: number;
+  lockedStakes: number;
+  nickname?: string;
+  profilePicture: ProfilePicture; // Always has a value (default 0 for monster)
+  title: UserProfileTitle | null;
+}
+
+export interface StakingLeaderboardData {
+  leaderboard: StakingLeaderboardEntry[];
+  userRank?: number;
+  userVirtualAmount?: number;
+  userAboveAmount?: number;
+  totalStakers: number;
+}
+
 export type UserStats = {
   username: string | null;
   division: keyof TradingCompetitionLeaderboardAPI;

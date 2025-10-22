@@ -2,12 +2,16 @@ import { AccountLayout, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useAllAdxStaking } from './useAllAdxStaking';
+
 let interval: NodeJS.Timeout | null = null;
 
 const HOLDERS_INTERVAL_IN_MS = 30_000;
 
 export default function useADXHolderCount(): number | null {
   const [holderCount, setHolderCount] = useState<number | null>(null);
+  // Use shared cached ADX staking data
+  const { allAdxStaking } = useAllAdxStaking();
 
   const loadHolders = useCallback(async () => {
     const connection = window.adrena.client.readonlyConnection;
@@ -63,7 +67,7 @@ export default function useADXHolderCount(): number | null {
       console.log('Error loading ADX token supply', e);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [window.adrena.client.readonlyConnection]);
+  }, [window.adrena.client.readonlyConnection, allAdxStaking]);
 
   useEffect(() => {
     loadHolders();

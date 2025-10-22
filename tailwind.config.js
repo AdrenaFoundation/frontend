@@ -36,6 +36,10 @@ module.exports = {
         mutagenHoverBig: '0 0 32px 0 #ff47b5',
         mutagenSmall: '0 0 12px 0 #ff47b5',
         mutagenHoverSmall: '0 0 16px 0 #ff47b5',
+        redBig: '0 0 24px 0 #ff4444',
+        redHoverBig: '0 0 32px 0 #ff4444',
+        redSmall: '0 0 12px 0 #ff4444',
+        redHoverSmall: '0 0 16px 0 #ff4444',
       },
       fontSize: {
         xxs: '0.6rem', // Extra Extra Small

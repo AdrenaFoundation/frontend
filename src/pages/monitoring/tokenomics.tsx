@@ -8,6 +8,7 @@ import AllVestingChart from '@/components/pages/global/AllVestingChart/AllVestin
 import { EmissionsChart } from '@/components/pages/global/Emissions/EmissionsChart';
 import TokenomicsPieChart from '@/components/pages/monitoring/Data/Tokenomics';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
+import { AllAdxStakingProvider } from '@/contexts/AllAdxStakingContext';
 import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
 import useADXHolderCount from '@/hooks/useADXHolderCount';
 import useADXJupiterInfo from '@/hooks/useADXJupiterInfo';
@@ -23,7 +24,7 @@ import jupImg from '../../../public/images/jup-logo.png';
 import raydiumImg from '../../../public/images/raydium.png';
 import rugcheckImg from '../../../public/images/rugcheck.jpg';
 
-export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boolean, view: string }) {
+function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, view: string }) {
     const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
 
     const totalSupplyADX = useADXTotalSupply();
@@ -370,5 +371,14 @@ export default function Tokenomics({ isSmallScreen, view }: { isSmallScreen: boo
                 </div>
             </StyledContainer >
         </div >
+    );
+}
+
+// Wrap with provider to share data across all hooks
+export default function Tokenomics(props: { isSmallScreen: boolean, view: string }) {
+    return (
+        <AllAdxStakingProvider>
+            <TokenomicsContent {...props} />
+        </AllAdxStakingProvider>
     );
 }
