@@ -11,6 +11,7 @@ import Loader from '@/components/Loader/Loader';
 import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
 import ALPStakingRecap from '@/components/pages/stake/ALPStakingRecap';
 import FullyLiquidALPStaking from '@/components/pages/stake/FullyLiquidALPStaking';
+import LiquidStakeModal from '@/components/pages/stake/LiquidStakeModal';
 import StakeApr from '@/components/pages/stake/StakeApr';
 import StakeLanding from '@/components/pages/stake/StakeLanding';
 import StakeOverview from '@/components/pages/stake/StakeOverview';
@@ -776,23 +777,37 @@ export default function Stake({ connected }: PageProps) {
 
   const modal = activeStakingToken && (
     <Modal
-      title={`Stake ${activeStakingToken}`}
+      title={`Stake ${activeStakingToken}${lockPeriod === 0 ? ' (Liquid)' : ''}`}
       close={() => {
         setAmount(null);
         setLockPeriod(DEFAULT_LOCKED_STAKE_LOCK_DURATION);
         setActiveStakingToken(null);
       }}
     >
-      <ADXStakeToken
-        amount={amount}
-        setAmount={setAmount}
-        onStakeAmountChange={onStakeAmountChange}
-        errorMessage={errorMessage}
-        stakeAmount={stakeAmount}
-        lockPeriod={lockPeriod as AdxLockPeriod}
-        setLockPeriod={(lockPeriod: AdxLockPeriod) => setLockPeriod(lockPeriod)}
-        balance={adxBalance}
-      />
+      {lockPeriod === 0 ? (
+        <LiquidStakeModal
+          amount={amount}
+          setAmount={setAmount}
+          onStakeAmountChange={onStakeAmountChange}
+          errorMessage={errorMessage}
+          stakeAmount={stakeAmount}
+          balance={adxBalance}
+          tokenSymbol="ADX"
+        />
+      ) : (
+        <ADXStakeToken
+          amount={amount}
+          setAmount={setAmount}
+          onStakeAmountChange={onStakeAmountChange}
+          errorMessage={errorMessage}
+          stakeAmount={stakeAmount}
+          lockPeriod={lockPeriod as AdxLockPeriod}
+          setLockPeriod={(lockPeriod: AdxLockPeriod) =>
+            setLockPeriod(lockPeriod)
+          }
+          balance={adxBalance}
+        />
+      )}
     </Modal>
   );
 

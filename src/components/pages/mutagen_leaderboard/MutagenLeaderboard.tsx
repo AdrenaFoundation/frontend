@@ -485,7 +485,7 @@ export default function MutagenLeaderboard({
         columnsTitles={columns}
         rowHovering={true}
         pagination={true}
-        paginationClassName="scale-[80%] p-0"
+        paginationClassName="scale-[80%] p-0 pb-4"
         nbItemPerPage={itemsPerPage}
         nbItemPerPageWhenBreakpoint={3}
         breakpoint="0"

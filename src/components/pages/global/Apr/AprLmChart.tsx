@@ -43,7 +43,6 @@ export function AprLmChart({ isAdxPage = false }: AprLmChartProps) {
         intervalRef.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [period, selectedPeriod]);
 
   const getInfo = async () => {

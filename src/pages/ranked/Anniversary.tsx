@@ -659,7 +659,6 @@ export default function Anniversary() {
             playsInline
           />
         </div>
-
         <div className="relative w-full flex-col items-center justify-center gap-4 p-8">
           <h1
             className={twMerge(
@@ -669,9 +668,7 @@ export default function Anniversary() {
           >
             PRIZES
           </h1>
-
           <div className="flex flex-col gap-2 mt-4 justify-center flex-wrap w-full">
-            {/* Top row: Raffle (left) and Trading (right) */}
             <div className="flex flex-row gap-2 justify-center flex-wrap w-full">
               {/* Raffle Category - Left side */}
               <div className="w-full lg:w-1/2 lg:max-w-[30.5em] flex flex-col p-4 border bg-main/40">
@@ -730,7 +727,6 @@ export default function Anniversary() {
                 </div>
               </div>
             </div>
-
             {/* Bottom row: Creative Category */}
             <div className="w-full lg:max-w-[61em] lg:mx-auto flex flex-col p-4 border bg-main/40">
               <h2 className="text-sm ml-auto mr-auto mb-4 tracking-wider font-bold">

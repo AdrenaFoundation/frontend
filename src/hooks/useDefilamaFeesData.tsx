@@ -36,7 +36,6 @@ export default function useDefilamaFeesData(): FeesData | null {
             clearInterval(interval);
             interval = null;
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loadFeesData]);
 
     return feesData;

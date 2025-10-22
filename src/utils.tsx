@@ -405,7 +405,7 @@ export const DEFAULT_SETTINGS = {
   priorityFeeOption: DEFAULT_PRIORITY_FEE_OPTION,
   maxPriorityFee: DEFAULT_MAX_PRIORITY_FEE,
   openPositionCollateralSymbol: '',
-  closePositionCollateralSymbol: '',
+  closePositionCollateralSymbols: {},
   depositCollateralSymbol: '',
   withdrawCollateralSymbol: '',
   disableFriendReq: false,
@@ -566,7 +566,7 @@ export class AdrenaTransactionError {
   constructor(
     public txHash: string | null,
     public readonly errorString: string,
-  ) { }
+  ) {}
 
   public setTxHash(txHash: string): void {
     this.txHash = txHash;
@@ -1014,22 +1014,25 @@ export function formatMilliseconds(milliseconds: number): string {
   }
 
   if (hours || formatted.length) {
-    const h = `${hours < 0 ? '-' : ''}${Math.abs(hours) < 10 ? `0${Math.abs(hours)}` : Math.abs(hours)
-      }`;
+    const h = `${hours < 0 ? '-' : ''}${
+      Math.abs(hours) < 10 ? `0${Math.abs(hours)}` : Math.abs(hours)
+    }`;
 
     formatted = `${formatted}${formatted.length ? ' ' : ''}${h}h`;
   }
 
   if (minutes || formatted.length) {
-    const m = `${minutes < 0 ? '-' : ''}${Math.abs(minutes) < 10 ? `0${Math.abs(minutes)}` : Math.abs(minutes)
-      }`;
+    const m = `${minutes < 0 ? '-' : ''}${
+      Math.abs(minutes) < 10 ? `0${Math.abs(minutes)}` : Math.abs(minutes)
+    }`;
 
     formatted = `${formatted}${formatted.length ? ' ' : ''}${m}m`;
   }
 
   if (seconds || formatted.length) {
-    const s = `${seconds < 0 ? '-' : ''}${Math.abs(seconds) < 10 ? `0${Math.abs(seconds)}` : Math.abs(seconds)
-      }`;
+    const s = `${seconds < 0 ? '-' : ''}${
+      Math.abs(seconds) < 10 ? `0${Math.abs(seconds)}` : Math.abs(seconds)
+    }`;
 
     formatted = `${formatted}${formatted.length ? ' ' : ''}${s}s`;
   }

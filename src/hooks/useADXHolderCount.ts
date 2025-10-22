@@ -19,19 +19,22 @@ export default function useADXHolderCount(): number | null {
     if (!connection) return;
 
     try {
-      const accounts = await connection.getProgramAccounts(TOKEN_PROGRAM_ID, {
-        filters: [
-          {
-            dataSize: AccountLayout.span, // Filter only token accounts
-          },
-          {
-            memcmp: {
-              offset: 0, // Mint address starts at byte 0
-              bytes: window.adrena.client.adxToken.mint.toBase58(),
+      const [accounts, allStaking] = await Promise.all([
+        connection.getProgramAccounts(TOKEN_PROGRAM_ID, {
+          filters: [
+            {
+              dataSize: AccountLayout.span, // Filter only token accounts
             },
-          },
-        ],
-      });
+            {
+              memcmp: {
+                offset: 0, // Mint address starts at byte 0
+                bytes: window.adrena.client.adxToken.mint.toBase58(),
+              },
+            },
+          ],
+        }),
+        window.adrena.client.loadAllStaking(),
+      ]);
 
       const directHolderNumber = accounts
         .map((account) => {
@@ -52,8 +55,12 @@ export default function useADXHolderCount(): number | null {
           return amountInUI > 0;
         }).length;
 
-      // allAdxStaking is already filtered for > 10 ADX
-      const nbStakedHolders = allAdxStaking?.length || 0;
+      const nbStakedHolders = (allStaking || []).filter(
+        (staking) =>
+          staking.stakingType === 1 &&
+          (staking.liquidStake.amount.toNumber() > 10 ||
+            staking.lockedStakes.length > 0),
+      ).length;
 
       setHolderCount(directHolderNumber + nbStakedHolders);
     } catch (e) {
@@ -77,7 +84,6 @@ export default function useADXHolderCount(): number | null {
       clearInterval(interval);
       interval = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadHolders]);
 
   return holderCount;

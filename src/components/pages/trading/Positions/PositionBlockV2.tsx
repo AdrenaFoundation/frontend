@@ -10,7 +10,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
-import { PositionExtended, Token } from '@/types';
+import { PositionExtended, Token, UserProfileExtended } from '@/types';
 import {
   formatTimeDifference,
   getFullTimeDifference,
@@ -35,6 +35,7 @@ interface PositionBlockProps {
   readOnly?: boolean;
   setTokenB?: (token: Token) => void;
   setShareClosePosition?: (p: PositionExtended) => void;
+  userProfile?: UserProfileExtended | false | null;
 }
 
 export default function PositionBlockV2({
@@ -71,7 +72,6 @@ export default function PositionBlockV2({
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const tradeTokenPrice = useSelector((s) =>
@@ -121,7 +121,6 @@ export default function PositionBlockV2({
 
   const positionBorrowFeesShouldBeResolved = useMemo(
     () => (position.borrowFeeUsd ?? 0) - (position.paidInterestUsd ?? 0) > 50,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [position.borrowFeeUsd, position.paidInterestUsd],
   );
 

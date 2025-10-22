@@ -35,7 +35,6 @@ export default function useALPTotalSupply() {
       clearInterval(interval);
       interval = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadTotalSupply]);
 
   return totalSupply;
