@@ -357,11 +357,31 @@ export default function WalletAdapter({
             </MenuItems>
           ) : null}
         </Menu>
+      ) : isTablet ? (
+        <Button
+          className={twMerge(
+            className,
+            'p-2 h-auto text-xs border border-[#414E5E] bg-transparent hover:bg-third rounded-full gap-1',
+            isIconOnly && 'p-0 h-8 w-8 rounded-full',
+            isConnecting && 'opacity-50 cursor-not-allowed',
+          )}
+          title={!isIconOnly ? (isConnecting ? 'Connecting...' : 'Connect') : null}
+          leftIcon={isConnecting ? undefined : walletIcon}
+          alt="wallet icon"
+          leftIconClassName="w-4 h-4"
+          variant="lightbg"
+          disabled={isConnecting}
+          onClick={() => {
+            if (!connected && !isConnecting) {
+              dispatch(openCloseConnectionModalAction(true));
+            }
+          }}
+        />
       ) : (
         <Button
           className={twMerge(
             className,
-            'gap-1 py-1 px-3 pr-4 h-auto text-xs border border-[#414E5E] bg-transparent hover:bg-third rounded-md',
+            'gap-1 py-1.5 px-3 pr-4 h-auto text-xs border border-[#414E5E] bg-transparent hover:bg-third rounded-md',
             isIconOnly && 'p-0 h-8 w-8 rounded-full',
             isConnecting && 'opacity-50 cursor-not-allowed',
           )}
