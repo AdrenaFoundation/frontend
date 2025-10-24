@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import infoIcon from '@/../public/images/Icons/info.svg';
+import { setSettings } from '@/actions/settingsActions';
 import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -29,7 +30,6 @@ import {
   validateTPSLInputs,
 } from '@/utils';
 
-import { setSettings } from '@/actions/settingsActions';
 import { ExecutionModeSelector } from './LongShortTradingInputs/ExecutionModeSelector';
 import { FeesSection } from './LongShortTradingInputs/FeesSection';
 import { InputSection } from './LongShortTradingInputs/InputSection';
