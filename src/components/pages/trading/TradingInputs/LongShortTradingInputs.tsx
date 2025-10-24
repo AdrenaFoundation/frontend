@@ -29,6 +29,7 @@ import {
   validateTPSLInputs,
 } from '@/utils';
 
+import { setSettings } from '@/actions/settingsActions';
 import { ExecutionModeSelector } from './LongShortTradingInputs/ExecutionModeSelector';
 import { FeesSection } from './LongShortTradingInputs/FeesSection';
 import { InputSection } from './LongShortTradingInputs/InputSection';
@@ -69,13 +70,14 @@ export default function LongShortTradingInputs({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const walletState = useSelector((s) => s.walletState.wallet);
+  const settings = useSelector((state) => state.settings);
 
   const walletAddress = useMemo(() => {
     if (walletState?.walletAddress) {
       return walletState.walletAddress;
     }
 
-    return null
+    return null;
   }, [walletState?.walletAddress]);
 
   const [takeProfitInput, setTakeProfitInput] = useState<number | null>(null);
@@ -86,7 +88,7 @@ export default function LongShortTradingInputs({
     inputB: null,
     priceA: null,
     priceB: null,
-    leverage: 10,
+    leverage: settings.preferredLeverage || 10,
     isLimitOrder: false,
     limitOrderTriggerPrice: null,
     limitOrderSlippage: null,
@@ -119,11 +121,7 @@ export default function LongShortTradingInputs({
       return [usdcCustody];
     }
     return [];
-  }, [
-    side,
-    positionInfo.custody,
-    usdcCustody,
-  ]);
+  }, [side, positionInfo.custody, usdcCustody]);
 
   const custodyLiquidity = useDynamicCustodyAvailableLiquidity(custodyArray);
 
@@ -453,33 +451,33 @@ export default function LongShortTradingInputs({
 
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
-          owner: new PublicKey(walletAddress),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: entryPrice,
-          collateralAmount,
-          leverage: uiLeverageToNative(inputState.leverage),
-          notification,
-          stopLossLimitPrice,
-          takeProfitLimitPrice,
-          isIncrease: !!openedPosition,
-          referrerProfile: r ? r.pubkey : undefined,
-          swapSlippage,
-        })
+            owner: new PublicKey(walletAddress),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: entryPrice,
+            collateralAmount,
+            leverage: uiLeverageToNative(inputState.leverage),
+            notification,
+            stopLossLimitPrice,
+            takeProfitLimitPrice,
+            isIncrease: !!openedPosition,
+            referrerProfile: r ? r.pubkey : undefined,
+            swapSlippage,
+          })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
-          owner: new PublicKey(walletAddress),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: entryPrice,
-          collateralAmount,
-          leverage: uiLeverageToNative(inputState.leverage),
-          notification,
-          stopLossLimitPrice,
-          takeProfitLimitPrice,
-          isIncrease: !!openedPosition,
-          referrerProfile: r ? r.pubkey : undefined,
-          swapSlippage,
-        }));
+            owner: new PublicKey(walletAddress),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: entryPrice,
+            collateralAmount,
+            leverage: uiLeverageToNative(inputState.leverage),
+            notification,
+            stopLossLimitPrice,
+            takeProfitLimitPrice,
+            isIncrease: !!openedPosition,
+            referrerProfile: r ? r.pubkey : undefined,
+            swapSlippage,
+          }));
 
       dispatch(fetchWalletTokenBalances());
       setInputState((prev) => ({
@@ -1051,6 +1049,23 @@ export default function LongShortTradingInputs({
 
   const { favorites, toggleFavorite } = useFavorites(allowedTokenB);
 
+  const handleLeverageLockToggle = (locked: boolean) => {
+    dispatch(
+      setSettings({
+        lockLeverage: locked,
+        preferredLeverage: inputState.leverage,
+      }),
+    );
+  };
+
+  const debouncedLeverageSave = useDebounce(inputState.leverage, 500);
+
+  useEffect(() => {
+    if (debouncedLeverageSave) {
+      dispatch(setSettings({ preferredLeverage: debouncedLeverageSave }));
+    }
+  }, [debouncedLeverageSave, dispatch]);
+
   return (
     <>
       <div className={twMerge('flex flex-col', className)}>
@@ -1073,16 +1088,20 @@ export default function LongShortTradingInputs({
           }
           onMax={handleMax}
           recommendedToken={recommendedToken}
+          isLeverageLocked={settings.lockLeverage}
+          onLeverageLockToggle={handleLeverageLockToggle}
+          side={side}
         />
 
         {doJupiterSwap && recommendedToken ? (
           <>
             <Tippy
+              placement="bottom"
               content={
                 'For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before opening or increasing the position.'
               }
             >
-              <div className="text-xs gap-1 flex mt-3 pb-1 w-full items-center opacity-30">
+              <div className="text-xs gap-1 flex mt-3 pb-1 w-full items-center opacity-30 cursor-help">
                 <Image src={infoIcon} alt="Info" width={12} height={12} />
                 <span className="font-xs">{tokenA.symbol}</span>
                 <span className="font-xs">auto-swapped to</span>

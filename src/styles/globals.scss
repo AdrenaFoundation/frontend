@@ -319,8 +319,16 @@ input[type='checkbox']:checked {
   color: #d4d4d4 !important;
 }
 
-.rc-slider-handle:active {
-  box-shadow: 0 0 5px 10px #fdfdff33 !important;
+/* Long position glow */
+.custom-leverage-slider-long .rc-slider-handle:active,
+.custom-leverage-slider-long .rc-slider-handle-dragging.rc-slider-handle-dragging.rc-slider-handle-dragging {
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.5) !important;
+}
+
+/* Short position glow */
+.custom-leverage-slider-short .rc-slider-handle:active,
+.custom-leverage-slider-short .rc-slider-handle-dragging.rc-slider-handle-dragging.rc-slider-handle-dragging {
+  box-shadow: 0 0 8px rgba(201, 36, 58, 0.5) !important;
 }
 
 /* Works on Firefox */

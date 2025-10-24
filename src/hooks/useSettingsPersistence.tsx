@@ -29,6 +29,8 @@ export default function useSettingsPersistence() {
     'enable-adrena-notifications',
     'use-sqrt-scale-for-volume-and-fee-chart',
     'last-selected-trading-token',
+    'preferred-leverage',
+    'lock-leverage',
   ]);
 
   const settings = useSelector((state) => state.settings);
@@ -140,6 +142,17 @@ export default function useSettingsPersistence() {
       updatedSettings.lastSelectedTradingToken = v;
     }
 
+    if (cookies['preferred-leverage'] !== undefined) {
+      dispatch(setSettings({ 
+        preferredLeverage: Number(cookies['preferred-leverage']) 
+      }));
+    }
+    if (cookies['lock-leverage'] !== undefined) {
+      dispatch(setSettings({ 
+        lockLeverage: cookies['lock-leverage'] === 'true' || cookies['lock-leverage'] === true 
+      }));
+    }
+
     dispatch(setSettings(updatedSettings));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!!cookies, !!dispatch, preferences]);
@@ -166,6 +179,8 @@ export default function useSettingsPersistence() {
             useSqrtScaleForVolumeAndFeeChart:
               'use-sqrt-scale-for-volume-and-fee-chart',
             lastSelectedTradingToken: 'last-selected-trading-token',
+            preferredLeverage: 'preferred-leverage',
+            lockLeverage: 'lock-leverage',
           } as Record<keyof SettingsState, keyof typeof cookies>
         )[key as keyof SettingsState],
         value,
