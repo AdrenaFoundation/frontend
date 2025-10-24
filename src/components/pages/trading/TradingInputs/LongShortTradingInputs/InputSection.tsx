@@ -18,6 +18,9 @@ interface InputSectionProps {
   onInputAChange: (value: number | null) => void;
   onLeverageChange: (value: number) => void;
   onMax: () => void;
+  isLeverageLocked?: boolean;
+  onLeverageLockToggle?: (locked: boolean) => void;
+  side: 'long' | 'short';
 }
 
 export const InputSection = ({
@@ -32,6 +35,9 @@ export const InputSection = ({
   onLeverageChange,
   onMax,
   recommendedToken,
+  isLeverageLocked,
+  onLeverageLockToggle,
+  side,
 }: InputSectionProps) => {
   const handlePercentageClick = (percentage: number) => {
     const balance = walletTokenBalances?.[tokenA.symbol] ?? 0;
@@ -81,6 +87,9 @@ export const InputSection = ({
             value={leverage}
             className="w-full font-mono select-none"
             onChange={onLeverageChange}
+            isLocked={isLeverageLocked}
+            onLockToggle={onLeverageLockToggle}
+            side={side}
           />
         </div>
       </div>

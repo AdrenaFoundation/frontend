@@ -397,7 +397,7 @@ export const DEFAULT_PRIORITY_FEE_OPTION = 'high';
 // in SOL
 export const DEFAULT_MAX_PRIORITY_FEE = 0.0001;
 
-export const DEFAULT_SETTINGS = {
+export const DEFAULT_SETTINGS: SettingsState = {
   disableChat: false,
   showFeesInPnl: true,
   showPopupOnPositionClose: true,
@@ -413,7 +413,9 @@ export const DEFAULT_SETTINGS = {
   enableAdrenaNotifications: true,
   useSqrtScaleForVolumeAndFeeChart: true,
   lastSelectedTradingToken: '',
-} as SettingsState;
+  preferredLeverage: 10,
+  lockLeverage: false,
+};
 
 export const PercentilePriorityFeeList = {
   medium: 3000,
