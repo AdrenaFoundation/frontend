@@ -1,5 +1,5 @@
-import 'tippy.js/dist/tippy.css';
 import 'react-toastify/dist/ReactToastify.css';
+import 'tippy.js/dist/tippy.css';
 
 import { Connection } from '@solana/web3.js';
 import Head from 'next/head';
@@ -78,7 +78,9 @@ export default function RootLayout({
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 1024px)');
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
-  const isTablet = useBetterMediaQuery('(min-width: 640px) and (max-width: 1023px)');
+  const isTablet = useBetterMediaQuery(
+    '(min-width: 640px) and (max-width: 1023px)',
+  );
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [isPriorityFeeOpen, setIsPriorityFeeOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
@@ -215,7 +217,9 @@ export default function RootLayout({
         <div
           className={twMerge(
             'w-full flex flex-col max-w-[200em]',
-            isMobile ? 'pb-[calc(100px+env(safe-area-inset-bottom))]' : 'sm:pb-0',
+            isMobile
+              ? 'pb-[calc(100px+env(safe-area-inset-bottom))]'
+              : 'sm:pb-0',
             isTablet ? 'pl-16' : '',
           )}
         >
@@ -257,12 +261,12 @@ export default function RootLayout({
       {!isBigScreen && !disableChat && (
         <ChatContainer
           title="Chat"
-          setTitle={() => { }}
-          setIsNewNotification={() => { }}
+          setTitle={() => {}}
+          setIsNewNotification={() => {}}
           isMobile={true}
           isChatOpen={isChatOpen}
           setIsChatOpen={setIsChatOpen}
-          setOnlineCount={() => { }}
+          setOnlineCount={() => {}}
         />
       )}
 
