@@ -483,7 +483,6 @@ function RaffleAdditionalPrize({
 
   const isCurrentUserHolder = record?.wallet === walletAddress;
   const hasRecord = !!record?.wallet;
-  const hasClickHandler = !!onClickProfile;
 
   return (
     <Tippy content={getEnhancedTippyContent()}>
