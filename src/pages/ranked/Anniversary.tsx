@@ -51,6 +51,33 @@ const CREATIVE_PRIZES = [
   },
 ] as const;
 
+// Add raffle winners data after CREATIVE_PRIZES
+const RAFFLE_WINNERS = [
+  'Au6TfPDWoGij2RYoDZCx6DoQetfaVmcdNZYzqAtpWhNh', // Dont Get Fined
+  '2u33gawaLnNW9rCx97J8Fx2MXBVuBvheFZSre9JXhQX2', // FeeSzn
+  '4ankwq3iL2cbjRJV6q92CyoEcgm5pQus4YRHosefHesC', // Click Buttons
+  'CDUwP2FrQBKNMmr9zsPnneb9KmqWPi453sjdz1qf2bg6', // The Worst Trader
+  'A6ELwd76fHMMCtTRRyKXEpeTjeX8C5aN2P1uYsz3qW6j', // Wet Blanket
+  '4N69yzFFVrdqBuQi81fdJ7w7JdX5t2hpwKh6potdKMX4', // Peso Enjoyer
+  'iWe1M1tATYYZmeitaqcKBM5ka1vtwyFyptkaQ2BB1XC', // Testarossa
+  '7otBMV8sK1KJaZcSE8KoTPbRYEDGuBdZxbtyyd1XfUK7', // No profile
+  'HKmwhAz5joFFr54UWpsnshrUiRKYdTRg18qDuExgW2AK', // kkkkk
+  'B3qwaaDGVr8qFFr2vg2sFAzETvfgzHo7QHzQCqewcsU8', // Muddy Peasant
+] as const;
+
+const RAFFLE_WINNERS_TICKETS = [
+  7858, // Dont Get Fined
+  9967, // FeeSzn
+  1378, // Click Buttons
+  16541, // The Worst Trader
+  22046, // Wet Blanket
+  5678, // Peso Enjoyer
+  21358, // Testarossa
+  6791, // 7otBMV8sK1KJaZcSE8KoTPbRYEDGuBdZxbtyyd1XfUK7
+  3094, // kkkkk
+  16585, // Muddy Peasant
+] as const;
+
 const TRADING_PRIZES = [
   {
     title: 'Best PnL %',
@@ -185,38 +212,119 @@ const getValueUnit = (title: string): string => {
   return '';
 };
 
-const getBorderClasses = (
-  isCurrentUserHolder: boolean,
-  hasRecord: boolean,
-  hasClickHandler: boolean,
-): string => {
-  if (isCurrentUserHolder) return 'border-green-400/50';
-  if (hasRecord && hasClickHandler)
-    return 'cursor-pointer hover:border-gray-400/30';
-  return 'cursor-help hover:border-white/10';
-};
-
 // Components
 function RafflePlace({
   placeTitle,
   imageRef,
   reward,
+  winnerWallet,
+  winnerTickets,
+  profileMap,
+  onClickProfile,
+  walletAddress,
 }: {
   placeTitle: string;
   imageRef: string | StaticImageData | null;
   reward: number;
+  winnerWallet?: string;
+  winnerTickets?: number | null;
+  profileMap: Map<string, UserProfileMetadata>;
+  onClickProfile?: (wallet: string) => void;
+  walletAddress: string | null;
 }) {
+  const getDisplayName = useCallback(
+    (wallet: string) => {
+      const profile = profileMap.get(wallet);
+      return profile?.nickname || getAbbrevWalletAddress(wallet);
+    },
+    [profileMap],
+  );
+
+  const getProfilePictureUrl = useCallback(
+    (wallet: string) => {
+      const profile = profileMap.get(wallet);
+      return profile
+        ? PROFILE_PICTURES[
+            profile.profilePicture as keyof typeof PROFILE_PICTURES
+          ]
+        : PROFILE_PICTURES[0];
+    },
+    [profileMap],
+  );
+
+  const isCurrentUserWinner = winnerWallet === walletAddress;
+  const hasWinner = !!winnerWallet;
+
   return (
     <Tippy
       content={
-        <div className="text-center">
-          At the end of the competition, 10 traders will be selected through a
-          random raffle. The more Mutagen you hold, the higher your chances of
-          being picked.
+        <div className="text-center max-w-[300px]">
+          {hasWinner ? (
+            <>
+              <div className="font-semibold mb-2">
+                {placeTitle} Raffle Winner
+              </div>
+              <div className="border-t border-gray-600 pt-2">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Image
+                    src={getProfilePictureUrl(winnerWallet)}
+                    alt="Profile"
+                    width={24}
+                    height={24}
+                    className="rounded-full"
+                  />
+                  <div className="text-sm">
+                    <div className="font-semibold text-white">
+                      {getDisplayName(winnerWallet)}
+                    </div>
+                  </div>
+                </div>
+                {winnerTickets && (
+                  <div className="text-sm text-gray-300 mt-2">
+                    <span className="font-semibold text-white">
+                      {winnerTickets.toLocaleString()}
+                    </span>{' '}
+                    raffle tickets
+                  </div>
+                )}
+              </div>
+            </>
+          ) : null}
         </div>
       }
     >
-      <div className="border bg-main rounded-md p-2 flex flex-col items-center justify-center gap-2 z-10 grow relative cursor-help hover:border-white/10">
+      <div
+        className={twMerge(
+          'rounded-md p-2 flex flex-col items-center justify-center gap-2 z-10 grow relative bg-main',
+          isCurrentUserWinner ? 'border-2 cursor-pointer' : 'border',
+          hasWinner && onClickProfile && !isCurrentUserWinner
+            ? 'cursor-pointer hover:border-gray-400/30'
+            : !isCurrentUserWinner && 'cursor-help hover:border-white/10',
+        )}
+        style={
+          isCurrentUserWinner
+            ? {
+                borderColor: 'rgb(74 222 128 /0.7',
+                transition: 'border-color 0.2s',
+              }
+            : undefined
+        }
+        onMouseEnter={(e) => {
+          if (isCurrentUserWinner) {
+            e.currentTarget.style.borderColor = 'rgb(34 197 94 / 0.9)';
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (isCurrentUserWinner) {
+            e.currentTarget.style.borderColor = 'rgb(74 222 128 / 0.7)';
+          }
+        }}
+        onClick={
+          hasWinner && onClickProfile
+            ? () => onClickProfile(winnerWallet)
+            : undefined
+        }
+      >
         {imageRef && (
           <Image
             src={imageRef}
@@ -227,15 +335,17 @@ function RafflePlace({
           />
         )}
 
-        <div
-          className="absolute w-full h-full z-10"
-          style={{
-            backgroundImage: 'url(images/interrogation.png)',
-            backgroundRepeat: 'repeat',
-            backgroundSize: '20px 20px',
-            opacity: 0.05,
-          }}
-        />
+        {!hasWinner && (
+          <div
+            className="absolute w-full h-full z-10"
+            style={{
+              backgroundImage: 'url(images/interrogation.png)',
+              backgroundRepeat: 'repeat',
+              backgroundSize: '20px 20px',
+              opacity: 0.05,
+            }}
+          />
+        )}
 
         <div className="text-sm font-semibold text-white/90">
           {placeTitle} Raffle Winner
@@ -292,8 +402,8 @@ function RaffleAdditionalPrize({
       const profile = profileMap.get(wallet);
       return profile
         ? PROFILE_PICTURES[
-        profile.profilePicture as keyof typeof PROFILE_PICTURES
-        ]
+            profile.profilePicture as keyof typeof PROFILE_PICTURES
+          ]
         : PROFILE_PICTURES[0];
     },
     [profileMap],
@@ -379,9 +489,30 @@ function RaffleAdditionalPrize({
     <Tippy content={getEnhancedTippyContent()}>
       <div
         className={twMerge(
-          'border bg-main p-2 flex flex-col z-10 grow rounded-md md:w-[12em] gap-2',
-          getBorderClasses(isCurrentUserHolder, hasRecord, hasClickHandler),
+          'rounded-md p-2 flex flex-col z-10 grow md:w-[12em] gap-2 bg-main',
+          isCurrentUserHolder ? 'border-2 cursor-pointer' : 'border',
+          hasRecord && onClickProfile && !isCurrentUserHolder
+            ? 'cursor-pointer hover:border-gray-400/30'
+            : !isCurrentUserHolder && 'cursor-help hover:border-white/10',
         )}
+        style={
+          isCurrentUserHolder
+            ? {
+                borderColor: 'rgb(74 222 128 / 0.7)',
+                transition: 'border-color 0.2s',
+              }
+            : undefined
+        }
+        onMouseEnter={(e) => {
+          if (isCurrentUserHolder) {
+            e.currentTarget.style.borderColor = 'rgb(34 197 94 / 0.9)';
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (isCurrentUserHolder) {
+            e.currentTarget.style.borderColor = 'rgb(74 222 128 / 0.7)';
+          }
+        }}
         onClick={
           hasRecord && onClickProfile
             ? () => onClickProfile(record.wallet)
@@ -678,23 +809,33 @@ export default function Anniversary() {
 
                 <div className="w-full flex flex-row flex-wrap grow">
                   <div className="relative z-10 w-full flex flex-row gap-2 grow">
-                    {RAFFLE_PLACES.slice(0, 3).map((place) => (
+                    {RAFFLE_PLACES.slice(0, 3).map((place, index) => (
                       <RafflePlace
                         key={place.placeTitle}
                         placeTitle={place.placeTitle}
                         imageRef={place.imageRef}
                         reward={place.reward}
+                        winnerWallet={RAFFLE_WINNERS[index]}
+                        winnerTickets={RAFFLE_WINNERS_TICKETS[index]}
+                        profileMap={profileMap}
+                        onClickProfile={handleProfileClick}
+                        walletAddress={walletAddress}
                       />
                     ))}
                   </div>
 
                   <div className="relative z-10 w-full flex flex-row gap-2 flex-wrap mt-2">
-                    {RAFFLE_PLACES.slice(3).map((place) => (
+                    {RAFFLE_PLACES.slice(3).map((place, index) => (
                       <RafflePlace
                         key={place.placeTitle}
                         placeTitle={place.placeTitle}
                         imageRef={place.imageRef}
                         reward={place.reward}
+                        winnerWallet={RAFFLE_WINNERS[index + 3]}
+                        winnerTickets={RAFFLE_WINNERS_TICKETS[index + 3]}
+                        profileMap={profileMap}
+                        onClickProfile={handleProfileClick}
+                        walletAddress={walletAddress}
                       />
                     ))}
                   </div>
