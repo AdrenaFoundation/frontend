@@ -33,7 +33,7 @@ export default function TradingChartHeaderStats({
   statsClassName?: string;
   numberLong?: number;
   numberShort?: number;
-  selectedAction: 'long' | 'short' | 'swap';
+  selectedAction: 'long' | 'short' | 'swap' | 'bridge';
   compact?: boolean;
   showIcon?: boolean;
   showMainLineOnly?: boolean;
