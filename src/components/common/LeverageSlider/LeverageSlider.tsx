@@ -2,27 +2,26 @@ import 'rc-slider/assets/index.css';
 
 import Image from 'next/image';
 import Slider from 'rc-slider';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import lockIcon from '@/../public/images/Icons/lock.svg';
 import unlockIcon from '@/../public/images/Icons/unlock.svg';
 
-// Import from tailwind config
 const RAIL_COLOR = 'var(--color-bcolor)';
+const LEVERAGE_MARKS = [1.1, 5, 10, 25, 50, 100] as const;
 
 const SUCCESS_COLORS = {
   emerald: '#10b981',
   green: '#22c55e',
   teal: '#14b8a6',
-};
+} as const;
 
 const DANGER_COLORS = {
   red: '#C9243A',
   rose: '#e11d48',
   pink: '#db2777',
-};
-
-const LEVERAGE_MARKS = [1.1, 5, 10, 25, 50, 100] as const;
+} as const;
 
 export default function LeverageSlider({
   className,
@@ -39,6 +38,9 @@ export default function LeverageSlider({
   onLockToggle?: (locked: boolean) => void;
   side?: 'long' | 'short';
 }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState('');
+
   const isLong = side === 'long';
   const activeColor = isLong ? SUCCESS_COLORS.green : DANGER_COLORS.red;
   const gradient = isLong
@@ -77,129 +79,209 @@ export default function LeverageSlider({
 
   const handleIncrement = () => {
     const currentValue = value || 1.1;
-    if (currentValue >= 100) return onChange(100);
-    if (currentValue >= 1.1 && currentValue < 2) return onChange(2);
-    onChange(Math.min(100, Math.floor(currentValue) + 1));
+    if (currentValue >= 100) return;
+    if (currentValue >= 1.1 && currentValue < 2) {
+      onChange(2);
+    } else {
+      onChange(Math.min(100, Math.floor(currentValue) + 1));
+    }
   };
 
   const handleDecrement = () => {
     const currentValue = value || 1.1;
-    if (currentValue <= 1.1) return onChange(1.1);
-    if (currentValue === 2) return onChange(1.1);
-    if (currentValue > 2 && currentValue <= 3) return onChange(2);
-    onChange(Math.max(1.1, Math.floor(currentValue) - 1));
+    if (currentValue <= 1.1) return;
+    if (currentValue === 2 || (currentValue > 2 && currentValue <= 3)) {
+      onChange(currentValue === 2 ? 1.1 : 2);
+    } else {
+      onChange(Math.max(1.1, Math.floor(currentValue) - 1));
+    }
+  };
+
+  const handleEditStart = () => {
+    if (!isLocked) {
+      setIsEditing(true);
+      setEditValue((value || 10).toFixed(1));
+    }
+  };
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditValue(e.target.value);
+  };
+
+  const handleEditSubmit = () => {
+    const newValue = parseFloat(editValue);
+    if (!isNaN(newValue) && newValue >= 1.1 && newValue <= 100) {
+      onChange(Math.round(newValue * 10) / 10);
+    }
+    setIsEditing(false);
+  };
+
+  const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleEditSubmit();
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+    }
+  };
+
+  const handleUnlockClick = () => {
+    if (isLocked && onLockToggle) {
+      onLockToggle(false);
+    }
   };
 
   return (
     <div className={twMerge('flex flex-col overflow-hidden', className)}>
-      <div className="flex items-center justify-between px-4 pb-2 h-8">
-        {!isLocked && (
-          <button
-            onClick={handleDecrement}
-            className="w-8 h-8 text-3xl flex items-center justify-center text-txtfade hover:text-white transition-colors duration-200"
-          >
-            −
-          </button>
-        )}
+      <div className="w-full h-[1px] bg-white/10 mb-2" />
 
-        <div
-          className={twMerge('flex items-center gap-4', isLocked && 'mx-auto')}
-        >
-          <span className="text-xl font-bold font-mono">
-            {value?.toFixed(1) || '10.0'}x
-          </span>
-
-          {onLockToggle && (
+      <div
+        className={twMerge('px-4 pb-2', isLocked && 'cursor-pointer')}
+        onClick={handleUnlockClick}
+      >
+        <div className="flex items-center justify-between h-8">
+          {!isLocked && (
             <button
-              onClick={() => onLockToggle(!isLocked)}
-              className={twMerge(
-                'flex items-center justify-center transition-opacity duration-200',
-                isLocked ? 'opacity-900' : 'opacity-50 hover:opacity-90',
-              )}
-              title={isLocked ? 'Unlock leverage' : 'Lock leverage'}
+              onClick={handleDecrement}
+              className="w-8 h-8 text-3xl flex items-center justify-center text-txtfade hover:text-white transition-colors duration-200"
             >
-              <Image
-                src={isLocked ? lockIcon : unlockIcon}
-                alt={isLocked ? 'Locked' : 'Unlocked'}
-                width={16}
-                height={16}
+              −
+            </button>
+          )}
+
+          <div
+            className={twMerge(
+              'flex items-center gap-4',
+              isLocked && 'mx-auto',
+            )}
+          >
+            {isEditing ? (
+              <input
+                type="number"
+                value={editValue}
+                onChange={handleEditChange}
+                onBlur={handleEditSubmit}
+                onKeyDown={handleEditKeyDown}
+                min={1.1}
+                max={100}
+                step={0.1}
+                autoFocus
+                className="text-lg font-bold font-mono bg-transparent border-b border-white/30 w-16 text-center focus:outline-none focus:border-white/60"
               />
+            ) : (
+              <span
+                className="text-lg font-bold font-mono cursor-text"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditStart();
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  handleEditStart();
+                }}
+              >
+                {value?.toFixed(1) || '10.0'}x
+              </span>
+            )}
+
+            {onLockToggle && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onLockToggle(!isLocked);
+                }}
+                className={twMerge(
+                  'flex items-center justify-center transition-opacity duration-200 p-2 -ml-2',
+                  isLocked ? 'opacity-900' : 'opacity-50 hover:opacity-90',
+                )}
+                title={isLocked ? 'Unlock leverage' : 'Lock leverage'}
+              >
+                <Image
+                  src={isLocked ? lockIcon : unlockIcon}
+                  alt={isLocked ? 'Locked' : 'Unlocked'}
+                  width={14}
+                  height={14}
+                />
+              </button>
+            )}
+          </div>
+
+          {!isLocked && (
+            <button
+              onClick={handleIncrement}
+              className="w-8 h-8 text-3xl flex items-center justify-center text-txtfade hover:text-white transition-colors duration-200"
+            >
+              +
             </button>
           )}
         </div>
 
         {!isLocked && (
-          <button
-            onClick={handleIncrement}
-            className="w-8 h-8 text-3xl flex items-center justify-center text-txtfade hover:text-white transition-colors duration-200"
-          >
-            +
-          </button>
-        )}
-      </div>
+          <div className="flex items-center gap-1 px-3 py-2">
+            <div className="flex-1 relative pb-6">
+              <Slider
+                className={`custom-leverage-slider-${side}`}
+                min={0}
+                max={LEVERAGE_MARKS.length - 1}
+                value={valueToPosition(value || 10)}
+                step={0.01}
+                styles={{
+                  rail: { backgroundColor: RAIL_COLOR, height: 4 },
+                  track: { background: gradient, height: 4 },
+                  handle: {
+                    backgroundColor: activeColor,
+                    borderColor: activeColor,
+                    opacity: 1,
+                    borderWidth: 1,
+                  },
+                }}
+                dotStyle={{ display: 'none' }}
+                onChange={(pos) =>
+                  onChange(Math.round(positionToValue(pos as number) * 10) / 10)
+                }
+              />
 
-      {!isLocked && (
-        <div className="flex items-center gap-1 px-7 py-2">
-          <div className="flex-1 relative pb-6">
-            <Slider
-              className={`custom-leverage-slider-${side}`}
-              min={0}
-              max={LEVERAGE_MARKS.length - 1}
-              value={valueToPosition(value || 10)}
-              step={0.01}
-              styles={{
-                rail: { backgroundColor: RAIL_COLOR, height: 4 },
-                track: { background: gradient, height: 4 },
-                handle: {
-                  backgroundColor: activeColor,
-                  borderColor: activeColor,
-                  opacity: 1,
-                  borderWidth: 1,
-                },
-              }}
-              dotStyle={{ display: 'none' }}
-              onChange={(pos) =>
-                onChange(Math.round(positionToValue(pos as number) * 10) / 10)
-              }
-            />
+              <div className="absolute top-0 left-0 right-0 pointer-events-none">
+                {LEVERAGE_MARKS.map((mark, index) => {
+                  const percentage =
+                    (index / (LEVERAGE_MARKS.length - 1)) * 100;
+                  const isActive = valueToPosition(value || 10) >= index;
 
-            <div className="absolute top-0 left-0 right-0 pointer-events-none">
-              {LEVERAGE_MARKS.map((mark, index) => {
-                const percentage = (index / (LEVERAGE_MARKS.length - 1)) * 100;
-                const isActive = valueToPosition(value || 10) >= index;
-
-                return (
-                  <div
-                    key={mark}
-                    className="absolute pointer-events-auto"
-                    style={{
-                      left: `${percentage}%`,
-                      transform: 'translateX(-50%)',
-                    }}
-                  >
+                  return (
                     <div
-                      className="w-[2px] h-3 mx-auto mb-1 transition-colors"
+                      key={mark}
+                      className="absolute pointer-events-auto"
                       style={{
-                        backgroundColor: isActive ? activeColor : RAIL_COLOR,
-                        marginTop: '1px',
+                        left: `${percentage}%`,
+                        transform: 'translateX(-50%)',
                       }}
-                    />
-                    <button
-                      onClick={() => onChange(mark)}
-                      className={twMerge(
-                        'text-xs hover:text-white transition-colors cursor-pointer font-mono',
-                        isActive ? 'text-white/80' : 'text-white/40',
-                      )}
                     >
-                      {mark}x
-                    </button>
-                  </div>
-                );
-              })}
+                      <div
+                        className="w-[2px] h-3 mx-auto mb-1 transition-colors"
+                        style={{
+                          backgroundColor: isActive ? activeColor : RAIL_COLOR,
+                          marginTop: '1px',
+                        }}
+                      />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onChange(mark);
+                        }}
+                        className={twMerge(
+                          'text-xs hover:text-white transition-colors cursor-pointer font-mono',
+                          isActive ? 'text-white/80' : 'text-white/40',
+                        )}
+                      >
+                        {mark}x
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

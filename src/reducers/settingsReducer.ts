@@ -18,8 +18,7 @@ export type SettingsState = {
   enableAdrenaNotifications: boolean;
   useSqrtScaleForVolumeAndFeeChart: boolean;
   lastSelectedTradingToken: string;
-  preferredLeverage: number;
-  lockLeverage: boolean;
+  leverageByToken: Record<string, { leverage: number; locked: boolean }>;
 };
 
 // freeze the initial state object to make sure it can be re-used through

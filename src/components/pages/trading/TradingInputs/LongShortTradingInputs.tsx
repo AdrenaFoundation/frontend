@@ -37,7 +37,6 @@ import { LimitOrderContent } from './LongShortTradingInputs/LimitOrderContent';
 import LimitOrderWarning from './LongShortTradingInputs/LimitOrderWarning';
 import { MarketOrderContent } from './LongShortTradingInputs/MarketOrderContent';
 import { PositionInfoSection } from './LongShortTradingInputs/PositionInfoSection';
-import { ShortWarning } from './LongShortTradingInputs/ShortWarning';
 import { SwapSlippageSection } from './LongShortTradingInputs/SwapSlippageSection';
 import TPSLModeSelector from './LongShortTradingInputs/TPSLModeSelector';
 import {
@@ -82,13 +81,13 @@ export default function LongShortTradingInputs({
 
   const [takeProfitInput, setTakeProfitInput] = useState<number | null>(null);
   const [stopLossInput, setStopLossInput] = useState<number | null>(null);
-  const [swapSlippage, setSwapSlippage] = useState<number>(0.3); // Default swap slippage
+  const [swapSlippage, setSwapSlippage] = useState<number>(0.3);
   const [inputState, setInputState] = useState<TradingInputState>({
     inputA: null,
     inputB: null,
     priceA: null,
     priceB: null,
-    leverage: settings.preferredLeverage || 10,
+    leverage: settings.leverageByToken?.[tokenB.symbol]?.leverage || 10,
     isLimitOrder: false,
     limitOrderTriggerPrice: null,
     limitOrderSlippage: null,
@@ -107,6 +106,7 @@ export default function LongShortTradingInputs({
 
   // Track the current request to prevent race conditions
   const currentRequestRef = useRef<AbortController | null>(null);
+  const leverageTokenRef = useRef<string>(tokenB.symbol);
 
   const usdcMint = window.adrena.client.getUsdcToken().mint;
   const usdcCustody =
@@ -114,12 +114,8 @@ export default function LongShortTradingInputs({
   const usdcPrice = tokenPrices['USDC'];
 
   const custodyArray = useMemo(() => {
-    if (side === 'long' && positionInfo.custody) {
-      return [positionInfo.custody];
-    }
-    if (usdcCustody) {
-      return [usdcCustody];
-    }
+    if (side === 'long' && positionInfo.custody) return [positionInfo.custody];
+    if (usdcCustody) return [usdcCustody];
     return [];
   }, [side, positionInfo.custody, usdcCustody]);
 
@@ -193,7 +189,7 @@ export default function LongShortTradingInputs({
 
     const isLeverageIncreased = newOverallLeverage.gt(currentLeverage);
 
-    const weightedAverageEntryPrice: BN = (() => {
+    const weightedAverageEntryPrice = (() => {
       const currentEntryPriceNative = uiToNative(
         openedPosition.price,
         PRICE_DECIMALS,
@@ -212,8 +208,7 @@ export default function LongShortTradingInputs({
       return numerator.div(denominator);
     })();
 
-    // Calculate liquidation price
-    const estimatedLiquidationPrice: number | null = (() => {
+    const estimatedLiquidationPrice = (() => {
       const provisionalPosition = {
         borrowFeeUsd: openedPosition.borrowFeeUsd,
         nativeObject: {
@@ -421,10 +416,8 @@ export default function LongShortTradingInputs({
 
     try {
       const r = referrer;
-
-      // Undefined means user doesn't want to touch it
-      let stopLossLimitPrice = undefined;
-      let takeProfitLimitPrice = undefined;
+      let stopLossLimitPrice;
+      let takeProfitLimitPrice;
 
       if (
         isTPSL &&
@@ -445,8 +438,6 @@ export default function LongShortTradingInputs({
         takeProfitLimitPrice = takeProfitInput
           ? new BN(takeProfitInput * 10 ** PRICE_DECIMALS)
           : null;
-      } else {
-        // alert('Invalid TPSL inputs');
       }
 
       await (side === 'long'
@@ -582,7 +573,7 @@ export default function LongShortTradingInputs({
         > | null = null;
 
         if (side === 'long') {
-          let collateralAmount: BN = uiToNative(
+          let collateralAmount = uiToNative(
             inputState.inputA ?? 0,
             tokenA.decimals,
           );
@@ -626,8 +617,7 @@ export default function LongShortTradingInputs({
               tokenPrices,
             });
         } else {
-          // Short
-          let collateralAmount: BN = uiToNative(
+          let collateralAmount = uiToNative(
             inputState.inputA ?? 0,
             tokenA.decimals,
           );
@@ -953,6 +943,17 @@ export default function LongShortTradingInputs({
     openedPosition,
   ]);
 
+  // Load leverage when token changes
+  useEffect(() => {
+    const tokenLeverageSettings = settings.leverageByToken?.[tokenB.symbol];
+    leverageTokenRef.current = tokenB.symbol;
+
+    setInputState((prev) => ({
+      ...prev,
+      leverage: tokenLeverageSettings?.leverage || 10,
+    }));
+  }, [tokenB.symbol, settings.leverageByToken]);
+
   const handleInputAChange = (v: number | null) => {
     setInputState((prev) => ({
       ...prev,
@@ -1042,18 +1043,23 @@ export default function LongShortTradingInputs({
     if (side === 'long') {
       return tokenB;
     }
-
-    // For shorts, we recommend USDC
     return window.adrena.client.getUsdcToken();
   }, [tokenB, side]);
 
   const { favorites, toggleFavorite } = useFavorites(allowedTokenB);
 
   const handleLeverageLockToggle = (locked: boolean) => {
+    const updatedLeverageByToken = {
+      ...settings.leverageByToken,
+      [tokenB.symbol]: {
+        leverage: inputState.leverage,
+        locked: locked,
+      },
+    };
+
     dispatch(
       setSettings({
-        lockLeverage: locked,
-        preferredLeverage: inputState.leverage,
+        leverageByToken: updatedLeverageByToken,
       }),
     );
   };
@@ -1062,15 +1068,27 @@ export default function LongShortTradingInputs({
 
   useEffect(() => {
     if (debouncedLeverageSave) {
-      dispatch(setSettings({ preferredLeverage: debouncedLeverageSave }));
+      const targetToken = leverageTokenRef.current;
+      const currentLeverage = settings.leverageByToken?.[targetToken]?.leverage;
+
+      if (currentLeverage !== debouncedLeverageSave) {
+        const updatedLeverageByToken = {
+          ...settings.leverageByToken,
+          [targetToken]: {
+            leverage: debouncedLeverageSave,
+            locked: settings.leverageByToken?.[targetToken]?.locked || false,
+          },
+        };
+
+        dispatch(setSettings({ leverageByToken: updatedLeverageByToken }));
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedLeverageSave, dispatch]);
 
   return (
     <>
       <div className={twMerge('flex flex-col', className)}>
-        {side === 'short' && <ShortWarning />}
-
         <InputSection
           tokenA={tokenA}
           allowedTokenA={allowedTokenA}
@@ -1088,7 +1106,9 @@ export default function LongShortTradingInputs({
           }
           onMax={handleMax}
           recommendedToken={recommendedToken}
-          isLeverageLocked={settings.lockLeverage}
+          isLeverageLocked={
+            settings.leverageByToken?.[tokenB.symbol]?.locked || false
+          }
           onLeverageLockToggle={handleLeverageLockToggle}
           side={side}
         />
