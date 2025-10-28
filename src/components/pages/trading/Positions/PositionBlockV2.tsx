@@ -242,7 +242,7 @@ export default function PositionBlockV2({
         onEditClick: () => triggerStopLossTakeProfit?.(position),
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
     [
       tradeTokenPrice,
       triggerEditPositionCollateral,
