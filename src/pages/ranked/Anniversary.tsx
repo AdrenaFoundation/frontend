@@ -13,97 +13,152 @@ import MutagenLeaderboardAnniversary from '@/components/pages/mutagen_leaderboar
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import { PROFILE_PICTURES } from '@/constant';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
-import useAnniversaryRecords from '@/hooks/useAnniversaryRecords';
 import useMutagenLeaderboardData from '@/hooks/useMutagenLeaderboardData';
 import { useSelector } from '@/store/store';
-import {
-  AnniversaryRecord,
-  UserProfileExtended,
-  UserProfileMetadata,
-} from '@/types';
+import { UserProfileExtended, UserProfileMetadata } from '@/types';
 import { getAbbrevWalletAddress, getNonUserProfile } from '@/utils';
 
-// Constants
-const CREATIVE_PRIZES = [
+// ============================================================================
+// RAFFLE CATEGORY DATA
+// ============================================================================
+const RAFFLE_DATA = [
   {
-    title: 'Best Shitpost Tweet',
-    reward: 500,
-    tippyText:
-      'Funniest or most viral shitpost about Adrena. Winner chosen by the team.',
+    place: '1st',
+    imageRef: firstImage,
+    prize: 10000,
+    winnerWallet: 'Au6TfPDWoGij2RYoDZCx6DoQetfaVmcdNZYzqAtpWhNh', // Dont Get Fined
+    tickets: 7858,
   },
   {
-    title: 'Best Anniversary Tweet',
-    reward: 500,
-    tippyText:
-      "Best tweet celebrating Adrena's anniversary. Winner chosen by the team.",
+    place: '2nd',
+    imageRef: secondImage,
+    prize: 8000,
+    winnerWallet: '2u33gawaLnNW9rCx97J8Fx2MXBVuBvheFZSre9JXhQX2', // FeeSzn
+    tickets: 9967,
   },
   {
-    title: 'Best Feature Idea',
-    reward: 500,
-    tippyText:
-      'Most valuable idea for improving Adrena, submitted on Discord. Winner selected by the team.',
+    place: '3rd',
+    imageRef: thirdImage,
+    prize: 6000,
+    winnerWallet: '4ankwq3iL2cbjRJV6q92CyoEcgm5pQus4YRHosefHesC', // Click Buttons
+    tickets: 1378,
   },
   {
-    title: 'Best Artwork',
-    reward: 500,
-    tippyText:
-      'Coolest community artwork related to Adrena. Winner chosen by the team.',
+    place: '4th',
+    imageRef: null,
+    prize: 4000,
+    winnerWallet: 'CDUwP2FrQBKNMmr9zsPnneb9KmqWPi453sjdz1qf2bg6', // The Worst Trader
+    tickets: 16541,
+  },
+  {
+    place: '5th',
+    imageRef: null,
+    prize: 3000,
+    winnerWallet: 'A6ELwd76fHMMCtTRRyKXEpeTjeX8C5aN2P1uYsz3qW6j', // Wet Blanket
+    tickets: 22046,
+  },
+  {
+    place: '6th',
+    imageRef: null,
+    prize: 2000,
+    winnerWallet: '4N69yzFFVrdqBuQi81fdJ7w7JdX5t2hpwKh6potdKMX4', // Peso Enjoyer
+    tickets: 5678,
+  },
+  {
+    place: '7th',
+    imageRef: null,
+    prize: 1500,
+    winnerWallet: 'iWe1M1tATYYZmeitaqcKBM5ka1vtwyFyptkaQ2BB1XC', // Testarossa
+    tickets: 21358,
+  },
+  {
+    place: '8th',
+    imageRef: null,
+    prize: 1300,
+    winnerWallet: '7otBMV8sK1KJaZcSE8KoTPbRYEDGuBdZxbtyyd1XfUK7', // No profile
+    tickets: 6791,
+  },
+  {
+    place: '9th',
+    imageRef: null,
+    prize: 1000,
+    winnerWallet: 'HKmwhAz5joFFr54UWpsnshrUiRKYdTRg18qDuExgW2AK', // kkkkk
+    tickets: 3094,
+  },
+  {
+    place: '10th',
+    imageRef: null,
+    prize: 800,
+    winnerWallet: 'B3qwaaDGVr8qFFr2vg2sFAzETvfgzHo7QHzQCqewcsU8', // Muddy Peasant
+    tickets: 16585,
   },
 ] as const;
 
-const TRADING_PRIZES = [
+// ============================================================================
+// TRADING CATEGORY DATA
+// ============================================================================
+const TRADING_DATA = [
   {
     title: 'Best PnL %',
-    reward: 2000,
-    tippyText: 'Trader with the highest single profitable trade by percentage.',
-    recordKey: 'best_pnl_percentage' as const,
+    prize: 2000,
+    description:
+      'Trader with the highest single profitable trade by percentage.',
+    winnerWallet: 'HwkwCLE2aNirKrToTn2h1shMkmyNB8KkEyAm3ZBcTEY7',
+    winnerValue: 16456.764,
   },
   {
     title: 'Top Liquidation',
-    reward: 2000,
-    tippyText: 'Trader with the largest single liquidation in USD value.',
-    recordKey: 'biggest_liquidation' as const,
+    prize: 2000,
+    description: 'Trader with the largest single liquidation in USD value.',
+    winnerWallet: 'ECyvtxvY4KNBt5vfLtdsMrp77mKjL3JD6aha9m3aXBvd',
+    winnerValue: 404633.565,
   },
   {
     title: 'Top Borrow Fees',
-    reward: 2000,
-    tippyText: 'Trader who paid the most borrow fees in USD.',
-    recordKey: 'biggest_borrow_fees' as const,
+    prize: 2000,
+    description: 'Trader who paid the most borrow fees in USD.',
+    winnerWallet: 'ECyvtxvY4KNBt5vfLtdsMrp77mKjL3JD6aha9m3aXBvd',
+    winnerValue: 9528.38,
   },
   {
     title: 'Top Exit Fees',
-    reward: 2000,
-    tippyText: 'Trader who paid the most exit fees in USD.',
-    recordKey: 'biggest_exit_fees' as const,
+    prize: 2000,
+    description: 'Trader who paid the most exit fees in USD.',
+    winnerWallet: '3NCrJhLN62RNkAV9qYpA6qJfyWdKTtUpEEiZhfCLzUa7',
+    winnerValue: 3811.901,
   },
   {
     title: 'Most Trades',
-    reward: 500,
-    tippyText: 'Trader who closed the most positions.',
-    recordKey: 'most_trades' as const,
+    prize: 500,
+    description: 'Trader who closed the most positions.',
+    winnerWallet: '3ZmANGFQg6Zq7ZhF55thWSP1ktggKw1jwqY4dY6rRcpK',
+    winnerValue: 673,
   },
   {
     title: 'Consecutive Wins',
-    reward: 500,
-    tippyText: 'Trader with the longest winning streak.',
-    recordKey: 'most_consecutive_wins' as const,
+    prize: 500,
+    description: 'Trader with the longest winning streak.',
+    winnerWallet: 'LXv6ZpUyFENQqPUr9hwpHfyqr5Y1VGMrRpmFF8VSGar',
+    winnerValue: 122,
   },
   {
     title: 'Consecutive Losses',
-    reward: 500,
-    tippyText: 'Trader with the longest losing streak.',
-    recordKey: 'most_consecutive_losses' as const,
+    prize: 500,
+    description: 'Trader with the longest losing streak.',
+    winnerWallet: 'D4iXhbPU6inwJaVcJhW3uygWQ5nzyjL32KWPCXj3rZ2E',
+    winnerValue: 607,
   },
   {
     title: 'Consecutive Liquidations',
-    reward: 500,
-    tippyText: 'Trader with the longest streak of liquidated trades.',
-    recordKey: 'most_consecutive_liquidations' as const,
+    prize: 500,
+    description: 'Trader with the longest streak of liquidated trades.',
+    winnerWallet: '4JsBNNdQxMtzgAraMZsPqcCZjwVFJywTsEmdXAa1FYX9',
+    winnerValue: 12,
   },
   {
     title: 'First Blood',
-    reward: 200,
-    tippyText: (
+    prize: 200,
+    description: (
       <div>
         <div>
           First trader to open and close a position with a PnL/Volume ratio of
@@ -114,12 +169,13 @@ const TRADING_PRIZES = [
         </div>
       </div>
     ),
-    recordKey: 'first_trader' as const,
+    winnerWallet: '6tsTdvGomGeep7MDwwpVe1brYpv9hamNvL7F36EsdGyo',
+    winnerValue: 1759507285000,
   },
   {
     title: 'Last Straw',
-    reward: 200,
-    tippyText: (
+    prize: 200,
+    description: (
       <div>
         <div>
           Last trader to close a position with a PnL/Volume ratio of 10% before
@@ -130,24 +186,44 @@ const TRADING_PRIZES = [
         </div>
       </div>
     ),
-    recordKey: 'last_trader' as const,
+    winnerWallet: 'EJsK69iZKqgVfM7fCh1q7aLtDa6cxcBUP1NEAbprawT',
+    winnerValue: 1761142988000,
   },
 ] as const;
 
-const RAFFLE_PLACES = [
-  { placeTitle: '1st', imageRef: firstImage, reward: 10000 },
-  { placeTitle: '2nd', imageRef: secondImage, reward: 8000 },
-  { placeTitle: '3rd', imageRef: thirdImage, reward: 6000 },
-  { placeTitle: '4th', imageRef: null, reward: 4000 },
-  { placeTitle: '5th', imageRef: null, reward: 3000 },
-  { placeTitle: '6th', imageRef: null, reward: 2000 },
-  { placeTitle: '7th', imageRef: null, reward: 1500 },
-  { placeTitle: '8th', imageRef: null, reward: 1300 },
-  { placeTitle: '9th', imageRef: null, reward: 1000 },
-  { placeTitle: '10th', imageRef: null, reward: 800 },
+// ============================================================================
+// CREATIVE CATEGORY DATA
+// ============================================================================
+const CREATIVE_DATA = [
+  {
+    title: 'Best Shitpost Tweet',
+    prize: 500,
+    description:
+      'Funniest or most viral shitpost about Adrena. Winner chosen by the team.',
+  },
+  {
+    title: 'Best Anniversary Tweet',
+    prize: 500,
+    description:
+      "Best tweet celebrating Adrena's anniversary. Winner chosen by the team.",
+  },
+  {
+    title: 'Best Feature Idea',
+    prize: 500,
+    description:
+      'Most valuable idea for improving Adrena, submitted on Discord. Winner selected by the team.',
+  },
+  {
+    title: 'Best Artwork',
+    prize: 500,
+    description:
+      'Coolest community artwork related to Adrena. Winner chosen by the team.',
+  },
 ] as const;
 
-// Utility functions
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
 const formatValue = (value: number, title: string): string => {
   if (title.includes('First Blood') || title.includes('Last Straw')) {
     return new Date(value).toLocaleDateString('en-US', {
@@ -185,38 +261,119 @@ const getValueUnit = (title: string): string => {
   return '';
 };
 
-const getBorderClasses = (
-  isCurrentUserHolder: boolean,
-  hasRecord: boolean,
-  hasClickHandler: boolean,
-): string => {
-  if (isCurrentUserHolder) return 'border-green-400/50';
-  if (hasRecord && hasClickHandler)
-    return 'cursor-pointer hover:border-gray-400/30';
-  return 'cursor-help hover:border-white/10';
-};
-
 // Components
 function RafflePlace({
   placeTitle,
   imageRef,
   reward,
+  winnerWallet,
+  winnerTickets,
+  profileMap,
+  onClickProfile,
+  walletAddress,
 }: {
   placeTitle: string;
   imageRef: string | StaticImageData | null;
   reward: number;
+  winnerWallet?: string;
+  winnerTickets?: number | null;
+  profileMap: Map<string, UserProfileMetadata>;
+  onClickProfile?: (wallet: string) => void;
+  walletAddress: string | null;
 }) {
+  const getDisplayName = useCallback(
+    (wallet: string) => {
+      const profile = profileMap.get(wallet);
+      return profile?.nickname || getAbbrevWalletAddress(wallet);
+    },
+    [profileMap],
+  );
+
+  const getProfilePictureUrl = useCallback(
+    (wallet: string) => {
+      const profile = profileMap.get(wallet);
+      return profile
+        ? PROFILE_PICTURES[
+            profile.profilePicture as keyof typeof PROFILE_PICTURES
+          ]
+        : PROFILE_PICTURES[0];
+    },
+    [profileMap],
+  );
+
+  const isCurrentUserWinner = winnerWallet === walletAddress;
+  const hasWinner = !!winnerWallet;
+
   return (
     <Tippy
       content={
-        <div className="text-center">
-          At the end of the competition, 10 traders will be selected through a
-          random raffle. The more Mutagen you hold, the higher your chances of
-          being picked.
+        <div className="text-center max-w-[300px]">
+          {hasWinner ? (
+            <>
+              <div className="font-semibold mb-2">
+                {placeTitle} Raffle Winner
+              </div>
+              <div className="border-t border-gray-600 pt-2">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Image
+                    src={getProfilePictureUrl(winnerWallet)}
+                    alt="Profile"
+                    width={24}
+                    height={24}
+                    className="rounded-full"
+                  />
+                  <div className="text-sm">
+                    <div className="font-semibold text-white">
+                      {getDisplayName(winnerWallet)}
+                    </div>
+                  </div>
+                </div>
+                {winnerTickets && (
+                  <div className="text-sm text-gray-300 mt-2">
+                    <span className="font-semibold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]">
+                      {winnerTickets.toLocaleString()}
+                    </span>{' '}
+                    raffle tickets
+                  </div>
+                )}
+              </div>
+            </>
+          ) : null}
         </div>
       }
     >
-      <div className="border bg-main rounded-md p-2 flex flex-col items-center justify-center gap-2 z-10 grow relative cursor-help hover:border-white/10">
+      <div
+        className={twMerge(
+          'rounded-md p-2 flex flex-col items-center justify-center gap-2 z-10 grow relative bg-main',
+          isCurrentUserWinner ? 'border-2 cursor-pointer' : 'border',
+          hasWinner && onClickProfile && !isCurrentUserWinner
+            ? 'cursor-pointer hover:border-gray-400/30'
+            : !isCurrentUserWinner && 'cursor-help hover:border-white/10',
+        )}
+        style={
+          isCurrentUserWinner
+            ? {
+                borderColor: 'rgb(74 222 128 /0.7',
+                transition: 'border-color 0.2s',
+              }
+            : undefined
+        }
+        onMouseEnter={(e) => {
+          if (isCurrentUserWinner) {
+            e.currentTarget.style.borderColor = 'rgb(34 197 94 / 0.9)';
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (isCurrentUserWinner) {
+            e.currentTarget.style.borderColor = 'rgb(74 222 128 / 0.7)';
+          }
+        }}
+        onClick={
+          hasWinner && onClickProfile
+            ? () => onClickProfile(winnerWallet)
+            : undefined
+        }
+      >
         {imageRef && (
           <Image
             src={imageRef}
@@ -227,15 +384,17 @@ function RafflePlace({
           />
         )}
 
-        <div
-          className="absolute w-full h-full z-10"
-          style={{
-            backgroundImage: 'url(images/interrogation.png)',
-            backgroundRepeat: 'repeat',
-            backgroundSize: '20px 20px',
-            opacity: 0.05,
-          }}
-        />
+        {!hasWinner && (
+          <div
+            className="absolute w-full h-full z-10"
+            style={{
+              backgroundImage: 'url(images/interrogation.png)',
+              backgroundRepeat: 'repeat',
+              backgroundSize: '20px 20px',
+              opacity: 0.05,
+            }}
+          />
+        )}
 
         <div className="text-sm font-semibold text-white/90">
           {placeTitle} Raffle Winner
@@ -260,24 +419,18 @@ function RaffleAdditionalPrize({
   record,
   profileMap,
   onClickProfile,
-  getUserComparison,
   showSecondLine = true,
 }: {
   title: string;
   reward: number;
   tippyText: string | React.ReactNode;
-  record?: AnniversaryRecord;
+  record?: { wallet: string; value: number };
   profileMap: Map<string, UserProfileMetadata>;
   onClickProfile?: (wallet: string) => void;
-  getUserComparison?: (title: string, currentValue: number) => React.ReactNode;
   showSecondLine?: boolean;
 }) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletAddress = wallet?.walletAddress ?? null;
-
-  // Check if competition has ended (hardcoded end date: Oct 25, 2025)
-  const competitionEndDate = new Date('2025-10-25T23:59:59.999Z');
-  const isCompetitionEnded = new Date() > competitionEndDate;
 
   const getDisplayName = useCallback(
     (wallet: string) => {
@@ -292,26 +445,11 @@ function RaffleAdditionalPrize({
       const profile = profileMap.get(wallet);
       return profile
         ? PROFILE_PICTURES[
-        profile.profilePicture as keyof typeof PROFILE_PICTURES
-        ]
+            profile.profilePicture as keyof typeof PROFILE_PICTURES
+          ]
         : PROFILE_PICTURES[0];
     },
     [profileMap],
-  );
-
-  const getStatusLabel = useCallback(
-    (title: string): string => {
-      if (title === 'First Blood') {
-        return 'Winner:';
-      }
-
-      if (isCompetitionEnded) {
-        return 'Winner:';
-      }
-
-      return 'Leading:';
-    },
-    [isCompetitionEnded],
   );
 
   const getEnhancedTippyContent = useCallback(() => {
@@ -320,9 +458,6 @@ function RaffleAdditionalPrize({
         <div className="text-center max-w-[300px]">
           <div className="font-semibold mb-2">{title}</div>
           <div className="mb-2">{tippyText}</div>
-          <div className="text-sm text-gray-300">
-            No winner yet - competition in progress!
-          </div>
         </div>
       );
     }
@@ -348,47 +483,55 @@ function RaffleAdditionalPrize({
             </div>
           </div>
 
-          <div className="text-sm mb-2">
+          <div className="text-sm">
             <div className="font-semibold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]">
-              Current Leader: {formatValue(record.value, title)}
+              {formatValue(record.value, title)}
               {getValueUnit(title)}
             </div>
           </div>
-
-          {getUserComparison && getUserComparison(title, record.value)}
-
-          {onClickProfile && <div className="text-xs text-gray-300 mt-2"></div>}
         </div>
       </div>
     );
-  }, [
-    record,
-    title,
-    tippyText,
-    getProfilePictureUrl,
-    getDisplayName,
-    getUserComparison,
-    onClickProfile,
-  ]);
+  }, [record, title, tippyText, getProfilePictureUrl, getDisplayName]);
 
   const isCurrentUserHolder = record?.wallet === walletAddress;
   const hasRecord = !!record?.wallet;
-  const hasClickHandler = !!onClickProfile;
 
   return (
     <Tippy content={getEnhancedTippyContent()}>
       <div
         className={twMerge(
-          'border bg-main p-2 flex flex-col z-10 grow rounded-md md:w-[12em] gap-2',
-          getBorderClasses(isCurrentUserHolder, hasRecord, hasClickHandler),
+          'rounded-md p-2 flex flex-col z-10 grow md:w-[12em] gap-2 bg-main',
+          isCurrentUserHolder ? 'border-2 cursor-pointer' : 'border',
+          hasRecord && onClickProfile && !isCurrentUserHolder
+            ? 'cursor-pointer hover:border-gray-400/30'
+            : !isCurrentUserHolder && 'cursor-help hover:border-white/10',
         )}
+        style={
+          isCurrentUserHolder
+            ? {
+                borderColor: 'rgb(74 222 128 / 0.7)',
+                transition: 'border-color 0.2s',
+              }
+            : undefined
+        }
+        onMouseEnter={(e) => {
+          if (isCurrentUserHolder) {
+            e.currentTarget.style.borderColor = 'rgb(34 197 94 / 0.9)';
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (isCurrentUserHolder) {
+            e.currentTarget.style.borderColor = 'rgb(74 222 128 / 0.7)';
+          }
+        }}
         onClick={
           hasRecord && onClickProfile
             ? () => onClickProfile(record.wallet)
             : undefined
         }
       >
-        {/* First line: Title and reward */}
+        {/* Title and reward */}
         <div className="flex justify-between items-center">
           <div className="text-sm font-semibold text-white/90">{title}</div>
           <FormatNumber
@@ -398,14 +541,12 @@ function RaffleAdditionalPrize({
           />
         </div>
 
-        {/* Second line: Status label, profile picture and name (conditional rendering) */}
+        {/* Winner info with golden shimmer effect */}
         {showSecondLine && (
           <div className="flex items-center gap-2">
             {record?.wallet ? (
               <>
-                <div className="text-xs text-white/40 font-medium">
-                  {getStatusLabel(title)}
-                </div>
+                <div className="text-xs text-white/40 font-medium">Winner:</div>
                 <Image
                   src={getProfilePictureUrl(record.wallet)}
                   alt="Profile"
@@ -413,7 +554,7 @@ function RaffleAdditionalPrize({
                   height={16}
                   className="rounded-full"
                 />
-                <div className="text-xs text-white/70 truncate">
+                <div className="text-xs truncate text-white/70">
                   {getDisplayName(record.wallet)}
                 </div>
               </>
@@ -431,43 +572,50 @@ function RaffleAdditionalPrize({
 }
 
 function TradingPrize({
+  title,
   prize,
-  record,
+  description,
+  winnerWallet,
+  winnerValue,
   profileMap,
   onClickProfile,
-  getUserComparison,
 }: {
-  prize: (typeof TRADING_PRIZES)[number];
-  record?: AnniversaryRecord;
+  title: string;
+  prize: number;
+  description: string | React.ReactNode;
+  winnerWallet: string;
+  winnerValue: number;
   profileMap: Map<string, UserProfileMetadata>;
   onClickProfile?: (wallet: string) => void;
-  getUserComparison?: (title: string, currentValue: number) => React.ReactNode;
 }) {
   return (
     <RaffleAdditionalPrize
-      title={prize.title}
-      reward={prize.reward}
-      tippyText={prize.tippyText}
-      record={record}
+      title={title}
+      reward={prize}
+      tippyText={description}
+      record={{ wallet: winnerWallet, value: winnerValue }}
       profileMap={profileMap}
       onClickProfile={onClickProfile}
-      getUserComparison={getUserComparison}
     />
   );
 }
 
 function CreativePrize({
+  title,
   prize,
+  description,
   profileMap,
 }: {
-  prize: (typeof CREATIVE_PRIZES)[number];
+  title: string;
+  prize: number;
+  description: string;
   profileMap: Map<string, UserProfileMetadata>;
 }) {
   return (
     <RaffleAdditionalPrize
-      title={prize.title}
-      reward={prize.reward}
-      tippyText={prize.tippyText}
+      title={title}
+      reward={prize}
+      tippyText={description}
       profileMap={profileMap}
       showSecondLine={false}
     />
@@ -478,7 +626,6 @@ export default function Anniversary() {
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletAddress = wallet?.walletAddress ?? null;
-  const { anniversaryData } = useAnniversaryRecords(walletAddress);
   const leaderboardData = useMutagenLeaderboardData({
     allUserProfilesMetadata,
     seasonName: 'anniversary1',
@@ -516,112 +663,6 @@ export default function Anniversary() {
       }
     },
     [profileMap],
-  );
-
-  const getUserComparison = useCallback(
-    (title: string, currentValue: number, leaderWallet?: string) => {
-      if (!anniversaryData?.user_stats || !walletAddress) {
-        return null;
-      }
-
-      const userStats = anniversaryData.user_stats;
-      let userValue: number = 0;
-      let unit = '';
-      let isConsecutive = false;
-
-      switch (title) {
-        case 'Best PnL %':
-          userValue = userStats.best_pnl_percentage;
-          unit = '%';
-          break;
-        case 'Top Liquidation':
-          userValue = userStats.biggest_liquidation;
-          unit = ' USD';
-          break;
-        case 'Top Borrow Fees':
-          userValue = userStats.biggest_borrow_fees;
-          unit = ' USD';
-          break;
-        case 'Top Exit Fees':
-          userValue = userStats.biggest_exit_fees;
-          unit = ' USD';
-          break;
-        case 'Most Trades':
-          userValue = userStats.most_trades;
-          unit = ' trades';
-          isConsecutive = true;
-          break;
-        case 'Consecutive Wins':
-          userValue = userStats.most_consecutive_wins;
-          unit = ' consecutive';
-          isConsecutive = true;
-          break;
-        case 'Consecutive Losses':
-          userValue = userStats.most_consecutive_losses;
-          unit = ' consecutive';
-          isConsecutive = true;
-          break;
-        case 'Consecutive Liquidations':
-          userValue = userStats.most_consecutive_liquidations;
-          unit = ' consecutive';
-          isConsecutive = true;
-          break;
-        case 'First Blood':
-        case 'Last Straw':
-          return null;
-        default:
-          return null;
-      }
-
-      if (userValue === 0) return null;
-
-      const difference = userValue - currentValue;
-      const isAhead = difference > 0;
-      const isSame = difference === 0;
-      const isLeader = isSame && walletAddress === leaderWallet;
-
-      const formattedUserValue = isConsecutive
-        ? Math.floor(userValue).toString()
-        : userValue.toFixed(2);
-
-      const formattedDifference = isConsecutive
-        ? Math.floor(Math.abs(difference)).toString()
-        : Math.abs(difference).toFixed(2);
-
-      return (
-        <div className="border-t border-gray-600 pt-2 mt-2">
-          <div className="text-xs text-gray-400 mb-1">Your Stats:</div>
-          <div className="text-sm">
-            <span className="text-white font-bold">
-              {formattedUserValue}
-              {unit}
-            </span>
-            {!isSame && (
-              <div
-                className={`text-xs mt-1 ${isAhead ? 'text-green-400' : 'text-red-400'}`}
-              >
-                {isAhead ? '🏆 ' : ''}
-                {isAhead
-                  ? `+${formattedDifference}`
-                  : `-${formattedDifference}`}{' '}
-                vs leader
-              </div>
-            )}
-            {isSame && !isLeader && (
-              <div className="text-xs mt-1 text-yellow-400">
-                Tied with leader!
-              </div>
-            )}
-            {isSame && isLeader && (
-              <div className="text-xs mt-1 font-semibold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#10B981,45%,#34D399,55%,#10B981)]">
-                You are the leader! 🏆
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    },
-    [anniversaryData?.user_stats, walletAddress],
   );
 
   return (
@@ -678,23 +719,33 @@ export default function Anniversary() {
 
                 <div className="w-full flex flex-row flex-wrap grow">
                   <div className="relative z-10 w-full flex flex-row gap-2 grow">
-                    {RAFFLE_PLACES.slice(0, 3).map((place) => (
+                    {RAFFLE_DATA.slice(0, 3).map((raffle) => (
                       <RafflePlace
-                        key={place.placeTitle}
-                        placeTitle={place.placeTitle}
-                        imageRef={place.imageRef}
-                        reward={place.reward}
+                        key={raffle.place}
+                        placeTitle={raffle.place}
+                        imageRef={raffle.imageRef}
+                        reward={raffle.prize}
+                        winnerWallet={raffle.winnerWallet}
+                        winnerTickets={raffle.tickets}
+                        profileMap={profileMap}
+                        onClickProfile={handleProfileClick}
+                        walletAddress={walletAddress}
                       />
                     ))}
                   </div>
 
                   <div className="relative z-10 w-full flex flex-row gap-2 flex-wrap mt-2">
-                    {RAFFLE_PLACES.slice(3).map((place) => (
+                    {RAFFLE_DATA.slice(3).map((raffle) => (
                       <RafflePlace
-                        key={place.placeTitle}
-                        placeTitle={place.placeTitle}
-                        imageRef={place.imageRef}
-                        reward={place.reward}
+                        key={raffle.place}
+                        placeTitle={raffle.place}
+                        imageRef={raffle.imageRef}
+                        reward={raffle.prize}
+                        winnerWallet={raffle.winnerWallet}
+                        winnerTickets={raffle.tickets}
+                        profileMap={profileMap}
+                        onClickProfile={handleProfileClick}
+                        walletAddress={walletAddress}
                       />
                     ))}
                   </div>
@@ -708,20 +759,16 @@ export default function Anniversary() {
                 </h2>
 
                 <div className="relative z-10 w-full flex flex-row flex-wrap items-center justify-center gap-2">
-                  {TRADING_PRIZES.map((prize) => (
+                  {TRADING_DATA.map((trading) => (
                     <TradingPrize
-                      key={prize.recordKey}
-                      prize={prize}
-                      record={anniversaryData?.records?.[prize.recordKey]}
+                      key={trading.title}
+                      title={trading.title}
+                      prize={trading.prize}
+                      description={trading.description}
+                      winnerWallet={trading.winnerWallet}
+                      winnerValue={trading.winnerValue}
                       profileMap={profileMap}
                       onClickProfile={handleProfileClick}
-                      getUserComparison={(title, currentValue) =>
-                        getUserComparison(
-                          title,
-                          currentValue,
-                          anniversaryData?.records?.[prize.recordKey]?.wallet,
-                        )
-                      }
                     />
                   ))}
                 </div>
@@ -734,10 +781,12 @@ export default function Anniversary() {
               </h2>
 
               <div className="relative z-10 w-full flex flex-row flex-wrap items-center justify-center gap-2">
-                {CREATIVE_PRIZES.map((prize) => (
+                {CREATIVE_DATA.map((creative) => (
                   <CreativePrize
-                    key={prize.title}
-                    prize={prize}
+                    key={creative.title}
+                    title={creative.title}
+                    prize={creative.prize}
+                    description={creative.description}
                     profileMap={profileMap}
                   />
                 ))}
