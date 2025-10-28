@@ -17,7 +17,7 @@ interface TradingChartHeaderProps {
   tokenList: Token[];
   selected: Token;
   onChange: (t: Token) => void;
-  selectedAction: 'long' | 'short' | 'swap';
+  selectedAction: 'long' | 'short' | 'swap' | 'bridge';
 }
 
 export default function TradingChartHeader({

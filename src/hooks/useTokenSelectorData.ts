@@ -19,7 +19,7 @@ export interface TokenDataItem {
 
 export function useTokenSelectorData(
   tokenList: Token[],
-  selectedAction: 'long' | 'short' | 'swap',
+  selectedAction: 'long' | 'short' | 'swap' | 'bridge',
   favorites: string[],
 ): TokenDataItem[] {
   const streamingTokenPrices = useSelector((s) => s.streamingTokenPrices);
