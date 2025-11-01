@@ -9,7 +9,6 @@ import { PercentilePriorityFeeList } from '@/utils';
 
 import useFetchUserSettings from './useFetchUserSettings';
 
-// Loads Settings from cookies and saves them to cookies
 export default function useSettingsPersistence() {
   const { preferences, updatePreferences } = useFetchUserSettings();
   const dispatch = useDispatch();
@@ -21,7 +20,6 @@ export default function useSettingsPersistence() {
     'max-priority-fee',
     'priority-fee',
     'disable-friend-req',
-    // Persistence for trading actions
     'open-position-collateral-symbol',
     'close-position-collateral-symbols',
     'deposit-collateral-symbol',
@@ -29,11 +27,11 @@ export default function useSettingsPersistence() {
     'enable-adrena-notifications',
     'use-sqrt-scale-for-volume-and-fee-chart',
     'last-selected-trading-token',
+    'leverage-by-token',
   ]);
 
   const settings = useSelector((state) => state.settings);
 
-  // Load cookies values when launching the hook
   useEffect(() => {
     const updatedSettings: Partial<SettingsState> = {};
 
@@ -140,46 +138,68 @@ export default function useSettingsPersistence() {
       updatedSettings.lastSelectedTradingToken = v;
     }
 
+    {
+      const v = preferences?.leverageByToken ?? cookies['leverage-by-token'];
+      if (v) {
+        try {
+          updatedSettings.leverageByToken =
+            typeof v === 'string' ? JSON.parse(v) : v;
+        } catch (e) {
+          console.error('Failed to parse leverage-by-token', e);
+        }
+      }
+    }
+
     dispatch(setSettings(updatedSettings));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!!cookies, !!dispatch, preferences]);
 
-  // When selector change, save in cookie
   useEffect(() => {
     Object.entries(settings).forEach(([key, value]) => {
-      setCookie(
-        (
-          {
-            disableChat: 'disable-chat',
-            showFeesInPnl: 'show-fees-in-pnl',
-            showPopupOnPositionClose: 'show-popup-on-position-close',
-            preferredSolanaExplorer: 'preferred-solana-explorer',
-            // This represent the maximum extra amount of SOL per IX for priority fees, priority fees will be capped at this value
-            maxPriorityFee: 'max-priority-fee',
-            priorityFeeOption: 'priority-fee',
-            disableFriendReq: 'disable-friend-req',
-            openPositionCollateralSymbol: 'open-position-collateral-symbol',
-            closePositionCollateralSymbols: 'close-position-collateral-symbols',
-            depositCollateralSymbol: 'deposit-collateral-symbol',
-            withdrawCollateralSymbol: 'withdraw-collateral-symbol',
-            enableAdrenaNotifications: 'enable-adrena-notifications',
-            useSqrtScaleForVolumeAndFeeChart:
-              'use-sqrt-scale-for-volume-and-fee-chart',
-            lastSelectedTradingToken: 'last-selected-trading-token',
-          } as Record<keyof SettingsState, keyof typeof cookies>
-        )[key as keyof SettingsState],
-        value,
-      );
+      const cookieKey = (
+        {
+          disableChat: 'disable-chat',
+          showFeesInPnl: 'show-fees-in-pnl',
+          showPopupOnPositionClose: 'show-popup-on-position-close',
+          preferredSolanaExplorer: 'preferred-solana-explorer',
+          maxPriorityFee: 'max-priority-fee',
+          priorityFeeOption: 'priority-fee',
+          disableFriendReq: 'disable-friend-req',
+          openPositionCollateralSymbol: 'open-position-collateral-symbol',
+          closePositionCollateralSymbols: 'close-position-collateral-symbols',
+          depositCollateralSymbol: 'deposit-collateral-symbol',
+          withdrawCollateralSymbol: 'withdraw-collateral-symbol',
+          enableAdrenaNotifications: 'enable-adrena-notifications',
+          useSqrtScaleForVolumeAndFeeChart:
+            'use-sqrt-scale-for-volume-and-fee-chart',
+          lastSelectedTradingToken: 'last-selected-trading-token',
+          leverageByToken: 'leverage-by-token',
+        } as Record<keyof SettingsState, keyof typeof cookies>
+      )[key as keyof SettingsState];
+
+      const valueToSave =
+        typeof value === 'object' ? JSON.stringify(value) : value;
+      const currentCookie = cookies[cookieKey];
+      const cookieValue =
+        typeof currentCookie === 'object'
+          ? JSON.stringify(currentCookie)
+          : currentCookie;
+
+      if (valueToSave !== cookieValue) {
+        setCookie(cookieKey, value);
+      }
     });
 
-    // Special cases
     window.adrena.settings.solanaExplorer = settings.preferredSolanaExplorer;
     window.adrena.client.setPriorityFeeOption(settings.priorityFeeOption);
     window.adrena.client.setMaxPriorityFee(settings.maxPriorityFee);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setCookie, settings]);
 
   useEffect(() => {
-    updatePreferences(settings);
+    if (updatePreferences) {
+      updatePreferences(settings);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings]);
 }

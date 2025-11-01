@@ -18,6 +18,7 @@ export default function TabSelect<T extends string | number>({
     icon?: string;
     activeColor?: string;
     disabled?: boolean;
+    tooltip?: React.ReactNode;
   }[];
   onClick: (title: T, index: number) => void;
   className?: string;
@@ -43,10 +44,10 @@ export default function TabSelect<T extends string | number>({
         wrapperClassName,
       )}
     >
-      {tabs.map(({ title: title, activeColor, disabled }, index) => (
+      {tabs.map(({ title: title, activeColor, disabled, tooltip }, index) => (
         <div
           className={twMerge(
-            'p-1 w-full cursor-pointer z-10',
+            'p-1 w-full cursor-pointer z-10 flex items-center justify-center gap-1',
             className,
             activeTab !== null && index === activeTab
               ? activeColor
@@ -59,8 +60,11 @@ export default function TabSelect<T extends string | number>({
           )}
           ref={refs[index]}
           key={title}
-          onClick={() => {
+          onClick={(e) => {
             if (disabled) return;
+            if ((e.target as HTMLElement).closest('[data-tippy-root]')) {
+              return;
+            }
 
             onClick(title, index);
             setActiveTab(index);
@@ -82,6 +86,7 @@ export default function TabSelect<T extends string | number>({
           >
             {title}
           </h5>
+          {tooltip}
         </div>
       ))}
     </div>
