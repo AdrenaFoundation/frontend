@@ -173,13 +173,26 @@ export default function TradeComp({
             ) : selectedAction === 'bridge' ? (
               <>
                 {/* LiFi Widget for Bridge */}
-                <div className="relative h-[575px]">
-                  <LiFiWidget
-                    adapters={adapters}
-                    activeRpc={activeRpc}
-                    id={`${terminalId}-lifi`}
-                    className="bg-transparent border-transparent min-w-[300px] w-full min-h-[550px]"
-                  />
+                <div
+                  className={twMerge(
+                    'relative h-[575px] min-w-[300px] w-full',
+                    !connected && 'overflow-hidden',
+                  )}
+                >
+                  <div className={!connected ? 'blur-sm' : ''}>
+                    <LiFiWidget
+                      adapters={adapters}
+                      activeRpc={activeRpc}
+                      id={`${terminalId}-lifi`}
+                      className="bg-transparent border-transparent min-w-[300px] w-full min-h-[550px]"
+                    />
+                  </div>
+
+                  {!connected ? (
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 h-full w-full backdrop-blur-sm">
+                      <WalletConnection />
+                    </div>
+                  ) : null}
                 </div>
               </>
             ) : null}

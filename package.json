@@ -36,7 +36,6 @@
     "@solana/spl-token": "=0.4.14",
     "@solana/spl-token-registry": "=0.2.7",
     "@solana/wallet-adapter-coinbase": "=0.1.23",
-    "@solana/wallet-adapter-phantom": "=0.9.28",
     "@solana/wallet-adapter-react": "=0.15.39",
     "@solana/wallet-adapter-solflare": "=0.6.32",
     "@solana/wallet-standard-wallet-adapter-react": "=1.1.2",
