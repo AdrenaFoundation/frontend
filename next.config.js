@@ -10,40 +10,6 @@ module.exports = (phase, { defaultConfig }) => {
 
     async headers() {
       // ==========================================================
-      // CONTENT SECURITY POLICY (CSP) CONFIGURATION
-      // ==========================================================
-      // This configuration defines all allowed sources for various
-      // types of content loaded by the application.
-      //
-      // ORGANIZATION:
-      // 1. Domain Configurations: Groups of related domains
-      //    - Wallet Providers (Privy, WalletConnect)
-      //    - Swap/Bridge Providers (Jupiter, LiFi)
-      // 2. RPC Endpoints: Blockchain RPC endpoints organized by:
-      //    - Solana RPCs
-      //    - Multi-chain wildcards (for providers like Alchemy)
-      //    - Ethereum Mainnet RPCs
-      //    - L2 Ethereum chains
-      //    - Alternative L1 chains (BSC, Polygon, etc.)
-      //    - Niche/Emerging chains
-      //    - Special purpose chains
-      // 3. External Services: Third-party services (Vercel, Supabase, etc.)
-      // 4. CSP Directives: Per-directive allow lists
-      //    - connect-src: Network connections
-      //    - script-src: JavaScript execution
-      //    - style-src: Stylesheets
-      //    - img-src: Images
-      //    - font-src: Fonts
-      //    - media-src: Audio/video
-      //    - child-src/frame-src: Embedded content
-      //
-      // ADDING NEW ENDPOINTS:
-      // - For RPC endpoints: Add to rpcEndpoints object in appropriate section
-      // - Then add the reference to connectSrcParts array
-      // - Use wildcards (*.domain.com) where possible to reduce config size
-      // ==========================================================
-
-      // ==========================================================
       // DOMAIN CONFIGURATIONS
       // ==========================================================
 
@@ -108,6 +74,8 @@ module.exports = (phase, { defaultConfig }) => {
         llamaRpc: 'https://*.llamarpc.com', // Multi-chain aggregator
         heliusWildcard: 'https://*.helius-rpc.com', // Solana
         heliusWss: 'wss://*.helius-rpc.com', // Solana websocket
+        stakelyWildcard: 'https://*.stakely.io', // Multi-chain RPC provider
+        matterWildcard: 'https://*.matterhosted.dev', // Lens and other chains
 
         // -------------------- COMMON PATTERNS --------------------
         // Additional wildcards for common RPC domain patterns
@@ -115,6 +83,10 @@ module.exports = (phase, { defaultConfig }) => {
         rpcPoolWss: 'wss://*.rpcpool.com', // Solana websocket
         blockPiWildcard: 'https://*.blockpi.network', // Multi-chain
         chainstackWildcard: 'https://*.chainstack.com', // Multi-chain
+        bnbchainWildcard: 'https://*.bnbchain.org', // BSC and opBNB
+        moonbeamWildcard: 'https://*.moonbeam.network', // Moonbeam/Moonriver
+        altTechWildcard: 'https://*.alt.technology', // Alternative tech RPCs
+        flareWildcard: 'https://*.flare.network', // Flare Network
 
         // -------------------- CHAIN-OWNED RPCs --------------------
         // Some chains run their own RPCs not covered by provider wildcards
@@ -124,6 +96,51 @@ module.exports = (phase, { defaultConfig }) => {
         polygon: 'https://polygon-rpc.com',
         bsc: 'https://bsc-dataseed.binance.org',
         avalanche: 'https://api.avax.network',
+        merkleCom: 'https://*.merkle.io', // Merkle RPC provider
+
+        // Layer 2s and Alt L1s
+        cronos: 'https://evm.cronos.org',
+        rsk: 'https://public-node.rsk.co',
+        rskAlt: 'https://mycrypto.rsk.co',
+        xdc: 'https://rpc.xdcrpc.com',
+        gnosis: 'https://rpc.gnosischain.com',
+        fuse: 'https://rpc.fuse.io',
+        unichain: 'https://mainnet.unichain.org',
+        sonic: 'https://rpc.soniclabs.com',
+        fantom: 'https://rpcapi.fantom.network',
+        fantomAlt: 'https://rpc.fantom.network',
+        flow: 'https://mainnet.evm.nodes.onflow.org',
+        hyperliquid: 'https://rpc.hyperliquid.xyz',
+        metis: 'https://andromeda.metis.io',
+        polygonZkEvm: 'https://zkevm-rpc.com',
+        sei: 'https://evm-rpc.sei-apis.com',
+        moonbeam: 'https://rpc.api.moonbeam.network',
+        moonriver: 'https://rpc.api.moonriver.moonbeam.network',
+        gravity: 'https://rpc.gravity.xyz',
+        soneium: 'https://rpc.soneium.org',
+        ronin: 'https://api.roninchain.com',
+        plasma: 'https://rpc.plasma.to',
+        immutable: 'https://rpc.immutable.com',
+        apechain: 'https://rpc.apechain.com',
+        mode: 'https://mainnet.mode.network',
+        celo: 'https://forno.celo.org',
+        etherlink: 'https://node.mainnet.etherlink.com',
+        hemi: 'https://rpc.hemi.network',
+        sophon: 'https://rpc.sophon.xyz',
+        superposition: 'https://rpc.superposition.so',
+        ink: 'https://rpc-gel.inkonchain.com',
+        linea: 'https://rpc.linea.build',
+        bob: 'https://rpc.gobob.xyz',
+        berachain: 'https://rpc.berachain.com',
+        blast: 'https://rpc.blast.io',
+        plume: 'https://rpc.plume.org',
+        taiko: 'https://rpc.mainnet.taiko.xyz',
+        taikoAlt: 'https://rpc.taiko.xyz',
+        aurora: 'https://mainnet.aurora.dev',
+        mantle: 'https://rpc.mantle.xyz',
+        kaia: 'https://public-en.node.kaia.io',
+        scroll: 'https://rpc.scroll.io',
+        vana: 'https://rpc.vana.org',
       };
 
       // ==========================================================
@@ -210,18 +227,69 @@ module.exports = (phase, { defaultConfig }) => {
         rpcEndpoints.llamaRpc,
         rpcEndpoints.heliusWildcard,
         rpcEndpoints.heliusWss,
+        rpcEndpoints.stakelyWildcard,
+        rpcEndpoints.matterWildcard,
         rpcEndpoints.rpcPoolWildcard,
         rpcEndpoints.rpcPoolWss,
         rpcEndpoints.blockPiWildcard,
         rpcEndpoints.chainstackWildcard,
+        rpcEndpoints.bnbchainWildcard,
+        rpcEndpoints.moonbeamWildcard,
+        rpcEndpoints.altTechWildcard,
+        rpcEndpoints.flareWildcard,
 
-        // Chain-owned RPCs
+        // Chain-owned RPCs (Major L1s and L2s)
         rpcEndpoints.optimism,
         rpcEndpoints.arbitrum,
         rpcEndpoints.base,
         rpcEndpoints.polygon,
         rpcEndpoints.bsc,
         rpcEndpoints.avalanche,
+        rpcEndpoints.merkleCom,
+
+        // Additional L2s and Alt L1s
+        rpcEndpoints.cronos,
+        rpcEndpoints.rsk,
+        rpcEndpoints.rskAlt,
+        rpcEndpoints.xdc,
+        rpcEndpoints.gnosis,
+        rpcEndpoints.fuse,
+        rpcEndpoints.unichain,
+        rpcEndpoints.sonic,
+        rpcEndpoints.fantom,
+        rpcEndpoints.fantomAlt,
+        rpcEndpoints.flow,
+        rpcEndpoints.hyperliquid,
+        rpcEndpoints.metis,
+        rpcEndpoints.polygonZkEvm,
+        rpcEndpoints.sei,
+        rpcEndpoints.moonbeam,
+        rpcEndpoints.moonriver,
+        rpcEndpoints.gravity,
+        rpcEndpoints.soneium,
+        rpcEndpoints.ronin,
+        rpcEndpoints.plasma,
+        rpcEndpoints.immutable,
+        rpcEndpoints.apechain,
+        rpcEndpoints.mode,
+        rpcEndpoints.celo,
+        rpcEndpoints.etherlink,
+        rpcEndpoints.hemi,
+        rpcEndpoints.sophon,
+        rpcEndpoints.superposition,
+        rpcEndpoints.ink,
+        rpcEndpoints.linea,
+        rpcEndpoints.bob,
+        rpcEndpoints.berachain,
+        rpcEndpoints.blast,
+        rpcEndpoints.plume,
+        rpcEndpoints.taiko,
+        rpcEndpoints.taikoAlt,
+        rpcEndpoints.aurora,
+        rpcEndpoints.mantle,
+        rpcEndpoints.kaia,
+        rpcEndpoints.scroll,
+        rpcEndpoints.vana,
 
         // -------------------- EXTERNAL SERVICES --------------------
         serviceDomains.relay,

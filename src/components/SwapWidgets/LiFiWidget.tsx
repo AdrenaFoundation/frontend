@@ -32,12 +32,11 @@ export default function LiFiWidget({
       integrator: 'adrena-lifi',
       variant: 'compact',
       appearance: 'dark',
+      hiddenUI: ['poweredBy'],
+      // Default to 'all networks' for maximum bridge options
+      fromChain: undefined, // undefined = 'all chains' selector
+      toChain: ChainId.SOL, // Default to Solana as destination
       theme: {
-        container: {
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: '8px',
-          backgroundColor: 'rgb(6, 13, 22)',
-        },
         palette: {
           primary: {
             main: 'rgb(199, 242, 132)',
@@ -53,6 +52,14 @@ export default function LiFiWidget({
             primary: 'rgb(232, 249, 255)',
           },
         },
+        // Scale down wallet button to match scaled widget
+        shape: {
+          borderRadius: 6,
+          borderRadiusSecondary: 12,
+        },
+        typography: {
+          fontFamily: 'inherit',
+        },
       },
       walletConfig: {
         usePartialWalletManagement: true,
@@ -67,6 +74,15 @@ export default function LiFiWidget({
           allowSwitchChain: true,
         },
       },
+      // Auto-detect and prefer tokens from connected wallets
+      tokens: {
+        allow: [], // Empty = allow all tokens
+        featured: [], // Auto-detect from wallet balances
+      },
+      chains: {
+        allow: [], // Empty = allow all chains ('all networks')
+        deny: [], // Don't deny any chains
+      },
     };
 
     if (defaultOutputMint) {
@@ -78,7 +94,16 @@ export default function LiFiWidget({
   }, [defaultOutputMint, rpcEndpoint]);
 
   return (
-    <div className={className} id={id}>
+    <div
+      className={className}
+      id={id}
+      style={{
+        transform: 'scale(0.85)',
+        transformOrigin: 'top center',
+        width: '117.65%',
+        marginLeft: '-8.825%',
+      }}
+    >
       <LiFiWidgetComponent config={widgetConfig} integrator="adrena-lifi" />
     </div>
   );

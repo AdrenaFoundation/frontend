@@ -131,7 +131,7 @@ export default function TradeComp({
               />
             ) : selectedAction === 'swap' ? (
               <>
-                {/* Jupiter Widget for Swap - hide for whitelisted swappers */}
+                {/* Jupiter Widget for Swap */}
                 {!isWhitelistedSwapper && (
                   <div
                     className={twMerge(
@@ -156,7 +156,6 @@ export default function TradeComp({
                   </div>
                 )}
 
-                {/* Show SwapTradingInputs for whitelisted swappers */}
                 {isWhitelistedSwapper && (
                   <SwapTradingInputs
                     allowedTokenA={window.adrena.client.tokens}
@@ -175,7 +174,7 @@ export default function TradeComp({
                 {/* LiFi Widget for Bridge */}
                 <div
                   className={twMerge(
-                    'relative h-[575px] min-w-[300px] w-full',
+                    'relative w-full overflow-visible',
                     !connected && 'overflow-hidden',
                   )}
                 >
@@ -184,7 +183,7 @@ export default function TradeComp({
                       adapters={adapters}
                       activeRpc={activeRpc}
                       id={`${terminalId}-lifi`}
-                      className="bg-transparent border-transparent min-w-[300px] w-full min-h-[550px]"
+                      className="bg-transparent border-transparent w-full"
                     />
                   </div>
 
