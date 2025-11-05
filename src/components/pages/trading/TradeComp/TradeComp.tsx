@@ -1,4 +1,5 @@
 import { Wallet } from '@coral-xyz/anchor';
+import { useWidgetEvents, WidgetEvent } from '@lifi/widget';
 import { Connection } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -11,7 +12,6 @@ import { ALTERNATIVE_SWAP_TOKENS } from '@/constant';
 import { Action } from '@/pages/trade';
 import { PositionExtended, Token, WalletAdapterExtended } from '@/types';
 import { getWalletAddress } from '@/utils';
-import { useWidgetEvents, WidgetEvent } from '@lifi/widget';
 
 import LongShortTradingInputs from '../TradingInputs/LongShortTradingInputs';
 import SwapTradingInputs from '../TradingInputs/SwapTradingInputs';
