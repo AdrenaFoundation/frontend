@@ -27,7 +27,7 @@ interface TokenSelectorProps {
   className?: string;
   favorites?: string[];
   onToggleFavorite?: (symbol: string) => void;
-  selectedAction: 'long' | 'short' | 'swap';
+  selectedAction: 'long' | 'short' | 'swap' | 'bridge';
   asModal?: boolean;
   isOpen?: boolean;
   onClose?: () => void;
@@ -45,7 +45,7 @@ function TokenList({
   onTokenSelect: (token: Token) => void;
   favorites: string[];
   onToggleFavorite?: (symbol: string) => void;
-  selectedAction: 'long' | 'short' | 'swap';
+  selectedAction: 'long' | 'short' | 'swap' | 'bridge';
 }) {
   return (
     <>

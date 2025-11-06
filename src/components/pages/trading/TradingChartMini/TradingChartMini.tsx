@@ -12,7 +12,7 @@ export default function TradingChartMini({
   numberShort,
 }: {
   token: Token;
-  selectedAction: 'long' | 'short' | 'swap';
+  selectedAction: 'long' | 'short' | 'swap' | 'bridge';
   numberLong?: number;
   numberShort?: number;
 }) {

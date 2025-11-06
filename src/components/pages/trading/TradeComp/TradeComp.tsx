@@ -1,10 +1,12 @@
 import { Wallet } from '@coral-xyz/anchor';
+import { useWidgetEvents, WidgetEvent } from '@lifi/widget';
 import { Connection } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import JupiterWidget from '@/components/JupiterWidget/JupiterWidget';
+import LiFiWidget from '@/components/SwapWidgets/LiFiWidget';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { ALTERNATIVE_SWAP_TOKENS } from '@/constant';
 import { Action } from '@/pages/trade';
@@ -52,18 +54,26 @@ export default function TradeComp({
   setActivePositionModal?: (e: Action | null) => void;
   onLimitOrderAdded: () => void;
 }) {
-  const [isJupSwap, setIsJupSwap] = useState(true);
   const [isWhitelistedSwapper, setIsWhitelistedSwapper] = useState(false);
+  const widgetEvents = useWidgetEvents();
 
   useEffect(() => {
     const walletAddress = getWalletAddress(wallet);
     if (
       walletAddress &&
-      window.adrena.client.mainPool.whitelistedSwapper.toBase58() === walletAddress
+      window.adrena.client.mainPool.whitelistedSwapper.toBase58() ===
+        walletAddress
     ) {
       setIsWhitelistedSwapper(true);
     }
   }, [wallet]);
+
+  useEffect(() => {
+    return () => {
+      widgetEvents.off(WidgetEvent.RouteExecutionFailed);
+      widgetEvents.off(WidgetEvent.AvailableRoutes);
+    };
+  }, [widgetEvents]);
 
   return (
     <div
@@ -77,9 +87,18 @@ export default function TradeComp({
         <TabSelect
           selected={selectedAction}
           tabs={[
-            { title: 'long', activeColor: 'border-transparent [border-image:linear-gradient(to_right,#10b981,#22c55e,#14b8a6)_1]' },
-            { title: 'short', activeColor: 'border-transparent [border-image:linear-gradient(to_right,#ef4444,#e11d48,#db2777)_1]' },
+            {
+              title: 'long',
+              activeColor:
+                'border-transparent [border-image:linear-gradient(to_right,#10b981,#22c55e,#14b8a6)_1]',
+            },
+            {
+              title: 'short',
+              activeColor:
+                'border-transparent [border-image:linear-gradient(to_right,#ef4444,#e11d48,#db2777)_1]',
+            },
             { title: 'swap', activeColor: 'border-white' },
+            { title: 'bridge', activeColor: 'border-purple-400' },
           ]}
           onClick={(title) => {
             setSelectedAction(title);
@@ -92,7 +111,6 @@ export default function TradeComp({
             {selectedAction === 'long' || selectedAction === 'short' ? (
               <LongShortTradingInputs
                 side={selectedAction}
-                // Adrena tokens + swappable tokens
                 allowedTokenA={[
                   ...window.adrena.client.tokens,
                   ...ALTERNATIVE_SWAP_TOKENS,
@@ -110,32 +128,34 @@ export default function TradeComp({
                 onLimitOrderAdded={onLimitOrderAdded}
                 setActivePositionModal={setActivePositionModal}
               />
-            ) : (
+            ) : selectedAction === 'swap' ? (
               <>
-                {/* Always render Jupiter widget but hide when not needed */}
-                <div className={twMerge(
-                  'relative h-[575px] min-w-[300px] w-full',
-                  !connected && 'overflow-hidden',
-                  !(isJupSwap || !isWhitelistedSwapper) && 'hidden'
-                )}>
-                  <div className={!connected ? 'blur-sm' : ''}>
-                    <JupiterWidget
-                      adapters={adapters}
-                      activeRpc={activeRpc}
-                      id={terminalId}
-                      className="bg-transparent border-transparent min-w-[300px] w-full min-h-[550px]"
-                    />
-                  </div>
-
-                  {!connected ? (
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 h-full w-full backdrop-blur-sm">
-                      <WalletConnection />
+                {/* Jupiter Widget for Swap */}
+                {!isWhitelistedSwapper && (
+                  <div
+                    className={twMerge(
+                      'relative h-[575px] min-w-[300px] w-full max-w-md mx-auto',
+                      !connected && 'overflow-hidden',
+                    )}
+                  >
+                    <div className={!connected ? 'blur-sm' : ''}>
+                      <JupiterWidget
+                        adapters={adapters}
+                        activeRpc={activeRpc}
+                        id={terminalId}
+                        className="bg-transparent border-transparent min-w-[300px] w-full min-h-[550px]"
+                      />
                     </div>
-                  ) : null}
-                </div>
 
-                {/* Show SwapTradingInputs when not using Jupiter */}
-                {!(isJupSwap || !isWhitelistedSwapper) && (
+                    {!connected ? (
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 h-full w-full backdrop-blur-sm">
+                        <WalletConnection />
+                      </div>
+                    ) : null}
+                  </div>
+                )}
+
+                {isWhitelistedSwapper && (
                   <SwapTradingInputs
                     allowedTokenA={window.adrena.client.tokens}
                     allowedTokenB={window.adrena.client.tokens}
@@ -147,38 +167,33 @@ export default function TradeComp({
                     connected={connected}
                   />
                 )}
-
-                {isWhitelistedSwapper ? (
-                  <div className="flex items-center justify-evenly w-[14em] ml-auto mr-auto">
-                    <span
-                      className={twMerge(
-                        'font-semibold uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-                        isJupSwap ? 'opacity-100' : '',
-                      )}
-                      onClick={() => {
-                        setIsJupSwap(true);
-                      }}
-                    >
-                      JUP
-                    </span>
-
-                    <span className="opacity-20 text-2xl">/</span>
-
-                    <span
-                      className={twMerge(
-                        'font-semibold uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-                        !isJupSwap ? 'opacity-100' : '',
-                      )}
-                      onClick={() => {
-                        setIsJupSwap(false);
-                      }}
-                    >
-                      Adrena
-                    </span>
-                  </div>
-                ) : null}
               </>
-            )}
+            ) : selectedAction === 'bridge' ? (
+              <>
+                {/* LiFi Widget for Bridge */}
+                <div
+                  className={twMerge(
+                    'relative w-full max-w-md',
+                    !connected && 'overflow-hidden',
+                  )}
+                >
+                  <div className={!connected ? 'blur-sm' : ''}>
+                    <LiFiWidget
+                      adapters={adapters}
+                      activeRpc={activeRpc}
+                      id={`${terminalId}-lifi`}
+                      className="bg-transparent border-transparent w-full"
+                    />
+                  </div>
+
+                  {!connected ? (
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 h-full w-full backdrop-blur-sm">
+                      <WalletConnection />
+                    </div>
+                  ) : null}
+                </div>
+              </>
+            ) : null}
           </>
         )}
       </div>

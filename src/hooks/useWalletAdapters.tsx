@@ -1,5 +1,4 @@
 import { CoinbaseWalletAdapter } from '@solana/wallet-adapter-coinbase';
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
 import { useStandardWalletAdapters } from '@solana/wallet-standard-wallet-adapter-react';
 import { useMemo } from 'react';
@@ -45,7 +44,6 @@ export const WALLET_COLORS = {
 
 // Memoize adapter instances to prevent new objects on every render
 const walletAdapterInstances = [
-  new PhantomWalletAdapter(),
   new CoinbaseWalletAdapter(),
   new SolflareWalletAdapter(),
 ];
