@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-const lifiRpcEndpoints = require('../lifi-rpc-endpoints');
+import lifiRpcEndpoints from '../lifi-rpc-endpoints';
 
 export function middleware(request: NextRequest) {
   const response = NextResponse.next();
