@@ -182,7 +182,6 @@ export default function Trade({
   useEffect(() => {
     if (!tokenA || !tokenB) return;
 
-    // Save the trading pair on URL without scrolling to top
     router.replace(
       {
         query: {
@@ -194,9 +193,8 @@ export default function Trade({
         },
       },
       undefined,
-      { scroll: false }, // Prevent scroll to top on action change
+      { scroll: false },
     );
-    // Use custom triggers to avoid unwanted refresh
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!!router, tokenA?.symbol, tokenB?.symbol, selectedAction]);
 

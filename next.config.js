@@ -28,7 +28,16 @@ module.exports = (phase, { defaultConfig }) => {
         relayWssFallback: 'wss://relay.walletconnect.org',
         explorer: 'https://explorer-api.walletconnect.com',
         registry: 'https://registry.walletconnect.com',
+        pulse: 'https://pulse.walletconnect.org', // Analytics/telemetry
+        walletConnectWildcard: 'https://*.walletconnect.org', // All WalletConnect services
         walletLink: 'https://www.walletlink.org',
+        walletLinkWss: 'wss://www.walletlink.org', // Coinbase Wallet WebSocket
+        web3modal: 'https://api.web3modal.org', // AppKit v1 config API
+        web3modalWildcard: 'https://*.web3modal.org', // All Web3Modal services
+      };
+
+      const coinbaseDomains = {
+        analytics: 'https://cca-lite.coinbase.com', // Coinbase analytics
       };
 
       // -------------------- SWAP/BRIDGE PROVIDERS --------------------
@@ -199,8 +208,14 @@ module.exports = (phase, { defaultConfig }) => {
         walletConnectDomains.relayWss,
         walletConnectDomains.relayWssFallback,
         walletConnectDomains.walletLink,
+        walletConnectDomains.walletLinkWss,
         walletConnectDomains.explorer,
         walletConnectDomains.registry,
+        walletConnectDomains.pulse,
+        walletConnectDomains.walletConnectWildcard,
+        walletConnectDomains.web3modal,
+        walletConnectDomains.web3modalWildcard,
+        coinbaseDomains.analytics,
 
         // -------------------- ADRENA & JUPITER --------------------
         serviceDomains.adrenaData,
