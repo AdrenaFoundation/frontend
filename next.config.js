@@ -111,8 +111,11 @@ module.exports = (phase, { defaultConfig }) => {
         fantomAlt: 'https://rpc.fantom.network',
         flow: 'https://mainnet.evm.nodes.onflow.org',
         hyperliquid: 'https://rpc.hyperliquid.xyz',
+        hyperlend: 'https://rpc.hyperlend.finance',
+        hypurscan: 'https://rpc.hypurrscan.io',
         metis: 'https://andromeda.metis.io',
         polygonZkEvm: 'https://zkevm-rpc.com',
+        zkSync: 'https://mainnet.era.zksync.io',
         sei: 'https://evm-rpc.sei-apis.com',
         moonbeam: 'https://rpc.api.moonbeam.network',
         moonriver: 'https://rpc.api.moonriver.moonbeam.network',
@@ -141,6 +144,13 @@ module.exports = (phase, { defaultConfig }) => {
         kaia: 'https://public-en.node.kaia.io',
         scroll: 'https://rpc.scroll.io',
         vana: 'https://rpc.vana.org',
+        abs: 'https://api.mainnet.abs.xyz',
+        katana: 'https://rpc.katana.network',
+        corn: 'https://mainnet.corn-rpc.com',
+        boba: 'https://mainnet.boba.network',
+        bobaReplica: 'https://replica.boba.network',
+        frax: 'https://rpc.frax.com',
+        lisk: 'https://rpc.api.lisk.com',
       };
 
       // ==========================================================
@@ -260,8 +270,11 @@ module.exports = (phase, { defaultConfig }) => {
         rpcEndpoints.fantomAlt,
         rpcEndpoints.flow,
         rpcEndpoints.hyperliquid,
+        rpcEndpoints.hyperlend,
+        rpcEndpoints.hypurscan,
         rpcEndpoints.metis,
         rpcEndpoints.polygonZkEvm,
+        rpcEndpoints.zkSync,
         rpcEndpoints.sei,
         rpcEndpoints.moonbeam,
         rpcEndpoints.moonriver,
@@ -290,6 +303,13 @@ module.exports = (phase, { defaultConfig }) => {
         rpcEndpoints.kaia,
         rpcEndpoints.scroll,
         rpcEndpoints.vana,
+        rpcEndpoints.abs,
+        rpcEndpoints.katana,
+        rpcEndpoints.corn,
+        rpcEndpoints.boba,
+        rpcEndpoints.bobaReplica,
+        rpcEndpoints.frax,
+        rpcEndpoints.lisk,
 
         // -------------------- EXTERNAL SERVICES --------------------
         serviceDomains.relay,
@@ -336,6 +356,7 @@ module.exports = (phase, { defaultConfig }) => {
         "'unsafe-inline'",
         privyDomains.auth,
         serviceDomains.googleFonts,
+        'http://fonts.googleapis.com',
         'https://fonts.gstatic.com',
       ];
 

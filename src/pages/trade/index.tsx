@@ -182,16 +182,20 @@ export default function Trade({
   useEffect(() => {
     if (!tokenA || !tokenB) return;
 
-    // Save the trading pair on URL
-    router.replace({
-      query: {
-        ...router.query,
-        pair: `${getTokenSymbol(tokenA.symbol)}_${getTokenSymbol(
-          tokenB.symbol,
-        )}`,
-        action: selectedAction,
+    // Save the trading pair on URL without scrolling to top
+    router.replace(
+      {
+        query: {
+          ...router.query,
+          pair: `${getTokenSymbol(tokenA.symbol)}_${getTokenSymbol(
+            tokenB.symbol,
+          )}`,
+          action: selectedAction,
+        },
       },
-    });
+      undefined,
+      { scroll: false }, // Prevent scroll to top on action change
+    );
     // Use custom triggers to avoid unwanted refresh
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!!router, tokenA?.symbol, tokenB?.symbol, selectedAction]);
@@ -615,7 +619,11 @@ export default function Trade({
           </>
         ) : (
           <div className="flex">
-            <div className="bg-secondary mt-4 border rounded-md w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full flex flex-col relative">
+            <div
+              className={twMerge(
+                'bg-secondary mt-4 border rounded-md w-full sm:w-1/2 sm:mr-4 lg:mr-0 lg:w-[65%] h-full flex flex-col relative',
+              )}
+            >
               <ViewTabs
                 view={view}
                 setView={setView}
@@ -630,7 +638,7 @@ export default function Trade({
               />
 
               {view === 'history' ? (
-                <div className="mt-1 w-full p-4 pt-2 flex grow">
+                <div className="mt-1 w-full pt-2 flex grow">
                   <PositionsHistory
                     walletAddress={getWalletAddress(wallet)}
                     connected={connected}
@@ -664,7 +672,7 @@ export default function Trade({
               ) : null}
             </div>
 
-            <div className="sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
+            <div className="sm:w-1/2 lg:w-[35%] lg:ml-4 hidden sm:flex">
               <TradeComp
                 selectedAction={selectedAction}
                 setSelectedAction={setSelectedAction}

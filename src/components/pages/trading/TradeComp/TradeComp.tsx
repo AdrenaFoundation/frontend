@@ -135,7 +135,7 @@ export default function TradeComp({
                 {!isWhitelistedSwapper && (
                   <div
                     className={twMerge(
-                      'relative h-[575px] min-w-[300px] w-full',
+                      'relative h-[575px] min-w-[300px] w-full max-w-md mx-auto',
                       !connected && 'overflow-hidden',
                     )}
                   >
@@ -174,7 +174,7 @@ export default function TradeComp({
                 {/* LiFi Widget for Bridge */}
                 <div
                   className={twMerge(
-                    'relative w-full overflow-visible',
+                    'relative w-full max-w-md',
                     !connected && 'overflow-hidden',
                   )}
                 >

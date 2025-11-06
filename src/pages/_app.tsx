@@ -170,13 +170,13 @@ export default function App(props: AppProps) {
         },
         externalWallets: {
           walletConnect: {
-            enabled: true,
+            enabled: false, // Disabled - conflicts with wagmi/LiFi EVM wallet detection
           },
           solana: {
             connectors: toSolanaWalletConnectors(),
           },
         },
-        walletConnectCloudProjectId: '549f49d83c4bc0a5c405d8ef6db7972a',
+        // walletConnectCloudProjectId removed since WalletConnect is disabled
         whatsAppEnabled: true,
       },
     }),
