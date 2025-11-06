@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 
+const lifiRpcEndpoints = require('./lifi-rpc-endpoints');
+
 module.exports = (phase, { defaultConfig }) => {
   const isDev = process.env.NODE_ENV === 'development';
 
@@ -61,105 +63,11 @@ module.exports = (phase, { defaultConfig }) => {
       // ==========================================================
       // RPC ENDPOINTS CONFIGURATION
       // ==========================================================
-
+      // Note: Most RPC endpoints are in lifi-rpc-endpoints.js
       const rpcEndpoints = {
-        // -------------------- ADRENA SPECIFIC (SOLANA) --------------------
+        // Adrena-specific Solana RPC
         tritonHttp: 'https://adrena-solanam-6f0c.mainnet.rpcpool.com',
         tritonWss: 'wss://adrena-solanam-6f0c.mainnet.rpcpool.com',
-
-        // -------------------- STRATEGIC WILDCARDS --------------------
-        // These cover 90%+ of RPC providers used by LiFi
-        publicNodeWildcard: 'https://*.publicnode.com', // covers 30+ chains
-        drpcWildcard: 'https://*.drpc.org', // covers 50+ chains
-        alchemyWildcard: 'https://*.g.alchemy.com', // ETH, Polygon, Arbitrum, etc.
-        infuraWildcard: 'https://*.infura.io', // Major ETH RPC provider
-        ankrWildcard: 'https://*.ankr.com', // Multi-chain RPC provider
-        quicknodeWildcard: 'https://*.quiknode.pro', // Multi-chain RPC provider
-        chainbaseWildcard: 'https://*.chainbase.online', // Multi-chain data provider
-        nodeRealWildcard: 'https://*.nodereal.io', // BSC and multi-chain
-        blastApiWildcard: 'https://*.blastapi.io', // Multi-chain RPC
-        cloudflareWeb3: 'https://cloudflare-eth.com', // Cloudflare ETH gateway
-        oneRpcWildcard: 'https://*.1rpc.io', // Privacy-focused multi-chain RPC
-        llamaRpc: 'https://*.llamarpc.com', // Multi-chain aggregator
-        heliusWildcard: 'https://*.helius-rpc.com', // Solana
-        heliusWss: 'wss://*.helius-rpc.com', // Solana websocket
-        stakelyWildcard: 'https://*.stakely.io', // Multi-chain RPC provider
-        matterWildcard: 'https://*.matterhosted.dev', // Lens and other chains
-
-        // -------------------- COMMON PATTERNS --------------------
-        // Additional wildcards for common RPC domain patterns
-        rpcPoolWildcard: 'https://*.rpcpool.com', // Solana RPCs
-        rpcPoolWss: 'wss://*.rpcpool.com', // Solana websocket
-        blockPiWildcard: 'https://*.blockpi.network', // Multi-chain
-        chainstackWildcard: 'https://*.chainstack.com', // Multi-chain
-        bnbchainWildcard: 'https://*.bnbchain.org', // BSC and opBNB
-        moonbeamWildcard: 'https://*.moonbeam.network', // Moonbeam/Moonriver
-        altTechWildcard: 'https://*.alt.technology', // Alternative tech RPCs
-        flareWildcard: 'https://*.flare.network', // Flare Network
-
-        // -------------------- CHAIN-OWNED RPCs --------------------
-        // Some chains run their own RPCs not covered by provider wildcards
-        optimism: 'https://mainnet.optimism.io',
-        arbitrum: 'https://arb1.arbitrum.io',
-        base: 'https://mainnet.base.org',
-        polygon: 'https://polygon-rpc.com',
-        bsc: 'https://bsc-dataseed.binance.org',
-        avalanche: 'https://api.avax.network',
-        merkleCom: 'https://*.merkle.io', // Merkle RPC provider
-
-        // Layer 2s and Alt L1s
-        cronos: 'https://evm.cronos.org',
-        rsk: 'https://public-node.rsk.co',
-        rskAlt: 'https://mycrypto.rsk.co',
-        xdc: 'https://rpc.xdcrpc.com',
-        gnosis: 'https://rpc.gnosischain.com',
-        fuse: 'https://rpc.fuse.io',
-        unichain: 'https://mainnet.unichain.org',
-        sonic: 'https://rpc.soniclabs.com',
-        fantom: 'https://rpcapi.fantom.network',
-        fantomAlt: 'https://rpc.fantom.network',
-        flow: 'https://mainnet.evm.nodes.onflow.org',
-        hyperliquid: 'https://rpc.hyperliquid.xyz',
-        hyperlend: 'https://rpc.hyperlend.finance',
-        hypurscan: 'https://rpc.hypurrscan.io',
-        metis: 'https://andromeda.metis.io',
-        polygonZkEvm: 'https://zkevm-rpc.com',
-        zkSync: 'https://mainnet.era.zksync.io',
-        sei: 'https://evm-rpc.sei-apis.com',
-        moonbeam: 'https://rpc.api.moonbeam.network',
-        moonriver: 'https://rpc.api.moonriver.moonbeam.network',
-        gravity: 'https://rpc.gravity.xyz',
-        soneium: 'https://rpc.soneium.org',
-        ronin: 'https://api.roninchain.com',
-        plasma: 'https://rpc.plasma.to',
-        immutable: 'https://rpc.immutable.com',
-        apechain: 'https://rpc.apechain.com',
-        mode: 'https://mainnet.mode.network',
-        celo: 'https://forno.celo.org',
-        etherlink: 'https://node.mainnet.etherlink.com',
-        hemi: 'https://rpc.hemi.network',
-        sophon: 'https://rpc.sophon.xyz',
-        superposition: 'https://rpc.superposition.so',
-        ink: 'https://rpc-gel.inkonchain.com',
-        linea: 'https://rpc.linea.build',
-        bob: 'https://rpc.gobob.xyz',
-        berachain: 'https://rpc.berachain.com',
-        blast: 'https://rpc.blast.io',
-        plume: 'https://rpc.plume.org',
-        taiko: 'https://rpc.mainnet.taiko.xyz',
-        taikoAlt: 'https://rpc.taiko.xyz',
-        aurora: 'https://mainnet.aurora.dev',
-        mantle: 'https://rpc.mantle.xyz',
-        kaia: 'https://public-en.node.kaia.io',
-        scroll: 'https://rpc.scroll.io',
-        vana: 'https://rpc.vana.org',
-        abs: 'https://api.mainnet.abs.xyz',
-        katana: 'https://rpc.katana.network',
-        corn: 'https://mainnet.corn-rpc.com',
-        boba: 'https://mainnet.boba.network',
-        bobaReplica: 'https://replica.boba.network',
-        frax: 'https://rpc.frax.com',
-        lisk: 'https://rpc.api.lisk.com',
       };
 
       // ==========================================================
@@ -233,98 +141,12 @@ module.exports = (phase, { defaultConfig }) => {
         lifiDomains.socketWildcard,
 
         // -------------------- RPC PROVIDERS --------------------
-        // Adrena-specific
+        // Adrena-specific Solana RPC
         rpcEndpoints.tritonHttp,
         rpcEndpoints.tritonWss,
 
-        // Major RPC provider wildcards
-        rpcEndpoints.publicNodeWildcard,
-        rpcEndpoints.drpcWildcard,
-        rpcEndpoints.alchemyWildcard,
-        rpcEndpoints.infuraWildcard,
-        rpcEndpoints.ankrWildcard,
-        rpcEndpoints.quicknodeWildcard,
-        rpcEndpoints.chainbaseWildcard,
-        rpcEndpoints.nodeRealWildcard,
-        rpcEndpoints.blastApiWildcard,
-        rpcEndpoints.cloudflareWeb3,
-        rpcEndpoints.oneRpcWildcard,
-        rpcEndpoints.llamaRpc,
-        rpcEndpoints.heliusWildcard,
-        rpcEndpoints.heliusWss,
-        rpcEndpoints.stakelyWildcard,
-        rpcEndpoints.matterWildcard,
-        rpcEndpoints.rpcPoolWildcard,
-        rpcEndpoints.rpcPoolWss,
-        rpcEndpoints.blockPiWildcard,
-        rpcEndpoints.chainstackWildcard,
-        rpcEndpoints.bnbchainWildcard,
-        rpcEndpoints.moonbeamWildcard,
-        rpcEndpoints.altTechWildcard,
-        rpcEndpoints.flareWildcard,
-
-        // Chain-owned RPCs (Major L1s and L2s)
-        rpcEndpoints.optimism,
-        rpcEndpoints.arbitrum,
-        rpcEndpoints.base,
-        rpcEndpoints.polygon,
-        rpcEndpoints.bsc,
-        rpcEndpoints.avalanche,
-        rpcEndpoints.merkleCom,
-
-        // Additional L2s and Alt L1s
-        rpcEndpoints.cronos,
-        rpcEndpoints.rsk,
-        rpcEndpoints.rskAlt,
-        rpcEndpoints.xdc,
-        rpcEndpoints.gnosis,
-        rpcEndpoints.fuse,
-        rpcEndpoints.unichain,
-        rpcEndpoints.sonic,
-        rpcEndpoints.fantom,
-        rpcEndpoints.fantomAlt,
-        rpcEndpoints.flow,
-        rpcEndpoints.hyperliquid,
-        rpcEndpoints.hyperlend,
-        rpcEndpoints.hypurscan,
-        rpcEndpoints.metis,
-        rpcEndpoints.polygonZkEvm,
-        rpcEndpoints.zkSync,
-        rpcEndpoints.sei,
-        rpcEndpoints.moonbeam,
-        rpcEndpoints.moonriver,
-        rpcEndpoints.gravity,
-        rpcEndpoints.soneium,
-        rpcEndpoints.ronin,
-        rpcEndpoints.plasma,
-        rpcEndpoints.immutable,
-        rpcEndpoints.apechain,
-        rpcEndpoints.mode,
-        rpcEndpoints.celo,
-        rpcEndpoints.etherlink,
-        rpcEndpoints.hemi,
-        rpcEndpoints.sophon,
-        rpcEndpoints.superposition,
-        rpcEndpoints.ink,
-        rpcEndpoints.linea,
-        rpcEndpoints.bob,
-        rpcEndpoints.berachain,
-        rpcEndpoints.blast,
-        rpcEndpoints.plume,
-        rpcEndpoints.taiko,
-        rpcEndpoints.taikoAlt,
-        rpcEndpoints.aurora,
-        rpcEndpoints.mantle,
-        rpcEndpoints.kaia,
-        rpcEndpoints.scroll,
-        rpcEndpoints.vana,
-        rpcEndpoints.abs,
-        rpcEndpoints.katana,
-        rpcEndpoints.corn,
-        rpcEndpoints.boba,
-        rpcEndpoints.bobaReplica,
-        rpcEndpoints.frax,
-        rpcEndpoints.lisk,
+        // All LiFi RPC endpoints (imported from separate file)
+        ...lifiRpcEndpoints,
 
         // -------------------- EXTERNAL SERVICES --------------------
         serviceDomains.relay,
