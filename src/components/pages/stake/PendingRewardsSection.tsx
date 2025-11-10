@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
-import useStakingAccount from '@/hooks/useStakingAccount';
+import useStakingAccount from '@/hooks/staking/useStakingAccount';
 import { getNextStakingRoundStartTime } from '@/utils';
 
 import adxTokenLogo from '../../../../public/images/adx.svg';
@@ -91,8 +91,8 @@ export default function PendingRewardsSection({
             onClick={onClaimAndBuyAdx}
             disabled={
               userPendingUsdcRewards +
-              userPendingAdxRewards +
-              pendingGenesisAdxRewards <=
+                userPendingAdxRewards +
+                pendingGenesisAdxRewards <=
               0
             }
           />
@@ -105,8 +105,8 @@ export default function PendingRewardsSection({
             onClick={onClaim}
             disabled={
               userPendingUsdcRewards +
-              userPendingAdxRewards +
-              pendingGenesisAdxRewards <=
+                userPendingAdxRewards +
+                pendingGenesisAdxRewards <=
               0
             }
           />

@@ -1,8 +1,8 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import addFriendIcon from '@/../public/images/Icons/add-friend.svg';
 import Button from '@/components/common/Button/Button';
-import useFriendReq from '@/hooks/useFriendReq';
+import useFriendReq from '@/hooks/auth-profile/useFriendReq';
 import { useSelector } from '@/store/store';
 
 function AddTrader({
@@ -10,7 +10,9 @@ function AddTrader({
 }: {
   receiverWalletAddress: string | null;
 }) {
-  const isFriendReqDisabled = useSelector((state) => state.settings.disableFriendReq);
+  const isFriendReqDisabled = useSelector(
+    (state) => state.settings.disableFriendReq,
+  );
 
   const wallet = useSelector((state) => state.walletState.wallet);
   const walletAddress = wallet?.walletAddress ?? null;

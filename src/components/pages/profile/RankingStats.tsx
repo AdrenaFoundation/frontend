@@ -8,7 +8,7 @@ import {
   AwakeningRankingTraderInfo,
   ExpanseRankingTraderInfo,
   FactionRankingTraderInfo,
-} from '@/hooks/useTraderInfo';
+} from '@/hooks/trading-position/useTraderInfo';
 import { UserProfileExtended } from '@/types';
 
 export default function RankingStats({
@@ -126,9 +126,9 @@ export default function RankingStats({
                 >
                   {season.name}
                   {season.name === 'Factions' &&
-                    season.userTeam !== undefined &&
-                    season.userTeam !== null &&
-                    season.userTeam !== 0 ? (
+                  season.userTeam !== undefined &&
+                  season.userTeam !== null &&
+                  season.userTeam !== 0 ? (
                     <p
                       className={twMerge(
                         'text-xs',

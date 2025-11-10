@@ -27,15 +27,14 @@ import ViewTabs, {
   ViewType,
 } from '@/components/pages/trading/ViewTabs/ViewTabs';
 import { ALTERNATIVE_SWAP_TOKENS, PRICE_DECIMALS } from '@/constant';
-import { useAllPositions } from '@/hooks/useAllPositions';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { useLimitOrderBook } from '@/hooks/useLimitOrderBook';
-import usePositionsHistory from '@/hooks/usePositionHistory';
-import usePositions from '@/hooks/usePositions';
+import { useAllPositions } from '@/hooks/trading-position/useAllPositions';
+import { useLimitOrderBook } from '@/hooks/trading-position/useLimitOrderBook';
+import usePositionsHistory from '@/hooks/trading-position/usePositionHistory';
+import usePositions from '@/hooks/trading-position/usePositions';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 import { useDispatch, useSelector } from '@/store/store';
 import { PageProps, PositionExtended, Token } from '@/types';
-import { getTokenSymbol, uiToNative } from '@/utils';
-import { getWalletAddress } from '@/utils';
+import { getTokenSymbol, getWalletAddress, uiToNative } from '@/utils';
 
 export type Action = 'long' | 'short' | 'swap';
 
@@ -395,23 +394,23 @@ export default function Trade({
           positionsGroup.map((p) =>
             p.side === 'long'
               ? window.adrena.client.buildClosePositionLongIx({
-                position: p,
-                price: uiToNative(
-                  tokenPrices[getTokenSymbol(p.token.symbol)]!,
-                  PRICE_DECIMALS,
-                )
-                  .mul(new BN(10_000 - slippageInBps))
-                  .div(new BN(10_000)),
-              })
+                  position: p,
+                  price: uiToNative(
+                    tokenPrices[getTokenSymbol(p.token.symbol)]!,
+                    PRICE_DECIMALS,
+                  )
+                    .mul(new BN(10_000 - slippageInBps))
+                    .div(new BN(10_000)),
+                })
               : window.adrena.client.buildClosePositionShortIx({
-                position: p,
-                price: uiToNative(
-                  tokenPrices[p.token.symbol]!,
-                  PRICE_DECIMALS,
-                )
-                  .mul(new BN(10_000))
-                  .div(new BN(10_000 - slippageInBps)),
-              }),
+                  position: p,
+                  price: uiToNative(
+                    tokenPrices[p.token.symbol]!,
+                    PRICE_DECIMALS,
+                  )
+                    .mul(new BN(10_000))
+                    .div(new BN(10_000 - slippageInBps)),
+                }),
           ),
         );
 
@@ -447,17 +446,17 @@ export default function Trade({
   const totalStats =
     positions && positions.length > 0
       ? positions.reduce(
-        (acc, position) => {
-          const price = tokenPrices[getTokenSymbol(position.token.symbol)];
-          if (!price || position.pnl == null) {
+          (acc, position) => {
+            const price = tokenPrices[getTokenSymbol(position.token.symbol)];
+            if (!price || position.pnl == null) {
+              return acc;
+            }
+            acc.totalPnL += position.pnl;
+            acc.totalCollateral += position.collateralUsd;
             return acc;
-          }
-          acc.totalPnL += position.pnl;
-          acc.totalCollateral += position.collateralUsd;
-          return acc;
-        },
-        { totalPnL: 0, totalCollateral: 0 },
-      )
+          },
+          { totalPnL: 0, totalCollateral: 0 },
+        )
       : null;
 
   return (
@@ -778,9 +777,10 @@ export default function Trade({
           <AnimatePresence>
             {activePositionModal && (
               <Modal
-                title={`${activePositionModal.charAt(0).toUpperCase() +
+                title={`${
+                  activePositionModal.charAt(0).toUpperCase() +
                   activePositionModal.slice(1)
-                  } Position`}
+                } Position`}
                 close={() => setActivePositionModal(null)}
                 className="flex flex-col overflow-y-auto w-full"
               >

@@ -7,8 +7,8 @@ import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
 import Table from '@/components/pages/monitoring/TableLegacy';
 import DataApiClient from '@/DataApiClient';
-import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { useAllUserProfilesMetadata } from '@/hooks/auth-profile/useAllUserProfilesMetadata';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 import { Trader, UserProfileExtended } from '@/types';
 import { getNonUserProfile } from '@/utils';
 

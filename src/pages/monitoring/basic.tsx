@@ -16,8 +16,8 @@ import UtilizationChart from '@/components/pages/global/UtilizationChart/Utiliza
 import VolumeBarChart from '@/components/pages/global/Volume/VolumeBarChart';
 import VelocityIndicator from '@/components/pages/monitoring/VelocityIndicator';
 import DataApiClient from '@/DataApiClient';
-import { PoolInfo } from '@/hooks/usePoolInfo';
-import useVelocityIndicators from '@/hooks/useVelocityIndicators';
+import useVelocityIndicators from '@/hooks/analytics-metrics/useVelocityIndicators';
+import { PoolInfo } from '@/hooks/trading-position/usePoolInfo';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 
@@ -53,13 +53,13 @@ export default function BasicMonitoring({
           lm: lm_apr_rolling_seven_day,
         });
       })
-      .catch(() => { });
+      .catch(() => {});
 
     DataApiClient.getAllTimeTradersCount()
       .then((count) => {
         setAllTimeTraders(count);
       })
-      .catch(() => { });
+      .catch(() => {});
 
     const interval = setInterval(() => {
       DataApiClient.getRolling7DGlobalApr()
@@ -69,13 +69,13 @@ export default function BasicMonitoring({
             lm: lm_apr_rolling_seven_day,
           });
         })
-        .catch(() => { });
+        .catch(() => {});
 
       DataApiClient.getAllTimeTradersCount()
         .then((count) => {
           setAllTimeTraders(count);
         })
-        .catch(() => { });
+        .catch(() => {});
     }, 60000);
 
     return () => clearInterval(interval);

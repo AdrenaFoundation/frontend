@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 
 import { setSettings } from '@/actions/settingsActions';
 import { SOL_DECIMALS } from '@/constant';
-import usePriorityFee from '@/hooks/usePriorityFees';
+import usePriorityFee from '@/hooks/ux/usePriorityFees';
 import { useDispatch, useSelector } from '@/store/store';
 import { PriorityFeeOption } from '@/types';
 import { DEFAULT_MAX_PRIORITY_FEE, formatNumber } from '@/utils';

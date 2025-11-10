@@ -1,6 +1,3 @@
-
-
-
 import {
   Cell,
   Legend,
@@ -11,12 +8,9 @@ import {
 } from 'recharts';
 
 import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 import { Cortex } from '@/types';
-import {
-  nativeToUi,
-} from '@/utils';
-
+import { nativeToUi } from '@/utils';
 
 export default function BucketsMintedAmount({
   cortex,

@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
 
+import { useAllAdxStaking } from '@/hooks/staking/useAllAdxStaking';
 import { UserStakingExtended } from '@/types';
 import { nativeToUi } from '@/utils';
-
-import { useAllAdxStaking } from './useAllAdxStaking';
 
 export type AllStakingStats = {
   byDurationByAmount: {

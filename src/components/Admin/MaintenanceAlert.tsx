@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import {
   MaintenanceMessage,
   useMaintenanceMessages,
-} from '@/hooks/useMaintenanceMessages';
+} from '@/hooks/communication/useMaintenanceMessages';
 
 import Button from '../common/Button/Button';
 import Checkbox from '../common/Checkbox/Checkbox';
@@ -216,7 +216,7 @@ export default function MaintenanceAlert() {
                           >
                             <Checkbox
                               checked={editPages.includes(page)}
-                              onChange={() => { }}
+                              onChange={() => {}}
                             />
                             <span className="ml-1 text-xs capitalize">
                               {page}

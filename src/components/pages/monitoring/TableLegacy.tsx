@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 
 import Block from './Block';
 
@@ -118,8 +118,7 @@ export default function TableLegacy({
       return { alignment: 'justify-center', truncation: '' };
     }
 
-    if (index === 0)
-      return { alignment: 'justify-center', truncation: '' };
+    if (index === 0) return { alignment: 'justify-center', truncation: '' };
     if (index === 1)
       return { alignment: 'justify-start', truncation: 'truncate' };
     return { alignment: 'justify-end', truncation: '' };

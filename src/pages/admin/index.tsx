@@ -4,7 +4,7 @@ import MaintenanceAlert from '@/components/Admin/MaintenanceAlert';
 import Button from '@/components/common/Button/Button';
 import Loader from '@/components/Loader/Loader';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
-import useAdminStatus from '@/hooks/useAdminStatus';
+import useAdminStatus from '@/hooks/auth-profile/useAdminStatus';
 import { useDispatch, useSelector } from '@/store/store';
 
 export default function Admin() {

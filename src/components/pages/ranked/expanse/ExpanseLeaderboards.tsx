@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Modal from '@/components/common/Modal/Modal';
@@ -10,9 +10,9 @@ import Select from '@/components/common/Select/Select';
 import Loader from '@/components/Loader/Loader';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import useExpanseData from '@/hooks/useExpanseData';
+import { useAllUserProfilesMetadata } from '@/hooks/auth-profile/useAllUserProfilesMetadata';
+import useExpanseData from '@/hooks/staking/useExpanseData';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 import { getNonUserProfile } from '@/utils';

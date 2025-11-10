@@ -2,7 +2,7 @@ import { Dispatch } from '@reduxjs/toolkit';
 import { Adapter, WalletConnectionError } from '@solana/wallet-adapter-base';
 import { PublicKey } from '@solana/web3.js';
 
-import { WalletAdapterName } from '@/hooks/useWalletAdapters';
+import { WalletAdapterName } from '@/hooks/wallet/useWalletAdapters';
 import { addNotification } from '@/utils';
 
 export type ConnectWalletAction = {

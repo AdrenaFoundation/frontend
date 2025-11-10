@@ -24,8 +24,8 @@ import LeaderboardTable from '@/components/pages/ranked/awakening/AwakeningLeade
 import WeeklyReward from '@/components/pages/ranked/awakening/AwakeningWeeklyReward';
 import { TRADING_COMPETITION_SEASONS } from '@/constant';
 import { DIVISIONS } from '@/constants/divisions';
-import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
-import useAwakeningV2 from '@/hooks/useAwakeningV2';
+import useAwakeningV2 from '@/hooks/analytics-metrics/useAwakeningV2';
+import { useAllUserProfilesMetadata } from '@/hooks/auth-profile/useAllUserProfilesMetadata';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended, UserStats } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
@@ -97,7 +97,13 @@ const CompetitionStats = memo(
             </div>
 
             <div className="flex gap-2 items-center justify-center w-full">
-              <Image src={jtoImage} alt="adx logo" className="w-6 h-6" width={22} height={22} />
+              <Image
+                src={jtoImage}
+                alt="adx logo"
+                className="w-6 h-6"
+                width={22}
+                height={22}
+              />
 
               <div className="text-lg font-semibold w-[6.2em]">25,000 JTO</div>
             </div>
@@ -108,15 +114,31 @@ const CompetitionStats = memo(
       <div className="flex flex-col items-center bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow h-[7.5em]">
         <div className="flex flex-col w-full items-center h-auto grow-0">
           <div className="flex items-center p-2">
-            <Image src={jitoLogo} alt="jito logo" className="w-6 h-6" width={24} height={24} />
+            <Image
+              src={jitoLogo}
+              alt="jito logo"
+              className="w-6 h-6"
+              width={24}
+              height={24}
+            />
             <div className="font-semibold text-base ml-1">Airdrop</div>
-            <span className="text-sm text-txtfade font-semibold ml-1">(6,000</span>
-            <Image src={jtoImage} alt="JTOlogo" className="w-6 h-6" width={24} height={24} />
+            <span className="text-sm text-txtfade font-semibold ml-1">
+              (6,000
+            </span>
+            <Image
+              src={jtoImage}
+              alt="JTOlogo"
+              className="w-6 h-6"
+              width={24}
+              height={24}
+            />
             <span className="text-sm text-txtfade font-semibold">)</span>
             {eligibleJitosolAirdropWallets.includes(
               wallet?.walletAddress ?? '',
             ) ? (
-              <span className="ml-2 font-semibold text-green">You qualify!</span>
+              <span className="ml-2 font-semibold text-green">
+                You qualify!
+              </span>
             ) : (
               <Tippy
                 content={
@@ -356,8 +378,8 @@ const ProfileBanner = memo(
 
           <span className="text-base font-semibold mr-2">
             {currentUserData.rank &&
-              currentUserData.rank < 4 &&
-              currentUserData.division !== 'No Division' ? (
+            currentUserData.rank < 4 &&
+            currentUserData.division !== 'No Division' ? (
               <Image
                 src={
                   currentUserData.rank === 1
@@ -577,7 +599,9 @@ export default function Awakening() {
 
         <div className="px-4 sm:px-8">
           <div className="flex flex-col lg:flex-row gap-3 w-full mb-3">
-            <h1 className="font-semibold flex-none capitalize">Weekly Rewards</h1>
+            <h1 className="font-semibold flex-none capitalize">
+              Weekly Rewards
+            </h1>
 
             <WeekSelector
               currentWeek={week}

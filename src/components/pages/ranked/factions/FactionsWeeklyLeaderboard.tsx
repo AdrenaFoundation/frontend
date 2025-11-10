@@ -16,7 +16,7 @@ import {
   TEAMS_MAPPING,
   USER_PROFILE_TITLES,
 } from '@/constant';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { FactionsLeaderboardsData, UserProfileExtended } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';

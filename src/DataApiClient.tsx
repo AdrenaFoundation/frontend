@@ -1,7 +1,10 @@
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 
-import { PositionSortOption, SortDirection } from './hooks/usePositionHistory';
+import {
+  PositionSortOption,
+  SortDirection,
+} from './hooks/trading-position/usePositionHistory';
 import {
   AnniversaryResponse,
   ChaosLabsPricesExtended,
@@ -625,14 +628,18 @@ export default class DataApiClient {
   } & T): Promise<GetPositionStatsReturnType<T> | null> {
     try {
       const result = await fetch(
-        `${DataApiClient.DATAPI_URL}/position-stats?${symbol ? `symbol=${symbol}` : ''
-        }${side ? `&side=${side}` : ''}${startDate
-          ? `&start_date=${encodeURIComponent(startDate.toISOString())}`
-          : ''
-        }${endDate
-          ? `&end_date=${encodeURIComponent(endDate.toISOString())}`
-          : ''
-        }&show_position_activity=${showPositionActivity ? showPositionActivity : false
+        `${DataApiClient.DATAPI_URL}/position-stats?${
+          symbol ? `symbol=${symbol}` : ''
+        }${side ? `&side=${side}` : ''}${
+          startDate
+            ? `&start_date=${encodeURIComponent(startDate.toISOString())}`
+            : ''
+        }${
+          endDate
+            ? `&end_date=${encodeURIComponent(endDate.toISOString())}`
+            : ''
+        }&show_position_activity=${
+          showPositionActivity ? showPositionActivity : false
         }${walletAddress ? `&wallet_address=${walletAddress}` : ''}`,
       ).then((res) => res.json());
 
@@ -695,13 +702,13 @@ export default class DataApiClient {
     limit?: number;
     walletAddress?: string;
     orderColumn?:
-    | 'pnl'
-    | 'pnl_minus_fees'
-    | 'volume'
-    | 'win_rate_percentage'
-    | 'volume_weighted_pnl'
-    | 'volume_weighted_pnl_percentage'
-    | 'pnl_volatility';
+      | 'pnl'
+      | 'pnl_minus_fees'
+      | 'volume'
+      | 'win_rate_percentage'
+      | 'volume_weighted_pnl'
+      | 'volume_weighted_pnl_percentage'
+      | 'pnl_volatility';
     sort?: 'ASC' | 'DESC';
   } = {}): Promise<{
     success: boolean;
@@ -779,7 +786,10 @@ export default class DataApiClient {
       const contentType = response.headers.get('content-type') || '';
       if (!contentType.includes('application/json')) {
         const body = await response.text();
-        console.error('Non-JSON response from mutagen-leaderboard:', body.slice(0, 200));
+        console.error(
+          'Non-JSON response from mutagen-leaderboard:',
+          body.slice(0, 200),
+        );
         return null;
       }
 
@@ -788,7 +798,10 @@ export default class DataApiClient {
         d = await response.json();
       } catch {
         const body = await response.text();
-        console.error('Failed to parse mutagen-leaderboard JSON. Body snippet:', body.slice(0, 200));
+        console.error(
+          'Failed to parse mutagen-leaderboard JSON. Body snippet:',
+          body.slice(0, 200),
+        );
         return null;
       }
 
@@ -857,9 +870,12 @@ export default class DataApiClient {
   }): Promise<EnrichedPositionApiV2 | null> {
     try {
       const response = await fetch(
-        `${DataApiClient.DATAPI_URL}/v4/position?user_wallet=${walletAddress
-        }&status=liquidate&status=close&limit=${limit}&offset=${offset}${entryDate ? `&entry_date=${entryDate.toISOString()}` : ''
-        }${exitDate ? `&exit_date=${exitDate.toISOString()}` : ''}${sortBy ? `&sortField=${sortBy}` : ''
+        `${DataApiClient.DATAPI_URL}/v4/position?user_wallet=${
+          walletAddress
+        }&status=liquidate&status=close&limit=${limit}&offset=${offset}${
+          entryDate ? `&entry_date=${entryDate.toISOString()}` : ''
+        }${exitDate ? `&exit_date=${exitDate.toISOString()}` : ''}${
+          sortBy ? `&sortField=${sortBy}` : ''
         }${sortDirection ? `&sort=${sortDirection.toUpperCase()}` : ''}`,
       );
 
@@ -1116,7 +1132,7 @@ export default class DataApiClient {
         dateDataPeriod.setDate(dateDataPeriod.getDate() - dataPeriod);
         startDate =
           dateDataPeriod.getTime() >
-            new Date('2025-03-19T12:00:00.000Z').getTime()
+          new Date('2025-03-19T12:00:00.000Z').getTime()
             ? dateDataPeriod
             : new Date('2025-03-19T12:00:00.000Z');
       } else {
@@ -1358,30 +1374,30 @@ export default class DataApiClient {
         const claims =
           s.claims && Array.isArray(s.claims)
             ? s.claims
-              .map((claim) => {
-                // Additional null checking
-                if (!claim) return null;
+                .map((claim) => {
+                  // Additional null checking
+                  if (!claim) return null;
 
-                const symbol =
-                  claim.mint === window.adrena.client.lmTokenMint.toBase58()
-                    ? 'ADX'
-                    : 'ALP';
+                  const symbol =
+                    claim.mint === window.adrena.client.lmTokenMint.toBase58()
+                      ? 'ADX'
+                      : 'ALP';
 
-                return {
-                  claim_id: claim.claim_id,
-                  rewards_adx: claim.rewards_adx,
-                  rewards_adx_genesis: claim.rewards_adx_genesis ?? 0,
-                  rewards_usdc: claim.rewards_usdc,
-                  signature: claim.signature,
-                  transaction_date: new Date(claim.transaction_date),
-                  created_at: new Date(claim.created_at),
-                  stake_mint: claim.mint,
-                  symbol: symbol,
-                  source: claim.source,
-                  adx_price_at_claim: claim.adx_price_at_claim,
-                } as ClaimHistoryExtended;
-              })
-              .filter((claim) => claim !== null)
+                  return {
+                    claim_id: claim.claim_id,
+                    rewards_adx: claim.rewards_adx,
+                    rewards_adx_genesis: claim.rewards_adx_genesis ?? 0,
+                    rewards_usdc: claim.rewards_usdc,
+                    signature: claim.signature,
+                    transaction_date: new Date(claim.transaction_date),
+                    created_at: new Date(claim.created_at),
+                    stake_mint: claim.mint,
+                    symbol: symbol,
+                    source: claim.source,
+                    adx_price_at_claim: claim.adx_price_at_claim,
+                  } as ClaimHistoryExtended;
+                })
+                .filter((claim) => claim !== null)
             : []; // Empty array if s.claims is undefined or not an array
 
         return {
@@ -1402,32 +1418,32 @@ export default class DataApiClient {
       symbols: enrichedClaimsWithSymbol,
       allTimeUsdcClaimed: symbol
         ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
-          ?.allTimeRewardsUsdc ?? 0)
+            ?.allTimeRewardsUsdc ?? 0)
         : enrichedClaimsWithSymbol.reduce(
-          (acc, curr) => acc + curr.allTimeRewardsUsdc,
-          0,
-        ),
+            (acc, curr) => acc + curr.allTimeRewardsUsdc,
+            0,
+          ),
       allTimeAdxClaimed: symbol
         ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
-          ?.allTimeRewardsAdx ?? 0)
+            ?.allTimeRewardsAdx ?? 0)
         : enrichedClaimsWithSymbol.reduce(
-          (acc, curr) => acc + curr.allTimeRewardsAdx,
-          0,
-        ),
+            (acc, curr) => acc + curr.allTimeRewardsAdx,
+            0,
+          ),
       allTimeAdxGenesisClaimed: symbol
         ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
-          ?.allTimeRewardsAdxGenesis ?? 0)
+            ?.allTimeRewardsAdxGenesis ?? 0)
         : enrichedClaimsWithSymbol.reduce(
-          (acc, curr) => acc + curr.allTimeRewardsAdxGenesis,
-          0,
-        ),
+            (acc, curr) => acc + curr.allTimeRewardsAdxGenesis,
+            0,
+          ),
       allTimeCountClaims: symbol
         ? (enrichedClaimsWithSymbol.find((c) => c.symbol === symbol)
-          ?.allTimeCountClaims ?? 0)
+            ?.allTimeCountClaims ?? 0)
         : enrichedClaimsWithSymbol.reduce(
-          (acc, curr) => acc + curr.allTimeCountClaims,
-          0,
-        ),
+            (acc, curr) => acc + curr.allTimeCountClaims,
+            0,
+          ),
     };
   }
 
@@ -1858,7 +1874,10 @@ export default class DataApiClient {
       const contentType = response.headers.get('content-type') || '';
       if (!contentType.includes('application/json')) {
         const body = await response.text();
-        console.error('Non-JSON response from anniversary_event_stats:', body.slice(0, 200));
+        console.error(
+          'Non-JSON response from anniversary_event_stats:',
+          body.slice(0, 200),
+        );
         return null;
       }
 
@@ -1867,7 +1886,10 @@ export default class DataApiClient {
         return data.success ? data.data : null;
       } catch {
         const body = await response.text();
-        console.error('Failed to parse anniversary_event_stats JSON. Body snippet:', body.slice(0, 200));
+        console.error(
+          'Failed to parse anniversary_event_stats JSON. Body snippet:',
+          body.slice(0, 200),
+        );
         return null;
       }
     } catch (error) {

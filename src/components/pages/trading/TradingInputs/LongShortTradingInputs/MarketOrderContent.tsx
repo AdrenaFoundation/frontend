@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import TokenSelector from '@/components/pages/trading/TradingChartHeader/TokenSelector';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 import { CustodyExtended, PositionExtended, Token } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
@@ -199,17 +199,17 @@ export const MarketOrderContent = ({
             nb={
               side === 'long'
                 ? custody &&
-                tokenPriceB &&
-                custodyLiquidity &&
-                custodyLiquidity * tokenPriceB
+                  tokenPriceB &&
+                  custodyLiquidity &&
+                  custodyLiquidity * tokenPriceB
                 : usdcPrice &&
-                usdcCustody &&
-                custody &&
-                custodyLiquidity &&
-                Math.min(
-                  custodyLiquidity * usdcPrice,
-                  availableLiquidityShort,
-                )
+                  usdcCustody &&
+                  custody &&
+                  custodyLiquidity &&
+                  Math.min(
+                    custodyLiquidity * usdcPrice,
+                    availableLiquidityShort,
+                  )
             }
             format="currency"
             precision={0}
@@ -227,9 +227,7 @@ export const MarketOrderContent = ({
       <SolanaIDInfo walletAddress={walletAddress} />
 
       <Button
-        className={twMerge(
-          'w-full justify-center mt-2 mb-1 sm:mb-2',
-        )}
+        className={twMerge('w-full justify-center mt-2 mb-1 sm:mb-2')}
         variant={side === 'short' ? 'danger' : 'success'}
         size="lg"
         title={buttonTitle}

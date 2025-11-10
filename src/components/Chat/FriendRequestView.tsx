@@ -1,7 +1,5 @@
-import React from 'react';
-
 import { PROFILE_PICTURES } from '@/constant';
-import { UseFriendReqReturn } from '@/hooks/useFriendReq';
+import { UseFriendReqReturn } from '@/hooks/auth-profile/useFriendReq';
 import { FriendRequest } from '@/pages/api/friend_requests';
 import { UserProfileMetadata } from '@/types';
 import { generateColorFromString, getAbbrevWalletAddress } from '@/utils';

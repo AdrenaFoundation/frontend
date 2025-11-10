@@ -1,16 +1,16 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import React, { memo, ReactNode, useEffect, useMemo, useState } from 'react';
+import { memo, ReactNode, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import collapseIcon from '@/../public/images/collapse-all.svg';
 import arrowIcon from '@/../public/images/Icons/arrow-up-2.svg';
 import { GENERAL_CHAT_ROOM_ID, PROFILE_PICTURES } from '@/constant';
-import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
-import useChatrooms from '@/hooks/useChatrooms';
-import useChatWindowResize from '@/hooks/useChatWindowResize';
-import useFriendReq from '@/hooks/useFriendReq';
-import useLiveCount from '@/hooks/useLiveCount';
+import { useAllUserProfilesMetadata } from '@/hooks/auth-profile/useAllUserProfilesMetadata';
+import useFriendReq from '@/hooks/auth-profile/useFriendReq';
+import useLiveCount from '@/hooks/auth-profile/useLiveCount';
+import useChatrooms from '@/hooks/communication/useChatrooms';
+import useChatWindowResize from '@/hooks/communication/useChatWindowResize';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended, UserProfileMetadata } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
@@ -94,7 +94,7 @@ function ChatContainer({
         );
         acc[profile.owner.toBase58()].profilePictureUrl =
           PROFILE_PICTURES[
-          profile.profilePicture as keyof typeof PROFILE_PICTURES
+            profile.profilePicture as keyof typeof PROFILE_PICTURES
           ];
         acc[profile.owner.toBase58()].team =
           acc[profile.owner.toBase58()]?.team || 0;
@@ -325,8 +325,8 @@ function ChatTitle({
 
       <div className="flex flex-row items-center gap-2">
         {totalNotifications !== null &&
-          totalNotifications > 0 &&
-          !isChatOpen ? (
+        totalNotifications > 0 &&
+        !isChatOpen ? (
           <div className="flex items-center justify-center bg-redbright min-w-2 h-2 rounded-full" />
         ) : null}
         <div
@@ -337,7 +337,13 @@ function ChatTitle({
             }
           }}
         >
-          <Image src={collapseIcon} alt="collapse logo" width={6} height={6} className='w-1.5 h-1.5' />
+          <Image
+            src={collapseIcon}
+            alt="collapse logo"
+            width={6}
+            height={6}
+            className="w-1.5 h-1.5"
+          />
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
-import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
+import { useAllUserProfilesMetadata } from '@/hooks/auth-profile/useAllUserProfilesMetadata';
 
 import CopyButton from '../common/CopyButton/CopyButton';
 import { EnhancedWallet, getWalletDisplayDataForEnhancedWallet, WalletDisplayData, WalletIcon, WalletTypeIcon } from './walletUtils';

@@ -8,7 +8,7 @@ import Modal from '@/components/common/Modal/Modal';
 import Loader from '@/components/Loader/Loader';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import { PROFILE_PICTURES } from '@/constant';
-import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
+import { useAllUserProfilesMetadata } from '@/hooks/auth-profile/useAllUserProfilesMetadata';
 import { UserProfileExtended } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
 

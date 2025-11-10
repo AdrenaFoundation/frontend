@@ -3,10 +3,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import DataApiClient from '@/DataApiClient';
 import { EnrichedTraderInfo } from '@/types';
 
-import useAwakeningV2 from './useAwakeningV2';
-import useExpanseData from './useExpanseData';
-import useFactionsData from './useFactionsData';
-import { WalletAdapterName } from './useWalletAdapters';
+import useAwakeningV2 from '../analytics-metrics/useAwakeningV2';
+import useFactionsData from '../analytics-metrics/useFactionsData';
+import useExpanseData from '../staking/useExpanseData';
+import { WalletAdapterName } from '../wallet/useWalletAdapters';
 
 export type ExpanseRankingTraderInfo =
   | {

@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import downloadIcon from '@/../public/images/download.png';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { normalize } from '@/constant';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 
 export const TotalRewardsCell = ({
   totalRewards,

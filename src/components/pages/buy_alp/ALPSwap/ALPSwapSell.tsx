@@ -10,7 +10,7 @@ import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
-import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
+import useDynamicCustodyAvailableLiquidity from '@/hooks/trading-position/useDynamicCustodyAvailableLiquidity';
 import { useDispatch, useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
@@ -50,10 +50,15 @@ export default function ALPSwapSell({
 
     return (
       collateralTokenCustodyLiquidity[
-      collateralTokenCustody.pubkey.toBase58()
+        collateralTokenCustody.pubkey.toBase58()
       ] * tokenPrice
     );
-  }, [tokenPrices, collateralToken.symbol, collateralTokenCustodyLiquidity, collateralTokenCustody.pubkey]);
+  }, [
+    tokenPrices,
+    collateralToken.symbol,
+    collateralTokenCustodyLiquidity,
+    collateralTokenCustody.pubkey,
+  ]);
 
   const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
   const [collateralInputUsd, setCollateralInputUsd] = useState<number | null>(

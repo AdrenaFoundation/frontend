@@ -17,9 +17,9 @@ import StakeLanding from '@/components/pages/stake/StakeLanding';
 import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import UpgradeLockedStake from '@/components/pages/stake/UpgradeLockedStake';
-import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
-import { useStakingClaimableRewards } from '@/hooks/useStakingClaimableRewards';
-import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
+import useStakingAccountRewardsAccumulated from '@/hooks/staking/useStakingAccountRewardsAccumulated';
+import { useStakingClaimableRewards } from '@/hooks/staking/useStakingClaimableRewards';
+import useWalletStakingAccounts from '@/hooks/staking/useWalletStakingAccounts';
 import { useDispatch, useSelector } from '@/store/store';
 import {
   AdxLockPeriod,

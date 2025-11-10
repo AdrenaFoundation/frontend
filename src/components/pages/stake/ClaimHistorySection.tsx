@@ -19,7 +19,7 @@ import Select from '@/components/common/Select/Select';
 import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
 import DataApiClient from '@/DataApiClient';
-import useClaimHistory from '@/hooks/useClaimHistory';
+import useClaimHistory from '@/hooks/staking/useClaimHistory';
 import { ClaimHistoryExtended } from '@/types';
 import { formatNumber } from '@/utils';
 

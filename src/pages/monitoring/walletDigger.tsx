@@ -21,14 +21,14 @@ import ClaimBlock from '@/components/pages/stake/ClaimBlock';
 import LockedStakes from '@/components/pages/stake/LockedStakes';
 import PositionBlock from '@/components/pages/trading/Positions/PositionBlock';
 import PositionsHistory from '@/components/pages/trading/Positions/PositionsHistory';
-import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
-import useClaimHistory from '@/hooks/useClaimHistory';
-import usePositionsByAddress from '@/hooks/usePositionsByAddress';
-import useSNSPrimaryDomain from '@/hooks/useSNSPrimaryDomain';
-import useTraderInfo from '@/hooks/useTraderInfo';
-import useUserProfile from '@/hooks/useUserProfile';
-import useUserVest from '@/hooks/useUserVest';
-import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
+import { useAllUserProfiles } from '@/hooks/auth-profile/useAllUserProfiles';
+import useUserProfile from '@/hooks/auth-profile/useUserProfile';
+import useClaimHistory from '@/hooks/staking/useClaimHistory';
+import useUserVest from '@/hooks/staking/useUserVest';
+import useWalletStakingAccounts from '@/hooks/staking/useWalletStakingAccounts';
+import usePositionsByAddress from '@/hooks/trading-position/usePositionsByAddress';
+import useTraderInfo from '@/hooks/trading-position/useTraderInfo';
+import useSNSPrimaryDomain from '@/hooks/wallet/useSNSPrimaryDomain';
 import {
   ClaimHistoryExtended,
   LockedStakeExtended,
@@ -382,9 +382,9 @@ export default function WalletDigger({
                 nb={
                   stakingAccounts?.ADX?.liquidStake.amount
                     ? nativeToUi(
-                      stakingAccounts.ADX.liquidStake.amount,
-                      window.adrena.client.adxToken.decimals,
-                    )
+                        stakingAccounts.ADX.liquidStake.amount,
+                        window.adrena.client.adxToken.decimals,
+                      )
                     : 0
                 }
                 format="number"
@@ -515,9 +515,9 @@ export default function WalletDigger({
                           totalPages={
                             claimsHistoryAdx
                               ? Math.ceil(
-                                claimsHistoryAdx.length /
-                                claimHistoryItemsPerPage,
-                              )
+                                  claimsHistoryAdx.length /
+                                    claimHistoryItemsPerPage,
+                                )
                               : 0
                           }
                           onPageChange={setAdxClaimHistoryCurrentPage}
@@ -540,9 +540,9 @@ export default function WalletDigger({
                           totalPages={
                             claimsHistoryAlp
                               ? Math.ceil(
-                                claimsHistoryAlp.length /
-                                claimHistoryItemsPerPage,
-                              )
+                                  claimsHistoryAlp.length /
+                                    claimHistoryItemsPerPage,
+                                )
                               : 0
                           }
                           onPageChange={setAlpClaimHistoryCurrentPage}
@@ -722,7 +722,7 @@ export default function WalletDigger({
               )}
 
               {allRefereesProfiles !== null &&
-                allRefereesProfiles.length === 0 ? (
+              allRefereesProfiles.length === 0 ? (
                 <div className="w-full items-center justify-center flex text-sm opacity-80 pt-8 pb-8">
                   No referee yet.
                 </div>

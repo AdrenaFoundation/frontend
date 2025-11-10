@@ -22,9 +22,9 @@ import Select from '@/components/common/Select/Select';
 import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '@/components/Number/FormatNumber';
 import DataApiClient from '@/DataApiClient';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import useClaimHistory from '@/hooks/useClaimHistory';
-import { WalletStakingAccounts } from '@/hooks/useWalletStakingAccounts';
+import useClaimHistory from '@/hooks/staking/useClaimHistory';
+import { WalletStakingAccounts } from '@/hooks/staking/useWalletStakingAccounts';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { ClaimHistoryExtended, LockedStakeExtended } from '@/types';
 import {

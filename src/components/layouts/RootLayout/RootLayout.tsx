@@ -25,7 +25,7 @@ import MobileNavbar from '@/components/MobileNavbar/MobileNavbar';
 import QuestMenu from '@/components/QuestMenu/QuestMenu';
 import SearchUserProfiles from '@/components/SearchUserProfiles/SearchUserProfiles';
 import WalletSidebar from '@/components/WalletSidebar/WalletSidebar';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import {
   LinksType,

@@ -4,10 +4,10 @@ import crossIcon from '@/../public/images/cross.svg';
 import Button from '@/components/common/Button/Button';
 import LoaderWrapper from '@/components/Loader/LoaderWrapper';
 import { WALLPAPERS } from '@/constant';
-import useFavorite from '@/hooks/useFavorite';
-import usePositionsByAddress from '@/hooks/usePositionsByAddress';
-import usePositionStats from '@/hooks/usePositionStats';
-import useTraderInfo from '@/hooks/useTraderInfo';
+import useFavorite from '@/hooks/trading-position/useFavorite';
+import usePositionsByAddress from '@/hooks/trading-position/usePositionsByAddress';
+import usePositionStats from '@/hooks/trading-position/usePositionStats';
+import useTraderInfo from '@/hooks/trading-position/useTraderInfo';
 import { UserProfileExtended } from '@/types';
 
 import ActivityCalendar from '../monitoring/ActivityCalendar';

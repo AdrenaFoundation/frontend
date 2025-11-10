@@ -2,7 +2,7 @@ import Image from 'next/image';
 import React from 'react';
 
 import { PROFILE_PICTURES } from '@/constant';
-import { WALLET_ICONS, WalletAdapterName } from '@/hooks/useWalletAdapters';
+import { WALLET_ICONS, WalletAdapterName } from '@/hooks/wallet/useWalletAdapters';
 
 export interface EnhancedWallet {
     address: string;

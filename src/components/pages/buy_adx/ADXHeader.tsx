@@ -2,10 +2,10 @@ import Image from 'next/image';
 import { useMemo } from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
-import useADXCirculatingSupply from '@/hooks/useADXCirculatingSupply';
-import useADXTotalSupply from '@/hooks/useADXTotalSupply';
-import useAPR from '@/hooks/useAPR';
-import useStakingAccount from '@/hooks/useStakingAccount';
+import useADXCirculatingSupply from '@/hooks/analytics-metrics/useADXCirculatingSupply';
+import useADXTotalSupply from '@/hooks/analytics-metrics/useADXTotalSupply';
+import useAPR from '@/hooks/analytics-metrics/useAPR';
+import useStakingAccount from '@/hooks/staking/useStakingAccount';
 import { useSelector } from '@/store/store';
 import { nativeToUi } from '@/utils';
 

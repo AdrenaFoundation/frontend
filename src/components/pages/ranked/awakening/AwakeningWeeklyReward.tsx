@@ -7,7 +7,7 @@ import diceImage from '@/../public/images/dice.svg';
 import firstImage from '@/../public/images/first-place.svg';
 import ticketImage from '@/../public/images/tickets.png';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { WalletAdapterName } from '@/hooks/useWalletAdapters';
+import { WalletAdapterName } from '@/hooks/wallet/useWalletAdapters';
 import { PreSeasonLeaderboardReturnTypeAPI } from '@/types';
 import { getAbbrevWalletAddress, isValidPublicKey } from '@/utils';
 

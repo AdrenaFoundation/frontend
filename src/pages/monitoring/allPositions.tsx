@@ -10,7 +10,7 @@ import AllPositionsChart from '@/components/pages/global/AllPositionsChart/AllPo
 import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
 import { UnrealizedPnlChart } from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
 import FilterSidebar from '@/components/pages/monitoring/FilterSidebar/FilterSidebar';
-import { useAllPositions } from '@/hooks/useAllPositions';
+import { useAllPositions } from '@/hooks/trading-position/useAllPositions';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
@@ -20,401 +20,401 @@ import resetIcon from '../../../public/images/Icons/cross.svg';
 import AllPositionTable from './AllPositionTable';
 
 export default function AllPositions({
-    isSmallScreen,
-    view,
+  isSmallScreen,
+  view,
 }: {
-    isSmallScreen: boolean;
-    view: string;
+  isSmallScreen: boolean;
+  view: string;
 }) {
-    const wallet = useSelector((state) => state.walletState.wallet);
+  const wallet = useSelector((state) => state.walletState.wallet);
 
-    const connected = !!wallet;
+  const connected = !!wallet;
 
-    const { allPositions, triggerAllPositionsReload } = useAllPositions({
-        connected,
+  const { allPositions, triggerAllPositionsReload } = useAllPositions({
+    connected,
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sideFilter, setSideFilter] = useState('all');
+  const [mintFilter, setMintFilter] = useState<string[] | null>(null);
+  const [ownerFilter, setOwnerFilter] = useState('');
+  const [pnlFilter, setPnlFilter] = useState('all');
+  const itemsPerPage = 20;
+  const [sortConfigs, setSortConfigs] = useState<{
+    [key: string]: 'asc' | 'desc';
+  }>({
+    pnl: 'asc',
+    size: 'asc',
+    leverage: 'desc',
+  });
+  const [sortOrder, setSortOrder] = useState<string[]>([
+    'pnl',
+    'size',
+    'leverage',
+  ]);
+
+  const [sortedPositions, setSortedPositions] = useState<PositionExtended[]>(
+    [],
+  );
+  const [paginatedPositions, setPaginatedPositions] = useState<
+    PositionExtended[]
+  >([]);
+
+  const [viewPage, setViewPage] = useState<string>('List view');
+
+  useEffect(() => {
+    if (view !== 'livePositions') return;
+
+    const filteredPositions = allPositions.filter((position) => {
+      const matchesSide = sideFilter === 'all' || position.side === sideFilter;
+      const matchesMint =
+        mintFilter === null ||
+        mintFilter.includes(getTokenSymbol(position.token.symbol));
+      const matchesUser =
+        ownerFilter === '' ||
+        position.owner
+          .toBase58()
+          .toLowerCase()
+          .includes(ownerFilter.toLowerCase());
+      const matchesPnl =
+        pnlFilter === 'all' ||
+        (pnlFilter === 'profit' && position.pnl && position.pnl > 0) ||
+        (pnlFilter === 'loss' && position.pnl && position.pnl < 0);
+      return matchesSide && matchesMint && matchesUser && matchesPnl;
     });
-    const [currentPage, setCurrentPage] = useState(1);
-    const [sideFilter, setSideFilter] = useState('all');
-    const [mintFilter, setMintFilter] = useState<string[] | null>(null);
-    const [ownerFilter, setOwnerFilter] = useState('');
-    const [pnlFilter, setPnlFilter] = useState('all');
-    const itemsPerPage = 20;
-    const [sortConfigs, setSortConfigs] = useState<{
-        [key: string]: 'asc' | 'desc';
-    }>({
-        pnl: 'asc',
-        size: 'asc',
-        leverage: 'desc',
-    });
-    const [sortOrder, setSortOrder] = useState<string[]>([
-        'pnl',
-        'size',
-        'leverage',
-    ]);
 
-    const [sortedPositions, setSortedPositions] = useState<PositionExtended[]>(
-        [],
+    setSortedPositions(
+      filteredPositions.sort((a, b) => {
+        for (const criteria of sortOrder) {
+          const order = sortConfigs[criteria];
+          const multiplier = order === 'asc' ? 1 : -1;
+          let comparison = 0;
+
+          switch (criteria) {
+            case 'pnl':
+              comparison = multiplier * ((b.pnl || 0) - (a.pnl || 0));
+              break;
+            case 'size':
+              comparison = multiplier * (b.sizeUsd - a.sizeUsd);
+              break;
+            case 'leverage':
+              comparison =
+                multiplier *
+                ((b.currentLeverage || 0) - (a.currentLeverage || 0));
+              break;
+          }
+
+          if (comparison !== 0) return comparison;
+        }
+
+        return 0;
+      }),
     );
-    const [paginatedPositions, setPaginatedPositions] = useState<
-        PositionExtended[]
-    >([]);
+  }, [
+    allPositions,
+    mintFilter,
+    ownerFilter,
+    pnlFilter,
+    sideFilter,
+    sortConfigs,
+    sortOrder,
+    view,
+  ]);
 
-    const [viewPage, setViewPage] = useState<string>('List view');
+  useEffect(() => {
+    const paginatedPositions = sortedPositions.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage,
+    );
 
-    useEffect(() => {
-        if (view !== 'livePositions') return;
+    setPaginatedPositions(paginatedPositions);
+  }, [currentPage, sortedPositions]);
 
-        const filteredPositions = allPositions.filter((position) => {
-            const matchesSide = sideFilter === 'all' || position.side === sideFilter;
-            const matchesMint =
-                mintFilter === null ||
-                mintFilter.includes(getTokenSymbol(position.token.symbol));
-            const matchesUser =
-                ownerFilter === '' ||
-                position.owner
-                    .toBase58()
-                    .toLowerCase()
-                    .includes(ownerFilter.toLowerCase());
-            const matchesPnl =
-                pnlFilter === 'all' ||
-                (pnlFilter === 'profit' && position.pnl && position.pnl > 0) ||
-                (pnlFilter === 'loss' && position.pnl && position.pnl < 0);
-            return matchesSide && matchesMint && matchesUser && matchesPnl;
-        });
+  const toggleSortOrder = (criteria: string) => {
+    const prevConfigs = { ...sortConfigs };
 
-        setSortedPositions(
-            filteredPositions.sort((a, b) => {
-                for (const criteria of sortOrder) {
-                    const order = sortConfigs[criteria];
-                    const multiplier = order === 'asc' ? 1 : -1;
-                    let comparison = 0;
+    setSortConfigs(() => ({
+      ...prevConfigs,
+      [criteria]: prevConfigs[criteria] === 'desc' ? 'asc' : 'desc',
+    }));
+    setSortOrder((prevOrder) => {
+      const newOrder = prevOrder.filter((item) => item !== criteria);
+      return [criteria, ...newOrder];
+    });
+  };
 
-                    switch (criteria) {
-                        case 'pnl':
-                            comparison = multiplier * ((b.pnl || 0) - (a.pnl || 0));
-                            break;
-                        case 'size':
-                            comparison = multiplier * (b.sizeUsd - a.sizeUsd);
-                            break;
-                        case 'leverage':
-                            comparison =
-                                multiplier *
-                                ((b.currentLeverage || 0) - (a.currentLeverage || 0));
-                            break;
-                    }
+  const resetFilters = () => {
+    setSideFilter('all');
+    setMintFilter(null);
+    setOwnerFilter('');
+    setPnlFilter('all');
+    setCurrentPage(1);
+  };
 
-                    if (comparison !== 0) return comparison;
-                }
+  const refreshPositions = () => {
+    triggerAllPositionsReload();
+  };
 
-                return 0;
-            }),
-        );
-    }, [
-        allPositions,
-        mintFilter,
-        ownerFilter,
-        pnlFilter,
-        sideFilter,
-        sortConfigs,
-        sortOrder,
-        view,
-    ]);
+  const unrealizedPnl = useMemo(() => {
+    return allPositions.reduce((pnl, position) => {
+      return pnl + (position.pnl ?? 0);
+    }, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allPositions.map((x) => x.pnl ?? 0).join(',')]);
 
-    useEffect(() => {
-        const paginatedPositions = sortedPositions.slice(
-            (currentPage - 1) * itemsPerPage,
-            currentPage * itemsPerPage,
-        );
+  const unrealizedBorrowFee = useMemo(() => {
+    return allPositions.reduce((total, position) => {
+      return (
+        total + ((position.borrowFeeUsd ?? 0) - (position.paidInterestUsd ?? 0))
+      );
+    }, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allPositions.map((x) => x.borrowFeeUsd ?? 0).join(',')]);
 
-        setPaginatedPositions(paginatedPositions);
-    }, [currentPage, sortedPositions]);
+  const unrealizedCloseFee = useMemo(() => {
+    return allPositions.reduce((total, position) => {
+      return total + (position.exitFeeUsd ?? 0);
+    }, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allPositions.map((x) => x.exitFeeUsd ?? 0).join(',')]);
 
-    const toggleSortOrder = (criteria: string) => {
-        const prevConfigs = { ...sortConfigs };
+  const sizeUsd = useMemo(() => {
+    return allPositions.reduce((total, position) => {
+      return total + position.sizeUsd;
+    }, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allPositions.map((x) => x.sizeUsd).join(',')]);
 
-        setSortConfigs(() => ({
-            ...prevConfigs,
-            [criteria]: prevConfigs[criteria] === 'desc' ? 'asc' : 'desc',
-        }));
-        setSortOrder((prevOrder) => {
-            const newOrder = prevOrder.filter((item) => item !== criteria);
-            return [criteria, ...newOrder];
-        });
-    };
+  return (
+    <div className="flex flex-col gap-2">
+      <StyledContainer className="p-0">
+        <div className="flex flex-wrap justify-between">
+          <NumberDisplay
+            title="POSITION COUNT"
+            nb={allPositions.length}
+            format="number"
+            precision={0}
+            className="border-0 min-w-[12em]"
+            bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+            headerClassName="pb-2"
+            titleClassName="text-[0.7em] sm:text-[0.7em]"
+          />
 
-    const resetFilters = () => {
-        setSideFilter('all');
-        setMintFilter(null);
-        setOwnerFilter('');
-        setPnlFilter('all');
-        setCurrentPage(1);
-    };
+          <NumberDisplay
+            title="OPEN INTEREST"
+            nb={sizeUsd}
+            format="currency"
+            precision={0}
+            className="border-0 min-w-[12em]"
+            bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+            headerClassName="pb-2"
+            titleClassName="text-[0.7em] sm:text-[0.7em]"
+          />
 
-    const refreshPositions = () => {
-        triggerAllPositionsReload();
-    };
+          <NumberDisplay
+            title="UNREALIZED PNL"
+            nb={unrealizedPnl}
+            format="currency"
+            precision={0}
+            className="border-0 min-w-[12em]"
+            bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+            headerClassName="pb-2"
+            titleClassName="text-[0.7em] sm:text-[0.7em]"
+          />
 
-    const unrealizedPnl = useMemo(() => {
-        return allPositions.reduce((pnl, position) => {
-            return pnl + (position.pnl ?? 0);
-        }, 0);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [allPositions.map((x) => x.pnl ?? 0).join(',')]);
+          <NumberDisplay
+            title="UNREALIZED BORROW FEES"
+            nb={unrealizedBorrowFee}
+            format="currency"
+            precision={0}
+            className="border-0 min-w-[12em]"
+            bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+            headerClassName="pb-2"
+            titleClassName="text-[0.7em] sm:text-[0.7em]"
+          />
 
-    const unrealizedBorrowFee = useMemo(() => {
-        return allPositions.reduce((total, position) => {
-            return (
-                total + ((position.borrowFeeUsd ?? 0) - (position.paidInterestUsd ?? 0))
-            );
-        }, 0);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [allPositions.map((x) => x.borrowFeeUsd ?? 0).join(',')]);
-
-    const unrealizedCloseFee = useMemo(() => {
-        return allPositions.reduce((total, position) => {
-            return total + (position.exitFeeUsd ?? 0);
-        }, 0);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [allPositions.map((x) => x.exitFeeUsd ?? 0).join(',')]);
-
-    const sizeUsd = useMemo(() => {
-        return allPositions.reduce((total, position) => {
-            return total + position.sizeUsd;
-        }, 0);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [allPositions.map((x) => x.sizeUsd).join(',')]);
-
-    return (
-        <div className="flex flex-col gap-2">
-            <StyledContainer className="p-0">
-                <div className="flex flex-wrap justify-between">
-                    <NumberDisplay
-                        title="POSITION COUNT"
-                        nb={allPositions.length}
-                        format="number"
-                        precision={0}
-                        className="border-0 min-w-[12em]"
-                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                        headerClassName="pb-2"
-                        titleClassName="text-[0.7em] sm:text-[0.7em]"
-                    />
-
-                    <NumberDisplay
-                        title="OPEN INTEREST"
-                        nb={sizeUsd}
-                        format="currency"
-                        precision={0}
-                        className="border-0 min-w-[12em]"
-                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                        headerClassName="pb-2"
-                        titleClassName="text-[0.7em] sm:text-[0.7em]"
-                    />
-
-                    <NumberDisplay
-                        title="UNREALIZED PNL"
-                        nb={unrealizedPnl}
-                        format="currency"
-                        precision={0}
-                        className="border-0 min-w-[12em]"
-                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                        headerClassName="pb-2"
-                        titleClassName="text-[0.7em] sm:text-[0.7em]"
-                    />
-
-                    <NumberDisplay
-                        title="UNREALIZED BORROW FEES"
-                        nb={unrealizedBorrowFee}
-                        format="currency"
-                        precision={0}
-                        className="border-0 min-w-[12em]"
-                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                        headerClassName="pb-2"
-                        titleClassName="text-[0.7em] sm:text-[0.7em]"
-                    />
-
-                    <NumberDisplay
-                        title="UNREALIZED CLOSE FEES"
-                        nb={unrealizedCloseFee}
-                        format="currency"
-                        precision={0}
-                        className="border-0 min-w-[12em]"
-                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                        headerClassName="pb-2"
-                        titleClassName="text-[0.7em] sm:text-[0.7em]"
-                    />
-                </div>
-            </StyledContainer>
-            {view === 'livePositions' ? (
-                <>
-                    <StyledContainer className="flex gap-6">
-                        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-                            <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
-                            <RealizedPnlChart isSmallScreen={isSmallScreen} />
-                        </div>
-                    </StyledContainer>
-                    <StyledContainer className="p-0">
-                        <div className="flex flex-col md:flex-row md:gap-3">
-                            <FilterSidebar
-                                views={[
-                                    {
-                                        title: 'List view',
-                                        icon: listIcon,
-                                    },
-                                    {
-                                        title: 'Chart view',
-                                        icon: chartIcon,
-                                    },
-                                ]}
-                                activeView={viewPage}
-                                handleViewChange={setViewPage}
-                                searches={[
-                                    {
-                                        placeholder: 'Filter by owner (pubkey)',
-                                        value: ownerFilter,
-                                        handleChange: setOwnerFilter,
-                                    },
-                                ]}
-                                filterOptions={[
-                                    {
-                                        type: 'radio',
-                                        name: 'Side',
-                                        activeOption: sideFilter,
-                                        handleChange: setSideFilter,
-                                        optionItems: [
-                                            { label: 'all' },
-                                            { label: 'long' },
-                                            { label: 'short' },
-                                        ],
-                                    },
-                                    {
-                                        type: 'checkbox',
-                                        name: 'Mint',
-                                        activeOption: mintFilter,
-                                        handleChange: setMintFilter,
-                                        optionItems: window.adrena.client.tokens
-                                            .filter((token) => token.symbol !== 'USDC')
-                                            .map((token) => ({
-                                                label: getTokenSymbol(token.symbol),
-                                                icon: getTokenImage(token),
-                                            })),
-                                    },
-                                    {
-                                        type: 'radio',
-                                        name: 'PnL',
-                                        activeOption: pnlFilter,
-                                        handleChange: setPnlFilter,
-                                        optionItems: [
-                                            { label: 'all' },
-                                            { label: 'profit' },
-                                            { label: 'loss' },
-                                        ],
-                                    },
-                                ]}
-                            />
-                            <div className="flex flex-col gap-3 w-full p-4 min-w-0">
-                                {viewPage === 'Chart view' ? (
-                                    <div className="flex w-full min-h-[34em] h-[34em] grow">
-                                        <AllPositionsChart allPositions={sortedPositions} />
-                                    </div>
-                                ) : null}
-
-                                {viewPage === 'List view' ? (
-                                    <>
-                                        <div className="flex flex-wrap justify-between gap-2">
-                                            <div className="flex flex-row justify-between w-full mb-2">
-                                                <div className="flex flex-row gap-3 flex-wrap">
-                                                    {mintFilter?.map((mint) => (
-                                                        <Button
-                                                            variant="outline"
-                                                            title={mint}
-                                                            className="border border-bcolor"
-                                                            rightIcon={resetIcon}
-                                                            key={mint}
-                                                            onClick={() =>
-                                                                setMintFilter((prev) => {
-                                                                    if (prev === null || prev.length === 1)
-                                                                        return null;
-                                                                    return prev.filter((item) => item !== mint);
-                                                                })
-                                                            }
-                                                        />
-                                                    ))}
-
-                                                    {sideFilter !== 'all' && (
-                                                        <Button
-                                                            variant="outline"
-                                                            title={sideFilter}
-                                                            className={twMerge(
-                                                                'border border-bcolor',
-                                                                sideFilter === 'long' && 'text-green',
-                                                                sideFilter === 'short' && 'text-red',
-                                                            )}
-                                                            rightIcon={resetIcon}
-                                                            onClick={() => setSideFilter('all')}
-                                                        />
-                                                    )}
-
-                                                    {pnlFilter !== 'all' && (
-                                                        <Button
-                                                            variant="outline"
-                                                            title={pnlFilter}
-                                                            className={twMerge(
-                                                                'border border-bcolor',
-                                                                pnlFilter === 'profit' && 'text-green',
-                                                                pnlFilter === 'loss' && 'text-red',
-                                                            )}
-                                                            rightIcon={resetIcon}
-                                                            onClick={() => setPnlFilter('all')}
-                                                        />
-                                                    )}
-
-                                                    {mintFilter?.length ||
-                                                        sideFilter !== 'all' ||
-                                                        pnlFilter !== 'all' ? (
-                                                        <Button
-                                                            variant="text"
-                                                            title="clear all"
-                                                            className="p-0"
-                                                            onClick={resetFilters}
-                                                        />
-                                                    ) : null}
-                                                </div>
-
-                                                <Button
-                                                    icon={reloadIcon}
-                                                    variant="outline"
-                                                    onClick={refreshPositions}
-                                                    className="w-7 h-7 p-0 border-bcolor ml-auto"
-                                                    iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
-                                                />
-                                            </div>
-                                            {paginatedPositions.length ? (
-                                                <AllPositionTable
-                                                    currentPage={currentPage}
-                                                    totalPages={
-                                                        sortedPositions
-                                                            ? Math.ceil(sortedPositions.length / itemsPerPage)
-                                                            : 0
-                                                    }
-                                                    setCurrentPage={setCurrentPage}
-                                                    paginatedPositions={paginatedPositions}
-                                                    handleSort={toggleSortOrder}
-                                                    sortBy={sortOrder[0]}
-                                                    sortDirection={sortConfigs[sortOrder[0]]}
-                                                />
-                                            ) : (
-                                                <div className="text-center w-full py-4 opacity-50">
-                                                    No matches 📭
-                                                </div>
-                                            )}
-                                        </div>
-                                    </>
-                                ) : null}
-                            </div>
-                        </div>
-                    </StyledContainer>
-                </>
-            ) : null}
+          <NumberDisplay
+            title="UNREALIZED CLOSE FEES"
+            nb={unrealizedCloseFee}
+            format="currency"
+            precision={0}
+            className="border-0 min-w-[12em]"
+            bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+            headerClassName="pb-2"
+            titleClassName="text-[0.7em] sm:text-[0.7em]"
+          />
         </div>
-    );
+      </StyledContainer>
+      {view === 'livePositions' ? (
+        <>
+          <StyledContainer className="flex gap-6">
+            <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+              <UnrealizedPnlChart isSmallScreen={isSmallScreen} />
+              <RealizedPnlChart isSmallScreen={isSmallScreen} />
+            </div>
+          </StyledContainer>
+          <StyledContainer className="p-0">
+            <div className="flex flex-col md:flex-row md:gap-3">
+              <FilterSidebar
+                views={[
+                  {
+                    title: 'List view',
+                    icon: listIcon,
+                  },
+                  {
+                    title: 'Chart view',
+                    icon: chartIcon,
+                  },
+                ]}
+                activeView={viewPage}
+                handleViewChange={setViewPage}
+                searches={[
+                  {
+                    placeholder: 'Filter by owner (pubkey)',
+                    value: ownerFilter,
+                    handleChange: setOwnerFilter,
+                  },
+                ]}
+                filterOptions={[
+                  {
+                    type: 'radio',
+                    name: 'Side',
+                    activeOption: sideFilter,
+                    handleChange: setSideFilter,
+                    optionItems: [
+                      { label: 'all' },
+                      { label: 'long' },
+                      { label: 'short' },
+                    ],
+                  },
+                  {
+                    type: 'checkbox',
+                    name: 'Mint',
+                    activeOption: mintFilter,
+                    handleChange: setMintFilter,
+                    optionItems: window.adrena.client.tokens
+                      .filter((token) => token.symbol !== 'USDC')
+                      .map((token) => ({
+                        label: getTokenSymbol(token.symbol),
+                        icon: getTokenImage(token),
+                      })),
+                  },
+                  {
+                    type: 'radio',
+                    name: 'PnL',
+                    activeOption: pnlFilter,
+                    handleChange: setPnlFilter,
+                    optionItems: [
+                      { label: 'all' },
+                      { label: 'profit' },
+                      { label: 'loss' },
+                    ],
+                  },
+                ]}
+              />
+              <div className="flex flex-col gap-3 w-full p-4 min-w-0">
+                {viewPage === 'Chart view' ? (
+                  <div className="flex w-full min-h-[34em] h-[34em] grow">
+                    <AllPositionsChart allPositions={sortedPositions} />
+                  </div>
+                ) : null}
+
+                {viewPage === 'List view' ? (
+                  <>
+                    <div className="flex flex-wrap justify-between gap-2">
+                      <div className="flex flex-row justify-between w-full mb-2">
+                        <div className="flex flex-row gap-3 flex-wrap">
+                          {mintFilter?.map((mint) => (
+                            <Button
+                              variant="outline"
+                              title={mint}
+                              className="border border-bcolor"
+                              rightIcon={resetIcon}
+                              key={mint}
+                              onClick={() =>
+                                setMintFilter((prev) => {
+                                  if (prev === null || prev.length === 1)
+                                    return null;
+                                  return prev.filter((item) => item !== mint);
+                                })
+                              }
+                            />
+                          ))}
+
+                          {sideFilter !== 'all' && (
+                            <Button
+                              variant="outline"
+                              title={sideFilter}
+                              className={twMerge(
+                                'border border-bcolor',
+                                sideFilter === 'long' && 'text-green',
+                                sideFilter === 'short' && 'text-red',
+                              )}
+                              rightIcon={resetIcon}
+                              onClick={() => setSideFilter('all')}
+                            />
+                          )}
+
+                          {pnlFilter !== 'all' && (
+                            <Button
+                              variant="outline"
+                              title={pnlFilter}
+                              className={twMerge(
+                                'border border-bcolor',
+                                pnlFilter === 'profit' && 'text-green',
+                                pnlFilter === 'loss' && 'text-red',
+                              )}
+                              rightIcon={resetIcon}
+                              onClick={() => setPnlFilter('all')}
+                            />
+                          )}
+
+                          {mintFilter?.length ||
+                          sideFilter !== 'all' ||
+                          pnlFilter !== 'all' ? (
+                            <Button
+                              variant="text"
+                              title="clear all"
+                              className="p-0"
+                              onClick={resetFilters}
+                            />
+                          ) : null}
+                        </div>
+
+                        <Button
+                          icon={reloadIcon}
+                          variant="outline"
+                          onClick={refreshPositions}
+                          className="w-7 h-7 p-0 border-bcolor ml-auto"
+                          iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
+                        />
+                      </div>
+                      {paginatedPositions.length ? (
+                        <AllPositionTable
+                          currentPage={currentPage}
+                          totalPages={
+                            sortedPositions
+                              ? Math.ceil(sortedPositions.length / itemsPerPage)
+                              : 0
+                          }
+                          setCurrentPage={setCurrentPage}
+                          paginatedPositions={paginatedPositions}
+                          handleSort={toggleSortOrder}
+                          sortBy={sortOrder[0]}
+                          sortDirection={sortConfigs[sortOrder[0]]}
+                        />
+                      ) : (
+                        <div className="text-center w-full py-4 opacity-50">
+                          No matches 📭
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : null}
+              </div>
+            </div>
+          </StyledContainer>
+        </>
+      ) : null}
+    </div>
+  );
 }

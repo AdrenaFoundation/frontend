@@ -12,7 +12,7 @@ import { twMerge } from 'tailwind-merge';
 
 import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 import Loader from '@/components/Loader/Loader';
-import { AllStakingStats } from '@/hooks/useAllStakingStats';
+import { AllStakingStats } from '@/hooks/staking/useAllStakingStats';
 import { formatNumberShort, periodModeToSeconds } from '@/utils';
 
 const formatYAxis = (tickItem: number) => {

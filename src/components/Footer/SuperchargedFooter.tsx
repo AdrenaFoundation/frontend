@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import adrenaLogo from '@/../public/images/adrena_logo_adx_white.svg';
@@ -22,8 +22,8 @@ import pplIcon from '@/../public/images/people-fill.svg';
 import rpcIcon from '@/../public/images/rpc.svg';
 import xLogo from '@/../public/images/x.svg';
 import { setIsAuthModalOpen } from '@/actions/supabaseAuthActions';
-import useAdminStatus from '@/hooks/useAdminStatus';
-import usePriorityFee from '@/hooks/usePriorityFees';
+import useAdminStatus from '@/hooks/auth-profile/useAdminStatus';
+import usePriorityFee from '@/hooks/ux/usePriorityFees';
 import { useDispatch, useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 import { formatNumber } from '@/utils';
@@ -284,9 +284,7 @@ export default function SuperchargedFooter({
 
         <div className="flex flex-row items-center">
           <AnimatePresence mode="wait">
-            {isAnnouncementView && (
-              <FooterAnnouncement key="announcement" />
-            )}
+            {isAnnouncementView && <FooterAnnouncement key="announcement" />}
             {!isAnnouncementView && (
               <FooterStats key="stats" mainPool={mainPool} />
             )}
@@ -394,9 +392,7 @@ export default function SuperchargedFooter({
               />
             </Link>
 
-            <Link
-              href="/terms_and_conditions"
-            >
+            <Link href="/terms_and_conditions">
               <Image
                 src={documentIcon}
                 alt="Terms & Privacy"

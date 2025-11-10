@@ -13,8 +13,8 @@ import arrowIcon from '@/../public/images/Icons/arrow-slim.svg';
 import solLogo from '@/../public/images/sol.svg';
 import { ADRENA_GREEN, ADRENA_RED } from '@/constant';
 import DataApiClient from '@/DataApiClient';
-import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
-import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
+import useAssetsUnderManagement from '@/hooks/analytics-metrics/useAssetsUnderManagement';
+import useDynamicCustodyAvailableLiquidity from '@/hooks/trading-position/useDynamicCustodyAvailableLiquidity';
 import { useSelector } from '@/store/store';
 import { PageProps, RechartsData } from '@/types';
 import { getCustodyByMint, getTokenSymbol } from '@/utils';
@@ -126,8 +126,8 @@ export default function FooterStats({
     try {
       const response = await fetch(
         `${CHAOS_API_ENDPOINT}/trading-view/data?feed=${token}USD&type=1H&from=${
-        // past 24 hours
-        Math.floor(Date.now() / 1000) - 24 * 60 * 60
+          // past 24 hours
+          Math.floor(Date.now() / 1000) - 24 * 60 * 60
         }&till=${Date.now()}`,
       );
 
@@ -324,9 +324,7 @@ export default function FooterStats({
             key={stat.label + i}
             className="flex flex-row items-center flex-shrink-0"
           >
-            <span className="text-xs opacity-50 mr-1">
-              {stat.label}
-            </span>
+            <span className="text-xs opacity-50 mr-1">{stat.label}</span>
             <FormatNumber
               nb={stat.value as number}
               className="text-xs"
@@ -483,19 +481,23 @@ export default function FooterStats({
                       !tokenPrice ||
                       !custody ||
                       isTokenDataLoading) && (
-                        <motion.div
-                          key="adx-staking-loader"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="bg-[#050D14] h-[1.125rem] w-[3rem] animate-loader rounded-md"
-                        />
-                      )}
+                      <motion.div
+                        key="adx-staking-loader"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="bg-[#050D14] h-[1.125rem] w-[3rem] animate-loader rounded-md"
+                      />
+                    )}
                   </AnimatePresence>
                 </div>
               </div>
-              <LineChart data={tokenHistoricalData[activeToken]} width={100} height={50}>
+              <LineChart
+                data={tokenHistoricalData[activeToken]}
+                width={100}
+                height={50}
+              >
                 <YAxis
                   domain={[
                     (dataMin: number) => dataMin * 0.999, // add a little padding
@@ -524,10 +526,7 @@ export default function FooterStats({
                 }}
               >
                 <div>
-                  <p className="text-xs opacity-50">
-                    {' '}
-                    24h Volume
-                  </p>
+                  <p className="text-xs opacity-50"> 24h Volume</p>
                   <FormatNumber
                     nb={stats[4].value as number}
                     className="text-base"
@@ -579,9 +578,7 @@ export default function FooterStats({
                 }}
               >
                 <div>
-                  <p className="text-xs opacity-50">
-                    Open Interest
-                  </p>
+                  <p className="text-xs opacity-50">Open Interest</p>
                   <FormatNumber
                     nb={
                       (mainPool?.oiLongUsd ?? 0) + (mainPool?.oiShortUsd ?? 0)

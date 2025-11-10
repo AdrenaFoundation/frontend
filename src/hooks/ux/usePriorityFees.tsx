@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { DEFAULT_PRIORITY_FEES } from '@/utils';
 
-import { getMeanPrioritizationFeeByPercentile, PrioritizationFeeLevels } from '../priorityFee';
+import { getMeanPrioritizationFeeByPercentile, PrioritizationFeeLevels } from '../../priorityFee';
 
 export interface PriorityFeesAmounts {
     medium: number;

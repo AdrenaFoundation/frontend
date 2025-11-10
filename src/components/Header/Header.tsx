@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
-import useAPR from '@/hooks/useAPR';
+import useAPR from '@/hooks/analytics-metrics/useAPR';
 import { useSelector } from '@/store/store';
 import {
   LinksType,
@@ -51,7 +51,7 @@ export default function Header({
   isPriorityFeeOpen,
   isSettingsOpen,
   setIsPriorityFeeOpen,
-  setIsSettingsOpen
+  setIsSettingsOpen,
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: LinksType[];
@@ -98,7 +98,10 @@ export default function Header({
   return (
     <div className="w-full flex flex-row items-center justify-between gap-3 py-3 px-4 lg:px-2 xl:px-4 border-b border-b-bcolor bg-secondary z-[51]">
       <div className="flex flex-row items-center gap-4">
-        <Link className="font-bold uppercase flex-shrink-0 block relative" href="/">
+        <Link
+          className="font-bold uppercase flex-shrink-0 block relative"
+          href="/"
+        >
           <Image
             src={logo}
             className={twMerge(
@@ -266,7 +269,10 @@ export default function Header({
         <div className="flex flex-row items-center border border-[#414E5E] rounded-md">
           <NotificationBell adapters={adapters} />
 
-          <PriorityFeeSetting isOpen={isPriorityFeeOpen} setIsOpen={setIsPriorityFeeOpen} />
+          <PriorityFeeSetting
+            isOpen={isPriorityFeeOpen}
+            setIsOpen={setIsPriorityFeeOpen}
+          />
 
           <Settings
             activeRpc={activeRpc}

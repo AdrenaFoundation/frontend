@@ -9,7 +9,7 @@ import MultiStepNotification from "@/components/common/MultiStepNotification/Mul
 import StyledContainer from "@/components/common/StyledContainer/StyledContainer";
 import OnchainAccountInfo from "@/components/pages/monitoring/OnchainAccountInfo";
 import { ADRENA_TEAM_WALLET } from "@/constant";
-import { useAllAddressLookupTables } from "@/hooks/useAllAddressLookupTables";
+import { useAllAddressLookupTables } from "@/hooks/wallet/useAllAddressLookupTables";
 
 import refreshIcon from '../../../public/images/refresh.png';
 
