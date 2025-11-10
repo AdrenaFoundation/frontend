@@ -26,6 +26,19 @@ export type AuthActions =
 export const setVerifiedWalletAddresses =
   () => async (dispatch: Dispatch<setVerifiedWalletAddressesAction>) => {
     try {
+      // First check if there's a session before calling getUser()
+      const {
+        data: { session },
+      } = await supabaseAnonClient.auth.getSession();
+
+      // If there's no session, return an empty array
+      if (!session) {
+        return dispatch({
+          type: 'setVerifiedWalletAddresses',
+          payload: [],
+        });
+      }
+
       const {
         data: { user },
         error: authError,
