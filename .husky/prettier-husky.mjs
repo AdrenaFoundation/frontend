@@ -31,6 +31,6 @@ execSync(
   { stdio: 'ignore' },
 );
 
-console.log('Prettier formatted:');
+console.log('\x1b[1mPrettier formatted:\x1b[0m');
 filesNeedingFormat.forEach((file) => console.log(`- ${file}`));
 console.log('\n');
