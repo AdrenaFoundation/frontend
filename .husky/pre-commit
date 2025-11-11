@@ -1,4 +1,2 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-# npx tsc --noEmit && npx eslint . && npx prettier --write src
+   #!/usr/bin/env sh
+   npm run lint && npm run fmt
