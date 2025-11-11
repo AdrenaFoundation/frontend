@@ -6,6 +6,7 @@
     "build": "next build",
     "dev": "next dev",
     "fmt": "prettier -w . --ignore-path .prettierignore",
+    "fmt:husky": "node .husky/prettier-husky.mjs",
     "lint": "next lint",
     "start": "next start"
   },

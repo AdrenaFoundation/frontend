@@ -1,2 +1,2 @@
-   #!/usr/bin/env sh
-   npm run lint && npm run fmt
+#!/usr/bin/env sh
+npm run lint && npm run fmt:husky

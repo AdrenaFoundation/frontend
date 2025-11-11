@@ -74,9 +74,8 @@ export default function UserVest({
       } catch (error) {
         console.log('error', error);
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
-    [dispatch, triggerUserVestReload, !!userVest, !!wallet],
+    [dispatch, triggerUserVestReload, userVest, wallet],
   );
 
   useEffect(() => {
