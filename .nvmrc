@@ -1,0 +1,18 @@
+20.19.4
+
+# Add this to your .zshrc to automatically switch the node version when you change directories
+# autoload -U add-zsh-hook
+# load-nvmrc() {
+#   if [ -f .nvmrc ]; then
+#     local node_version
+#     node_version=$(nvm version "$(cat .nvmrc)")
+#     if [ "$node_version" = "N/A" ]; then
+#       nvm install
+#     elif [ "$node_version" != "$(nvm current)" ]; then
+#       nvm use --silent
+#     fi
+#     corepack prepare npm@10.8.2 --activate > /dev/null
+#   fi
+# }
+# add-zsh-hook chpwd load-nvmrc
+# load-nvmrc
