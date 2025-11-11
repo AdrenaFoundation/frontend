@@ -48,7 +48,9 @@ export default function FavAchievements({
                         transition={{ duration: 0.3, delay: i * 0.05 }}
                         className={twMerge(
                           'bg-[#050D14] animate-loader rounded-md w-[8rem] h-[9.5rem] md:w-[6.5rem] md:h-[9rem] border border-white/10 scale-[0.6] lg:scale-[0.8] lg:w-[9rem] lg:h-[11rem]',
-                          i === 0 ? 'rotate-[-30deg] relative top-6 left-4' : '',
+                          i === 0
+                            ? 'rotate-[-30deg] relative top-6 left-4'
+                            : '',
                           i === 2 ? 'rotate-[20deg] relative top-6' : '',
                         )}
                         style={{
@@ -85,18 +87,20 @@ export default function FavAchievements({
                           'w-[4rem] h-[10rem] scale-[0.6] lg:scale-[0.8] lg:w-[8rem] lg:h-[10rem]',
                           achievements.length === 3
                             ? twMerge(
-                              i === 0
-                                ? 'rotate-[-30deg] relative top-6 left-4'
-                                : '',
-                              i === 2 ? 'rotate-[20deg] relative top-6' : '',
-                            )
-                            : achievements.length === 2
-                              ? twMerge(
                                 i === 0
                                   ? 'rotate-[-30deg] relative top-6 left-4'
                                   : '',
-                                i === 1 ? 'rotate-[20deg] relative top-6' : '',
+                                i === 2 ? 'rotate-[20deg] relative top-6' : '',
                               )
+                            : achievements.length === 2
+                              ? twMerge(
+                                  i === 0
+                                    ? 'rotate-[-30deg] relative top-6 left-4'
+                                    : '',
+                                  i === 1
+                                    ? 'rotate-[20deg] relative top-6'
+                                    : '',
+                                )
                               : '',
                         )}
                       />

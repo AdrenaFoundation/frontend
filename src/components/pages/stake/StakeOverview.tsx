@@ -72,10 +72,10 @@ export default function StakeOverview({
     return savedConfig
       ? JSON.parse(savedConfig)
       : {
-        size: 'desc',
-        duration: 'asc',
-        lastClicked: 'duration',
-      };
+          size: 'desc',
+          duration: 'asc',
+          lastClicked: 'duration',
+        };
   });
 
   const [roundPassed, setRoundPassed] = useState<boolean>(false);

@@ -86,7 +86,9 @@ export default function FooterStatus() {
               </li>
               <li className="flex flex-row items-center gap-2">
                 <LiveIcon isLive={notificationsWebSocket} />
-                <p className="font-semibold text-sm opacity-75">Notifications</p>
+                <p className="font-semibold text-sm opacity-75">
+                  Notifications
+                </p>
               </li>
               <li className="flex flex-row items-center gap-2">
                 <LiveIcon isLive={chatWebSocket} />

@@ -175,7 +175,7 @@ export default function OwnerBloc({
             !updatingMetadata.favoriteAchievements?.includes(achievement.index),
         ) ||
         currentFavoriteAchievements.length !==
-        (updatingMetadata.favoriteAchievements?.length ?? 0);
+          (updatingMetadata.favoriteAchievements?.length ?? 0);
 
       if (isNewChanges) {
         updateFavoriteAchievements?.(
@@ -499,9 +499,9 @@ export default function OwnerBloc({
                   ACHIEVEMENTS.find(
                     (achievement) => achievement.titleUnlock === index,
                   ) &&
-                    ACHIEVEMENTS.find(
-                      (achievement) => achievement.titleUnlock === index,
-                    )?.title
+                  ACHIEVEMENTS.find(
+                    (achievement) => achievement.titleUnlock === index,
+                  )?.title
                     ? `Unlocked by the achievement "${ACHIEVEMENTS.find((achievement) => achievement.titleUnlock === index)?.title}"`
                     : 'Unlocked by default'
                 }
@@ -836,30 +836,30 @@ export default function OwnerBloc({
               <div className="h-[1em]">
                 {(trimmedUpdatedNickname &&
                   trimmedUpdatedNickname.length < 3) ||
-                  !trimmedUpdatedNickname ? (
+                !trimmedUpdatedNickname ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-semibold">
                     Nickname must be at least 3 characters
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                  typeof alreadyTakenNicknames[trimmedUpdatedNickname] ===
+                typeof alreadyTakenNicknames[trimmedUpdatedNickname] ===
                   'undefined' &&
-                  trimmedUpdatedNickname.length > 3 ? (
+                trimmedUpdatedNickname.length > 3 ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-txtfade font-semibold">
                     Checking nickname availability...
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                  alreadyTakenNicknames[trimmedUpdatedNickname] === true ? (
+                alreadyTakenNicknames[trimmedUpdatedNickname] === true ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-yellow-400 font-semibold">
                     Nickname is already taken
                   </div>
                 ) : null}
 
                 {trimmedUpdatedNickname &&
-                  alreadyTakenNicknames[trimmedUpdatedNickname] === false ? (
+                alreadyTakenNicknames[trimmedUpdatedNickname] === false ? (
                   <div className="text-red-500 text-xs text-center mb-4 text-green font-semibold">
                     Nickname is available
                   </div>
@@ -940,7 +940,9 @@ export default function OwnerBloc({
                           width={12}
                           height={12}
                         />
-                        <p className="text-nowrap font-semibold text-sm">{name}</p>
+                        <p className="text-nowrap font-semibold text-sm">
+                          {name}
+                        </p>
                       </div>
                     </li>
                   ))}
@@ -992,11 +994,11 @@ export default function OwnerBloc({
                                 ? 'border-yellow-400/80'
                                 : 'border-[#ffffff20] grayscale',
                               updatingMetadata.favoriteAchievements?.length ===
-                              3 &&
-                              !updatingMetadata.favoriteAchievements.includes(
-                                achievement.index,
-                              ) &&
-                              'opacity-20 hover:opacity-20 cursor-disabled',
+                                3 &&
+                                !updatingMetadata.favoriteAchievements.includes(
+                                  achievement.index,
+                                ) &&
+                                'opacity-20 hover:opacity-20 cursor-disabled',
                             )}
                             onClick={() => {
                               if (
@@ -1013,15 +1015,15 @@ export default function OwnerBloc({
                                 favoriteAchievements:
                                   u.favoriteAchievements !== null
                                     ? u.favoriteAchievements.includes(
-                                      achievement.index,
-                                    )
-                                      ? u.favoriteAchievements?.filter(
-                                        (a) => a !== achievement.index,
-                                      )
-                                      : [
-                                        ...u.favoriteAchievements,
                                         achievement.index,
-                                      ]
+                                      )
+                                      ? u.favoriteAchievements?.filter(
+                                          (a) => a !== achievement.index,
+                                        )
+                                      : [
+                                          ...u.favoriteAchievements,
+                                          achievement.index,
+                                        ]
                                     : null,
                               }));
                             }}

@@ -14,9 +14,7 @@ export default function StakingLockedTokens({
   return (
     <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
-        <p className={titleClassName}>
-          Locked Stakes Amounts
-        </p>
+        <p className={titleClassName}>Locked Stakes Amounts</p>
         <p className="text-xs opacity-50">
           Tokens locked in the staking program.
         </p>
@@ -30,7 +28,7 @@ export default function StakingLockedTokens({
             alpStakingAccount.stakedTokenDecimals,
           )}
           precision={0}
-          className='border-0'
+          className="border-0"
         />
 
         <NumberDisplay
@@ -40,7 +38,7 @@ export default function StakingLockedTokens({
             adxStakingAccount.stakedTokenDecimals,
           )}
           precision={0}
-          className='border-l-0 border-r-0 border-b-0 border-t sm:border-t-0 sm:border-l'
+          className="border-l-0 border-r-0 border-b-0 border-t sm:border-t-0 sm:border-l"
         />
       </div>
     </div>

@@ -51,7 +51,6 @@ export const useLiveCount = ({
   }, [roomId, walletAddress]);
 
   const fetchConnectedUsers = useCallback(async (): Promise<string[]> => {
-
     try {
       const cacheKey = `room_${roomId}`;
       const cached = connectedUsersCache.get(cacheKey);

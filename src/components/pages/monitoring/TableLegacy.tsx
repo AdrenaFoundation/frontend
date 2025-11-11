@@ -118,8 +118,7 @@ export default function TableLegacy({
       return { alignment: 'justify-center', truncation: '' };
     }
 
-    if (index === 0)
-      return { alignment: 'justify-center', truncation: '' };
+    if (index === 0) return { alignment: 'justify-center', truncation: '' };
     if (index === 1)
       return { alignment: 'justify-start', truncation: 'truncate' };
     return { alignment: 'justify-end', truncation: '' };

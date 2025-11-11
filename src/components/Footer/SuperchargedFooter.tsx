@@ -284,9 +284,7 @@ export default function SuperchargedFooter({
 
         <div className="flex flex-row items-center">
           <AnimatePresence mode="wait">
-            {isAnnouncementView && (
-              <FooterAnnouncement key="announcement" />
-            )}
+            {isAnnouncementView && <FooterAnnouncement key="announcement" />}
             {!isAnnouncementView && (
               <FooterStats key="stats" mainPool={mainPool} />
             )}
@@ -394,9 +392,7 @@ export default function SuperchargedFooter({
               />
             </Link>
 
-            <Link
-              href="/terms_and_conditions"
-            >
+            <Link href="/terms_and_conditions">
               <Image
                 src={documentIcon}
                 alt="Terms & Privacy"

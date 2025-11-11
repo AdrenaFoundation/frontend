@@ -270,9 +270,7 @@ export default function EventBlocks({
 
       <div className="flex flex-row gap-4 relative max-h-[20rem] overflow-y-auto custom-chat-scrollbar overscroll-contain">
         <AnimatePresence mode="wait">
-          {isLoading && (
-            <SkeletonLoader key="loading" />
-          )}
+          {isLoading && <SkeletonLoader key="loading" />}
           {!isLoading && (
             <motion.div
               key="loaded"

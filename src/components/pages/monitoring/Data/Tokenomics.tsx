@@ -10,11 +10,7 @@ import { twMerge } from 'tailwind-merge';
 
 import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 
-export default function Tokenomics({
-  className,
-}: {
-  className?: string;
-}) {
+export default function Tokenomics({ className }: { className?: string }) {
   const data = [
     {
       label: 'Core Contributors',
@@ -60,12 +56,11 @@ export default function Tokenomics({
   const bucketColors = ['#9F8CAE', '#EB6672', '#7FD7C1'];
 
   return (
-    <div className={twMerge("flex flex-col h-full w-full max-h-[15em]", className)}>
+    <div
+      className={twMerge('flex flex-col h-full w-full max-h-[15em]', className)}
+    >
       <ResponsiveContainer width="100%" height="100%" className="m-auto">
-        <PieChart
-          width={400}
-          height={400}
-        >
+        <PieChart width={400} height={400}>
           <Tooltip
             content={<CustomRechartsToolTip format="percentage" isPieChart />}
             cursor={false}

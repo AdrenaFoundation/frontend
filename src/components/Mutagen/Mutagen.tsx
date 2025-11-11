@@ -272,15 +272,15 @@ export default function Mutagen({ isMobile = false }: { isMobile?: boolean }) {
           />
         </div>
 
-          {isModalOpen && (
-            <Modal
-              close={() => setIsModalOpen(false)}
-              className="flex flex-col w-full p-5 relative overflow-visible"
-            >
-              {content}
-            </Modal>
-          )}
-        </AnimatePresence>
+        {isModalOpen && (
+          <Modal
+            close={() => setIsModalOpen(false)}
+            className="flex flex-col w-full p-5 relative overflow-visible"
+          >
+            {content}
+          </Modal>
+        )}
+      </AnimatePresence>
     );
   }
 

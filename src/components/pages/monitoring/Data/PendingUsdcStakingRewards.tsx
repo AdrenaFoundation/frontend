@@ -31,14 +31,14 @@ export default function PendingUsdcStakingRewards({
           <div className="flex items-center">
             <div>
               {alpStakingRewardsAccumulated !== null &&
-                adxStakingRewardsAccumulated !== null &&
-                alpStakingRewardsAccumulated.usdcRewards !== null &&
-                adxStakingRewardsAccumulated.usdcRewards !== null
+              adxStakingRewardsAccumulated !== null &&
+              alpStakingRewardsAccumulated.usdcRewards !== null &&
+              adxStakingRewardsAccumulated.usdcRewards !== null
                 ? formatNumber(
-                  alpStakingRewardsAccumulated.usdcRewards +
-                  adxStakingRewardsAccumulated.usdcRewards,
-                  0,
-                )
+                    alpStakingRewardsAccumulated.usdcRewards +
+                      adxStakingRewardsAccumulated.usdcRewards,
+                    0,
+                  )
                 : '-'}
             </div>
 

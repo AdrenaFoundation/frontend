@@ -33,10 +33,9 @@ export default function NetValueTooltip({
               <FormatNumber
                 nb={position.pnlMinusFees}
                 format="currency"
-                className={`text-${position.pnl && position.pnl > 0
-                  ? 'green'
-                  : 'redbright'
-                  }`}
+                className={`text-${
+                  position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+                }`}
                 isDecimalDimmed={false}
                 precision={2}
                 minimumFractionDigits={2}
@@ -72,7 +71,11 @@ export default function NetValueTooltip({
               <span className="text-sm">Resulting Net Value</span>
               <FormatNumber
                 format="currency"
-                nb={position.pnl ? position.collateralUsd + position.pnl : undefined}
+                nb={
+                  position.pnl
+                    ? position.collateralUsd + position.pnl
+                    : undefined
+                }
                 isDecimalDimmed={true}
                 precision={2}
                 minimumFractionDigits={2}
@@ -81,7 +84,7 @@ export default function NetValueTooltip({
           </StyledSubContainer>
         </div>
       }
-      placement='auto'
+      placement="auto"
       className={className}
       maxWidth="none"
     >

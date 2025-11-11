@@ -122,19 +122,25 @@ export default function TradingChartHeaderStats({
 
   const dailyChange = stats?.[selected.symbol]?.dailyChange ?? null;
 
-  const {
-    borrowRateToDisplay,
-    borrowRateTippy,
-  } = useMemo(() => {
+  const { borrowRateToDisplay, borrowRateTippy } = useMemo(() => {
     return {
-      borrowRateToDisplay: <span className="font-mono text-sm sm:text-xs text-white ml-1 cursor-help" onClick={() => setDisplayBorrowRateAsApr(!displayBorrowRateAsApr)}>
-        {displayBorrowRateAsApr ? borrowRateApr !== null
-          ? `${(borrowRateApr).toFixed(0)}% APR`
-          : '-' : borrowRateHourly !== null
-          ? `${(borrowRateHourly).toFixed(4)}%/h`
-          : '-'}
-      </span>,
-      borrowRateTippy: displayBorrowRateAsApr ? 'Annual borrow rate in % of position size' : 'Hourly borrow rate in % of position size',
+      borrowRateToDisplay: (
+        <span
+          className="font-mono text-sm sm:text-xs text-white ml-1 cursor-help"
+          onClick={() => setDisplayBorrowRateAsApr(!displayBorrowRateAsApr)}
+        >
+          {displayBorrowRateAsApr
+            ? borrowRateApr !== null
+              ? `${borrowRateApr.toFixed(0)}% APR`
+              : '-'
+            : borrowRateHourly !== null
+              ? `${borrowRateHourly.toFixed(4)}%/h`
+              : '-'}
+        </span>
+      ),
+      borrowRateTippy: displayBorrowRateAsApr
+        ? 'Annual borrow rate in % of position size'
+        : 'Hourly borrow rate in % of position size',
     };
   }, [borrowRateApr, borrowRateHourly, displayBorrowRateAsApr]);
 
@@ -174,11 +180,7 @@ export default function TradingChartHeaderStats({
                 )}
               </span>
               <Tippy
-                content={
-                  <div className="text-sm">
-                    {borrowRateTippy}
-                  </div>
-                }
+                content={<div className="text-sm">{borrowRateTippy}</div>}
                 placement="bottom"
               >
                 <div className="flex items-center">
@@ -200,12 +202,13 @@ export default function TradingChartHeaderStats({
       <div className="flex items-center gap-3 sm:hidden">
         <span className="text-xs font-mono text-txtfade">
           <span
-            className={`${dailyChange
-              ? dailyChange > 0
-                ? 'text-green'
-                : 'text-redbright'
-              : 'text-white'
-              } font-mono`}
+            className={`${
+              dailyChange
+                ? dailyChange > 0
+                  ? 'text-green'
+                  : 'text-redbright'
+                : 'text-white'
+            } font-mono`}
           >
             {dailyChange
               ? `${dailyChange > 0 ? '+' : ''}${dailyChange.toFixed(2)}%`
@@ -257,12 +260,13 @@ export default function TradingChartHeaderStats({
           <div className="flex items-center gap-3">
             <span className="text-xs font-mono text-txtfade ml-2">
               <span
-                className={`${dailyChange
-                  ? dailyChange > 0
-                    ? 'text-green'
-                    : 'text-redbright'
-                  : 'text-white'
-                  } font-mono`}
+                className={`${
+                  dailyChange
+                    ? dailyChange > 0
+                      ? 'text-green'
+                      : 'text-redbright'
+                    : 'text-white'
+                } font-mono`}
               >
                 {dailyChange
                   ? `${dailyChange > 0 ? '+' : ''}${dailyChange.toFixed(2)}%`
@@ -334,11 +338,7 @@ export default function TradingChartHeaderStats({
                 )}
               </span>
               <Tippy
-                content={
-                  <div className="text-sm">
-                    {borrowRateTippy}
-                  </div>
-                }
+                content={<div className="text-sm">{borrowRateTippy}</div>}
                 placement="bottom"
               >
                 <div className="flex items-center">
@@ -377,12 +377,13 @@ export default function TradingChartHeaderStats({
             <div className="flex items-center gap-2">
               <span className="text-xs font-mono text-txtfade">
                 <span
-                  className={`${dailyChange
-                    ? dailyChange > 0
-                      ? 'text-green'
-                      : 'text-redbright'
-                    : 'text-white'
-                    } font-mono`}
+                  className={`${
+                    dailyChange
+                      ? dailyChange > 0
+                        ? 'text-green'
+                        : 'text-redbright'
+                      : 'text-white'
+                  } font-mono`}
                 >
                   {dailyChange ? `${dailyChange.toFixed(2)}%` : '-'}
                 </span>
@@ -450,11 +451,7 @@ export default function TradingChartHeaderStats({
                   )}
                 </span>
                 <Tippy
-                  content={
-                    <div className="text-sm">
-                      {borrowRateTippy}
-                    </div>
-                  }
+                  content={<div className="text-sm">{borrowRateTippy}</div>}
                   placement="bottom"
                 >
                   <div className="flex items-center">
@@ -566,11 +563,7 @@ export default function TradingChartHeaderStats({
             )}
           >
             <Tippy
-              content={
-                <div className="text-sm">
-                  {borrowRateTippy}
-                </div>
-              }
+              content={<div className="text-sm">{borrowRateTippy}</div>}
               placement="bottom"
             >
               <div className="flex items-center">

@@ -19,7 +19,9 @@ export default function VestsBreakdown({
     <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl overflow-hidden">
       <div className="w-full border-b p-3 flex gap-2">
         <p className={titleClassName}>Vest Breakdown</p>
-        {vests ? <p className='text-base opacity-50 font-mono'>{vests.length} vests</p> : null}
+        {vests ? (
+          <p className="text-base opacity-50 font-mono">{vests.length} vests</p>
+        ) : null}
       </div>
 
       <Table
@@ -34,7 +36,7 @@ export default function VestsBreakdown({
           'claimed',
           'owner',
         ]}
-        className='rounded-none bg-transparent border-none'
+        className="rounded-none bg-transparent border-none"
         data={vests.map((vest, i) => ({
           rowTitle: ``,
           values: [

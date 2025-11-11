@@ -21,30 +21,31 @@ export default function TextExplainWrapper({
   position?: 'top' | 'bottom';
   onClick?: () => void;
 }) {
-  const content = <div className={twMerge(
-    'flex relative items-center',
-    onClick ? 'cursor-pointer' : '',
-    className,
-  )} onClick={onClick}>
-    <TextExplain
-      title={title}
+  const content = (
+    <div
       className={twMerge(
-        position === 'top' ? 'top-[-1.4em]' : 'bottom-[-1.5em]',
-        textExplainClassName,
+        'flex relative items-center',
+        onClick ? 'cursor-pointer' : '',
+        className,
       )}
-      position={position}
-    />
+      onClick={onClick}
+    >
+      <TextExplain
+        title={title}
+        className={twMerge(
+          position === 'top' ? 'top-[-1.4em]' : 'bottom-[-1.5em]',
+          textExplainClassName,
+        )}
+        position={position}
+      />
 
-    {children}
-  </div>;
+      {children}
+    </div>
+  );
 
   if (!tippy) {
     return content;
   }
 
-  return (
-    <Tippy content={tippy}>
-      {content}
-    </Tippy>
-  );
+  return <Tippy content={tippy}>{content}</Tippy>;
 }

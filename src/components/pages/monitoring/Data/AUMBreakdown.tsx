@@ -20,7 +20,7 @@ export default function AUMBreakdown({
         <p className={titleClassName}>AUM Breakdown</p>
       </div>
 
-      <div className='grid md:grid-cols-4'>
+      <div className="grid md:grid-cols-4">
         {...custodies.map((custody, i) => {
           return (
             <div
@@ -41,24 +41,26 @@ export default function AUMBreakdown({
                   height={24}
                 />
 
-                <p className={twMerge(titleClassName, 'opacity-100')}>{custody.tokenInfo.symbol}</p>
+                <p className={twMerge(titleClassName, 'opacity-100')}>
+                  {custody.tokenInfo.symbol}
+                </p>
               </div>
 
               <NumberDisplay
                 nb={custody.owned}
                 precision={custody.tokenInfo.displayAmountDecimalsPrecision}
-                className='border-0 p-0 items-start'
+                className="border-0 p-0 items-start"
               />
 
-              {tokenPrices[custody.tokenInfo.symbol] ? (<NumberDisplay
-                nb={
-                  custody.owned * tokenPrices[custody.tokenInfo.symbol]!
-                }
-                precision={0}
-                className='border-0 p-0 items-start'
-                bodyClassName='text-txtfade text-sm'
-                format='currency'
-              />) : null}
+              {tokenPrices[custody.tokenInfo.symbol] ? (
+                <NumberDisplay
+                  nb={custody.owned * tokenPrices[custody.tokenInfo.symbol]!}
+                  precision={0}
+                  className="border-0 p-0 items-start"
+                  bodyClassName="text-txtfade text-sm"
+                  format="currency"
+                />
+              ) : null}
             </div>
           );
         })}

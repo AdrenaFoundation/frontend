@@ -11,7 +11,12 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import { selectStreamingTokenPriceFallback } from '@/selectors/streamingTokenPrices';
 import { useSelector } from '@/store/store';
-import { PositionExtended, Token, UserProfileExtended, UserProfileMetadata } from '@/types';
+import {
+  PositionExtended,
+  Token,
+  UserProfileExtended,
+  UserProfileMetadata,
+} from '@/types';
 import {
   formatTimeDifference,
   getAbbrevWalletAddress,
@@ -42,7 +47,7 @@ interface PositionBlockProps {
   userProfileMetadata?: UserProfileMetadata;
   setTokenB?: (token: Token) => void;
   userProfile?: UserProfileExtended | false | null;
-  }
+}
 
 export function PositionBlock({
   bodyClassName,

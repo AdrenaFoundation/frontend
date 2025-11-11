@@ -53,13 +53,13 @@ export default function BasicMonitoring({
           lm: lm_apr_rolling_seven_day,
         });
       })
-      .catch(() => { });
+      .catch(() => {});
 
     DataApiClient.getAllTimeTradersCount()
       .then((count) => {
         setAllTimeTraders(count);
       })
-      .catch(() => { });
+      .catch(() => {});
 
     const interval = setInterval(() => {
       DataApiClient.getRolling7DGlobalApr()
@@ -69,13 +69,13 @@ export default function BasicMonitoring({
             lm: lm_apr_rolling_seven_day,
           });
         })
-        .catch(() => { });
+        .catch(() => {});
 
       DataApiClient.getAllTimeTradersCount()
         .then((count) => {
           setAllTimeTraders(count);
         })
-        .catch(() => { });
+        .catch(() => {});
     }, 60000);
 
     return () => clearInterval(interval);

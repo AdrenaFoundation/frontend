@@ -20,7 +20,7 @@ export default function Loader({
         autoplay={true}
         style={{ height, width }}
         rendererSettings={{
-          preserveAspectRatio: 'xMidYMid slice'
+          preserveAspectRatio: 'xMidYMid slice',
         }}
       />
     </div>

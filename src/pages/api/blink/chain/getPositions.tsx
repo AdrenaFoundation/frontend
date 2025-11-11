@@ -7,10 +7,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<
-    | ActionGetResponse
-    | ActionPostResponse
-  >,
+  res: NextApiResponse<ActionGetResponse | ActionPostResponse>,
 ) {
   if (req.method === 'POST') {
     res.writeHead(200, ACTIONS_CORS_HEADERS).json({

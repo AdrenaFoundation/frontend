@@ -5,48 +5,53 @@ import { twMerge } from 'tailwind-merge';
 import { ImageRef } from '@/types';
 
 export default function Filter({
-    options,
-    activeFilter,
-    setFilter,
-    iconClassName,
-    className,
+  options,
+  activeFilter,
+  setFilter,
+  iconClassName,
+  className,
 }: {
-    options: { name: string; icon?: ImageRef }[];
-    activeFilter: string;
-    setFilter: (filter: string) => void;
-    iconClassName?: string;
-    className?: string;
+  options: { name: string; icon?: ImageRef }[];
+  activeFilter: string;
+  setFilter: (filter: string) => void;
+  iconClassName?: string;
+  className?: string;
 }) {
-    return (
-        <ul className={twMerge("flex flex-row gap-2 items-center border border-bcolor rounded-md p-2 bg-secondary flex-1", className)}>
-            {options.map((option) => (
-                <li
-                    className={twMerge(
-                        'text-sm font-mono w-full text-center border border-bcolor rounded-md p-1 px-4 text-txtfade bg-transparent hover:bg-third hover:text-white cursor-pointer transition duration-300 select-none capitalize',
-                        option.name === activeFilter
-                            ? 'text-white bg-third border-white'
-                            : '',
-                        option?.icon && 'flex flex-row items-center justify-center gap-2',
-                        (option.name === 'profit' || option.name === 'long') &&
-                        'text-green',
-                        (option.name === 'loss' || option.name === 'short') && 'text-red',
-                    )}
-                    key={option.name}
-                    onClick={() => setFilter(option.name)}
-                >
-                    {option?.icon ? (
-                        <Image
-                            src={option.icon}
-                            alt={'icon'}
-                            width={12}
-                            height={12}
-                            className={iconClassName}
-                        />
-                    ) : null}
+  return (
+    <ul
+      className={twMerge(
+        'flex flex-row gap-2 items-center border border-bcolor rounded-md p-2 bg-secondary flex-1',
+        className,
+      )}
+    >
+      {options.map((option) => (
+        <li
+          className={twMerge(
+            'text-sm font-mono w-full text-center border border-bcolor rounded-md p-1 px-4 text-txtfade bg-transparent hover:bg-third hover:text-white cursor-pointer transition duration-300 select-none capitalize',
+            option.name === activeFilter
+              ? 'text-white bg-third border-white'
+              : '',
+            option?.icon && 'flex flex-row items-center justify-center gap-2',
+            (option.name === 'profit' || option.name === 'long') &&
+              'text-green',
+            (option.name === 'loss' || option.name === 'short') && 'text-red',
+          )}
+          key={option.name}
+          onClick={() => setFilter(option.name)}
+        >
+          {option?.icon ? (
+            <Image
+              src={option.icon}
+              alt={'icon'}
+              width={12}
+              height={12}
+              className={iconClassName}
+            />
+          ) : null}
 
-                    {option.name}
-                </li>
-            ))}
-        </ul>
-    );
+          {option.name}
+        </li>
+      ))}
+    </ul>
+  );
 }

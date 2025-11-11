@@ -46,8 +46,8 @@ export default function FilterSidebar({
     type: 'checkbox' | 'radio' | 'input';
     name: string;
     handleChange:
-    | React.Dispatch<React.SetStateAction<string>>
-    | React.Dispatch<React.SetStateAction<string[] | null>>;
+      | React.Dispatch<React.SetStateAction<string>>
+      | React.Dispatch<React.SetStateAction<string[] | null>>;
     activeOption: string[] | string | null;
     optionItems: { label: string; icon?: ImageRef | string }[];
     disabled?: boolean;
@@ -93,11 +93,17 @@ export default function FilterSidebar({
       className={twMerge(
         'p-4 bg-[#040D14] border rounded-md',
         filterOptions.some((f) => f.disabled) &&
-        'opacity-25 cursor-not-allowed pointer-events-none',
+          'opacity-25 cursor-not-allowed pointer-events-none',
       )}
     >
       <div className="flex flex-row gap-2 mb-3">
-        <Image src={filterIcon} alt="filter icon" className="opacity-50 w-4 h-4" width={16} height={16} />
+        <Image
+          src={filterIcon}
+          alt="filter icon"
+          className="opacity-50 w-4 h-4"
+          width={16}
+          height={16}
+        />
 
         <p className="text-base font-semibold">Filter</p>
       </div>
@@ -167,11 +173,17 @@ export default function FilterSidebar({
       className={twMerge(
         'p-4 bg-[#040D14] border rounded-md transition duration-300',
         sortOptions.disabled &&
-        'opacity-25 cursor-not-allowed pointer-events-none',
+          'opacity-25 cursor-not-allowed pointer-events-none',
       )}
     >
       <div className="flex flex-row gap-2 mb-3">
-        <Image src={sortIcon} alt="sort icon" className="opacity-50 w-4 h-4" width={16} height={16} />
+        <Image
+          src={sortIcon}
+          alt="sort icon"
+          className="opacity-50 w-4 h-4"
+          width={16}
+          height={16}
+        />
 
         <p className="text-base font-semibold">Sort</p>
       </div>
@@ -185,7 +197,15 @@ export default function FilterSidebar({
             )}
             onClick={() => sortOptions.handleChange(opt.label)}
           >
-            {opt.icon && <Image src={opt.icon} alt="sort icon" width={12} height={12} className="w-3 h-3" />}
+            {opt.icon && (
+              <Image
+                src={opt.icon}
+                alt="sort icon"
+                width={12}
+                height={12}
+                className="w-3 h-3"
+              />
+            )}
             <p className="text-sm font-semibold">{opt.label}</p>
 
             <motion.div
@@ -302,13 +322,25 @@ export default function FilterSidebar({
             className="w-full p-4"
             onClick={() => setIsFilterModalOpen(true)}
           >
-            <Image src={filterIcon} alt="filter icon" className="m-auto w-4 h-4" width={16} height={16} />
+            <Image
+              src={filterIcon}
+              alt="filter icon"
+              className="m-auto w-4 h-4"
+              width={16}
+              height={16}
+            />
           </div>
           <div
             className="w-full p-4 border-l"
             onClick={() => setIsSortModalOpen(true)}
           >
-            <Image src={sortIcon} alt="sort icon" className="m-auto w-4 h-4" width={16} height={16} />
+            <Image
+              src={sortIcon}
+              alt="sort icon"
+              className="m-auto w-4 h-4"
+              width={16}
+              height={16}
+            />
           </div>
         </div>
 
@@ -413,7 +445,15 @@ export const Checkbox: React.FC<CheckboxProps> = ({
           labelClassName,
         )}
       >
-        {img && <Image src={img} alt="token icon" width={12} height={12} className="w-3 h-3" />}
+        {img && (
+          <Image
+            src={img}
+            alt="token icon"
+            width={12}
+            height={12}
+            className="w-3 h-3"
+          />
+        )}
         {label}
       </label>
     </div>
@@ -461,7 +501,15 @@ export const Radio: React.FC<RadioProps> = ({
           ['loss', 'short'].includes(label) && 'text-red',
         )}
       >
-        {img && <Image src={img} alt="token icon" width={12} height={12} className="w-3 h-3" />}
+        {img && (
+          <Image
+            src={img}
+            alt="token icon"
+            width={12}
+            height={12}
+            className="w-3 h-3"
+          />
+        )}
         {label}
       </label>
     </div>

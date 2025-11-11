@@ -44,9 +44,11 @@ export async function generateMetadata(
 
   const currentUrl = heads.get('host');
 
-  const url = `https://${currentUrl}/api/og?opt=${opt}&pnl=${pnl ?? 0
-    }&pnlUsd=${pnlUsd}&isPnlUsd=${isPnlUsd}&side=${side}&symbol=${symbol}&collateral=${collateral}&mark=${mark ?? 0
-    }&price=${price}&opened=${opened}&size=${size}&exitPrice=${exitPrice}`;
+  const url = `https://${currentUrl}/api/og?opt=${opt}&pnl=${
+    pnl ?? 0
+  }&pnlUsd=${pnlUsd}&isPnlUsd=${isPnlUsd}&side=${side}&symbol=${symbol}&collateral=${collateral}&mark=${
+    mark ?? 0
+  }&price=${price}&opened=${opened}&size=${size}&exitPrice=${exitPrice}`;
 
   // optionally access and extend (rather than replace) parent metadata
   const previousImages = (await parent).openGraph?.images || [];

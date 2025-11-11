@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis } from 'recharts';
-import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  TooltipProps,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import {
+  NameType,
+  ValueType,
+} from 'recharts/types/component/DefaultTooltipContent';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
@@ -22,11 +34,14 @@ export default function StakingChart() {
 
   const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
 
-  const [chartData, setChartData] = useState<{
-    name: string;
-    ADX: number;
-    ADXAmount: number;
-  }[] | null>(null);
+  const [chartData, setChartData] = useState<
+    | {
+        name: string;
+        ADX: number;
+        ADXAmount: number;
+      }[]
+    | null
+  >(null);
 
   useEffect(() => {
     if (!allStakingStats || !adxCirculatingSupply) {
@@ -39,25 +54,37 @@ export default function StakingChart() {
       ADX: number;
       ADXAmount: number;
     }[] = [
-        {
-          name: 'liquid',
-          ADX: (adxCirculatingSupply - allStakingStats.byDurationByAmount.ADX.liquid - allStakingStats.byDurationByAmount.ADX.totalLocked) * 100 / adxCirculatingSupply,
-          ADXAmount: adxCirculatingSupply - allStakingStats.byDurationByAmount.ADX.liquid - allStakingStats.byDurationByAmount.ADX.totalLocked,
-        },
-        {
-          name: '0d',
-          ADX: allStakingStats.byDurationByAmount.ADX.liquid * 100 / adxCirculatingSupply,
-          ADXAmount: allStakingStats.byDurationByAmount.ADX.liquid,
-        },
-      ];
+      {
+        name: 'liquid',
+        ADX:
+          ((adxCirculatingSupply -
+            allStakingStats.byDurationByAmount.ADX.liquid -
+            allStakingStats.byDurationByAmount.ADX.totalLocked) *
+            100) /
+          adxCirculatingSupply,
+        ADXAmount:
+          adxCirculatingSupply -
+          allStakingStats.byDurationByAmount.ADX.liquid -
+          allStakingStats.byDurationByAmount.ADX.totalLocked,
+      },
+      {
+        name: '0d',
+        ADX:
+          (allStakingStats.byDurationByAmount.ADX.liquid * 100) /
+          adxCirculatingSupply,
+        ADXAmount: allStakingStats.byDurationByAmount.ADX.liquid,
+      },
+    ];
 
-    Object.entries(allStakingStats.byDurationByAmount.ADX.locked).forEach(([lockedDuration, lockedAmount]) => {
-      data.push({
-        name: lockedDuration + 'd',
-        ADX: lockedAmount.total * 100 / adxCirculatingSupply,
-        ADXAmount: lockedAmount.total,
-      });
-    });
+    Object.entries(allStakingStats.byDurationByAmount.ADX.locked).forEach(
+      ([lockedDuration, lockedAmount]) => {
+        data.push({
+          name: lockedDuration + 'd',
+          ADX: (lockedAmount.total * 100) / adxCirculatingSupply,
+          ADXAmount: lockedAmount.total,
+        });
+      },
+    );
 
     setChartData(data);
   }, [adxCirculatingSupply, allStakingStats]);
@@ -76,7 +103,11 @@ export default function StakingChart() {
 
   return (
     <div className="flex flex-col h-full w-full max-h-[18em]">
-      <ResponsiveContainer width="100%" height="100%" style={{ marginLeft: '-1rem' }}>
+      <ResponsiveContainer
+        width="100%"
+        height="100%"
+        style={{ marginLeft: '-1rem' }}
+      >
         <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
@@ -84,70 +115,82 @@ export default function StakingChart() {
           <YAxis tickFormatter={formatYAxis} fontSize="10" />
 
           <Tooltip
-            content={({
-              payload,
-            }: TooltipProps<ValueType, NameType>) => (
+            content={({ payload }: TooltipProps<ValueType, NameType>) => (
               <div className="bg-third p-3 border border-white rounded-md justify-center">
-                <div className='flex w-full justify-center items-center'>
-                  {payload && payload.map((item) => (
-                    <div
-                      key={item.dataKey}
-                      className="text-sm flex-col font-mono flex justify-center items-center"
-                    >
-                      <div className='flex flex-col justify-center items-center'>
-                        <div
-                          className={twMerge('font-mono flex gap-1')}
-                        >
-                          {formatPercentage(Number(item.value), 2)}
+                <div className="flex w-full justify-center items-center">
+                  {payload &&
+                    payload.map((item) => (
+                      <div
+                        key={item.dataKey}
+                        className="text-sm flex-col font-mono flex justify-center items-center"
+                      >
+                        <div className="flex flex-col justify-center items-center">
+                          <div className={twMerge('font-mono flex gap-1')}>
+                            {formatPercentage(Number(item.value), 2)}
 
-                          <div className='font-semibold'>of circulating supply</div>
-                        </div>
+                            <div className="font-semibold">
+                              of circulating supply
+                            </div>
+                          </div>
 
-                        <div
-                          className='font-mono'
-                        >
-                          <FormatNumber
-                            nb={Number(item.payload?.[`${item.dataKey}Amount`] ?? 0)}
-                            precision={0}
-                            isDecimalDimmed={false}
-                            className={twMerge("text-sm", `text-[${item.color}]`)}
-                            format={"number"}
-                            isAbbreviate={true}
-                            isAbbreviateIcon={false}
-                          />
-
-                          <span className='ml-1 font-semibold'>ADX</span>
-                        </div>
-
-                        {tokenPriceADX ? <>
-                          <div
-                            className={twMerge('font-mono')}
-                            style={{ color: item.color }}
-                          >
+                          <div className="font-mono">
                             <FormatNumber
-                              nb={Number(item.payload?.[`${item.dataKey}Amount`] ?? 0) * tokenPriceADX}
+                              nb={Number(
+                                item.payload?.[`${item.dataKey}Amount`] ?? 0,
+                              )}
                               precision={0}
                               isDecimalDimmed={false}
-                              className={twMerge("text-sm", `text-[${item.color}]`)}
-                              format={"currency"}
-                              prefix='$'
+                              className={twMerge(
+                                'text-sm',
+                                `text-[${item.color}]`,
+                              )}
+                              format={'number'}
                               isAbbreviate={true}
                               isAbbreviateIcon={false}
                             />
+
+                            <span className="ml-1 font-semibold">ADX</span>
                           </div>
-                        </> : null}
+
+                          {tokenPriceADX ? (
+                            <>
+                              <div
+                                className={twMerge('font-mono')}
+                                style={{ color: item.color }}
+                              >
+                                <FormatNumber
+                                  nb={
+                                    Number(
+                                      item.payload?.[`${item.dataKey}Amount`] ??
+                                        0,
+                                    ) * tokenPriceADX
+                                  }
+                                  precision={0}
+                                  isDecimalDimmed={false}
+                                  className={twMerge(
+                                    'text-sm',
+                                    `text-[${item.color}]`,
+                                  )}
+                                  format={'currency'}
+                                  prefix="$"
+                                  isAbbreviate={true}
+                                  isAbbreviateIcon={false}
+                                />
+                              </div>
+                            </>
+                          ) : null}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
-              </div>)
-            }
+              </div>
+            )}
             cursor={false}
           />
 
           <Bar
             type="monotone"
-            dataKey='ADX'
+            dataKey="ADX"
             stroke={adxColor}
             fill={adxColor}
             key="ADX"

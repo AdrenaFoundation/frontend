@@ -36,10 +36,10 @@ export default function FinalizeLockedStakeRedeem({
     stakeTokenMintDecimals,
   );
 
-  const precision = lockedStake.tokenSymbol === 'ALP' ?
-    window.adrena.client.alpToken.displayAmountDecimalsPrecision :
-    window.adrena.client.adxToken.displayAmountDecimalsPrecision;
-
+  const precision =
+    lockedStake.tokenSymbol === 'ALP'
+      ? window.adrena.client.alpToken.displayAmountDecimalsPrecision
+      : window.adrena.client.adxToken.displayAmountDecimalsPrecision;
 
   return (
     <div className="flex flex-col rounded-md sm:min-w-[400px] h-fit p-5">

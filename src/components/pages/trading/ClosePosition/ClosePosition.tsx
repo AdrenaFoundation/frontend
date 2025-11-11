@@ -707,7 +707,13 @@ export default function ClosePosition({
                       'flex h-2 w-2 items-center justify-center shrink-0',
                     )}
                   >
-                    <Image src={chevronDownIcon} alt="chevron down" width={8} height={8} className="w-2 h-2" />
+                    <Image
+                      src={chevronDownIcon}
+                      alt="chevron down"
+                      width={8}
+                      height={8}
+                      className="w-2 h-2"
+                    />
                   </div>
 
                   <div className="font-regular">

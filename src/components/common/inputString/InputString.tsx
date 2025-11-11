@@ -37,7 +37,7 @@ export default function InputString({
       onKeyDown={(e) => {
         if (!onEnterKeyPressed) return;
 
-        if (e.key === "Enter") {
+        if (e.key === 'Enter') {
           onEnterKeyPressed();
         }
       }}

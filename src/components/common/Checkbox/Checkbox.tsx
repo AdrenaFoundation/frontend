@@ -17,7 +17,9 @@ export default function Checkbox({
         'h-3 w-3 border border-bcolor rounded-[0.2em] cursor-pointer flex justify-center items-center',
         checked
           ? "bg-[url('/images/check.svg')] bg-no-repeat bg-center bg-contain"
-          : variant === 'white' ? 'bg-white' : '',
+          : variant === 'white'
+            ? 'bg-white'
+            : '',
         className,
       )}
       onClick={() => onChange(!checked)}

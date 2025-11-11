@@ -14,18 +14,23 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
-        time: string;
-      }
+          time: string;
+        }
       | { [key: string]: number }
     )[];
 
     custodiesColors: string[];
   } | null>(null);
-  const [period, setPeriod] = useState<'1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null>('7d');
+  const [period, setPeriod] = useState<
+    '1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null
+  >('7d');
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [totalUnrealizedPnl, setTotalUnrealizedPnl] = useState<number>(0);
-  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
+  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({
+    start: 0,
+    end: 0,
+  });
 
   useEffect(() => {
     periodRef.current = period;
@@ -89,7 +94,7 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
       const result = await DataApiClient.getCustodyInfo(
         dataEndpoint,
         'short_pnl=true&long_pnl=true',
-        dataPeriod
+        dataPeriod,
       );
 
       if (!result) {
@@ -108,7 +113,9 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
       } = result;
 
       if (!shortPnL || !longPnL || !snapshot_timestamp) {
-        console.error('Failed to fetch unrealized PnL data: Missing required data fields');
+        console.error(
+          'Failed to fetch unrealized PnL data: Missing required data fields',
+        );
         return (
           <div className="h-full w-full flex items-center justify-center text-sm">
             Could not fetch unrealized PnL data
@@ -116,7 +123,10 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
         );
       }
 
-      const timeStamp = formatSnapshotTimestamp(snapshot_timestamp, periodRef.current);
+      const timeStamp = formatSnapshotTimestamp(
+        snapshot_timestamp,
+        periodRef.current,
+      );
 
       // Each custody keeps an utilization array
       const infos = window.adrena.client.custodies
@@ -180,7 +190,6 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
     }
   };
 
-
   if (!infos) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
@@ -207,7 +216,11 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
       ]}
       yDomain={[0]}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      gmt={
+        period === '1M' || period === '3M' || period === '6M' || period === '1Y'
+          ? 0
+          : getGMT()
+      }
       periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}

@@ -1,46 +1,46 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import DataApiClient from "@/DataApiClient";
+import DataApiClient from '@/DataApiClient';
 import {
   PreSeasonLeaderboardReturnTypeAPI,
   RankedRewards,
   TradingCompetitionLeaderboardAPI,
   UserProfileMetadata,
-} from "@/types";
-import { calculateWeeksPassed } from "@/utils";
+} from '@/types';
+import { calculateWeeksPassed } from '@/utils';
 
-import { WalletAdapterName } from "./useWalletAdapters";
+import { WalletAdapterName } from './useWalletAdapters';
 
 const RAFFLE_WINNERS = [
   {
     week: 0,
-    feesWinner: "B3NyyoWNzyzvpWv1G6a9gZJMjD1sTQBdZojBaH18mNjY",
-    jitoWinner: "CQmHKGYWmVT3MXN92y4Z7tHPxo6iUxk86tYEUaxsgeh6",
+    feesWinner: 'B3NyyoWNzyzvpWv1G6a9gZJMjD1sTQBdZojBaH18mNjY',
+    jitoWinner: 'CQmHKGYWmVT3MXN92y4Z7tHPxo6iUxk86tYEUaxsgeh6',
   },
   {
     week: 1,
-    feesWinner: "BRGTWBZH9aGyQjn2Q89nxQ9KEkGdbXHjgPyf7vRCYN6F",
-    jitoWinner: "C6EWezRe8Pz6HqNeVPQ9yFifLuyA7QDa1XsQcvDPJsaT",
+    feesWinner: 'BRGTWBZH9aGyQjn2Q89nxQ9KEkGdbXHjgPyf7vRCYN6F',
+    jitoWinner: 'C6EWezRe8Pz6HqNeVPQ9yFifLuyA7QDa1XsQcvDPJsaT',
   },
   {
     week: 2,
-    feesWinner: "CQmHKGYWmVT3MXN92y4Z7tHPxo6iUxk86tYEUaxsgeh6",
-    jitoWinner: "B3NyyoWNzyzvpWv1G6a9gZJMjD1sTQBdZojBaH18mNjY",
+    feesWinner: 'CQmHKGYWmVT3MXN92y4Z7tHPxo6iUxk86tYEUaxsgeh6',
+    jitoWinner: 'B3NyyoWNzyzvpWv1G6a9gZJMjD1sTQBdZojBaH18mNjY',
   },
   {
     week: 3,
-    feesWinner: "6ALGMay8AmcywGAX72ho7JbSucD7zeh4hwMVyXDb9zgy",
-    jitoWinner: "CQmHKGYWmVT3MXN92y4Z7tHPxo6iUxk86tYEUaxsgeh6",
+    feesWinner: '6ALGMay8AmcywGAX72ho7JbSucD7zeh4hwMVyXDb9zgy',
+    jitoWinner: 'CQmHKGYWmVT3MXN92y4Z7tHPxo6iUxk86tYEUaxsgeh6',
   },
   {
     week: 4,
-    feesWinner: "GxGS7GbaZatHbpzzqMNLzbz3kLEUZHejNiYLUZeCBpVU",
-    jitoWinner: "5iAj5Gx5jRnFA2W3HQG4gsvaBnWYXXsgrfpeN6SdDniV",
+    feesWinner: 'GxGS7GbaZatHbpzzqMNLzbz3kLEUZHejNiYLUZeCBpVU',
+    jitoWinner: '5iAj5Gx5jRnFA2W3HQG4gsvaBnWYXXsgrfpeN6SdDniV',
   },
   {
     week: 5,
-    feesWinner: "TriaLcGhTL4sPFc5zo7vY5yji4Z2gb3UGz5jL1RcCsM",
-    jitoWinner: "CJJCXbcrbuN78kaGqzsdAuPAgXo4GB1YDLL56PRmYFPr",
+    feesWinner: 'TriaLcGhTL4sPFc5zo7vY5yji4Z2gb3UGz5jL1RcCsM',
+    jitoWinner: 'CJJCXbcrbuN78kaGqzsdAuPAgXo4GB1YDLL56PRmYFPr',
   },
 ];
 
@@ -54,7 +54,7 @@ const findUserData = (
       rankInDivision: number;
       adxReward: number;
       jtoReward: number;
-      badge: "Diamond" | "Gold" | "Silver" | "Bronze" | "Iron";
+      badge: 'Diamond' | 'Gold' | 'Silver' | 'Bronze' | 'Iron';
     }[];
   }[],
   walletAddress: string,
@@ -84,7 +84,7 @@ const findUserData = (
 const processLeaderboardData = (
   traderDivisions: PreSeasonLeaderboardReturnTypeAPI<{
     showTraderDivisions: true;
-  }>["traderDivisions"],
+  }>['traderDivisions'],
   getUserName: (address: string | null) => string | null,
   wallet: { walletAddress: string } | null,
 ): TradingCompetitionLeaderboardAPI => {
@@ -97,7 +97,7 @@ const processLeaderboardData = (
         rankInDivision: number;
         adxReward: number;
         jtoReward: number;
-        badge: "Diamond" | "Gold" | "Silver" | "Bronze" | "Iron";
+        badge: 'Diamond' | 'Gold' | 'Silver' | 'Bronze' | 'Iron';
       }) => ({
         username: getUserName(trader.address) ?? trader.address,
         connected: trader.address === wallet?.walletAddress,
@@ -114,13 +114,13 @@ const processLeaderboardData = (
     for (let i = 0; i < nbMissing; i++) {
       acc[division].push({
         connected: false,
-        username: "-",
+        username: '-',
         rank: 10 - nbMissing + (i + 1),
         volume: null,
         pnl: null,
         adxRewards: 0,
         jtoRewards: 0,
-        badge: "Iron" as const,
+        badge: 'Iron' as const,
       });
     }
     return acc;
@@ -130,7 +130,7 @@ const processLeaderboardData = (
 const processAchievements = (
   achievements: PreSeasonLeaderboardReturnTypeAPI<{
     showAchievements: true;
-  }>["achievements"],
+  }>['achievements'],
   getUserName: (address: string | null) => string | null,
 ) => {
   if (!achievements) return null;
@@ -181,10 +181,10 @@ export default function useAwakeningV2({
     endDate: string;
     traderDivisions: PreSeasonLeaderboardReturnTypeAPI<{
       showTraderDivisions: true;
-    }>["traderDivisions"];
+    }>['traderDivisions'];
     achievements: PreSeasonLeaderboardReturnTypeAPI<{
       showAchievements: true;
-    }>["achievements"];
+    }>['achievements'];
     eligibleJitosolWallets: string[];
     rankedRewards: RankedRewards[];
   } | null>(null);
@@ -201,7 +201,7 @@ export default function useAwakeningV2({
 
   const getUserName = useCallback(
     (address: string | null) => {
-      if (!address) return "";
+      if (!address) return '';
       return userProfilesMap[address] ?? address;
     },
     [userProfilesMap],
@@ -210,14 +210,14 @@ export default function useAwakeningV2({
   const fetchData = useCallback(async () => {
     try {
       const response = await DataApiClient.getPreSeasonLeaderboard({
-        season: "preseason",
+        season: 'preseason',
         showAchievements: true,
         showTraderDivisions: true,
         showEligibleJitosolWallets: true,
       });
 
       if (!response) {
-        console.log("could not fetch data from API");
+        console.log('could not fetch data from API');
         return;
       }
 
@@ -230,7 +230,7 @@ export default function useAwakeningV2({
         rankedRewards: response.rankedRewards,
       });
     } catch (e) {
-      console.error("Error loading leaderboard data:", e);
+      console.error('Error loading leaderboard data:', e);
     }
   }, []);
 

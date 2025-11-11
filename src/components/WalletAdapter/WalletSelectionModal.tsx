@@ -26,8 +26,8 @@ export default function WalletSelectionModal({
   const dispatch = useDispatch();
   const { modalIsOpen } = useSelector((s) => s.walletState);
 
-  const privyAdapter = adapters.find(adapter => adapter.name === 'Privy');
-  const nativeAdapters = adapters.filter(adapter => adapter.name !== 'Privy');
+  const privyAdapter = adapters.find((adapter) => adapter.name === 'Privy');
+  const nativeAdapters = adapters.filter((adapter) => adapter.name !== 'Privy');
 
   return (
     <AnimatePresence>
@@ -37,29 +37,38 @@ export default function WalletSelectionModal({
           className="flex flex-col w-full sm:w-[90vw] md:w-[28em] max-w-[30em] items-center relative overflow-visible"
           title="Connect now"
         >
-          <div className={twMerge("flex flex-col grow items-start gap-6 pb-4 pt-4 w-full")}>
+          <div
+            className={twMerge(
+              'flex flex-col grow items-start gap-6 pb-4 pt-4 w-full',
+            )}
+          >
             {privyAdapter && (
               <div className="w-full px-3 sm:px-4">
                 <div className="space-y-3 sm:space-y-4">
                   <button
                     className="overflow-hidden group relative w-full h-24 border border-bcolor rounded-md cursor-pointer group transition-all hover:opacity-90 shadow-md hover:shadow-lg flex items-center justify-between px-3 sm:px-4 focus:outline-none"
                     style={{
-                      background: 'linear-gradient(90deg, #1a1b3a, #2f3c7e, #5b3ea8)',
+                      background:
+                        'linear-gradient(90deg, #1a1b3a, #2f3c7e, #5b3ea8)',
                     }}
                     onClick={() => {
                       dispatch(openCloseConnectionModalAction(false));
                       dispatch(connectWalletAction(privyAdapter));
                     }}
                   >
-                    <div className='flex flex-col gap-1'>
+                    <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-sm sm:text-base text-white font-bold">Smart Account</span>
+                        <span className="text-sm sm:text-base text-white font-bold">
+                          Smart Account
+                        </span>
                         <Tippy
-                          placement='top'
+                          placement="top"
                           content={
                             <div className="space-y-2">
                               <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
-                                Your Smart Account is a self-custodial wallet powered by Privy — fully yours, just easier to use.
+                                Your Smart Account is a self-custodial wallet
+                                powered by Privy — fully yours, just easier to
+                                use.
                               </p>
                             </div>
                           }
@@ -103,7 +112,8 @@ export default function WalletSelectionModal({
                     />
 
                     <div className="absolute bottom-1 right-2 text-xxs font-medium text-[#cbd5e1]/40 mix-blend-screen">
-                      powered by <span className="text-[#cbd5e1]/70">Privy</span>
+                      powered by{' '}
+                      <span className="text-[#cbd5e1]/70">Privy</span>
                     </div>
                   </button>
 
@@ -114,7 +124,7 @@ export default function WalletSelectionModal({
                     <BulletPoint text="Easy to use" />
 
                     <Link
-                      href='https://www.privy.io/wallets'
+                      href="https://www.privy.io/wallets"
                       target="_blank"
                       className={twMerge(
                         'text-xs opacity-50 hover:opacity-100 transition-opacity duration-300 hover:grayscale-0 flex ml-auto',
@@ -135,9 +145,11 @@ export default function WalletSelectionModal({
                     <div className="w-full border-t border-white/10"></div>
                   </div>
 
-                  <Tippy content='Connect directly to your wallet without any intermediaries.'>
+                  <Tippy content="Connect directly to your wallet without any intermediaries.">
                     <div className="relative flex justify-center text-xs cursor-help">
-                      <span className="px-3 bg-secondary text-white/50">Direct Connect</span>
+                      <span className="px-3 bg-secondary text-white/50">
+                        Direct Connect
+                      </span>
                     </div>
                   </Tippy>
                 </div>
@@ -169,7 +181,7 @@ export default function WalletSelectionModal({
                       />
 
                       {/* Logo */}
-                      {adapter.iconOverride ?? adapter.icon ? (
+                      {(adapter.iconOverride ?? adapter.icon) ? (
                         <div className="w-4 h-4 flex-shrink-0 relative z-10 flex items-center justify-center">
                           <Image
                             src={adapter.iconOverride ?? adapter.icon}
@@ -191,9 +203,8 @@ export default function WalletSelectionModal({
               </div>
             )}
           </div>
-        </Modal >
-      )
-      }
-    </AnimatePresence >
+        </Modal>
+      )}
+    </AnimatePresence>
   );
 }

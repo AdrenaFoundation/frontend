@@ -93,7 +93,13 @@ export default function ADXFeeStreamAnimation({
               transition={{ duration: duration, repeat: Infinity }}
               className="absolute"
             >
-              <Image src={usdc?.image} className="w-5 h-5" alt="adx logo" width={20} height={20} />
+              <Image
+                src={usdc?.image}
+                className="w-5 h-5"
+                alt="adx logo"
+                width={20}
+                height={20}
+              />
             </motion.span>
           )}
         </motion.div>

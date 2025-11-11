@@ -153,7 +153,7 @@ export default function SearchUserProfiles({
                               'flex items-center gap-3 p-2 px-4 rounded-md border border-bcolor hover:border-white/10 cursor-pointer transition-all duration-200',
                               'hover:bg-third/50 group',
                               loadingProfile === user.owner.toBase58() &&
-                              'opacity-50 pointer-events-none',
+                                'opacity-50 pointer-events-none',
                             )}
                             onClick={() =>
                               setSelectedProfile(user as UserProfileExtended)
@@ -163,7 +163,7 @@ export default function SearchUserProfiles({
                               <Image
                                 src={
                                   PROFILE_PICTURES[
-                                  user.profilePicture as keyof typeof PROFILE_PICTURES
+                                    user.profilePicture as keyof typeof PROFILE_PICTURES
                                   ] || PROFILE_PICTURES[0]
                                 }
                                 alt="Profile"

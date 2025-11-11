@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import { z } from "zod";
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
 
-import { SolanaIDType } from "@/types";
+import { SolanaIDType } from '@/types';
 
 // Match the API response
 const SolanaIDSchema = z.object({
   solidUser: z.object({
     // solidScore: z.number(),
-    tierGroup: z.enum(["tier_1", "tier_2", "tier_3", "tier_4"]),
+    tierGroup: z.enum(['tier_1', 'tier_2', 'tier_3', 'tier_4']),
     isSolanaIdUser: z.boolean().optional().nullable(),
   }),
 });
@@ -29,8 +29,8 @@ const useSolanaID = ({
     if (
       // Do not call Solana ID in localhost as the call is restricted to the domain
       walletAddress === null ||
-      typeof window === "undefined" ||
-      window.location.hostname === "localhost"
+      typeof window === 'undefined' ||
+      window.location.hostname === 'localhost'
     ) {
       setData(null);
       return;
@@ -39,7 +39,7 @@ const useSolanaID = ({
     const apiKey = process.env.NEXT_PUBLIC_SOLANA_ID_API_KEY;
 
     if (!apiKey) {
-      console.error("API key is not set");
+      console.error('API key is not set');
       setData(null);
       return;
     }
@@ -52,16 +52,16 @@ const useSolanaID = ({
         const response = await fetch(
           `https://score.solana.id/api/solid-score/address/${walletAddress}`,
           {
-            method: "GET",
+            method: 'GET',
             headers: {
-              "Content-Type": "application/json",
-              "x-api-key": apiKey,
+              'Content-Type': 'application/json',
+              'x-api-key': apiKey,
             },
           },
         );
 
         if (!response.ok) {
-          console.error("Error fetching data:", response.statusText);
+          console.error('Error fetching data:', response.statusText);
           return null;
         }
 
@@ -77,7 +77,7 @@ const useSolanaID = ({
         // Enforce the API answer
         if (!parsed.success) {
           console.log(
-            "SOLANA ID API response does not match schema",
+            'SOLANA ID API response does not match schema',
             parsed.error,
           );
           setData(null);
@@ -90,8 +90,8 @@ const useSolanaID = ({
           setData(null);
         }
       } catch (err) {
-        console.error("Error fetching data:", err);
-        setError("Failed to fetch data");
+        console.error('Error fetching data:', err);
+        setError('Failed to fetch data');
       } finally {
         setLoading(false);
       }

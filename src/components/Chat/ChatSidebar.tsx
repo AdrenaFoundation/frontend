@@ -180,7 +180,7 @@ function ChatSidebar({
               alt="Add Friend Icon"
               width={16}
               height={16}
-              className='w-4 h-4'
+              className="w-4 h-4"
             />
             <p
               className={twMerge(
@@ -288,8 +288,8 @@ function RoomButton({
           className={twMerge(
             'opacity-50 group-hover:opacity-100 text-sm font-semibold capitalize transition-opacity duration-300',
             currentChatroomId === room.id &&
-            !friendRequestWindowOpen &&
-            'opacity-100',
+              !friendRequestWindowOpen &&
+              'opacity-100',
             room.unread_count > 0 && 'font-bold opacity-100',
           )}
         >

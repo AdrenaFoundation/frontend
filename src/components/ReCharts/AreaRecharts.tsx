@@ -15,7 +15,11 @@ import {
 import { AxisDomain, DataKey } from 'recharts/types/util/types';
 
 import { AdrenaEvent, RechartsData } from '@/types';
-import { formatGraphCurrency, formatNumberShort, formatPercentage } from '@/utils';
+import {
+  formatGraphCurrency,
+  formatNumberShort,
+  formatPercentage,
+} from '@/utils';
 
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
@@ -50,10 +54,13 @@ export default function AreaRechart<T extends string>({
   }[];
   period: T | null;
   setPeriod: (v: T | null) => void;
-  periods: (T | {
-    name: T;
-    disabled?: boolean;
-  })[];
+  periods: (
+    | T
+    | {
+        name: T;
+        disabled?: boolean;
+      }
+  )[];
   domain?: AxisDomain;
   tippyContent?: ReactNode;
   subValue?: number;
@@ -67,10 +74,18 @@ export default function AreaRechart<T extends string>({
   startTimestamp?: number;
   endTimestamp?: number;
 }) {
-  const [hiddenLabels, setHiddenLabels] = React.useState<DataKey<string | number>[]>([]);
+  const [hiddenLabels, setHiddenLabels] = React.useState<
+    DataKey<string | number>[]
+  >([]);
 
   const activeEvents = useMemo(() => {
-    return (events || []).filter(event => startTimestamp && endTimestamp && event.timestamp >= startTimestamp && event.timestamp <= endTimestamp);
+    return (events || []).filter(
+      (event) =>
+        startTimestamp &&
+        endTimestamp &&
+        event.timestamp >= startTimestamp &&
+        event.timestamp <= endTimestamp,
+    );
   }, [events, startTimestamp, endTimestamp]);
 
   const formatYAxis = (tickItem: number) => {
@@ -79,7 +94,11 @@ export default function AreaRechart<T extends string>({
     }
 
     if (formatY === 'currency') {
-      return formatGraphCurrency({ tickItem, maxDecimals: 2, maxDecimalsIfToken: 4 });
+      return formatGraphCurrency({
+        tickItem,
+        maxDecimals: 2,
+        maxDecimalsIfToken: 4,
+      });
     }
 
     return formatNumberShort(tickItem, 0);
@@ -97,20 +116,26 @@ export default function AreaRechart<T extends string>({
             </Tippy>
           ) : null}
 
-          {subValue ? <FormatNumber
-            nb={subValue}
-            className="text-sm text-txtfade sm:text-xs"
-            format={formatTooltipNumber}
-            prefix="("
-            suffix=")"
-            suffixClassName='ml-0 text-txtfade'
-            isDecimalDimmed={false}
-            precision={title === 'ALP Price' ? 4 : 0}
-          /> : null}
+          {subValue ? (
+            <FormatNumber
+              nb={subValue}
+              className="text-sm text-txtfade sm:text-xs"
+              format={formatTooltipNumber}
+              prefix="("
+              suffix=")"
+              suffixClassName="ml-0 text-txtfade"
+              isDecimalDimmed={false}
+              precision={title === 'ALP Price' ? 4 : 0}
+            />
+          ) : null}
         </div>
 
         <div className="flex flex-col gap-2 items-end">
-          <PeriodSelector period={period} setPeriod={setPeriod} periods={periods} />
+          <PeriodSelector
+            period={period}
+            setPeriod={setPeriod}
+            periods={periods}
+          />
 
           {lockPeriods && setLockPeriod && (
             <div className="flex gap-2 text-sm items-center">
@@ -118,8 +143,9 @@ export default function AreaRechart<T extends string>({
               {lockPeriods.map((period) => (
                 <div
                   key={period}
-                  className={`cursor-pointer ${lockPeriod === period ? 'underline' : ''
-                    }`}
+                  className={`cursor-pointer ${
+                    lockPeriod === period ? 'underline' : ''
+                  }`}
                   onClick={() => setLockPeriod(period)}
                 >
                   {period}d
@@ -201,12 +227,8 @@ export default function AreaRechart<T extends string>({
             );
           })}
 
-          {activeEvents?.map(({
-            label,
-            time,
-            color,
-            labelPosition,
-          }, i) => <ReferenceLine
+          {activeEvents?.map(({ label, time, color, labelPosition }, i) => (
+            <ReferenceLine
               key={label + '-' + i + '-' + time}
               x={time}
               stroke={color}
@@ -217,7 +239,8 @@ export default function AreaRechart<T extends string>({
                 fill: color,
                 fontSize: 12,
               }}
-            />)}
+            />
+          ))}
         </AreaChart>
       </ResponsiveContainer>
     </div>

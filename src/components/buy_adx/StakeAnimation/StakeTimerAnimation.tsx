@@ -122,7 +122,13 @@ export default function StakeTimerAnimation({
               suffix={isADX ? ' ADX' : ' ALP'}
             />
             <div className="flex flex-row gap-1 items-center opacity-50">
-              <Image src={lockIcon} className="w-3 h-3" alt="lock icon" width={12} height={12} />
+              <Image
+                src={lockIcon}
+                className="w-3 h-3"
+                alt="lock icon"
+                width={12}
+                height={12}
+              />
               <FormatNumber
                 nb={initial.daysLocked}
                 className="text-sm lg:text-base"
@@ -142,15 +148,15 @@ export default function StakeTimerAnimation({
             animate={
               cooldown
                 ? {
-                  translateX: x,
-                  translateY: y,
-                  opacity: 1,
-                }
+                    translateX: x,
+                    translateY: y,
+                    opacity: 1,
+                  }
                 : {
-                  translateX: x[1] + 10,
-                  translateY: y[1] - 100,
-                  opacity: 0,
-                }
+                    translateX: x[1] + 10,
+                    translateY: y[1] - 100,
+                    opacity: 0,
+                  }
             }
             transition={{
               duration: 0.5,
@@ -160,7 +166,15 @@ export default function StakeTimerAnimation({
             className="absolute flex-none"
             key={index}
           >
-            {token && <Image src={token} className="w-4 h-4" alt="lock icon" width={16} height={16} />}
+            {token && (
+              <Image
+                src={token}
+                className="w-4 h-4"
+                alt="lock icon"
+                width={16}
+                height={16}
+              />
+            )}
           </motion.span>
         ))}
       </div>

@@ -34,7 +34,6 @@ export function useAllUserProfilesMetadata(): {
     const interval = setInterval(loadAllUserProfileMetadata, 60000);
 
     return () => clearInterval(interval);
-     
   }, [trickReload]);
 
   const profilesMap = useMemo(() => {

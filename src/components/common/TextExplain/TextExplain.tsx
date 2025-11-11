@@ -17,9 +17,7 @@ export default function TextExplain({
     <div
       className={twMerge(
         'h-[0.3em] border-l-2 border-r-2 border-gray-600 w-full',
-        position === 'top'
-          ? 'border-t-2 mt-[0.1em]'
-          : 'border-b-2 mb-[0.1em]',
+        position === 'top' ? 'border-t-2 mt-[0.1em]' : 'border-b-2 mb-[0.1em]',
       )}
     />
   );

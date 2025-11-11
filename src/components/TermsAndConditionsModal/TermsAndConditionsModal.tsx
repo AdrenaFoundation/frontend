@@ -11,18 +11,18 @@ export default function TermsAndConditionsModal({
   ...args
 }:
   | {
-    className?: string;
-    isOpen: boolean;
-    readonly: true;
-    closeTrigger: () => void;
-  }
+      className?: string;
+      isOpen: boolean;
+      readonly: true;
+      closeTrigger: () => void;
+    }
   | {
-    className?: string;
-    isOpen: boolean;
-    readonly: false;
-    agreeTrigger: () => void;
-    declineTrigger: () => void;
-  }) {
+      className?: string;
+      isOpen: boolean;
+      readonly: false;
+      agreeTrigger: () => void;
+      declineTrigger: () => void;
+    }) {
   if (!isOpen) {
     return null;
   }
@@ -40,23 +40,37 @@ export default function TermsAndConditionsModal({
         'flex flex-col items-center p-4 w-[25em] max-w-full max-h-[40em]',
       )}
     >
-      <div className='flex text-sm text-center'>
+      <div className="flex text-sm text-center">
         <p>
-          <span className='text-txtfade'>Using this platform means that you agree to both our </span>
+          <span className="text-txtfade">
+            Using this platform means that you agree to both our{' '}
+          </span>
           <span
-            className='font-semibold cursor-pointer opacity-90 hover:opacity-100'
-            onClick={() => window.open("https://docs.adrena.trade/technical-documentation/token-terms-and-conditions", "_blank")}
+            className="font-semibold cursor-pointer opacity-90 hover:opacity-100"
+            onClick={() =>
+              window.open(
+                'https://docs.adrena.trade/technical-documentation/token-terms-and-conditions',
+                '_blank',
+              )
+            }
           >
             token terms and conditions
           </span>
-          <span className='text-txtfade'> and </span>
+          <span className="text-txtfade"> and </span>
           <span
-            className='font-semibold cursor-pointer opacity-90 hover:opacity-100'
-            onClick={() => window.open("https://docs.adrena.trade/technical-documentation/terms-and-conditions", "_blank")}
+            className="font-semibold cursor-pointer opacity-90 hover:opacity-100"
+            onClick={() =>
+              window.open(
+                'https://docs.adrena.trade/technical-documentation/terms-and-conditions',
+                '_blank',
+              )
+            }
           >
             terms of service
           </span>
-          <span className='text-txtfade'>. Please read them carefully before proceeding.</span>
+          <span className="text-txtfade">
+            . Please read them carefully before proceeding.
+          </span>
         </p>
       </div>
 

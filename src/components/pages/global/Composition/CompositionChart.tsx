@@ -11,9 +11,14 @@ import { getCustodyByMint, getGMT, periodModeToSeconds } from '@/utils';
 export default function CompositionChart() {
   const [data, setData] = useState<RechartsData[] | null>(null);
   const [custodyInfo, setCustodyInfo] = useState<TokenInfo[] | null>(null);
-  const [period, setPeriod] = useState<'1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null>('6M');
+  const [period, setPeriod] = useState<
+    '1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null
+  >('6M');
   const periodRef = useRef(period);
-  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
+  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({
+    start: 0,
+    end: 0,
+  });
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -104,7 +109,12 @@ export default function CompositionChart() {
           });
         }
 
-        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M' || periodRef.current === '1Y') {
+        if (
+          periodRef.current === '1M' ||
+          periodRef.current === '3M' ||
+          periodRef.current === '6M' ||
+          periodRef.current === '1Y'
+        ) {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
@@ -177,7 +187,11 @@ export default function CompositionChart() {
         color: info.color,
       }))}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      gmt={
+        period === '1M' || period === '3M' || period === '6M' || period === '1Y'
+          ? 0
+          : getGMT()
+      }
       periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       yDomain={['dataMax']}
       setPeriod={setPeriod}

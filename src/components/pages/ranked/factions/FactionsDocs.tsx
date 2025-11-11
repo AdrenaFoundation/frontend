@@ -209,7 +209,9 @@ export default function FactionsDocs({
                 </div>
                 <div className="text-[#bbb] leading-relaxed pl-4">
                   → <span className="text-[#5AA6FA] font-regular">JITO</span>
-                  &apos;s <span className="text-white font-regular">33%</span>{' '}
+                  &apos;s <span className="text-white font-regular">
+                    33%
+                  </span>{' '}
                   damage advantage + completed officer goals giving a max cap of{' '}
                   <span className="text-white font-regular">30%.</span>
                 </div>
@@ -236,7 +238,9 @@ export default function FactionsDocs({
                 </div>
                 <div className="text-[#bbb] leading-relaxed pl-4">
                   → <span className="text-[#FA6724] font-regular">BONK</span>
-                  &apos;s <span className="text-white font-regular">33%</span>{' '}
+                  &apos;s <span className="text-white font-regular">
+                    33%
+                  </span>{' '}
                   damage advantage, but officers only completed half their
                   missions, giving a max cap of{' '}
                   <span className="text-white font-regular">15%.</span>

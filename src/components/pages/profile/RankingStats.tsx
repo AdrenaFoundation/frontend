@@ -126,9 +126,9 @@ export default function RankingStats({
                 >
                   {season.name}
                   {season.name === 'Factions' &&
-                    season.userTeam !== undefined &&
-                    season.userTeam !== null &&
-                    season.userTeam !== 0 ? (
+                  season.userTeam !== undefined &&
+                  season.userTeam !== null &&
+                  season.userTeam !== 0 ? (
                     <p
                       className={twMerge(
                         'text-xs',

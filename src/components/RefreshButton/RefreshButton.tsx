@@ -27,7 +27,13 @@ export default function RefreshButton({ className }: { className?: string }) {
         className,
       )}
     >
-      <Image src={refreshIcon} alt="Refresh" className="w-3" width={12} height={12} />
+      <Image
+        src={refreshIcon}
+        alt="Refresh"
+        className="w-3"
+        width={12}
+        height={12}
+      />
     </div>
   );
 }

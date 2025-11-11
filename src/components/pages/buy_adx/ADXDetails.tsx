@@ -34,13 +34,13 @@ export default function ADXDetails({ className }: { className?: string }) {
                   protocol fees.
                 </li>
                 <li className="text-sm opacity-75 list-disc ml-4 mt-1">
-                  <span className="font-semibold">USDC Distribution:</span>{' '}
-                  This revenue is distributed to ADX holders in USDC.
+                  <span className="font-semibold">USDC Distribution:</span> This
+                  revenue is distributed to ADX holders in USDC.
                 </li>
                 <li className="text-sm opacity-75 list-disc ml-4 mt-1">
-                  <span className="font-semibold">Bonus Rewards:</span>{' '}
-                  Duration locked ADX additionally receives ADX liquidity mining
-                  rewards and multipliers on both USDC revenue and ADX rewards.
+                  <span className="font-semibold">Bonus Rewards:</span> Duration
+                  locked ADX additionally receives ADX liquidity mining rewards
+                  and multipliers on both USDC revenue and ADX rewards.
                 </li>
               </ul>
 
@@ -62,7 +62,13 @@ export default function ADXDetails({ className }: { className?: string }) {
             className="w-fit opacity-50 hover:opacity-100 transition-opacity duration-300 flex flex-row gap-2 items-center mt-3 cursor-pointer"
           >
             <p className="text-sm">Learn more</p>
-            <Image src={arrowIcon} alt="arrow icon" className="w-2 h-2" width={8} height={8} />
+            <Image
+              src={arrowIcon}
+              alt="arrow icon"
+              className="w-2 h-2"
+              width={8}
+              height={8}
+            />
           </Link>
         </div>
       </div>

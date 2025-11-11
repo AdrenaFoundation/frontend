@@ -57,30 +57,30 @@ export default async function handler(
       label: hasActivePositions ? 'Close Position' : 'Open Position',
       links: hasActivePositions
         ? {
-          actions: [
-            {
-              label: 'Close Position',
-              href: '/api/blink/closePosition?pubkey={pubkey}',
-              parameters: [
-                {
-                  name: 'pubkey',
-                  type: 'select',
-                  label: 'Position',
-                  required: true,
-                  options: allUserPositions.map((position, i) => ({
-                    label: `${getTokenSymbol(position.collateralToken.symbol)} – ${position.side}`,
-                    value: position.pubkey.toBase58(),
-                    selected: i === 0,
-                  })),
-                },
-              ],
-              type: 'transaction',
-            },
-          ],
-        }
+            actions: [
+              {
+                label: 'Close Position',
+                href: '/api/blink/closePosition?pubkey={pubkey}',
+                parameters: [
+                  {
+                    name: 'pubkey',
+                    type: 'select',
+                    label: 'Position',
+                    required: true,
+                    options: allUserPositions.map((position, i) => ({
+                      label: `${getTokenSymbol(position.collateralToken.symbol)} – ${position.side}`,
+                      value: position.pubkey.toBase58(),
+                      selected: i === 0,
+                    })),
+                  },
+                ],
+                type: 'transaction',
+              },
+            ],
+          }
         : {
-          actions: [],
-        },
+            actions: [],
+          },
     });
   } else {
     res.writeHead(200, ACTIONS_CORS_HEADERS).json({

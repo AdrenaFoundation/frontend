@@ -85,7 +85,8 @@ export default function MoreMenu({
             transition={{ duration: 0.2 }}
             id="more-menu"
             key="more-menu"
-            className="absolute top-8 left-1/2 -translate-x-1/2 flex flex-row gap-5 bg-secondary border shadow-xl rounded-md p-4 w-[37.5rem]">
+            className="absolute top-8 left-1/2 -translate-x-1/2 flex flex-row gap-5 bg-secondary border shadow-xl rounded-md p-4 w-[37.5rem]"
+          >
             <div className="flex-1">
               <p className="text-sm mb-1 font-semibold opacity-50">Features</p>
               <div className="flex flex-col gap-3 flex-1">
@@ -161,7 +162,9 @@ export default function MoreMenu({
                             />
                           ) : null}
                           <div>
-                            <p className="text-base font-semibold">{page.name}</p>
+                            <p className="text-base font-semibold">
+                              {page.name}
+                            </p>
                           </div>
                         </div>
 

@@ -178,9 +178,9 @@ export default function MixedAreaLineChart<T extends string>({
                   src={downloadIcon}
                   width={0}
                   height={0}
-                                    style={{ width: '14px', height: '12px' }}
+                  style={{ width: '14px', height: '12px' }}
                   alt="Download icon"
-                                    className="w-3.5 h-3.5"
+                  className="w-3.5 h-3.5"
                 />
               </div>
             ) : null}

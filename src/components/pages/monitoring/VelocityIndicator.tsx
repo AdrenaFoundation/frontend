@@ -21,7 +21,11 @@ const VelocityIndicator = React.memo(function VelocityIndicator({
   weeklyTippyContent,
   format = 'currency',
 }: VelocityIndicatorProps) {
-  const renderPeriodValue = (change: number | null, period: '24h' | '7d', tippyContent: ReactNode) => {
+  const renderPeriodValue = (
+    change: number | null,
+    period: '24h' | '7d',
+    tippyContent: ReactNode,
+  ) => {
     if (change === null) {
       return (
         <div className="flex items-center gap-1">
@@ -36,7 +40,7 @@ const VelocityIndicator = React.memo(function VelocityIndicator({
     const prefix = format === 'currency' ? `${sign}$` : sign;
 
     return (
-      <Tippy content={tippyContent} placement='bottom'>
+      <Tippy content={tippyContent} placement="bottom">
         <div className="flex items-center gap-1.5 mt-0.5 cursor-help">
           <span className="text-xs opacity-25">{period}</span>
 
@@ -60,7 +64,9 @@ const VelocityIndicator = React.memo(function VelocityIndicator({
   };
 
   return (
-    <div className={twMerge('flex items-center gap-2 font-mono mt-0.5', className)}>
+    <div
+      className={twMerge('flex items-center gap-2 font-mono mt-0.5', className)}
+    >
       {renderPeriodValue(dailyChange, '24h', dailyTippyContent)}
       <span className="text-xs opacity-10">|</span>
       {renderPeriodValue(weeklyChange, '7d', weeklyTippyContent)}

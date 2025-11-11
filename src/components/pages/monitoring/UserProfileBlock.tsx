@@ -31,7 +31,7 @@ export default function UserProfileBlock({
           onClick={() =>
             setActiveProfile(
               superchargedProfile.profile ||
-              getNonUserProfile(superchargedProfile.wallet.toBase58()),
+                getNonUserProfile(superchargedProfile.wallet.toBase58()),
             )
           }
         >

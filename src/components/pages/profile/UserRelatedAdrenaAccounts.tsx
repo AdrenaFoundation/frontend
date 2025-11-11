@@ -51,9 +51,9 @@ export default function UserRelatedAdrenaAccounts({
 }) {
   const [data, setData] = useState<
     | {
-      rowTitle: ReactNode;
-      value: ReactNode;
-    }[]
+        rowTitle: ReactNode;
+        value: ReactNode;
+      }[]
     | null
   >(null);
 
@@ -111,8 +111,9 @@ export default function UserRelatedAdrenaAccounts({
     positions?.forEach((position) => {
       data.push(
         onchainAccountData({
-          title: `${getTokenSymbol(position.token.symbol)} ${position.side === 'long' ? 'Long' : 'Short'
-            } Position`,
+          title: `${getTokenSymbol(position.token.symbol)} ${
+            position.side === 'long' ? 'Long' : 'Short'
+          } Position`,
           address: position.pubkey,
           program: 'Adrena',
         }),

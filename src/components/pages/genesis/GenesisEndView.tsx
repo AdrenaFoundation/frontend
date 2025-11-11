@@ -13,9 +13,8 @@ import adrenaMonsters from '../../../../public/images/adrena-monsters.png';
 import xIcon from '../../../../public/images/x-black-bg.png';
 
 export default function GenesisEndView({ connected }: { connected: boolean }) {
-  const walletAddress = useSelector(
-    (state) => state.walletState.wallet,
-  )?.walletAddress ?? null;
+  const walletAddress =
+    useSelector((state) => state.walletState.wallet)?.walletAddress ?? null;
 
   const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
   const [totalStakedAmount, setTotalStakedAmount] = useState<number | null>(
@@ -68,9 +67,9 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
   const twitterText =
     totalStakedAmount !== null && totalStakedAmount > 0 && connected
       ? `I just bought ${formatNumber(
-        totalStakedAmount,
-        2,
-      )} ALP locked and staked for 180 days! @adrenaprotocol`
+          totalStakedAmount,
+          2,
+        )} ALP locked and staked for 180 days! @adrenaprotocol`
       : 'Check out Adrena \nThe new community owned, 100% rev share, perp dex on Solana!';
 
   return (
