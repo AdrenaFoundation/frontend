@@ -33,3 +33,4 @@ execSync(
 
 console.log('Prettier formatted:');
 filesNeedingFormat.forEach((file) => console.log(`- ${file}`));
+console.log('\n');

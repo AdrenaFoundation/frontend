@@ -107,7 +107,7 @@ export default function BurgerMenu({
   // Only show loading shimmer the first time the menu is opened
   useEffect(() => {
     if (isOpen && !hasMenuLoadedOnce) {
-                 // Short delay to allow images/content to load
+      // Short delay to allow images/content to load
       const timer = setTimeout(() => {
         setHasMenuLoadedOnce(true);
       }, 300);
