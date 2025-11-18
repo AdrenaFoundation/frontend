@@ -149,9 +149,7 @@ async function startStreaming() {
   }
 
   return new Promise<void>((resolve, reject) => {
-    websocket = new WebSocket(
-      'wss://history.oraclesecurity.org/trading-view/stream',
-    );
+    websocket = new WebSocket('wss://view.chaospp.xyz/trading-view/stream');
 
     websocket.onopen = () => {
       console.log('[Streaming]: WebSocket connected, subscribing');

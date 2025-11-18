@@ -16,7 +16,7 @@ import {
 } from '../../../../../public/charting_library/charting_library.js';
 import { subscribeOnStream, unsubscribeFromStream } from './streaming';
 
-export const CHAOS_API_ENDPOINT = 'https://history.oraclesecurity.org';
+export const CHAOS_API_ENDPOINT = 'https://view.chaospp.xyz';
 
 export default function datafeed({
   getMarksCallback,
