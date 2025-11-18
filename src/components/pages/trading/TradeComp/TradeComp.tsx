@@ -1,8 +1,12 @@
 import { Wallet } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import infoIcon from '@/../../public/images/Icons/info.svg';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import JupiterWidget from '@/components/JupiterWidget/JupiterWidget';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
@@ -59,7 +63,8 @@ export default function TradeComp({
     const walletAddress = getWalletAddress(wallet);
     if (
       walletAddress &&
-      window.adrena.client.mainPool.whitelistedSwapper.toBase58() === walletAddress
+      window.adrena.client.mainPool.whitelistedSwapper.toBase58() ===
+        walletAddress
     ) {
       setIsWhitelistedSwapper(true);
     }
@@ -77,8 +82,54 @@ export default function TradeComp({
         <TabSelect
           selected={selectedAction}
           tabs={[
-            { title: 'long', activeColor: 'border-transparent [border-image:linear-gradient(to_right,#10b981,#22c55e,#14b8a6)_1]' },
-            { title: 'short', activeColor: 'border-transparent [border-image:linear-gradient(to_right,#ef4444,#e11d48,#db2777)_1]' },
+            {
+              title: 'long',
+              activeColor:
+                'border-transparent [border-image:linear-gradient(to_right,#10b981,#22c55e,#14b8a6)_1]',
+            },
+            {
+              title: 'short',
+              activeColor:
+                'border-transparent [border-image:linear-gradient(to_right,#ef4444,#e11d48,#db2777)_1]',
+              tooltip: selectedAction === 'short' && (
+                <Tippy
+                  content={
+                    <div className="text-xs max-w-xs">
+                      <span className="text-sm">
+                        Max payout on short is equivalent to the borrowed USDC
+                        (size). More about the peer2pool perp model{' '}
+                        <Link
+                          href="https://docs.adrena.trade/technical-documentation/peer-to-pool-perp-model-and-the-risks-as-a-liquidity-provider"
+                          className="underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          in the docs
+                        </Link>
+                        .
+                      </span>
+                    </div>
+                  }
+                  placement="bottom"
+                  interactive={true}
+                  className="cursor-pointer"
+                >
+                  <div
+                    className="flex items-center"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Image
+                      src={infoIcon}
+                      alt="Info"
+                      width={12}
+                      height={12}
+                      className="opacity-50 hover:opacity-100 transition-opacity"
+                    />
+                  </div>
+                </Tippy>
+              ),
+            },
             { title: 'swap', activeColor: 'border-white' },
           ]}
           onClick={(title) => {
@@ -113,11 +164,13 @@ export default function TradeComp({
             ) : (
               <>
                 {/* Always render Jupiter widget but hide when not needed */}
-                <div className={twMerge(
-                  'relative h-[575px] min-w-[300px] w-full',
-                  !connected && 'overflow-hidden',
-                  !(isJupSwap || !isWhitelistedSwapper) && 'hidden'
-                )}>
+                <div
+                  className={twMerge(
+                    'relative h-[575px] min-w-[300px] w-full',
+                    !connected && 'overflow-hidden',
+                    !(isJupSwap || !isWhitelistedSwapper) && 'hidden',
+                  )}
+                >
                   <div className={!connected ? 'blur-sm' : ''}>
                     <JupiterWidget
                       adapters={adapters}

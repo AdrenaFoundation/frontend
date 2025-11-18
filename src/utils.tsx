@@ -397,7 +397,7 @@ export const DEFAULT_PRIORITY_FEE_OPTION = 'high';
 // in SOL
 export const DEFAULT_MAX_PRIORITY_FEE = 0.0001;
 
-export const DEFAULT_SETTINGS = {
+export const DEFAULT_SETTINGS: SettingsState = {
   disableChat: false,
   showFeesInPnl: true,
   showPopupOnPositionClose: true,
@@ -413,7 +413,8 @@ export const DEFAULT_SETTINGS = {
   enableAdrenaNotifications: true,
   useSqrtScaleForVolumeAndFeeChart: true,
   lastSelectedTradingToken: '',
-} as SettingsState;
+  leverageByToken: {},
+};
 
 export const PercentilePriorityFeeList = {
   medium: 3000,
@@ -1654,7 +1655,9 @@ export function periodModeToSeconds(
 
 // Simple helper to extract address from Anchor Wallet type
 // For Redux wallet state, use selectWalletAddress from @/selectors/walletSelectors
-export function getWalletAddress(wallet: Wallet | null | undefined): string | null {
+export function getWalletAddress(
+  wallet: Wallet | null | undefined,
+): string | null {
   if (!wallet) return null;
 
   try {
@@ -1672,8 +1675,18 @@ export function BulletPoint({ text }: { text: string }) {
   return (
     <div className="flex items-center gap-1.5 sm:gap-2">
       <div className="flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500/90">
-        <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3.5} d="M5 13l4 4L19 7" />
+        <svg
+          className="w-2.5 h-2.5 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={3.5}
+            d="M5 13l4 4L19 7"
+          />
         </svg>
       </div>
       <span className="text-xs text-[#11aa78] font-bold">{text}</span>
