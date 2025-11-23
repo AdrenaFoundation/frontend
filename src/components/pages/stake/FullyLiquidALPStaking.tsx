@@ -61,10 +61,10 @@ export default function FullyLiquidALPStaking({
     return savedConfig
       ? JSON.parse(savedConfig)
       : {
-        size: 'desc',
-        duration: 'asc',
-        lastClicked: 'size',
-      };
+          size: 'desc',
+          duration: 'asc',
+          lastClicked: 'size',
+        };
   });
 
   const { claimsHistory } = useClaimHistory({
@@ -79,25 +79,25 @@ export default function FullyLiquidALPStaking({
 
   const sortedLockedStakes = lockedStakes
     ? lockedStakes.sort((a: LockedStakeExtended, b: LockedStakeExtended) => {
-      const sizeModifier = sortConfig.size === 'asc' ? 1 : -1;
-      const durationModifier = sortConfig.duration === 'asc' ? 1 : -1;
+        const sizeModifier = sortConfig.size === 'asc' ? 1 : -1;
+        const durationModifier = sortConfig.duration === 'asc' ? 1 : -1;
 
-      const sizeDiff = (Number(a.amount) - Number(b.amount)) * sizeModifier;
-      const durationDiff =
-        (Number(a.endTime) * 1000 - Number(b.endTime) * 1000) *
-        durationModifier;
+        const sizeDiff = (Number(a.amount) - Number(b.amount)) * sizeModifier;
+        const durationDiff =
+          (Number(a.endTime) * 1000 - Number(b.endTime) * 1000) *
+          durationModifier;
 
-      if (sortConfig.lastClicked === 'size') {
-        return sizeDiff !== 0 ? sizeDiff : durationDiff; // If sizeDiff is zero, fall back to durationDiff.
-      }
+        if (sortConfig.lastClicked === 'size') {
+          return sizeDiff !== 0 ? sizeDiff : durationDiff; // If sizeDiff is zero, fall back to durationDiff.
+        }
 
-      if (sortConfig.lastClicked === 'duration') {
-        return durationDiff !== 0 ? durationDiff : sizeDiff; // If durationDiff is zero, fall back to sizeDiff.
-      }
+        if (sortConfig.lastClicked === 'duration') {
+          return durationDiff !== 0 ? durationDiff : sizeDiff; // If durationDiff is zero, fall back to sizeDiff.
+        }
 
-      // Fallback sorting by duration or size if none was clicked
-      return durationDiff || sizeDiff;
-    })
+        // Fallback sorting by duration or size if none was clicked
+        return durationDiff || sizeDiff;
+      })
     : [];
 
   useEffect(() => {
@@ -135,7 +135,7 @@ export default function FullyLiquidALPStaking({
       (sum, claim) =>
         sum +
         (claim.rewards_adx + claim.rewards_adx_genesis) *
-        claim.adx_price_at_claim,
+          claim.adx_price_at_claim,
       0,
     ) ?? 0;
 
@@ -146,8 +146,8 @@ export default function FullyLiquidALPStaking({
         acc:
           median.acc +
           amount *
-          (fullyLiquidALPStaking.getTime() -
-            lockedStake.stakeTime.toNumber() * 1000),
+            (fullyLiquidALPStaking.getTime() -
+              lockedStake.stakeTime.toNumber() * 1000),
         total: median.total + amount,
       };
     },

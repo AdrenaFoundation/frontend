@@ -38,11 +38,11 @@ export default function SelectOptions<T>({
           className={twMerge(
             'text-sm font-semibold cursor-pointer opacity-50 hover:opacity-100 transition duration-300',
             selected === (isObject(option) ? option.title : (option as T)) &&
-            'opacity-100',
+              'opacity-100',
             isObject(option) && option.activeColor,
             isObject(option) &&
-            option.disabled &&
-            'opacity-30 cursor-not-allowed hover:opacity-30',
+              option.disabled &&
+              'opacity-30 cursor-not-allowed hover:opacity-30',
             textClassName,
           )}
           onClick={() => {

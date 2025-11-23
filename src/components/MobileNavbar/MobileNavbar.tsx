@@ -27,7 +27,7 @@ export default function MobileNavbar({
             'Referral',
             'Leaderboard',
             userVest || userDelegatedVest ? null : 'Vest',
-            'Achievements'
+            'Achievements',
           ].includes(p.name),
       ).map((page) => {
         return (

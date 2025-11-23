@@ -91,8 +91,9 @@ export default function ADXVoteAnimation() {
       <div
         className="grid gap-3 w-full h-[150px] overflow-hidden items-center bg-main p-5 border-t border-bcolor rounded-b-2xl"
         style={{
-          gridTemplateColumns: `repeat(${participants.length < 8 ? participants.length : 8
-            },  1fr)`,
+          gridTemplateColumns: `repeat(${
+            participants.length < 8 ? participants.length : 8
+          },  1fr)`,
         }}
       >
         <AnimatePresence>

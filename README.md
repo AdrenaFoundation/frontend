@@ -27,13 +27,7 @@ Before you begin, ensure you have the following installed:
    npm i
    ```
 
-3. **Install Pre-commit hook**
-
-   ```bash
-    npx husky install
-   ```
-
-4. **Setup environment file**
+3. **Setup environment file**
 
    ```bash
     cp .env.example .env
@@ -41,7 +35,7 @@ Before you begin, ensure you have the following installed:
 
    and set mandatory env variables
 
-5. **Launch the Development Server**
+4. **Launch the Development Server**
 
    ```bash
    npx next dev

@@ -216,7 +216,7 @@ export default function MaintenanceAlert() {
                           >
                             <Checkbox
                               checked={editPages.includes(page)}
-                              onChange={() => { }}
+                              onChange={() => {}}
                             />
                             <span className="ml-1 text-xs capitalize">
                               {page}

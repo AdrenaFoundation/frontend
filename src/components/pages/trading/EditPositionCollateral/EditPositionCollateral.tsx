@@ -13,11 +13,24 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { WalletBalance } from '@/components/pages/trading/TradingInputs/LongShortTradingInputs/WalletBalance';
-import { ALTERNATIVE_SWAP_TOKENS, PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
+import {
+  ALTERNATIVE_SWAP_TOKENS,
+  PRICE_DECIMALS,
+  USD_DECIMALS,
+} from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import { findATAAddressSync, getJupiterApiQuote, getTokenAccountBalanceNullable, getTokenImage, getTokenSymbol, jupInstructionToTransactionInstruction, nativeToUi, uiToNative } from '@/utils';
+import {
+  findATAAddressSync,
+  getJupiterApiQuote,
+  getTokenAccountBalanceNullable,
+  getTokenImage,
+  getTokenSymbol,
+  jupInstructionToTransactionInstruction,
+  nativeToUi,
+  uiToNative,
+} from '@/utils';
 import { JupiterSwapError } from '@/utils';
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
@@ -64,8 +77,12 @@ export default function EditPositionCollateral({
 
   const debouncedInput = useDebounce(input);
 
-  const [depositToken, setDepositToken] = useState<Token>(position.collateralToken);
-  const [redeemToken, setRedeemToken] = useState<Token>(position.collateralToken);
+  const [depositToken, setDepositToken] = useState<Token>(
+    position.collateralToken,
+  );
+  const [redeemToken, setRedeemToken] = useState<Token>(
+    position.collateralToken,
+  );
 
   const [updatedInfos, setUpdatedInfos] = useState<{
     currentLeverage: number;
@@ -78,20 +95,25 @@ export default function EditPositionCollateral({
   const collateralPrice: number | null =
     tokenPrices[position.collateralToken.symbol];
 
-  const walletBalance: number | null =
-    useMemo(() => walletTokenBalances?.[depositToken.symbol] ?? null, [walletTokenBalances, depositToken]);
+  const walletBalance: number | null = useMemo(
+    () => walletTokenBalances?.[depositToken.symbol] ?? null,
+    [walletTokenBalances, depositToken],
+  );
 
   const [belowMinLeverage, setBelowMinLeverage] = useState(false);
   const [aboveMaxLeverage, setAboveMaxLeverage] = useState(false);
   // Pick default redeem/deposit token
   useEffect(() => {
-    const tokens = [
-      ...window.adrena.client.tokens,
-      ...ALTERNATIVE_SWAP_TOKENS,
-    ];
+    const tokens = [...window.adrena.client.tokens, ...ALTERNATIVE_SWAP_TOKENS];
 
-    setRedeemToken(tokens.find((t) => t.symbol === settings.withdrawCollateralSymbol) ?? position.token);
-    setDepositToken(tokens.find((t) => t.symbol === settings.depositCollateralSymbol) ?? position.token);
+    setRedeemToken(
+      tokens.find((t) => t.symbol === settings.withdrawCollateralSymbol) ??
+        position.token,
+    );
+    setDepositToken(
+      tokens.find((t) => t.symbol === settings.depositCollateralSymbol) ??
+        position.token,
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -144,34 +166,47 @@ export default function EditPositionCollateral({
   const doRemoveCollateral = async (): Promise<boolean> => {
     if (!input) return false;
 
-    const notification =
-      MultiStepNotification.newForRegularTransaction(
-        `Remove Collateral${doJupiterSwapOnWithdraw ? ' 1/2' : ''}`
-      ).fire();
+    const notification = MultiStepNotification.newForRegularTransaction(
+      `Remove Collateral${doJupiterSwapOnWithdraw ? ' 1/2' : ''}`,
+    ).fire();
 
     try {
-      const ataAddress = findATAAddressSync(position.owner, position.collateralToken.mint);
+      const ataAddress = findATAAddressSync(
+        position.owner,
+        position.collateralToken.mint,
+      );
 
       if (!window.adrena.client.readonlyConnection) {
         throw new Error('Connection is not available');
       }
 
-      const ataBalanceBefore = await getTokenAccountBalanceNullable(window.adrena.client.readonlyConnection, ataAddress) ?? new BN(0);
+      const ataBalanceBefore =
+        (await getTokenAccountBalanceNullable(
+          window.adrena.client.readonlyConnection,
+          ataAddress,
+        )) ?? new BN(0);
 
-      await (position.side === 'long'
-        ? window.adrena.client.removeCollateralLong.bind(window.adrena.client)
-        : window.adrena.client.removeCollateralShort.bind(
-          window.adrena.client,
-        ))({
-          position,
-          collateralUsd: uiToNative(input, USD_DECIMALS),
-          notification,
-        });
+      await (
+        position.side === 'long'
+          ? window.adrena.client.removeCollateralLong.bind(window.adrena.client)
+          : window.adrena.client.removeCollateralShort.bind(
+              window.adrena.client,
+            )
+      )({
+        position,
+        collateralUsd: uiToNative(input, USD_DECIMALS),
+        notification,
+      });
 
       if (doJupiterSwapOnWithdraw) {
-        const notification = MultiStepNotification.newForRegularTransaction('Remove Collateral 2/2').fire();
+        const notification = MultiStepNotification.newForRegularTransaction(
+          'Remove Collateral 2/2',
+        ).fire();
 
-        const ataBalanceAfter = await getTokenAccountBalanceNullable(window.adrena.client.readonlyConnection, ataAddress)
+        const ataBalanceAfter = await getTokenAccountBalanceNullable(
+          window.adrena.client.readonlyConnection,
+          ataAddress,
+        );
 
         if (ataBalanceAfter === null) {
           // should not happen since we initialize ata address if it doesn't exist in `removeCollateralLong`/`removeCollateralShort`
@@ -217,10 +252,10 @@ export default function EditPositionCollateral({
           ),
           ...(swapInstructions.cleanupInstruction
             ? [
-              jupInstructionToTransactionInstruction(
-                swapInstructions.cleanupInstruction,
-              ),
-            ]
+                jupInstructionToTransactionInstruction(
+                  swapInstructions.cleanupInstruction,
+                ),
+              ]
             : []),
         );
 
@@ -244,23 +279,32 @@ export default function EditPositionCollateral({
     }
   };
 
-  const doAddCollateral = async (useCollateralToken = false): Promise<boolean> => {
+  const doAddCollateral = async (
+    useCollateralToken = false,
+  ): Promise<boolean> => {
     if (!input) return false;
 
     const notification =
       MultiStepNotification.newForRegularTransaction('Add Collateral').fire();
 
     try {
-      const tokenToUse = useCollateralToken ? position.collateralToken : depositToken;
+      const tokenToUse = useCollateralToken
+        ? position.collateralToken
+        : depositToken;
 
       const addedCollateral = useCollateralToken
         ? (() => {
-          if (!depositCollateralAmountPostSwap) {
-            throw new Error('Jupiter quote not available. Please wait for the quote to load.');
-          }
+            if (!depositCollateralAmountPostSwap) {
+              throw new Error(
+                'Jupiter quote not available. Please wait for the quote to load.',
+              );
+            }
 
-          return uiToNative(depositCollateralAmountPostSwap, position.collateralToken.decimals);
-        })()
+            return uiToNative(
+              depositCollateralAmountPostSwap,
+              position.collateralToken.decimals,
+            );
+          })()
         : uiToNative(input, tokenToUse.decimals);
 
       await window.adrena.client.addCollateralToPosition({
@@ -285,8 +329,8 @@ export default function EditPositionCollateral({
                 notification.close(0);
                 doAddCollateral(useCollateralToken);
               },
-              variant: 'primary'
-            }
+              variant: 'primary',
+            },
           ]);
           notification.currentStepErrored(error.errorString);
         }
@@ -313,32 +357,35 @@ export default function EditPositionCollateral({
     (async () => {
       const liquidationPrice = await (selectedAction === 'deposit'
         ? window.adrena.client.getPositionLiquidationPrice({
-          position,
-          addCollateral: (() => {
-            // Use the same logic as the actual transaction
-            if (doJupiterSwapOnDeposit) {
-              // If there's a swap, we need to use the swapped amount with collateral token decimals
-              if (!depositCollateralAmountPostSwap) {
-                return new BN(0); // Can't calculate yet
+            position,
+            addCollateral: (() => {
+              // Use the same logic as the actual transaction
+              if (doJupiterSwapOnDeposit) {
+                // If there's a swap, we need to use the swapped amount with collateral token decimals
+                if (!depositCollateralAmountPostSwap) {
+                  return new BN(0); // Can't calculate yet
+                }
+                return uiToNative(
+                  depositCollateralAmountPostSwap,
+                  position.collateralToken.decimals,
+                );
+              } else {
+                // No swap, use input with deposit token decimals (matches actual transaction)
+                return uiToNative(input, depositToken.decimals);
               }
-              return uiToNative(depositCollateralAmountPostSwap, position.collateralToken.decimals);
-            } else {
-              // No swap, use input with deposit token decimals (matches actual transaction)
-              return uiToNative(input, depositToken.decimals);
-            }
-          })(),
-          removeCollateral: new BN(0),
-        })
+            })(),
+            removeCollateral: new BN(0),
+          })
         : window.adrena.client.getPositionLiquidationPrice({
-          position,
-          addCollateral: new BN(0),
-          removeCollateral: uiToNative(
-            input / collateralPrice,
-            position.side === 'long'
-              ? position.token.decimals
-              : position.collateralToken.decimals,
-          ),
-        }));
+            position,
+            addCollateral: new BN(0),
+            removeCollateral: uiToNative(
+              input / collateralPrice,
+              position.side === 'long'
+                ? position.token.decimals
+                : position.collateralToken.decimals,
+            ),
+          }));
 
       // Check if request was aborted
       if (abortController.signal.aborted) {
@@ -363,14 +410,17 @@ export default function EditPositionCollateral({
     selectedAction,
   ]);
 
-  const [depositCollateralAmountPostSwap, setDepositCollateralAmountPostSwap] = useState<number | null>(null);
-  const [redeemCollateralAmountPostSwap, setRedeemCollateralAmountPostSwap] = useState<number | null>(null);
+  const [depositCollateralAmountPostSwap, setDepositCollateralAmountPostSwap] =
+    useState<number | null>(null);
+  const [redeemCollateralAmountPostSwap, setRedeemCollateralAmountPostSwap] =
+    useState<number | null>(null);
 
   const depositQuoteRef = useRef<AbortController | null>(null);
   const withdrawalQuoteRef = useRef<AbortController | null>(null);
 
   const [depositQuoteFailed, setDepositQuoteFailed] = useState<boolean>(false);
-  const [withdrawalQuoteFailed, setWithdrawalQuoteFailed] = useState<boolean>(false);
+  const [withdrawalQuoteFailed, setWithdrawalQuoteFailed] =
+    useState<boolean>(false);
 
   useEffect(() => {
     setInput(null);
@@ -392,20 +442,15 @@ export default function EditPositionCollateral({
       const abortController = new AbortController();
       depositQuoteRef.current = abortController;
 
-
       // Need to quote to know the value of the token to calculate new leverage
       const quoteResult = await getJupiterApiQuote({
         inputMint: depositToken.mint,
         outputMint: position.collateralToken.mint,
-        amount: uiToNative(
-          input,
-          depositToken.decimals,
-        ),
+        amount: uiToNative(input, depositToken.decimals),
         swapSlippage,
       });
 
       if (abortController.signal.aborted) return;
-
 
       if (!quoteResult) {
         setDepositCollateralAmountPostSwap(null);
@@ -413,18 +458,35 @@ export default function EditPositionCollateral({
         return;
       }
 
-      setDepositCollateralAmountPostSwap(nativeToUi(new BN(quoteResult.outAmount), position.collateralToken.decimals));
+      setDepositCollateralAmountPostSwap(
+        nativeToUi(
+          new BN(quoteResult.outAmount),
+          position.collateralToken.decimals,
+        ),
+      );
       setDepositQuoteFailed(false);
     })().catch((e) => {
       // Ignore error
       console.log(e);
       setDepositQuoteFailed(true);
     });
-  }, [doJupiterSwapOnDeposit, input, depositToken, position.collateralToken, swapSlippage, selectedAction]);
+  }, [
+    doJupiterSwapOnDeposit,
+    input,
+    depositToken,
+    position.collateralToken,
+    swapSlippage,
+    selectedAction,
+  ]);
 
   useEffect(() => {
     (async () => {
-      if (!input || !doJupiterSwapOnWithdraw || !collateralPrice || selectedAction !== 'withdraw') {
+      if (
+        !input ||
+        !doJupiterSwapOnWithdraw ||
+        !collateralPrice ||
+        selectedAction !== 'withdraw'
+      ) {
         return;
       }
 
@@ -453,24 +515,42 @@ export default function EditPositionCollateral({
         return;
       }
 
-      setRedeemCollateralAmountPostSwap(nativeToUi(new BN(quoteResult.outAmount), redeemToken.decimals));
+      setRedeemCollateralAmountPostSwap(
+        nativeToUi(new BN(quoteResult.outAmount), redeemToken.decimals),
+      );
       setWithdrawalQuoteFailed(false);
     })().catch((e) => {
       console.log(e);
       setWithdrawalQuoteFailed(true);
     });
-  }, [doJupiterSwapOnWithdraw, input, redeemToken, position.collateralToken, swapSlippage, collateralPrice, selectedAction]);
+  }, [
+    doJupiterSwapOnWithdraw,
+    input,
+    redeemToken,
+    position.collateralToken,
+    swapSlippage,
+    collateralPrice,
+    selectedAction,
+  ]);
 
   const executeBtnText = (() => {
     if (selectedAction === 'deposit' && !walletBalance)
       return `No ${depositToken.symbol} in wallet`;
     if (!input) return 'Enter an amount';
 
-    if (selectedAction === 'deposit' && doJupiterSwapOnDeposit && !depositCollateralAmountPostSwap) {
+    if (
+      selectedAction === 'deposit' &&
+      doJupiterSwapOnDeposit &&
+      !depositCollateralAmountPostSwap
+    ) {
       return 'Cannot find jupiter route';
     }
 
-    if (selectedAction === 'withdraw' && doJupiterSwapOnWithdraw && !redeemCollateralAmountPostSwap) {
+    if (
+      selectedAction === 'withdraw' &&
+      doJupiterSwapOnWithdraw &&
+      !redeemCollateralAmountPostSwap
+    ) {
       return 'Cannot find jupiter route';
     }
 
@@ -501,7 +581,9 @@ export default function EditPositionCollateral({
     let updatedCollateralUsd: number;
 
     if (selectedAction === 'deposit') {
-      const depositAmount = doJupiterSwapOnDeposit ? depositCollateralAmountPostSwap : input;
+      const depositAmount = doJupiterSwapOnDeposit
+        ? depositCollateralAmountPostSwap
+        : input;
 
       if (depositAmount === null) {
         return;
@@ -559,18 +641,29 @@ export default function EditPositionCollateral({
 
     // For deposits, calculate the new collateral USD value correctly
     // Use the same logic as the leverage calculation
-    const depositAmount = doJupiterSwapOnDeposit ? depositCollateralAmountPostSwap : input;
+    const depositAmount = doJupiterSwapOnDeposit
+      ? depositCollateralAmountPostSwap
+      : input;
 
     if (depositAmount === null) {
       return setNewPositionNetValue(null);
     }
 
-    const updatedCollateralAmount = position.collateralUsd / collateralPrice + depositAmount;
+    const updatedCollateralAmount =
+      position.collateralUsd / collateralPrice + depositAmount;
     const updatedCollateralUsd = updatedCollateralAmount * collateralPrice;
     const newCollateralAdded = updatedCollateralUsd - position.collateralUsd;
 
     setNewPositionNetValue(positionNetValue + newCollateralAdded);
-  }, [collateralPrice, input, positionNetValue, selectedAction, doJupiterSwapOnDeposit, depositCollateralAmountPostSwap, position.collateralUsd]);
+  }, [
+    collateralPrice,
+    input,
+    positionNetValue,
+    selectedAction,
+    doJupiterSwapOnDeposit,
+    depositCollateralAmountPostSwap,
+    position.collateralUsd,
+  ]);
 
   const calculateCollateralPercentage = (percentage: number) =>
     Number(Number((positionNetValue * Number(percentage)) / 100).toFixed(2));
@@ -626,18 +719,28 @@ export default function EditPositionCollateral({
     (selectedAction === 'deposit' || // the input is capped at what the user has in wallet
       (selectedAction === 'withdraw' && input <= position.collateralUsd)) &&
     // For deposits with Jupiter swap, ensure we have valid quote
-    !(selectedAction === 'deposit' && doJupiterSwapOnDeposit && !depositCollateralAmountPostSwap) &&
+    !(
+      selectedAction === 'deposit' &&
+      doJupiterSwapOnDeposit &&
+      !depositCollateralAmountPostSwap
+    ) &&
     // For withdrawals with Jupiter swap, ensure we have valid quote
-    !(selectedAction === 'withdraw' && doJupiterSwapOnWithdraw && !redeemCollateralAmountPostSwap);
+    !(
+      selectedAction === 'withdraw' &&
+      doJupiterSwapOnWithdraw &&
+      !redeemCollateralAmountPostSwap
+    );
 
   return (
     <div
-      className={twMerge('flex flex-col gap-2 h-full w-full sm:w-[40em] max-w-full pt-4 px-4', className)}
+      className={twMerge(
+        'flex flex-col gap-2 h-full w-full sm:w-[40em] max-w-full pt-4 px-4',
+        className,
+      )}
     >
-      <div className='flex gap-4 w-full flex-col sm:flex-row items-center sm:items-start'>
-
+      <div className="flex gap-4 w-full flex-col sm:flex-row items-center sm:items-start">
         {/* DEPOSIT / WITHDRAW */}
-        <div className='flex flex-col w-full sm:w-1/2'>
+        <div className="flex flex-col w-full sm:w-1/2">
           <TabSelect
             wrapperClassName="h-12 flex items-center"
             selected={selectedAction}
@@ -670,8 +773,8 @@ export default function EditPositionCollateral({
                         width={20}
                         alt="Warning icon"
                       />
-                      This action would take the leverage below the minimum of 1.1x.
-                      Please adjust your input.
+                      This action would take the leverage below the minimum of
+                      1.1x. Please adjust your input.
                     </div>
                   </div>
                 )}
@@ -684,9 +787,14 @@ export default function EditPositionCollateral({
                     walletTokenBalances={walletTokenBalances}
                     onMax={() => setInput(walletBalance)}
                     onPercentageClick={(percentage: number) => {
-                      const balance = walletTokenBalances?.[depositToken.symbol] ?? 0;
+                      const balance =
+                        walletTokenBalances?.[depositToken.symbol] ?? 0;
                       const amount = balance * (percentage / 100);
-                      const roundedAmount = Number(amount.toFixed(depositToken.displayAmountDecimalsPrecision));
+                      const roundedAmount = Number(
+                        amount.toFixed(
+                          depositToken.displayAmountDecimalsPrecision,
+                        ),
+                      );
                       setInput(roundedAmount);
                     }}
                   />
@@ -725,7 +833,11 @@ export default function EditPositionCollateral({
                 </div>
 
                 {/* Jupiter route failure warning */}
-                {selectedAction === 'deposit' && doJupiterSwapOnDeposit && !depositCollateralAmountPostSwap && input && depositQuoteFailed ? (
+                {selectedAction === 'deposit' &&
+                doJupiterSwapOnDeposit &&
+                !depositCollateralAmountPostSwap &&
+                input &&
+                depositQuoteFailed ? (
                   <div className="flex flex-col text-sm">
                     <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full pl-10">
                       <Image
@@ -737,10 +849,12 @@ export default function EditPositionCollateral({
                       />
                       <div className="flex flex-col gap-2">
                         <div>
-                          Cannot find Jupiter route for {depositToken.symbol} → {position.collateralToken.symbol}.
+                          Cannot find Jupiter route for {depositToken.symbol} →{' '}
+                          {position.collateralToken.symbol}.
                         </div>
                         <div className="text-xs text-orange/80">
-                          You can use {position.collateralToken.symbol} directly as collateral instead.
+                          You can use {position.collateralToken.symbol} directly
+                          as collateral instead.
                         </div>
                         <Button
                           title={`Use ${position.collateralToken.symbol}`}
@@ -749,7 +863,8 @@ export default function EditPositionCollateral({
                           onClick={() => {
                             dispatch(
                               setSettings({
-                                depositCollateralSymbol: position.collateralToken.symbol,
+                                depositCollateralSymbol:
+                                  position.collateralToken.symbol,
                               }),
                             );
                             setDepositToken(position.collateralToken);
@@ -758,29 +873,39 @@ export default function EditPositionCollateral({
                       </div>
                     </div>
                   </div>
-                ) : doJupiterSwapOnDeposit && recommendedToken ? <>
-                  <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before adding collateral to the position."}>
-                    <div className="text-xs gap-1 flex pt-1 pb-1 w-full items-center justify-center">
-                      <span className='text-white/30'>{depositToken.symbol}</span>
-                      <span className='text-white/30'>auto-swapped to</span>
-                      <span className='text-white/30'>{position.collateralToken.symbol}</span>
-                      <span className='text-white/30'>via Jupiter</span>
-                    </div>
-                  </Tippy>
+                ) : doJupiterSwapOnDeposit && recommendedToken ? (
+                  <>
+                    <Tippy
+                      content={
+                        'For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before adding collateral to the position.'
+                      }
+                    >
+                      <div className="text-xs gap-1 flex pt-1 pb-1 w-full items-center justify-center">
+                        <span className="text-white/30">
+                          {depositToken.symbol}
+                        </span>
+                        <span className="text-white/30">auto-swapped to</span>
+                        <span className="text-white/30">
+                          {position.collateralToken.symbol}
+                        </span>
+                        <span className="text-white/30">via Jupiter</span>
+                      </div>
+                    </Tippy>
 
-                  <SwapSlippageSection
-                    swapSlippage={swapSlippage}
-                    setSwapSlippage={setSwapSlippage}
-                    className="mt-4 mb-4"
-                  />
-                </> : null}
+                    <SwapSlippageSection
+                      swapSlippage={swapSlippage}
+                      setSwapSlippage={setSwapSlippage}
+                      className="mt-4 mb-4"
+                    />
+                  </>
+                ) : null}
               </>
             ) : (
               <>
                 {/* Check for max leverage*/}
                 {maxInitialLeverage &&
-                  position.currentLeverage &&
-                  position.currentLeverage >= maxInitialLeverage ? (
+                position.currentLeverage &&
+                position.currentLeverage >= maxInitialLeverage ? (
                   <div className="flex flex-col text-sm ml-4 mr-4">
                     <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
                       <Image
@@ -792,7 +917,8 @@ export default function EditPositionCollateral({
                       />
                       <span className="text-sm">
                         Your position is above the maximum leverage of{' '}
-                        {maxInitialLeverage}x, you cannot withdraw more collateral.
+                        {maxInitialLeverage}x, you cannot withdraw more
+                        collateral.
                       </span>
                     </div>
                   </div>
@@ -850,19 +976,30 @@ export default function EditPositionCollateral({
                   of collateral in the position
                 </div>
 
-                <div className='text-sm'>
-                  Withdraw in
-                </div>
+                <div className="text-sm">Withdraw in</div>
 
-                <div className='flex items-center border p-4 gap-2 justify-center cursor-pointer rounded-md' onClick={() => setIsPickTokenModalOpen(true)}>
-                  <div className={twMerge("flex h-2 w-2 items-center justify-center shrink-0")}>
-                    <Image src={chevronDownIcon} alt="chevron down" width={8} height={8} className="w-2 h-2" />
+                <div
+                  className="flex items-center border p-4 gap-2 justify-center cursor-pointer rounded-md"
+                  onClick={() => setIsPickTokenModalOpen(true)}
+                >
+                  <div
+                    className={twMerge(
+                      'flex h-2 w-2 items-center justify-center shrink-0',
+                    )}
+                  >
+                    <Image
+                      src={chevronDownIcon}
+                      alt="chevron down"
+                      width={8}
+                      height={8}
+                      className="w-2 h-2"
+                    />
                   </div>
 
-                  <div className='text-base'>{redeemToken.symbol ?? '-'}</div>
+                  <div className="text-base">{redeemToken.symbol ?? '-'}</div>
 
                   <Image
-                    className='h-4 w-4'
+                    className="h-4 w-4"
                     src={redeemToken.image}
                     alt="logo"
                     width={20}
@@ -871,7 +1008,11 @@ export default function EditPositionCollateral({
                 </div>
 
                 {/* Jupiter route failure warning for withdrawals */}
-                {selectedAction === 'withdraw' && doJupiterSwapOnWithdraw && !redeemCollateralAmountPostSwap && input && withdrawalQuoteFailed ? (
+                {selectedAction === 'withdraw' &&
+                doJupiterSwapOnWithdraw &&
+                !redeemCollateralAmountPostSwap &&
+                input &&
+                withdrawalQuoteFailed ? (
                   <div className="flex flex-col text-sm">
                     <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full pl-10">
                       <Image
@@ -883,10 +1024,13 @@ export default function EditPositionCollateral({
                       />
                       <div className="flex flex-col gap-2">
                         <div>
-                          Cannot find Jupiter route for {position.collateralToken.symbol} → {redeemToken.symbol}.
+                          Cannot find Jupiter route for{' '}
+                          {position.collateralToken.symbol} →{' '}
+                          {redeemToken.symbol}.
                         </div>
                         <div className="text-xs text-orange/80">
-                          You can withdraw in {position.collateralToken.symbol} instead.
+                          You can withdraw in {position.collateralToken.symbol}{' '}
+                          instead.
                         </div>
                         <Button
                           title={`Use ${position.collateralToken.symbol}`}
@@ -895,7 +1039,8 @@ export default function EditPositionCollateral({
                           onClick={() => {
                             dispatch(
                               setSettings({
-                                withdrawCollateralSymbol: position.collateralToken.symbol,
+                                withdrawCollateralSymbol:
+                                  position.collateralToken.symbol,
                               }),
                             );
                             setRedeemToken(position.collateralToken);
@@ -904,21 +1049,27 @@ export default function EditPositionCollateral({
                       </div>
                     </div>
                   </div>
-                ) : doJupiterSwapOnWithdraw && recommendedToken ? <>
-                  <div className="text-xs gap-1 flex ml-auto mr-auto pt-1 pb-1 w-full items-center justify-center">
-                    <span className='text-white/30'>{position.collateralToken.symbol}</span>
-                    <span className='text-white/30'>auto-swapped to</span>
-                    <span className='text-white/30'>{redeemToken.symbol}</span>
-                    <span className='text-white/30'>via Jupiter</span>
-                  </div>
+                ) : doJupiterSwapOnWithdraw && recommendedToken ? (
+                  <>
+                    <div className="text-xs gap-1 flex ml-auto mr-auto pt-1 pb-1 w-full items-center justify-center">
+                      <span className="text-white/30">
+                        {position.collateralToken.symbol}
+                      </span>
+                      <span className="text-white/30">auto-swapped to</span>
+                      <span className="text-white/30">
+                        {redeemToken.symbol}
+                      </span>
+                      <span className="text-white/30">via Jupiter</span>
+                    </div>
 
-                  <SwapSlippageSection
-                    swapSlippage={swapSlippage}
-                    setSwapSlippage={setSwapSlippage}
-                    className="mt-4 mb-4"
-                    titleClassName="ml-0"
-                  />
-                </> : null}
+                    <SwapSlippageSection
+                      swapSlippage={swapSlippage}
+                      setSwapSlippage={setSwapSlippage}
+                      className="mt-4 mb-4"
+                      titleClassName="ml-0"
+                    />
+                  </>
+                ) : null}
 
                 <PickTokenModal
                   recommendedToken={recommendedToken}
@@ -951,7 +1102,7 @@ export default function EditPositionCollateral({
 
         {/* Position Info */}
         <div className="flex flex-col w-full sm:w-1/2 items-center">
-          <div className='flex w-full'>
+          <div className="flex w-full">
             <div className="flex flex-col p-3 py-2.5 border bg-[#040D14] rounded-md w-full">
               <div className="w-full flex justify-between mt-">
                 <div className="flex items-center">
@@ -1085,8 +1236,9 @@ export default function EditPositionCollateral({
                     nb={position.pnl && markPrice ? position.pnl : null}
                     prefix={position.pnl && position.pnl > 0 ? '+' : ''}
                     format="currency"
-                    className={`font-bold text-sm text-${position.pnl && position.pnl > 0 ? 'green' : 'redbright'
-                      }`}
+                    className={`font-bold text-sm text-${
+                      position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+                    }`}
                     isDecimalDimmed={false}
                   />
                 </div>
@@ -1100,7 +1252,7 @@ export default function EditPositionCollateral({
                   <FormatNumber
                     nb={position.collateralUsd}
                     format="currency"
-                    className='text-sm'
+                    className="text-sm"
                   />
 
                   {input ? (
@@ -1112,7 +1264,7 @@ export default function EditPositionCollateral({
                           <FormatNumber
                             nb={updatedInfos?.collateralUsd}
                             format="currency"
-                            className='text-sm'
+                            className="text-sm"
                             minimumFractionDigits={2}
                           />
                         </div>
@@ -1132,7 +1284,7 @@ export default function EditPositionCollateral({
                       <FormatNumber
                         nb={positionNetValue}
                         format="currency"
-                        className='text-sm'
+                        className="text-sm"
                         minimumFractionDigits={2}
                       />
                     </span>
@@ -1165,7 +1317,7 @@ export default function EditPositionCollateral({
                   <FormatNumber
                     nb={position.currentLeverage}
                     suffix="x"
-                    className='text-sm'
+                    className="text-sm"
                     isDecimalDimmed={true}
                     minimumFractionDigits={2}
                   />
@@ -1182,7 +1334,8 @@ export default function EditPositionCollateral({
                               suffix="x"
                               className={
                                 maxInitialLeverage &&
-                                  updatedInfos.currentLeverage > maxInitialLeverage
+                                updatedInfos.currentLeverage >
+                                  maxInitialLeverage
                                   ? 'text-sm text-redbright'
                                   : 'text-sm'
                               }

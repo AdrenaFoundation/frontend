@@ -382,9 +382,9 @@ export default function WalletDigger({
                 nb={
                   stakingAccounts?.ADX?.liquidStake.amount
                     ? nativeToUi(
-                      stakingAccounts.ADX.liquidStake.amount,
-                      window.adrena.client.adxToken.decimals,
-                    )
+                        stakingAccounts.ADX.liquidStake.amount,
+                        window.adrena.client.adxToken.decimals,
+                      )
                     : 0
                 }
                 format="number"
@@ -515,9 +515,9 @@ export default function WalletDigger({
                           totalPages={
                             claimsHistoryAdx
                               ? Math.ceil(
-                                claimsHistoryAdx.length /
-                                claimHistoryItemsPerPage,
-                              )
+                                  claimsHistoryAdx.length /
+                                    claimHistoryItemsPerPage,
+                                )
                               : 0
                           }
                           onPageChange={setAdxClaimHistoryCurrentPage}
@@ -540,9 +540,9 @@ export default function WalletDigger({
                           totalPages={
                             claimsHistoryAlp
                               ? Math.ceil(
-                                claimsHistoryAlp.length /
-                                claimHistoryItemsPerPage,
-                              )
+                                  claimsHistoryAlp.length /
+                                    claimHistoryItemsPerPage,
+                                )
                               : 0
                           }
                           onPageChange={setAlpClaimHistoryCurrentPage}
@@ -722,7 +722,7 @@ export default function WalletDigger({
               )}
 
               {allRefereesProfiles !== null &&
-                allRefereesProfiles.length === 0 ? (
+              allRefereesProfiles.length === 0 ? (
                 <div className="w-full items-center justify-center flex text-sm opacity-80 pt-8 pb-8">
                   No referee yet.
                 </div>

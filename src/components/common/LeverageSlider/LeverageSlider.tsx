@@ -124,7 +124,6 @@ export default function LeverageSlider({
             title={`x${mark.toString()}`}
             variant="text"
             rounded={false}
-
             className={twMerge(
               'flex-1 flex-grow text-xs h-full',
               // Put 0.7 e.m instead of lg because conflicts in the border handling by browser

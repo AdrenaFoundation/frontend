@@ -24,7 +24,6 @@ export const NotificationBell = ({
   isNotificationModalOpen?: boolean;
   setIsNotificationModalOpen?: (isOpen: boolean) => void;
 }) => {
-
   const wallet = useSelector((state) => state.walletState.wallet);
   const [isOpen, setIsOpen] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
@@ -35,7 +34,7 @@ export const NotificationBell = ({
     hasMore,
     loadMore,
     isLoading,
-    isDialectSubscriber
+    isDialectSubscriber,
   } = useNotifications(wallet?.walletAddress ?? null);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -78,13 +77,14 @@ export const NotificationBell = ({
         width={0}
         height={0}
         style={{ width: '12px', height: '12px' }}
-        className='w-3 h-3'
+        className="w-3 h-3"
       />
 
       {/* Notification Dot */}
       {unreadCount > 0 && (
         <div
-          className={twMerge("absolute top-1 right-1.5 w-1.5 h-1.5 rounded-full z-20",
+          className={twMerge(
+            'absolute top-1 right-1.5 w-1.5 h-1.5 rounded-full z-20',
             isMobile && 'top-0 right-0',
           )}
           style={{
@@ -98,8 +98,12 @@ export const NotificationBell = ({
 
   if (isDialectSubscriber) {
     return (
-      <DialectNotification isMobile={isMobile} isDialectSubscriber={isDialectSubscriber} adapters={adapters} />
-    )
+      <DialectNotification
+        isMobile={isMobile}
+        isDialectSubscriber={isDialectSubscriber}
+        adapters={adapters}
+      />
+    );
   }
 
   if (isMobile) {
@@ -127,7 +131,6 @@ export const NotificationBell = ({
         )}
       </>
     );
-
   }
 
   return (

@@ -109,7 +109,7 @@ function Chat({
                     className={twMerge(
                       'text-xs font-mono',
                       userProfilesMap?.[message.wallet] &&
-                      'hover:underline cursor-pointer',
+                        'hover:underline cursor-pointer',
                     )}
                     style={{
                       color: generateColorFromString(message.wallet),
@@ -140,9 +140,12 @@ function Chat({
         )}
       </motion.ul>
 
-      <div className={twMerge("relative flex flex-row gap-1 items-center w-full px-3 pb-14",
-        !walletAddress && 'opacity-20 cursor-not-allowed pointer-events-none'
-      )}>
+      <div
+        className={twMerge(
+          'relative flex flex-row gap-1 items-center w-full px-3 pb-14',
+          !walletAddress && 'opacity-20 cursor-not-allowed pointer-events-none',
+        )}
+      >
         <input
           type="text"
           placeholder="Type a message..."
@@ -158,8 +161,10 @@ function Chat({
         <Button
           size="sm"
           title="Send"
-          className={twMerge("absolute right-5 font-semibold bg-[#E2464A] text-white w-14 h-6 rounded-md",
-            isSendingMessage && 'opacity-50 cursor-not-allowed pointer-events-none'
+          className={twMerge(
+            'absolute right-5 font-semibold bg-[#E2464A] text-white w-14 h-6 rounded-md',
+            isSendingMessage &&
+              'opacity-50 cursor-not-allowed pointer-events-none',
           )}
           onClick={handleSendMessage}
           disabled={!walletAddress || isSendingMessage}

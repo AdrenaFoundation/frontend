@@ -36,7 +36,7 @@ export default function ALPStakingRecap({
       (sum, claim) =>
         sum +
         (claim.rewards_adx + claim.rewards_adx_genesis) *
-        claim.adx_price_at_claim,
+          claim.adx_price_at_claim,
       0,
     ) ?? 0;
 

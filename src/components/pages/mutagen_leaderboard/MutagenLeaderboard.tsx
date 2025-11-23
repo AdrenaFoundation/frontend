@@ -272,7 +272,9 @@ export default function MutagenLeaderboard({
       <span className="opacity-50" key="rank">
         #
       </span>,
-      <span className="opacity-50" key="trader">Trader</span>,
+      <span className="opacity-50" key="trader">
+        Trader
+      </span>,
     ];
 
     if (breakpoint5) {

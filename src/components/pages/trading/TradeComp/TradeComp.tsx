@@ -59,7 +59,8 @@ export default function TradeComp({
     const walletAddress = getWalletAddress(wallet);
     if (
       walletAddress &&
-      window.adrena.client.mainPool.whitelistedSwapper.toBase58() === walletAddress
+      window.adrena.client.mainPool.whitelistedSwapper.toBase58() ===
+        walletAddress
     ) {
       setIsWhitelistedSwapper(true);
     }
@@ -77,8 +78,16 @@ export default function TradeComp({
         <TabSelect
           selected={selectedAction}
           tabs={[
-            { title: 'long', activeColor: 'border-transparent [border-image:linear-gradient(to_right,#10b981,#22c55e,#14b8a6)_1]' },
-            { title: 'short', activeColor: 'border-transparent [border-image:linear-gradient(to_right,#ef4444,#e11d48,#db2777)_1]' },
+            {
+              title: 'long',
+              activeColor:
+                'border-transparent [border-image:linear-gradient(to_right,#10b981,#22c55e,#14b8a6)_1]',
+            },
+            {
+              title: 'short',
+              activeColor:
+                'border-transparent [border-image:linear-gradient(to_right,#ef4444,#e11d48,#db2777)_1]',
+            },
             { title: 'swap', activeColor: 'border-white' },
           ]}
           onClick={(title) => {
@@ -113,11 +122,13 @@ export default function TradeComp({
             ) : (
               <>
                 {/* Always render Jupiter widget but hide when not needed */}
-                <div className={twMerge(
-                  'relative h-[575px] min-w-[300px] w-full',
-                  !connected && 'overflow-hidden',
-                  !(isJupSwap || !isWhitelistedSwapper) && 'hidden'
-                )}>
+                <div
+                  className={twMerge(
+                    'relative h-[575px] min-w-[300px] w-full',
+                    !connected && 'overflow-hidden',
+                    !(isJupSwap || !isWhitelistedSwapper) && 'hidden',
+                  )}
+                >
                   <div className={!connected ? 'blur-sm' : ''}>
                     <JupiterWidget
                       adapters={adapters}

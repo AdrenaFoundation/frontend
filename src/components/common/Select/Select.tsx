@@ -56,19 +56,13 @@ export default function Select<T extends string>({
       // eslint-disable-next-line @next/next/no-img-element
       <img
         src={selectedImg.img}
-        className={twMerge(
-          'w-[20px] h-[20px]',
-          selectedImg.imgClassName,
-        )}
+        className={twMerge('w-[20px] h-[20px]', selectedImg.imgClassName)}
         alt="logo"
       />
     ) : (
       <Image
         src={selectedImg.img}
-        className={twMerge(
-          'w-5 h-5',
-          selectedImg.imgClassName,
-        )}
+        className={twMerge('w-5 h-5', selectedImg.imgClassName)}
         alt="logo"
         width={20}
         height={20}
@@ -79,7 +73,13 @@ export default function Select<T extends string>({
   const chevron =
     options.length > 1 ? (
       <div className="flex h-2 w-2 items-center justify-center shrink-0 mr-1 ml-1">
-        <Image src={chevronDownIcon} alt="chevron down" width={8} height={8} className="w-2 h-2" />
+        <Image
+          src={chevronDownIcon}
+          alt="chevron down"
+          width={8}
+          height={8}
+          className="w-2 h-2"
+        />
       </div>
     ) : null;
 

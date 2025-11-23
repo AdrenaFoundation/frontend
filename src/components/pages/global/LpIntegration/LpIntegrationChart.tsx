@@ -8,7 +8,9 @@ import { getGMT } from '@/utils';
 
 export default function LpIntegrationChart() {
   const [data, setData] = useState<RechartsData[] | null>(null);
-  const [lpIntegrationInfo, setLpIntegrationInfo] = useState<Record<string, number>[] | null>(null);
+  const [lpIntegrationInfo, setLpIntegrationInfo] = useState<
+    Record<string, number>[] | null
+  >(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
@@ -111,7 +113,12 @@ export default function LpIntegrationChart() {
           });
         }
 
-        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M' || periodRef.current === '1Y') {
+        if (
+          periodRef.current === '1M' ||
+          periodRef.current === '3M' ||
+          periodRef.current === '6M' ||
+          periodRef.current === '1Y'
+        ) {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
@@ -132,7 +139,12 @@ export default function LpIntegrationChart() {
           const loopscaleLpAmount = loopscale_lp_amount[i] ?? 0;
           const exponentFinanceLpAmount = exponent_finance_lp_amount[i] ?? 0;
           const lpTokenSupply = lp_token_supply[i] ?? 0;
-          const liquid = lpTokenSupply - (kaminoLpAmount + carrotLpAmount + loopscaleLpAmount + exponentFinanceLpAmount);
+          const liquid =
+            lpTokenSupply -
+            (kaminoLpAmount +
+              carrotLpAmount +
+              loopscaleLpAmount +
+              exponentFinanceLpAmount);
 
           return {
             time,
@@ -187,12 +199,16 @@ export default function LpIntegrationChart() {
         },
       ]}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      gmt={
+        period === '1M' || period === '3M' || period === '6M' || period === '1Y'
+          ? 0
+          : getGMT()
+      }
       periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       setPeriod={setPeriod}
       events={[]}
-      formatY='percentage'
-      formatTooltip='currency'
+      formatY="percentage"
+      formatTooltip="currency"
       displayYAxis={true}
     />
   );

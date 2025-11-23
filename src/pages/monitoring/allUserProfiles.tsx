@@ -231,20 +231,25 @@ export default function AllUserProfiles() {
                         className="flex flex-col gap-2 w-full"
                       >
                         <AnimatePresence>
-                          {paginatedProfiles.map((superchargedProfile, index) => (
-                            <motion.div
-                              key={superchargedProfile.wallet.toBase58()}
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -20 }}
-                              transition={{ duration: 0.3, delay: index * 0.05 }}
-                            >
-                              <UserProfileBlock
-                                superchargedProfile={superchargedProfile}
-                                setActiveProfile={setActiveProfile}
-                              />
-                            </motion.div>
-                          ))}
+                          {paginatedProfiles.map(
+                            (superchargedProfile, index) => (
+                              <motion.div
+                                key={superchargedProfile.wallet.toBase58()}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{
+                                  duration: 0.3,
+                                  delay: index * 0.05,
+                                }}
+                              >
+                                <UserProfileBlock
+                                  superchargedProfile={superchargedProfile}
+                                  setActiveProfile={setActiveProfile}
+                                />
+                              </motion.div>
+                            ),
+                          )}
                         </AnimatePresence>
                       </motion.section>
                     ) : (

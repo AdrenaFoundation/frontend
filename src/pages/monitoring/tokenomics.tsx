@@ -24,361 +24,393 @@ import jupImg from '../../../public/images/jup-logo.png';
 import raydiumImg from '../../../public/images/raydium.png';
 import rugcheckImg from '../../../public/images/rugcheck.jpg';
 
-function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, view: string }) {
-    const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
+function TokenomicsContent({
+  isSmallScreen,
+  view,
+}: {
+  isSmallScreen: boolean;
+  view: string;
+}) {
+  const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
 
-    const totalSupplyADX = useADXTotalSupply();
+  const totalSupplyADX = useADXTotalSupply();
 
-    const adxJupiterInfo = useADXJupiterInfo();
+  const adxJupiterInfo = useADXJupiterInfo();
 
-    const {
-        stakingAccount: adxStakingAccount,
-    } = useStakingAccount(window.adrena.client.lmTokenMint);
+  const { stakingAccount: adxStakingAccount } = useStakingAccount(
+    window.adrena.client.lmTokenMint,
+  );
 
-    const circulatingSupplyADX = useADXCirculatingSupply({
-        totalSupplyADX,
+  const circulatingSupplyADX = useADXCirculatingSupply({
+    totalSupplyADX,
+  });
+
+  const vests = useVests();
+
+  const [{ vestingClaimed, vestingClaimable, vestingVested }, setVestingData] =
+    useState({
+      vestingClaimed: 0,
+      vestingClaimable: 0,
+      vestingVested: 0,
     });
 
-    const vests = useVests();
+  const adxHolderCount = useADXHolderCount();
 
-    const [{
-        vestingClaimed,
-        vestingClaimable,
-        vestingVested,
-    }, setVestingData] = useState({
-        vestingClaimed: 0,
-        vestingClaimable: 0,
-        vestingVested: 0,
-    });
+  useEffect(() => {
+    (async () => {})();
+  }, [totalSupplyADX, adxStakingAccount]);
 
-    const adxHolderCount = useADXHolderCount();
+  const marketCap = useMemo(() => {
+    if (!tokenPriceADX || !circulatingSupplyADX) return 0;
 
-    useEffect(() => {
-        (async () => {
+    return tokenPriceADX * circulatingSupplyADX;
+  }, [tokenPriceADX, circulatingSupplyADX]);
 
-        })();
-    }, [totalSupplyADX, adxStakingAccount]);
+  const fullyDilutedValue = useMemo(() => {
+    if (!tokenPriceADX || !totalSupplyADX) return 0;
 
-    const marketCap = useMemo(() => {
-        if (!tokenPriceADX || !circulatingSupplyADX) return 0;
+    return tokenPriceADX * totalSupplyADX;
+  }, [totalSupplyADX, tokenPriceADX]);
 
-        return tokenPriceADX * circulatingSupplyADX;
-    }, [tokenPriceADX, circulatingSupplyADX]);
-
-    const fullyDilutedValue = useMemo(() => {
-        if (!tokenPriceADX || !totalSupplyADX) return 0;
-
-        return tokenPriceADX * totalSupplyADX;
-    }, [totalSupplyADX, tokenPriceADX]);
-
-    useEffect(() => {
-        const calculateVestingData = () => {
-            if (!vests) {
-                return {
-                    vestingClaimed: 0,
-                    vestingClaimable: 0,
-                    vestingVested: 0,
-                };
-            }
-
-            return vests.reduce((acc, vest) => {
-                const vestedAmount = nativeToUi(vest.amount, window.adrena.client.adxToken.decimals);
-                const claimedAmount = nativeToUi(vest.claimedAmount, window.adrena.client.adxToken.decimals);
-
-                acc.vestingClaimed += claimedAmount;
-
-                if (vest.unlockStartTimestamp.toNumber() <= Date.now() / 1000) {
-                    const total =
-                        (vestedAmount / (vest.unlockEndTimestamp.toNumber() - vest.unlockStartTimestamp.toNumber())) *
-                        ((Date.now() - vest.unlockStartTimestamp.toNumber() * 1000) / 1000);
-
-                    acc.vestingClaimable += total - claimedAmount;
-                }
-
-                acc.vestingVested += vestedAmount;
-
-                return acc;
-            }, {
-                vestingClaimed: 0,
-                vestingClaimable: 0,
-                vestingVested: 0,
-            });
+  useEffect(() => {
+    const calculateVestingData = () => {
+      if (!vests) {
+        return {
+          vestingClaimed: 0,
+          vestingClaimable: 0,
+          vestingVested: 0,
         };
+      }
 
-        const interval = setInterval(() => {
-            setVestingData(calculateVestingData());
-        }, 300);
+      return vests.reduce(
+        (acc, vest) => {
+          const vestedAmount = nativeToUi(
+            vest.amount,
+            window.adrena.client.adxToken.decimals,
+          );
+          const claimedAmount = nativeToUi(
+            vest.claimedAmount,
+            window.adrena.client.adxToken.decimals,
+          );
 
-        return () => clearInterval(interval);
-    }, [vests]);
+          acc.vestingClaimed += claimedAmount;
 
-    useEffect(() => {
-        if (view !== 'tokenomics') return;
-    }, [view]);
+          if (vest.unlockStartTimestamp.toNumber() <= Date.now() / 1000) {
+            const total =
+              (vestedAmount /
+                (vest.unlockEndTimestamp.toNumber() -
+                  vest.unlockStartTimestamp.toNumber())) *
+              ((Date.now() - vest.unlockStartTimestamp.toNumber() * 1000) /
+                1000);
 
-    return (
-        <div className="flex flex-col gap-2 p-2 items-center justify-center">
-            <StyledContainer className="p-0">
-                <div className="flex flex-wrap justify-between">
-                    <NumberDisplay
-                        title="MARKET CAP"
-                        nb={marketCap}
-                        format="currency"
-                        precision={0}
-                        className="border-0 min-w-[12em]"
-                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                        headerClassName="pb-2"
-                        titleClassName="text-[0.7em] sm:text-[0.7em]"
-                    />
+            acc.vestingClaimable += total - claimedAmount;
+          }
 
-                    <NumberDisplay
-                        title="Fully Diluted Value"
-                        nb={fullyDilutedValue}
-                        format="currency"
-                        precision={0}
-                        className="border-0 min-w-[12em]"
-                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                        headerClassName="pb-2"
-                        titleClassName="text-[0.7em] sm:text-[0.7em]"
-                    />
+          acc.vestingVested += vestedAmount;
 
-                    <NumberDisplay
-                        title="CIRCULATING SUPPLY"
-                        nb={circulatingSupplyADX}
-                        format="number"
-                        suffix='ADX'
-                        precision={0}
-                        className="border-0 min-w-[12em]"
-                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                        headerClassName="pb-2"
-                        titleClassName="sm:text-[0.85em]"
-                        tippyInfo='All the distributed ADX tokens'
-                    />
+          return acc;
+        },
+        {
+          vestingClaimed: 0,
+          vestingClaimable: 0,
+          vestingVested: 0,
+        },
+      );
+    };
 
-                    <NumberDisplay
-                        title="TOTAL SUPPLY"
-                        nb={totalSupplyADX}
-                        format="number"
-                        suffix='ADX'
-                        precision={0}
-                        className="border-0 min-w-[12em]"
-                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                        headerClassName="pb-2"
-                        titleClassName="text-[0.7em] sm:text-[0.7em]"
-                    />
+    const interval = setInterval(() => {
+      setVestingData(calculateVestingData());
+    }, 300);
 
-                    <NumberDisplay
-                        title="HOLDER COUNT"
-                        nb={adxHolderCount}
-                        format="number"
-                        precision={0}
-                        className="border-0 min-w-[12em]"
-                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                        headerClassName="pb-2"
-                        titleClassName="text-[0.7em] sm:text-[0.7em]"
-                    />
+    return () => clearInterval(interval);
+  }, [vests]);
 
-                    <NumberDisplay
-                        title="LIQUIDITY"
-                        nb={adxJupiterInfo?.liquidity ?? null}
-                        format="currency"
-                        precision={0}
-                        className="border-0 min-w-[12em]"
-                        bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                        headerClassName="pb-2"
-                        titleClassName="sm:text-[0.85em]"
-                        tippyInfo='Total liquidity available through Jupiter aggregator'
-                    />
-                </div>
-            </StyledContainer>
+  useEffect(() => {
+    if (view !== 'tokenomics') return;
+  }, [view]);
 
-            <div className="grid lg:grid-cols-2 gap-2 w-full">
-                <StyledContainer className="p-4" bodyClassName='items-center justify-center'>
-                    <div className='flex flex-col items-center justify-center h-full w-full'>
-                        <h2 className='flex'>TOKEN ALLOCATION</h2>
+  return (
+    <div className="flex flex-col gap-2 p-2 items-center justify-center">
+      <StyledContainer className="p-0">
+        <div className="flex flex-wrap justify-between">
+          <NumberDisplay
+            title="MARKET CAP"
+            nb={marketCap}
+            format="currency"
+            precision={0}
+            className="border-0 min-w-[12em]"
+            bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+            headerClassName="pb-2"
+            titleClassName="text-[0.7em] sm:text-[0.7em]"
+          />
 
-                        <div className="h-[17em] w-full">
-                            <TokenomicsPieChart />
-                        </div>
-                    </div>
-                </StyledContainer>
+          <NumberDisplay
+            title="Fully Diluted Value"
+            nb={fullyDilutedValue}
+            format="currency"
+            precision={0}
+            className="border-0 min-w-[12em]"
+            bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+            headerClassName="pb-2"
+            titleClassName="text-[0.7em] sm:text-[0.7em]"
+          />
 
-                <StyledContainer className="p-4" bodyClassName='items-center justify-center h-full min-h-[14em]'>
-                    <div className='flex flex-col items-center justify-center w-full h-full pb-6'>
-                        <h2 className='flex mb-4'>CHECK IT OUT</h2>
+          <NumberDisplay
+            title="CIRCULATING SUPPLY"
+            nb={circulatingSupplyADX}
+            format="number"
+            suffix="ADX"
+            precision={0}
+            className="border-0 min-w-[12em]"
+            bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+            headerClassName="pb-2"
+            titleClassName="sm:text-[0.85em]"
+            tippyInfo="All the distributed ADX tokens"
+          />
 
-                        <div className='flex w-full items-center justify-evenly grow relative'>
-                            <div className='flex flex-col items-center justify-center gap-y-2 opacity-80 hover:opacity-100 cursor-pointer'>
-                                <Image
-                                    src={coingeckoImg}
-                                    height={50}
-                                    width={50}
-                                    alt="coingecko"
-                                    onClick={() => {
-                                        window.open('https://www.coingecko.com/en/coins/adrena');
-                                    }}
-                                />
+          <NumberDisplay
+            title="TOTAL SUPPLY"
+            nb={totalSupplyADX}
+            format="number"
+            suffix="ADX"
+            precision={0}
+            className="border-0 min-w-[12em]"
+            bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+            headerClassName="pb-2"
+            titleClassName="text-[0.7em] sm:text-[0.7em]"
+          />
 
-                                <div className='text-sm font-semibold'>Coingecko</div>
-                            </div>
+          <NumberDisplay
+            title="HOLDER COUNT"
+            nb={adxHolderCount}
+            format="number"
+            precision={0}
+            className="border-0 min-w-[12em]"
+            bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+            headerClassName="pb-2"
+            titleClassName="text-[0.7em] sm:text-[0.7em]"
+          />
 
-                            <div className='flex flex-col items-center justify-center gap-y-2 opacity-80 hover:opacity-100 cursor-pointer'>
-                                <Image
-                                    src={dexscreenerImg}
-                                    height={54}
-                                    width={54}
-                                    alt="dex screener icon"
-                                    onClick={() => {
-                                        window.open('https://dexscreener.com/solana/2qnwswsp1deymnbuzgjfrz55jnubiwgrnpk6fmiz1mef');
-                                    }}
-                                />
+          <NumberDisplay
+            title="LIQUIDITY"
+            nb={adxJupiterInfo?.liquidity ?? null}
+            format="currency"
+            precision={0}
+            className="border-0 min-w-[12em]"
+            bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+            headerClassName="pb-2"
+            titleClassName="sm:text-[0.85em]"
+            tippyInfo="Total liquidity available through Jupiter aggregator"
+          />
+        </div>
+      </StyledContainer>
 
-                                <div className='text-sm font-semibold'>DEX screener</div>
-                            </div>
+      <div className="grid lg:grid-cols-2 gap-2 w-full">
+        <StyledContainer
+          className="p-4"
+          bodyClassName="items-center justify-center"
+        >
+          <div className="flex flex-col items-center justify-center h-full w-full">
+            <h2 className="flex">TOKEN ALLOCATION</h2>
 
-                            <div className='flex flex-col items-center justify-center gap-y-2 opacity-80 hover:opacity-100 cursor-pointer'>
-                                <Image
-                                    src={raydiumImg}
-                                    height={55}
-                                    width={55}
-                                    alt="raydium"
-                                    onClick={() => {
-                                        window.open('https://raydium.io/liquidity-pools/?tab=standard&token=AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw');
-                                    }}
-                                />
+            <div className="h-[17em] w-full">
+              <TokenomicsPieChart />
+            </div>
+          </div>
+        </StyledContainer>
 
-                                <div className='text-sm font-semibold'>Raydium</div>
-                            </div>
+        <StyledContainer
+          className="p-4"
+          bodyClassName="items-center justify-center h-full min-h-[14em]"
+        >
+          <div className="flex flex-col items-center justify-center w-full h-full pb-6">
+            <h2 className="flex mb-4">CHECK IT OUT</h2>
 
-                            <div className='flex flex-col items-center justify-center gap-y-1 opacity-80 hover:opacity-100 cursor-pointer'>
-                                <Image
-                                    src={jupImg}
-                                    height={60}
-                                    width={60}
-                                    alt="jupiter"
-                                    onClick={() => {
-                                        window.open('https://jup.ag/swap/USDC-ADX');
-                                    }}
-                                />
+            <div className="flex w-full items-center justify-evenly grow relative">
+              <div className="flex flex-col items-center justify-center gap-y-2 opacity-80 hover:opacity-100 cursor-pointer">
+                <Image
+                  src={coingeckoImg}
+                  height={50}
+                  width={50}
+                  alt="coingecko"
+                  onClick={() => {
+                    window.open('https://www.coingecko.com/en/coins/adrena');
+                  }}
+                />
 
-                                <div className='text-sm font-semibold'>Jupiter</div>
-                            </div>
+                <div className="text-sm font-semibold">Coingecko</div>
+              </div>
 
-                            <div className='flex flex-col items-center justify-center gap-y-1 opacity-80 hover:opacity-100 cursor-pointer'>
-                                <Image
-                                    src={rugcheckImg}
-                                    height={60}
-                                    width={60}
-                                    alt="rugcheck"
-                                    className='border-2'
-                                    onClick={() => {
-                                        window.open('https://rugcheck.xyz/tokens/AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw');
-                                    }}
-                                />
+              <div className="flex flex-col items-center justify-center gap-y-2 opacity-80 hover:opacity-100 cursor-pointer">
+                <Image
+                  src={dexscreenerImg}
+                  height={54}
+                  width={54}
+                  alt="dex screener icon"
+                  onClick={() => {
+                    window.open(
+                      'https://dexscreener.com/solana/2qnwswsp1deymnbuzgjfrz55jnubiwgrnpk6fmiz1mef',
+                    );
+                  }}
+                />
 
-                                <div className='text-sm font-semibold'>Rugcheck</div>
-                            </div>
-                        </div>
+                <div className="text-sm font-semibold">DEX screener</div>
+              </div>
 
-                        <OnchainAccountInfo
-                            className="absolute top-4 right-4"
-                            address={window.adrena.client.adxToken.mint}
-                            shorten={true}
-                        />
+              <div className="flex flex-col items-center justify-center gap-y-2 opacity-80 hover:opacity-100 cursor-pointer">
+                <Image
+                  src={raydiumImg}
+                  height={55}
+                  width={55}
+                  alt="raydium"
+                  onClick={() => {
+                    window.open(
+                      'https://raydium.io/liquidity-pools/?tab=standard&token=AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw',
+                    );
+                  }}
+                />
 
-                        <div className='flex gap-2 w-full items-center justify-evenly'>
-                            <Button
-                                className="mt-auto w-full max-w-[20em]"
-                                title="See docs"
-                                variant="outline"
-                                size="lg"
-                                onClick={() => {
-                                    window.open('https://docs.adrena.trade/tokenomics/adx');
-                                }}
-                            />
+                <div className="text-sm font-semibold">Raydium</div>
+              </div>
 
-                            <Button
-                                className="mt-auto w-full max-w-[20em]"
-                                title="Buy ADX"
-                                size="lg"
-                                onClick={() => {
-                                    window.open('https://jup.ag/swap/USDC-ADX');
-                                }}
-                            />
-                        </div>
-                    </div>
-                </StyledContainer>
+              <div className="flex flex-col items-center justify-center gap-y-1 opacity-80 hover:opacity-100 cursor-pointer">
+                <Image
+                  src={jupImg}
+                  height={60}
+                  width={60}
+                  alt="jupiter"
+                  onClick={() => {
+                    window.open('https://jup.ag/swap/USDC-ADX');
+                  }}
+                />
+
+                <div className="text-sm font-semibold">Jupiter</div>
+              </div>
+
+              <div className="flex flex-col items-center justify-center gap-y-1 opacity-80 hover:opacity-100 cursor-pointer">
+                <Image
+                  src={rugcheckImg}
+                  height={60}
+                  width={60}
+                  alt="rugcheck"
+                  className="border-2"
+                  onClick={() => {
+                    window.open(
+                      'https://rugcheck.xyz/tokens/AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw',
+                    );
+                  }}
+                />
+
+                <div className="text-sm font-semibold">Rugcheck</div>
+              </div>
             </div>
 
-            <StyledContainer className="p-4" bodyClassName='items-center justify-center flex relative'>
-                <div className='flex flex-col items-center justify-center gap-1 w-full'>
-                    <h2 className='flex'>daily emission rate</h2>
+            <OnchainAccountInfo
+              className="absolute top-4 right-4"
+              address={window.adrena.client.adxToken.mint}
+              shorten={true}
+            />
 
-                    <div className="h-[20em] w-full mt-4">
-                        <EmissionsChart isSmallScreen={isSmallScreen} />
-                    </div>
-                </div>
-            </StyledContainer>
+            <div className="flex gap-2 w-full items-center justify-evenly">
+              <Button
+                className="mt-auto w-full max-w-[20em]"
+                title="See docs"
+                variant="outline"
+                size="lg"
+                onClick={() => {
+                  window.open('https://docs.adrena.trade/tokenomics/adx');
+                }}
+              />
 
-            <StyledContainer className="p-4" bodyClassName='items-center justify-center flex relative'>
-                <div className='flex flex-col items-center justify-center gap-1 w-full'>
-                    <h2 className='flex'>VESTS</h2>
-                    <div className="flex flex-wrap justify-between">
-                        <NumberDisplay
-                            title="CLAIMED"
-                            nb={vestingClaimed}
-                            format="number"
-                            precision={0}
-                            suffix='ADX'
-                            className="border-0 min-w-[12em]"
-                            bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                            headerClassName="pb-2"
-                            titleClassName="text-[0.7em] sm:text-[0.7em]"
-                        />
+              <Button
+                className="mt-auto w-full max-w-[20em]"
+                title="Buy ADX"
+                size="lg"
+                onClick={() => {
+                  window.open('https://jup.ag/swap/USDC-ADX');
+                }}
+              />
+            </div>
+          </div>
+        </StyledContainer>
+      </div>
 
-                        <NumberDisplay
-                            title="CLAIMABLE"
-                            nb={vestingClaimable}
-                            format="number"
-                            precision={0}
-                            suffix='ADX'
-                            className="border-0 min-w-[12em]"
-                            bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                            headerClassName="pb-2"
-                            titleClassName="text-[0.7em] sm:text-[0.7em]"
-                        />
+      <StyledContainer
+        className="p-4"
+        bodyClassName="items-center justify-center flex relative"
+      >
+        <div className="flex flex-col items-center justify-center gap-1 w-full">
+          <h2 className="flex">daily emission rate</h2>
 
-                        <NumberDisplay
-                            title="TOTAL VESTED"
-                            nb={vestingVested}
-                            format="number"
-                            precision={0}
-                            suffix='ADX'
-                            className="border-0 min-w-[12em]"
-                            bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
-                            headerClassName="pb-2"
-                            titleClassName="text-[0.7em] sm:text-[0.7em]"
-                        />
-                    </div>
+          <div className="h-[20em] w-full mt-4">
+            <EmissionsChart isSmallScreen={isSmallScreen} />
+          </div>
+        </div>
+      </StyledContainer>
 
-                    <div className="h-[20em] w-full mt-8">
-                        <AllVestingChart vests={vests} />
-                    </div>
+      <StyledContainer
+        className="p-4"
+        bodyClassName="items-center justify-center flex relative"
+      >
+        <div className="flex flex-col items-center justify-center gap-1 w-full">
+          <h2 className="flex">VESTS</h2>
+          <div className="flex flex-wrap justify-between">
+            <NumberDisplay
+              title="CLAIMED"
+              nb={vestingClaimed}
+              format="number"
+              precision={0}
+              suffix="ADX"
+              className="border-0 min-w-[12em]"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+              headerClassName="pb-2"
+              titleClassName="text-[0.7em] sm:text-[0.7em]"
+            />
 
-                    <div>
-                        {/* TOP TOKEN HOLDERS */}
-                    </div>
-                </div>
-            </StyledContainer >
-        </div >
-    );
+            <NumberDisplay
+              title="CLAIMABLE"
+              nb={vestingClaimable}
+              format="number"
+              precision={0}
+              suffix="ADX"
+              className="border-0 min-w-[12em]"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+              headerClassName="pb-2"
+              titleClassName="text-[0.7em] sm:text-[0.7em]"
+            />
+
+            <NumberDisplay
+              title="TOTAL VESTED"
+              nb={vestingVested}
+              format="number"
+              precision={0}
+              suffix="ADX"
+              className="border-0 min-w-[12em]"
+              bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+              headerClassName="pb-2"
+              titleClassName="text-[0.7em] sm:text-[0.7em]"
+            />
+          </div>
+
+          <div className="h-[20em] w-full mt-8">
+            <AllVestingChart vests={vests} />
+          </div>
+
+          <div>{/* TOP TOKEN HOLDERS */}</div>
+        </div>
+      </StyledContainer>
+    </div>
+  );
 }
 
 // Wrap with provider to share data across all hooks
-export default function Tokenomics(props: { isSmallScreen: boolean, view: string }) {
-    return (
-        <AllAdxStakingProvider>
-            <TokenomicsContent {...props} />
-        </AllAdxStakingProvider>
-    );
+export default function Tokenomics(props: {
+  isSmallScreen: boolean;
+  view: string;
+}) {
+  return (
+    <AllAdxStakingProvider>
+      <TokenomicsContent {...props} />
+    </AllAdxStakingProvider>
+  );
 }

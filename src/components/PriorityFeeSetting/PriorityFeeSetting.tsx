@@ -179,7 +179,9 @@ export default function PriorityFeeSetting({
             <label htmlFor="currency" className="sr-only">
               Currency
             </label>
-            <span className="opacity-50 sm:text-sm mr-3 font-semibold">SOL</span>
+            <span className="opacity-50 sm:text-sm mr-3 font-semibold">
+              SOL
+            </span>
           </div>
         </div>
       </div>

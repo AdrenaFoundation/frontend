@@ -48,28 +48,42 @@ export default function TPSLModeSelector({
   };
 
   return (
-    <div className={"relative flex flex-col gap-3 w-full border bg-third rounded-md mt-4"}>
-      {(!isTPSL || !isConnected) ? <div
-        className="flex flex-row justify-between gap-3 py-3 px-4 cursor-pointer select-none"
-        onClick={() => {
-          if (!isConnected) return;
-          setIsTPSL(!isTPSL);
-          setTakeProfitInput(null);
-          setStopLossInput(null);
-        }}
-      >
-        <h5>{(!isTPSL || !isConnected) ? 'Take Profit / Stop Loss' : ''}</h5>
-        <label className={twMerge("flex items-center ml-1 cursor-pointer", !isConnected ? "opacity-50" : "")}>
-          <Switch
-            className={twMerge("mr-0.5", isTPSL ? "bg-green" : "bg-inputcolor")}
-            checked={isTPSL}
-            onChange={() => {
-              // Handle the click on the level above
-            }}
-            size="medium"
-          />
-        </label>
-      </div> : null}
+    <div
+      className={
+        'relative flex flex-col gap-3 w-full border bg-third rounded-md mt-4'
+      }
+    >
+      {!isTPSL || !isConnected ? (
+        <div
+          className="flex flex-row justify-between gap-3 py-3 px-4 cursor-pointer select-none"
+          onClick={() => {
+            if (!isConnected) return;
+            setIsTPSL(!isTPSL);
+            setTakeProfitInput(null);
+            setStopLossInput(null);
+          }}
+        >
+          <h5>{!isTPSL || !isConnected ? 'Take Profit / Stop Loss' : ''}</h5>
+          <label
+            className={twMerge(
+              'flex items-center ml-1 cursor-pointer',
+              !isConnected ? 'opacity-50' : '',
+            )}
+          >
+            <Switch
+              className={twMerge(
+                'mr-0.5',
+                isTPSL ? 'bg-green' : 'bg-inputcolor',
+              )}
+              checked={isTPSL}
+              onChange={() => {
+                // Handle the click on the level above
+              }}
+              size="medium"
+            />
+          </label>
+        </div>
+      ) : null}
 
       {isTPSL && isConnected ? (
         <>
@@ -77,10 +91,14 @@ export default function TPSLModeSelector({
             position={position as unknown as PositionExtended}
             input={takeProfitInput}
             setInput={setTakeProfitInput}
-            type='Take Profit'
-            title={openedPosition && openedPosition.takeProfitIsSet ? 'Update Take Profit' : "Take Profit"}
+            type="Take Profit"
+            title={
+              openedPosition && openedPosition.takeProfitIsSet
+                ? 'Update Take Profit'
+                : 'Take Profit'
+            }
             isLoading={positionInfo.isInfoLoading}
-            setIsError={() => { }}
+            setIsError={() => {}}
             setIsTPSL={setIsTPSL}
             isTPSL={isTPSL}
             isConnected={isConnected}
@@ -90,10 +108,14 @@ export default function TPSLModeSelector({
             position={position as unknown as PositionExtended}
             input={stopLossInput}
             setInput={setStopLossInput}
-            type='Stop Loss'
-            title={openedPosition && openedPosition.stopLossIsSet ? 'Update Stop Loss' : "Stop Loss"}
+            type="Stop Loss"
+            title={
+              openedPosition && openedPosition.stopLossIsSet
+                ? 'Update Stop Loss'
+                : 'Stop Loss'
+            }
             isLoading={positionInfo.isInfoLoading}
-            setIsError={() => { }}
+            setIsError={() => {}}
             className="pb-3"
             isLight
           />

@@ -129,18 +129,18 @@ type TypeMap = {
 type DecodeType<T extends IdlType, Defined> = T extends keyof TypeMap
   ? TypeMap[T]
   : T extends { defined: keyof Defined }
-  ? Defined[T['defined']]
-  : T extends { option: { defined: keyof Defined } }
-  ? Defined[T['option']['defined']] | null
-  : T extends { option: keyof TypeMap }
-  ? TypeMap[T['option']] | null
-  : T extends { vec: { defined: keyof Defined } }
-  ? Defined[T['vec']['defined']][]
-  : T extends { vec: keyof TypeMap }
-  ? TypeMap[T['vec']][]
-  : T extends { array: [idlType: keyof TypeMap, size: number] }
-  ? TypeMap[T['array'][0]][]
-  : unknown;
+    ? Defined[T['defined']]
+    : T extends { option: { defined: keyof Defined } }
+      ? Defined[T['option']['defined']] | null
+      : T extends { option: keyof TypeMap }
+        ? TypeMap[T['option']] | null
+        : T extends { vec: { defined: keyof Defined } }
+          ? Defined[T['vec']['defined']][]
+          : T extends { vec: keyof TypeMap }
+            ? TypeMap[T['vec']][]
+            : T extends { array: [idlType: keyof TypeMap, size: number] }
+              ? TypeMap[T['array'][0]][]
+              : unknown;
 
 type MakeArgs<A extends IdlField[], Defined> = {
   [K in keyof A]: A[K] extends IdlField

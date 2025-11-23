@@ -14,7 +14,6 @@ export default function TokenInfoHeader({
   totalStakeAmount,
   walletAddress,
 }: TokenInfoHeaderProps) {
-
   return (
     <div className="p-5 pb-0">
       <div className="flex flex-col w-full bg-gradient-to-br from-[#07111A] to-[#0B1722] border rounded-md shadow-lg">

@@ -65,15 +65,15 @@ export default function StakingRewardVaults({
         <NumberDisplay
           nb={nextAdxRoundUsdcRewards}
           precision={0}
-          suffix='USDC'
-          className='border-0 p-0'
+          suffix="USDC"
+          className="border-0 p-0"
         />
 
         <NumberDisplay
           nb={nextAdxRoundAdxRewards}
           precision={0}
-          suffix='ADX'
-          className='border-0 p-0'
+          suffix="ADX"
+          className="border-0 p-0"
         />
       </div>
     </div>

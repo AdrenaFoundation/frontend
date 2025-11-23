@@ -14,8 +14,8 @@ export function AprLpChart({ isSmallScreen, isAlpPage }: AprChartProps) {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
-        time: string;
-      }
+          time: string;
+        }
       | { [key: string]: number }
     )[];
 
@@ -81,7 +81,8 @@ export function AprLpChart({ isSmallScreen, isAlpPage }: AprChartProps) {
             return 'poolinfodaily';
           case '1Y':
             return 'poolinfodaily';
-          default: return 'poolinfo';
+          default:
+            return 'poolinfo';
         }
       })();
 
@@ -93,7 +94,11 @@ export function AprLpChart({ isSmallScreen, isAlpPage }: AprChartProps) {
         isLiquidApr: true,
       });
 
-      if (!result || !result.lp_apr_rolling_seven_day || !result.snapshot_timestamp) {
+      if (
+        !result ||
+        !result.lp_apr_rolling_seven_day ||
+        !result.snapshot_timestamp
+      ) {
         console.error('Failed to fetch data: Missing required data fields');
         return;
       }
@@ -115,7 +120,12 @@ export function AprLpChart({ isSmallScreen, isAlpPage }: AprChartProps) {
           });
         }
 
-        if (periodRef.current === '1M' || periodRef.current === '3M' || periodRef.current === '6M' || periodRef.current === '1Y') {
+        if (
+          periodRef.current === '1M' ||
+          periodRef.current === '3M' ||
+          periodRef.current === '6M' ||
+          periodRef.current === '1Y'
+        ) {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
@@ -161,14 +171,21 @@ export function AprLpChart({ isSmallScreen, isAlpPage }: AprChartProps) {
       labels={[{ name: 'ALP APR', color: '#66b3ff' }]}
       yDomain={[0]}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      gmt={
+        period === '1M' || period === '3M' || period === '6M' || period === '1Y'
+          ? 0
+          : getGMT()
+      }
       setPeriod={setPeriod}
       periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       isSmallScreen={isSmallScreen}
-      formatY='percentage'
+      formatY="percentage"
       isAlpPage={isAlpPage}
       tippyContent={
-        <div>This represents the 7-day rolling average APR for ALP since March 19, 2025, when ALP became liquid.</div>
+        <div>
+          This represents the 7-day rolling average APR for ALP since March 19,
+          2025, when ALP became liquid.
+        </div>
       }
     />
   );

@@ -1,4 +1,8 @@
-import { ActionGetResponse, ActionPostResponse, ACTIONS_CORS_HEADERS } from '@solana/actions';
+import {
+  ActionGetResponse,
+  ActionPostResponse,
+  ACTIONS_CORS_HEADERS,
+} from '@solana/actions';
 import { PublicKey } from '@solana/web3.js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -7,7 +11,6 @@ import { adrenaClient, getSeriliazedTransaction } from '@/lib/blink/utils';
 import { AdxLockPeriod } from '@/types';
 import { AdrenaTransactionError, isValidPublicKey } from '@/utils';
 
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ActionGetResponse | ActionPostResponse>,
@@ -15,7 +18,7 @@ export default async function handler(
   const client = await adrenaClient;
 
   if (req.method === 'POST') {
-    const { account, } = req.body;
+    const { account } = req.body;
     const lockPeriod = Number(req.query.lockPeriod) as AdxLockPeriod;
     const amount = Number(req.query.amount);
 
@@ -45,7 +48,6 @@ export default async function handler(
       });
     }
 
-
     const userStaking = await client.getUserStakingAccount({
       owner: new PublicKey(account),
       stakedTokenMint,
@@ -54,24 +56,26 @@ export default async function handler(
     if (!userStaking) {
       return res.writeHead(400, ACTIONS_CORS_HEADERS).json({
         type: 'transaction',
-        message: 'User staking account not found, please stake using the adrena app',
+        message:
+          'User staking account not found, please stake using the adrena app',
         transaction: '',
       });
     }
 
     try {
-      const ix = lockPeriod === 0
-        ? await client.buildAddLiquidStakeIx({
-          owner: new PublicKey(account),
-          amount,
-          stakedTokenMint,
-        })
-        : await client.buildAddLockedStakeIx({
-          owner: new PublicKey(account),
-          amount,
-          lockedDays: lockPeriod,
-          stakedTokenMint,
-        });
+      const ix =
+        lockPeriod === 0
+          ? await client.buildAddLiquidStakeIx({
+              owner: new PublicKey(account),
+              amount,
+              stakedTokenMint,
+            })
+          : await client.buildAddLockedStakeIx({
+              owner: new PublicKey(account),
+              amount,
+              lockedDays: lockPeriod,
+              stakedTokenMint,
+            });
 
       const serialTX = await getSeriliazedTransaction(ix, account);
 
@@ -79,7 +83,6 @@ export default async function handler(
         type: 'transaction',
         transaction: serialTX,
       });
-
     } catch (error) {
       console.log(error);
       const errString =
@@ -122,11 +125,10 @@ export default async function handler(
                   value: period.toString(),
                   selected: period === 90,
                 })),
-              }
+              },
             ],
             type: 'transaction',
           },
-
         ],
       },
     });

@@ -17,7 +17,11 @@
 
 import { bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import { usePrivy } from '@privy-io/react-auth';
-import { ConnectedStandardSolanaWallet, useCreateWallet, useWallets } from '@privy-io/react-auth/solana';
+import {
+  ConnectedStandardSolanaWallet,
+  useCreateWallet,
+  useWallets,
+} from '@privy-io/react-auth/solana';
 import { WalletReadyState } from '@solana/wallet-adapter-base';
 import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
 import { EventEmitter } from 'events';
@@ -38,17 +42,20 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [adapterInitialized, setAdapterInitialized] = useState(false);
-  const [autoConnectAttemptTime, setAutoConnectAttemptTime] = useState<number | null>(null);
+  const [autoConnectAttemptTime, setAutoConnectAttemptTime] = useState<
+    number | null
+  >(null);
   const [timeoutCheckTrigger, setTimeoutCheckTrigger] = useState(0);
 
-  const { wallets: connectedStandardWallets, ready: walletsReady } = useWallets();
+  const { wallets: connectedStandardWallets, ready: walletsReady } =
+    useWallets();
   const { createWallet } = useCreateWallet();
 
   const currentWalletAddress = useSelector(selectWalletAddress);
 
   const externalWalletAddressMap = useMemo(() => {
     const map = new Map();
-    connectedStandardWallets.forEach(w => {
+    connectedStandardWallets.forEach((w) => {
       if (!w.standardWallet.name.toLowerCase().includes('privy')) {
         map.set(w.address, w.standardWallet.name);
       }
@@ -89,7 +96,10 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
   }, [eventEmitter]);
 
   const currentChain = useMemo(() => {
-    const chain = process.env.NEXT_PUBLIC_DEV_CLUSTER === 'devnet' ? 'solana:devnet' : 'solana:mainnet';
+    const chain =
+      process.env.NEXT_PUBLIC_DEV_CLUSTER === 'devnet'
+        ? 'solana:devnet'
+        : 'solana:mainnet';
     return chain;
   }, []);
 
@@ -101,7 +111,7 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     // Check every 500ms to trigger auto-connect re-evaluation
     // This allows us to check the timeout even if connectedStandardWallets doesn't change
     const interval = setInterval(() => {
-      setTimeoutCheckTrigger(prev => prev + 1);
+      setTimeoutCheckTrigger((prev) => prev + 1);
     }, 500);
 
     return () => clearInterval(interval);
@@ -181,7 +191,14 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
         }, 1000); // Check every second
 
         return () => clearInterval(interval); */
-  }, [authenticated, currentWalletAddress, connectedStandardWallets, dispatch, eventEmitter, adapterRef]);
+  }, [
+    authenticated,
+    currentWalletAddress,
+    connectedStandardWallets,
+    dispatch,
+    eventEmitter,
+    adapterRef,
+  ]);
 
   // Auto-connect when publicKey becomes available
   useEffect(() => {
@@ -195,7 +212,8 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     }
 
     try {
-      const shouldAutoConnect = authenticated && !currentWalletAddress && adapterRef.current;
+      const shouldAutoConnect =
+        authenticated && !currentWalletAddress && adapterRef.current;
 
       if (shouldAutoConnect) {
         // Wait for wallets to be ready before auto-connecting
@@ -211,8 +229,8 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
           const savedWallet = localStorage.getItem('privy:selectedWallet');
 
           if (savedWallet) {
-            const connectedWallet = connectedStandardWallets.find(w =>
-              w.address === savedWallet
+            const connectedWallet = connectedStandardWallets.find(
+              (w) => w.address === savedWallet,
             );
 
             if (isValidPublicKey(savedWallet) && connectedWallet) {
@@ -225,8 +243,8 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
         if (!walletAddress) {
           const savedWallet = localStorage.getItem('privy:selectedWallet');
-          const embeddedWallet = connectedStandardWallets.find(w =>
-            w.standardWallet.name.toLowerCase().includes('privy')
+          const embeddedWallet = connectedStandardWallets.find((w) =>
+            w.standardWallet.name.toLowerCase().includes('privy'),
           );
 
           if (savedWallet) {
@@ -294,7 +312,21 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     } finally {
       setIsConnecting(false);
     }
-  }, [publicKey, authenticated, ready, isDisconnecting, isConnecting, dispatch, eventEmitter, adapterInitialized, connectedStandardWallets, walletsReady, currentWalletAddress, autoConnectAttemptTime, timeoutCheckTrigger]);
+  }, [
+    publicKey,
+    authenticated,
+    ready,
+    isDisconnecting,
+    isConnecting,
+    dispatch,
+    eventEmitter,
+    adapterInitialized,
+    connectedStandardWallets,
+    walletsReady,
+    currentWalletAddress,
+    autoConnectAttemptTime,
+    timeoutCheckTrigger,
+  ]);
 
   // called from function connectWalletAction in walletActions.ts
   const connect = useCallback(async () => {
@@ -318,13 +350,14 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
       if (typeof window !== 'undefined') {
         const savedWallet = localStorage.getItem('privy:selectedWallet');
-        walletAddress = savedWallet && isValidPublicKey(savedWallet) ? savedWallet : null;
+        walletAddress =
+          savedWallet && isValidPublicKey(savedWallet) ? savedWallet : null;
       }
 
       if (!walletAddress && connectedStandardWallets.length > 0) {
         // Find the first embedded wallet (Privy wallet)
-        const embeddedWallet = connectedStandardWallets.find(w =>
-          w.standardWallet.name.toLowerCase().includes('privy')
+        const embeddedWallet = connectedStandardWallets.find((w) =>
+          w.standardWallet.name.toLowerCase().includes('privy'),
         );
         if (embeddedWallet) {
           walletAddress = embeddedWallet.address;
@@ -355,14 +388,24 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
           },
         });
       }
-
     } catch (error) {
       console.error('Failed to connect to Privy:', error);
       throw error;
     } finally {
       setIsConnecting(false);
     }
-  }, [ready, authenticated, login, isConnecting, isDisconnecting, publicKey, dispatch, createWallet, connectedStandardWallets, walletsReady]);
+  }, [
+    ready,
+    authenticated,
+    login,
+    isConnecting,
+    isDisconnecting,
+    publicKey,
+    dispatch,
+    createWallet,
+    connectedStandardWallets,
+    walletsReady,
+  ]);
 
   const disconnect = useCallback(async () => {
     if (isDisconnecting) {
@@ -386,134 +429,202 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
     }
   }, [logout, dispatch, isDisconnecting]);
 
-  const serializeTransaction = useCallback((transaction: Transaction | VersionedTransaction): Uint8Array => {
-    if (transaction instanceof VersionedTransaction) {
-      return transaction.serialize();
-    } else {
-      return new Uint8Array(transaction.serialize({
-        requireAllSignatures: false,
-        verifySignatures: false,
-      }));
-    }
-  }, []);
-
-  const handleVersionedTransaction = useCallback(async (
-    wallet: ConnectedStandardSolanaWallet,
-    serializedTransaction: Uint8Array
-  ): Promise<VersionedTransaction> => {
-
-    const result = await wallet.signTransaction({
-      transaction: serializedTransaction,
-      chain: currentChain,
-    });
-
-    try {
-      const signedVersionedTx = VersionedTransaction.deserialize(result.signedTransaction);
-      return signedVersionedTx;
-    } catch (error) {
-      console.error('❌ Failed to deserialize as VersionedTransaction:', error);
-      console.error('   This might indicate the wallet returned a different format');
-      throw error;
-    }
-  }, [currentChain]);
-
-  const handleLegacyTransaction = useCallback(async (
-    transaction: Transaction,
-    wallet: ConnectedStandardSolanaWallet,
-    serializedTransaction: Uint8Array
-  ): Promise<Transaction> => {
-
-    const result = await wallet.signTransaction({
-      transaction: serializedTransaction,
-      chain: currentChain,
-    });
-
-    try {
-      const versionedTx = VersionedTransaction.deserialize(result.signedTransaction);
-
-      if (versionedTx.signatures && versionedTx.signatures.length > 0) {
-        (transaction as unknown as { signatures: Uint8Array[] }).signatures = versionedTx.signatures.map((sig) => new Uint8Array(sig));
-      }
-
-      return transaction;
-    } catch (error) {
-      console.error('❌ Failed to deserialize as VersionedTransaction:', error);
-      console.error('   This might indicate the wallet returned a different format');
-      throw error;
-    }
-  }, [currentChain]);
-
-  const signTransaction = useCallback(async (transaction: Transaction | VersionedTransaction): Promise<Transaction | VersionedTransaction> => {
-
-    if (!walletsReady) {
-      throw new Error('Wallets not ready for signing');
-    }
-
-    const targetWalletAddress = externalWallet?.address || currentWalletAddress;
-
-    if (!targetWalletAddress) {
-      throw new Error('No wallet address available for signing');
-    }
-
-    const wallet = connectedStandardWallets.find(w => w.address === targetWalletAddress);
-    if (!wallet) {
-      throw new Error(`Wallet not found for address: ${targetWalletAddress?.slice(0, 8)}...`);
-    }
-
-    try {
-      const serializedTransaction = serializeTransaction(transaction);
-
-      let signedTransaction: Transaction | VersionedTransaction;
-
-      // Use instanceof instead of constructor.name to handle minification
-      const isVersionedTx = transaction instanceof VersionedTransaction;
-
-      if (isVersionedTx) {
-        signedTransaction = await handleVersionedTransaction(wallet, serializedTransaction);
+  const serializeTransaction = useCallback(
+    (transaction: Transaction | VersionedTransaction): Uint8Array => {
+      if (transaction instanceof VersionedTransaction) {
+        return transaction.serialize();
       } else {
-        console.warn('   Transaction is not a VersionedTransaction, falling back to legacy transaction');
-        signedTransaction = await handleLegacyTransaction(transaction as Transaction, wallet, serializedTransaction);
+        return new Uint8Array(
+          transaction.serialize({
+            requireAllSignatures: false,
+            verifySignatures: false,
+          }),
+        );
+      }
+    },
+    [],
+  );
+
+  const handleVersionedTransaction = useCallback(
+    async (
+      wallet: ConnectedStandardSolanaWallet,
+      serializedTransaction: Uint8Array,
+    ): Promise<VersionedTransaction> => {
+      const result = await wallet.signTransaction({
+        transaction: serializedTransaction,
+        chain: currentChain,
+      });
+
+      try {
+        const signedVersionedTx = VersionedTransaction.deserialize(
+          result.signedTransaction,
+        );
+        return signedVersionedTx;
+      } catch (error) {
+        console.error(
+          '❌ Failed to deserialize as VersionedTransaction:',
+          error,
+        );
+        console.error(
+          '   This might indicate the wallet returned a different format',
+        );
+        throw error;
+      }
+    },
+    [currentChain],
+  );
+
+  const handleLegacyTransaction = useCallback(
+    async (
+      transaction: Transaction,
+      wallet: ConnectedStandardSolanaWallet,
+      serializedTransaction: Uint8Array,
+    ): Promise<Transaction> => {
+      const result = await wallet.signTransaction({
+        transaction: serializedTransaction,
+        chain: currentChain,
+      });
+
+      try {
+        const versionedTx = VersionedTransaction.deserialize(
+          result.signedTransaction,
+        );
+
+        if (versionedTx.signatures && versionedTx.signatures.length > 0) {
+          (transaction as unknown as { signatures: Uint8Array[] }).signatures =
+            versionedTx.signatures.map((sig) => new Uint8Array(sig));
+        }
+
+        return transaction;
+      } catch (error) {
+        console.error(
+          '❌ Failed to deserialize as VersionedTransaction:',
+          error,
+        );
+        console.error(
+          '   This might indicate the wallet returned a different format',
+        );
+        throw error;
+      }
+    },
+    [currentChain],
+  );
+
+  const signTransaction = useCallback(
+    async (
+      transaction: Transaction | VersionedTransaction,
+    ): Promise<Transaction | VersionedTransaction> => {
+      if (!walletsReady) {
+        throw new Error('Wallets not ready for signing');
       }
 
-      return signedTransaction;
-    } catch (error) {
-      console.error('❌ SIGN: Failed to sign transaction:', error);
-      throw error;
-    }
-  }, [externalWallet, currentWalletAddress, connectedStandardWallets, serializeTransaction, handleVersionedTransaction, handleLegacyTransaction, walletsReady]);
+      const targetWalletAddress =
+        externalWallet?.address || currentWalletAddress;
 
-  const signAllTransactions = useCallback(async (transactions: (Transaction | VersionedTransaction)[]): Promise<(Transaction | VersionedTransaction)[]> => {
-    const signedTransactions: (Transaction | VersionedTransaction)[] = [];
+      if (!targetWalletAddress) {
+        throw new Error('No wallet address available for signing');
+      }
 
-    for (const transaction of transactions) {
-      const signedTransaction = await signTransaction(transaction);
-      signedTransactions.push(signedTransaction);
-    }
+      const wallet = connectedStandardWallets.find(
+        (w) => w.address === targetWalletAddress,
+      );
+      if (!wallet) {
+        throw new Error(
+          `Wallet not found for address: ${targetWalletAddress?.slice(0, 8)}...`,
+        );
+      }
 
-    return signedTransactions;
-  }, [signTransaction]);
+      try {
+        const serializedTransaction = serializeTransaction(transaction);
 
-  const signMessage = useCallback(async (message: Uint8Array): Promise<Uint8Array> => {
-    if (!walletsReady) {
-      throw new Error('Wallets not ready for signing');
-    }
+        let signedTransaction: Transaction | VersionedTransaction;
 
-    const targetWalletAddress = externalWallet?.address || currentWalletAddress;
+        // Use instanceof instead of constructor.name to handle minification
+        const isVersionedTx = transaction instanceof VersionedTransaction;
 
-    if (!targetWalletAddress) {
-      throw new Error('No wallet address available for signing');
-    }
+        if (isVersionedTx) {
+          signedTransaction = await handleVersionedTransaction(
+            wallet,
+            serializedTransaction,
+          );
+        } else {
+          console.warn(
+            '   Transaction is not a VersionedTransaction, falling back to legacy transaction',
+          );
+          signedTransaction = await handleLegacyTransaction(
+            transaction as Transaction,
+            wallet,
+            serializedTransaction,
+          );
+        }
 
-    const wallet = connectedStandardWallets.find(w => w.address === targetWalletAddress);
+        return signedTransaction;
+      } catch (error) {
+        console.error('❌ SIGN: Failed to sign transaction:', error);
+        throw error;
+      }
+    },
+    [
+      externalWallet,
+      currentWalletAddress,
+      connectedStandardWallets,
+      serializeTransaction,
+      handleVersionedTransaction,
+      handleLegacyTransaction,
+      walletsReady,
+    ],
+  );
 
-    if (!wallet) {
-      throw new Error(`No Solana wallet available for signing. Address: ${targetWalletAddress?.slice(0, 8)}...`);
-    }
+  const signAllTransactions = useCallback(
+    async (
+      transactions: (Transaction | VersionedTransaction)[],
+    ): Promise<(Transaction | VersionedTransaction)[]> => {
+      const signedTransactions: (Transaction | VersionedTransaction)[] = [];
 
-    const { signature } = await wallet.signMessage({ message });
+      for (const transaction of transactions) {
+        const signedTransaction = await signTransaction(transaction);
+        signedTransactions.push(signedTransaction);
+      }
 
-    return signature;
-  }, [externalWallet, currentWalletAddress, connectedStandardWallets, walletsReady]);
+      return signedTransactions;
+    },
+    [signTransaction],
+  );
+
+  const signMessage = useCallback(
+    async (message: Uint8Array): Promise<Uint8Array> => {
+      if (!walletsReady) {
+        throw new Error('Wallets not ready for signing');
+      }
+
+      const targetWalletAddress =
+        externalWallet?.address || currentWalletAddress;
+
+      if (!targetWalletAddress) {
+        throw new Error('No wallet address available for signing');
+      }
+
+      const wallet = connectedStandardWallets.find(
+        (w) => w.address === targetWalletAddress,
+      );
+
+      if (!wallet) {
+        throw new Error(
+          `No Solana wallet available for signing. Address: ${targetWalletAddress?.slice(0, 8)}...`,
+        );
+      }
+
+      const { signature } = await wallet.signMessage({ message });
+
+      return signature;
+    },
+    [
+      externalWallet,
+      currentWalletAddress,
+      connectedStandardWallets,
+      walletsReady,
+    ],
+  );
 
   useEffect(() => {
     if (!adapterRef.current && ready) {
@@ -528,8 +639,8 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
         supportedTransactionVersions: new Set([0]),
         readyState: WalletReadyState.Installed,
         autoConnect: false,
-        connect: async () => { },
-        disconnect: async () => { },
+        connect: async () => {},
+        disconnect: async () => {},
         sendTransaction: async () => '',
         signTransaction: async (tx: Transaction) => tx,
         signAllTransactions: async (txs: Transaction[]) => txs,
@@ -551,7 +662,9 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       adapterRef.current.publicKey = publicKey;
       adapterRef.current.connecting = isConnecting;
       adapterRef.current.connected = authenticated && !!currentWalletAddress;
-      adapterRef.current.readyState = (ready ? WalletReadyState.Installed : WalletReadyState.NotDetected) as WalletReadyState;
+      adapterRef.current.readyState = (
+        ready ? WalletReadyState.Installed : WalletReadyState.NotDetected
+      ) as WalletReadyState;
 
       adapterRef.current.connect = connect;
       adapterRef.current.disconnect = disconnect;
@@ -566,14 +679,21 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
       adapter.signMessage = signMessage;
 
       // function not used by adrena client right now, may be used later
-      adapterRef.current.sendTransaction = async (transaction: Transaction | VersionedTransaction) => {
+      adapterRef.current.sendTransaction = async (
+        transaction: Transaction | VersionedTransaction,
+      ) => {
         if (!walletsReady) {
           throw new Error('Wallets not ready for sending transaction');
         }
 
-        const privySignature = (transaction as unknown as { _privySignature: string })?._privySignature;
+        const privySignature = (
+          transaction as unknown as { _privySignature: string }
+        )?._privySignature;
         if (privySignature) {
-          console.log('✅ Using cached Privy signature:', privySignature.slice(0, 16) + '...');
+          console.log(
+            '✅ Using cached Privy signature:',
+            privySignature.slice(0, 16) + '...',
+          );
           return privySignature;
         }
 
@@ -582,15 +702,25 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
           throw new Error('No Solana wallet connected');
         }
 
-        const wallet = connectedStandardWallets.find(w => w.address === currentWalletAddress);
+        const wallet = connectedStandardWallets.find(
+          (w) => w.address === currentWalletAddress,
+        );
         if (!wallet) {
           console.error('❌ Wallet not found!');
-          console.error('   Looking for:', currentWalletAddress.slice(0, 8) + '...');
-          console.error('   Available wallets:', connectedStandardWallets.map(w => ({
-            address: w.address.slice(0, 8) + '...',
-            name: w.standardWallet.name,
-          })));
-          throw new Error('Wallet not found for address: ' + currentWalletAddress);
+          console.error(
+            '   Looking for:',
+            currentWalletAddress.slice(0, 8) + '...',
+          );
+          console.error(
+            '   Available wallets:',
+            connectedStandardWallets.map((w) => ({
+              address: w.address.slice(0, 8) + '...',
+              name: w.standardWallet.name,
+            })),
+          );
+          throw new Error(
+            'Wallet not found for address: ' + currentWalletAddress,
+          );
         }
 
         try {
@@ -606,16 +736,34 @@ export function usePrivyAdapter(): WalletAdapterExtended | null {
 
           return signature;
         } catch (error) {
-          console.error('❌ [sendTransaction] Failed to send transaction:', error);
+          console.error(
+            '❌ [sendTransaction] Failed to send transaction:',
+            error,
+          );
           throw error;
         }
       };
 
       setAdapterInitialized(true);
     }
-  }, [publicKey, isConnecting, authenticated, currentWalletAddress, ready, connect, disconnect, signTransaction, signAllTransactions, signMessage, connectedStandardWallets, currentChain, serializeTransaction, externalWallet, eventEmitter, walletsReady]);
+  }, [
+    publicKey,
+    isConnecting,
+    authenticated,
+    currentWalletAddress,
+    ready,
+    connect,
+    disconnect,
+    signTransaction,
+    signAllTransactions,
+    signMessage,
+    connectedStandardWallets,
+    currentChain,
+    serializeTransaction,
+    externalWallet,
+    eventEmitter,
+    walletsReady,
+  ]);
 
-
-
-  return ready && adapterRef.current ? (adapterRef.current || null) : null;
+  return ready && adapterRef.current ? adapterRef.current || null : null;
 }

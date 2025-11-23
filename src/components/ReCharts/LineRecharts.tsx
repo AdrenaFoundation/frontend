@@ -154,7 +154,11 @@ export default function LineRechart<T extends string>({
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height="100%" style={{ marginLeft: '-1rem' }}>
+      <ResponsiveContainer
+        width="100%"
+        height="100%"
+        style={{ marginLeft: '-1rem' }}
+      >
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 

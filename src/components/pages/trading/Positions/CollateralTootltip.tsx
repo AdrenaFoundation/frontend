@@ -42,12 +42,22 @@ const CollateralTooltip: React.FC<CollateralTooltipProps> = ({
         <div className="flex justify-between items-center">
           <span>Entry Collateral:</span>
           <span className="ml-4 inline-block">
-            <FormatNumber nb={entryCollateralAmount} format="currency" isDecimalDimmed={false} className='text-xs' />
+            <FormatNumber
+              nb={entryCollateralAmount}
+              format="currency"
+              isDecimalDimmed={false}
+              className="text-xs"
+            />
           </span>
         </div>
         <div className="flex justify-end">
           <span className="ml-4 flex items-center text-sm">
-            <FormatNumber nb={entryCollateralAmountNative} isDecimalDimmed={false} precision={token.displayAmountDecimalsPrecision} className='text-xs' />
+            <FormatNumber
+              nb={entryCollateralAmountNative}
+              isDecimalDimmed={false}
+              precision={token.displayAmountDecimalsPrecision}
+              className="text-xs"
+            />
             <span className="text-xs text-txtfade mt-0.5 ml-1">
               {token.symbol}
             </span>
@@ -68,12 +78,22 @@ const CollateralTooltip: React.FC<CollateralTooltipProps> = ({
         <div className="flex justify-between items-center">
           <span>Increase / Remove Collateral:</span>
           <span className="ml-4 inline-block">
-            <FormatNumber nb={increaseCollateralAmount} format="currency" isDecimalDimmed={false} className='text-xs' />
+            <FormatNumber
+              nb={increaseCollateralAmount}
+              format="currency"
+              isDecimalDimmed={false}
+              className="text-xs"
+            />
           </span>
         </div>
         <div className="flex justify-end">
           <span className="ml-4 flex items-center text-sm">
-            <FormatNumber nb={increaseCollateralAmountNative} isDecimalDimmed={false} precision={token.displayAmountDecimalsPrecision} className='text-xs' />
+            <FormatNumber
+              nb={increaseCollateralAmountNative}
+              isDecimalDimmed={false}
+              precision={token.displayAmountDecimalsPrecision}
+              className="text-xs"
+            />
             <span className="text-xs text-txtfade mt-0.5 ml-1">
               {token.symbol}
             </span>
@@ -94,12 +114,22 @@ const CollateralTooltip: React.FC<CollateralTooltipProps> = ({
         <div className="flex justify-between items-center">
           <span>Decrease Collateral:</span>
           <span className="ml-4 inline-block">
-            <FormatNumber nb={decreaseCollateralAmount} format="currency" isDecimalDimmed={false} className='text-xs' />
+            <FormatNumber
+              nb={decreaseCollateralAmount}
+              format="currency"
+              isDecimalDimmed={false}
+              className="text-xs"
+            />
           </span>
         </div>
         <div className="flex justify-end">
           <span className="ml-4 flex items-center text-sm">
-            <FormatNumber nb={decreaseCollateralAmountNative} isDecimalDimmed={false} precision={token.displayAmountDecimalsPrecision} className='text-xs' />
+            <FormatNumber
+              nb={decreaseCollateralAmountNative}
+              isDecimalDimmed={false}
+              precision={token.displayAmountDecimalsPrecision}
+              className="text-xs"
+            />
             <span className="text-xs text-txtfade mt-0.5 ml-1">
               {token.symbol}
             </span>
@@ -120,12 +150,22 @@ const CollateralTooltip: React.FC<CollateralTooltipProps> = ({
         <div className="flex justify-between items-center">
           <span>Close Collateral:</span>
           <span className="ml-4 inline-block">
-            <FormatNumber nb={closeCollateralAmount} format="currency" isDecimalDimmed={false} className='text-xs' />
+            <FormatNumber
+              nb={closeCollateralAmount}
+              format="currency"
+              isDecimalDimmed={false}
+              className="text-xs"
+            />
           </span>
         </div>
         <div className="flex justify-end">
           <span className="ml-4 flex items-center text-sm">
-            <FormatNumber nb={closeCollateralAmountNative} isDecimalDimmed={false} precision={token.displayAmountDecimalsPrecision} className='text-xs' />
+            <FormatNumber
+              nb={closeCollateralAmountNative}
+              isDecimalDimmed={false}
+              precision={token.displayAmountDecimalsPrecision}
+              className="text-xs"
+            />
             <span className="text-xs text-txtfade mt-0.5 ml-1">
               {token.symbol}
             </span>
@@ -147,7 +187,12 @@ const CollateralTooltip: React.FC<CollateralTooltipProps> = ({
           <span>Total Exit Amount:</span>
           <div className="flex justify-end">
             <span className="ml-4 flex items-center text-sm">
-              <FormatNumber nb={exitAmountNative} isDecimalDimmed={false} precision={token.displayAmountDecimalsPrecision} className='text-xs' />
+              <FormatNumber
+                nb={exitAmountNative}
+                isDecimalDimmed={false}
+                precision={token.displayAmountDecimalsPrecision}
+                className="text-xs"
+              />
               <span className="text-xs text-txtfade mt-0.5 ml-1">
                 {token.symbol}
               </span>
@@ -161,7 +206,6 @@ const CollateralTooltip: React.FC<CollateralTooltipProps> = ({
             </span>
           </div>
         </div>
-
       </div>
     </div>
   );

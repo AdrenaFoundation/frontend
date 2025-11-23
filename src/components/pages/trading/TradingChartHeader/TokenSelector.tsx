@@ -61,7 +61,9 @@ function TokenList({
           <div className="hidden sm:block col-span-2 font-semibold text-white/50">
             24h%
           </div>
-          <div className="col-span-2 font-semibold text-white/50">Avail. Liq.</div>
+          <div className="col-span-2 font-semibold text-white/50">
+            Avail. Liq.
+          </div>
         </div>
       </div>
 
@@ -200,13 +202,13 @@ export default function TokenSelector({
     () =>
       asModal
         ? () => {
-          onClose?.();
-          setSearchTerm('');
-        }
+            onClose?.();
+            setSearchTerm('');
+          }
         : () => {
-          setInternalIsOpen(false);
-          setSearchTerm('');
-        },
+            setInternalIsOpen(false);
+            setSearchTerm('');
+          },
     [asModal, onClose],
   );
 

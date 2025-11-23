@@ -42,7 +42,9 @@ export default function AllTimeFeesBreakdownPerToken({
                   height={24}
                 />
 
-                <p className={twMerge(titleClassName, 'opacity-100')}>{custody.tokenInfo.symbol}</p>
+                <p className={twMerge(titleClassName, 'opacity-100')}>
+                  {custody.tokenInfo.symbol}
+                </p>
               </div>
 
               <div className="flex flex-col mt-3">
@@ -69,20 +71,20 @@ export default function AllTimeFeesBreakdownPerToken({
                         nb={nativeToUi(
                           // eslint-disable-next-line @typescript-eslint/no-explicit-any
                           (custody.nativeObject.collectedFees as any)[
-                          attribute
+                            attribute
                           ],
                           USD_DECIMALS,
                         )}
                         precision={0}
-                        format='currency'
-                        className='border-0 p-0 min-h-0'
-                        bodyClassName='text-base'
+                        format="currency"
+                        className="border-0 p-0 min-h-0"
+                        bodyClassName="text-base"
                       />
                     </div>
                   </div>
                 ))}
 
-                <div className='w-full h-[1px] bg-bcolor mt-2 mb-2' />
+                <div className="w-full h-[1px] bg-bcolor mt-2 mb-2" />
 
                 <div
                   className="flex flex-row justify-between items-center"
@@ -90,13 +92,13 @@ export default function AllTimeFeesBreakdownPerToken({
                 >
                   <p className={twMerge('text-txtfade text-base')}>Total</p>
 
-                  <div key='Total' className="flex">
+                  <div key="Total" className="flex">
                     <NumberDisplay
                       nb={custody.totalFeeCollected}
                       precision={0}
-                      format='currency'
-                      className='border-0 p-0 min-h-0'
-                      bodyClassName='text-base'
+                      format="currency"
+                      className="border-0 p-0 min-h-0"
+                      bodyClassName="text-base"
                     />
                   </div>
                 </div>

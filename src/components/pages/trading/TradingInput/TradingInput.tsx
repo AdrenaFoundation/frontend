@@ -73,9 +73,9 @@ export default function TradingInput({
           style={
             disabled
               ? {
-                backgroundSize: '10px 10px',
-                cursor: 'not-allowed',
-              }
+                  backgroundSize: '10px 10px',
+                  cursor: 'not-allowed',
+                }
               : {}
           }
         >
@@ -130,13 +130,17 @@ export default function TradingInput({
                       'flex h-2 w-2 items-center justify-center shrink-0',
                     )}
                   >
-                    <Image src={chevronDownIcon} alt="chevron down" width={8} height={8} className="w-2 h-2" />
+                    <Image
+                      src={chevronDownIcon}
+                      alt="chevron down"
+                      width={8}
+                      height={8}
+                      className="w-2 h-2"
+                    />
                   </div>
                 ) : null}
 
-                <div className="text-base">
-                  {selectedToken.symbol ?? '-'}
-                </div>
+                <div className="text-base">{selectedToken.symbol ?? '-'}</div>
 
                 <Image
                   className="h-4 w-4"

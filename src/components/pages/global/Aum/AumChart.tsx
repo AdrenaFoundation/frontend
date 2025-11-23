@@ -9,10 +9,15 @@ import { formatSnapshotTimestamp, getGMT, periodModeToSeconds } from '@/utils';
 
 export default function AumChart() {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
-  const [period, setPeriod] = useState<'1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null>('6M');
+  const [period, setPeriod] = useState<
+    '1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null
+  >('6M');
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
+  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({
+    start: 0,
+    end: 0,
+  });
 
   useEffect(() => {
     periodRef.current = period;
@@ -100,7 +105,10 @@ export default function AumChart() {
         );
       }
 
-      const timeStamp = formatSnapshotTimestamp(snapshot_timestamp, periodRef.current);
+      const timeStamp = formatSnapshotTimestamp(
+        snapshot_timestamp,
+        periodRef.current,
+      );
 
       // Combine AUM and ALP price data
       const formattedData = aum_usd.map((aum: number, i: number) => {
@@ -110,14 +118,14 @@ export default function AumChart() {
         if (aum === 0 && alpPrice === 0) {
           return {
             time: timeStamp[i],
-            'AUM': null,
+            AUM: null,
             'ALP Price': null,
           };
         }
 
         return {
           time: timeStamp[i],
-          'AUM': aum,
+          AUM: aum,
           'ALP Price': alpPrice,
         };
       });
@@ -154,10 +162,14 @@ export default function AumChart() {
       data={chartData}
       labels={[
         { name: 'AUM', color: '#5460cb', type: 'area', yAxisId: 'left' },
-        { name: 'ALP Price', color: '#fde000', type: 'line', yAxisId: 'right' }
+        { name: 'ALP Price', color: '#fde000', type: 'line', yAxisId: 'right' },
       ]}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      gmt={
+        period === '1M' || period === '3M' || period === '6M' || period === '1Y'
+          ? 0
+          : getGMT()
+      }
       periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       setPeriod={setPeriod}
       leftDomain={['dataMin', 'dataMax']}

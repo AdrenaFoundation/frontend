@@ -16,13 +16,13 @@ export default function Block({
   rowTitleClassName?: string;
   data: (
     | {
-      rowTitle: ReactNode;
-      values: ReactNode[];
-    }
+        rowTitle: ReactNode;
+        values: ReactNode[];
+      }
     | {
-      rowTitle: ReactNode;
-      value: ReactNode;
-    }
+        rowTitle: ReactNode;
+        value: ReactNode;
+      }
   )[];
 }) {
   return (

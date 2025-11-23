@@ -231,7 +231,7 @@ export default function DetailedMonitoring({
         </AnimatePresence>
 
         {selectedTab === 'All' ||
-          (selectedTab === 'Trading' && view === 'full') ? (
+        (selectedTab === 'Trading' && view === 'full') ? (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -297,7 +297,7 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' ||
-          (selectedTab === 'Staking' && view === 'full') ? (
+        (selectedTab === 'Staking' && view === 'full') ? (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -444,7 +444,7 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' ||
-          (selectedTab === 'Trading' && view === 'full') ? (
+        (selectedTab === 'Trading' && view === 'full') ? (
           <AnimatePresence mode="wait">
             {custodies ? (
               <motion.div
@@ -473,7 +473,7 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' ||
-          (selectedTab === 'Pool' && view === 'full') ? (
+        (selectedTab === 'Pool' && view === 'full') ? (
           <AnimatePresence mode="wait">
             {custodies ? (
               <motion.div
@@ -530,7 +530,7 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' ||
-          (selectedTab === 'Pool' && view === 'full') ? (
+        (selectedTab === 'Pool' && view === 'full') ? (
           <AnimatePresence mode="wait">
             {custodies ? (
               <motion.div
@@ -559,7 +559,7 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' ||
-          (selectedTab === 'Pool' && view === 'full') ? (
+        (selectedTab === 'Pool' && view === 'full') ? (
           <AnimatePresence mode="wait">
             {poolInfo ? (
               <motion.div
@@ -588,7 +588,7 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' ||
-          (selectedTab === 'Accounts' && view === 'full') ? (
+        (selectedTab === 'Accounts' && view === 'full') ? (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

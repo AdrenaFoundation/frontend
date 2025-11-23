@@ -113,7 +113,7 @@ export default function Settings({
               className={twMerge(
                 'justify-start transition duration-300 rounded-md px-2 py-4 border border-bcolor hover:bg-third bg-third hover:opacity-100 hover:grayscale-0',
                 exp !== settings.preferredSolanaExplorer &&
-                'grayscale border-transparent bg-transparent hover:bg-transparent opacity-30',
+                  'grayscale border-transparent bg-transparent hover:bg-transparent opacity-30',
               )}
               iconClassName="w-[20px] h-[20px]"
               variant="outline"
@@ -144,9 +144,7 @@ export default function Settings({
         </div>
 
         <div className="flex flex-row justify-between items-center">
-          <p className="text-sm opacity-50 w-full">
-            Disable Friend Requests
-          </p>
+          <p className="text-sm opacity-50 w-full">Disable Friend Requests</p>
           <Switch
             checked={settings.disableFriendReq}
             onChange={() => {
@@ -161,9 +159,7 @@ export default function Settings({
         </div>
 
         <div className="flex flex-row justify-between items-center">
-          <p className="text-sm opacity-50 w-full">
-            Show fees in PnL
-          </p>
+          <p className="text-sm opacity-50 w-full">Show fees in PnL</p>
           <Switch
             checked={settings.showFeesInPnl}
             onChange={() => {
@@ -212,14 +208,16 @@ export default function Settings({
           />
         </div>
 
-
-        <Tippy content={
-          <div>
-            SQRT scale reduces the gap between small and large values by using their
-            square root. This makes charts easier to read when there are big spikes,
-            since extreme values don&apos;t overshadow the rest of the data.
-          </div>
-        }>
+        <Tippy
+          content={
+            <div>
+              SQRT scale reduces the gap between small and large values by using
+              their square root. This makes charts easier to read when there are
+              big spikes, since extreme values don&apos;t overshadow the rest of
+              the data.
+            </div>
+          }
+        >
           <div className="flex flex-row justify-between items-center">
             <p className="text-sm opacity-50 w-full">
               Use Sqrt scale for volume & fee chart
@@ -230,7 +228,8 @@ export default function Settings({
               onChange={() => {
                 dispatch(
                   setSettings({
-                    useSqrtScaleForVolumeAndFeeChart: !settings.useSqrtScaleForVolumeAndFeeChart,
+                    useSqrtScaleForVolumeAndFeeChart:
+                      !settings.useSqrtScaleForVolumeAndFeeChart,
                   }),
                 );
               }}

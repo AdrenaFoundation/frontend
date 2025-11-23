@@ -12,20 +12,25 @@ export default function BorrowRateChart() {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
-        time: string;
-      }
+          time: string;
+        }
       | { [key: string]: number }
     )[];
 
     custodiesColors: string[];
   } | null>(null);
 
-  const [period, setPeriod] = useState<'1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null>('6M');
+  const [period, setPeriod] = useState<
+    '1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null
+  >('6M');
   const [apiResult, setApiResult] = useState<CustodyInfoResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const periodRef = useRef(period);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({ start: 0, end: 0 });
+  const [timestamps, setTimestamps] = useState<{ start: number; end: number }>({
+    start: 0,
+    end: 0,
+  });
   const [displayBorrowRateAsApr, setDisplayBorrowRateAsApr] = useState(false);
 
   useEffect(() => {
@@ -92,7 +97,7 @@ export default function BorrowRateChart() {
       const result = await DataApiClient.getCustodyInfo(
         dataEndpoint,
         'borrow_rate=true',
-        dataPeriod
+        dataPeriod,
       );
 
       setApiResult(result);
@@ -115,7 +120,9 @@ export default function BorrowRateChart() {
     const { borrow_rate, snapshot_timestamp } = apiResult;
 
     if (!borrow_rate || !snapshot_timestamp) {
-      console.error('Failed to fetch borrow rate data: Missing required data fields');
+      console.error(
+        'Failed to fetch borrow rate data: Missing required data fields',
+      );
       return;
     }
 
@@ -138,14 +145,19 @@ export default function BorrowRateChart() {
     }
 
     const formatted = snapshot_timestamp.map((time: string, i: number) => {
-      const formattedTime = formatSnapshotTimestamp([time], periodRef.current)[0];
+      const formattedTime = formatSnapshotTimestamp(
+        [time],
+        periodRef.current,
+      )[0];
 
       return {
         time: formattedTime,
         ...infos.reduce(
           (acc, { custody, values }) => ({
             ...acc,
-            [custody.tokenInfo.symbol]: displayBorrowRateAsApr ? values[i] * 24 * 365.4 : values[i],
+            [custody.tokenInfo.symbol]: displayBorrowRateAsApr
+              ? values[i] * 24 * 365.4
+              : values[i],
           }),
           {} as { [key: string]: number },
         ),
@@ -182,7 +194,9 @@ export default function BorrowRateChart() {
             onClick={() => setDisplayBorrowRateAsApr(true)}
             className={twMerge(
               'cursor-pointer',
-              displayBorrowRateAsApr ? 'underline' : 'opacity-50 hover:opacity-100',
+              displayBorrowRateAsApr
+                ? 'underline'
+                : 'opacity-50 hover:opacity-100',
             )}
           >
             APR
@@ -192,7 +206,9 @@ export default function BorrowRateChart() {
             onClick={() => setDisplayBorrowRateAsApr(false)}
             className={twMerge(
               'cursor-pointer',
-              !displayBorrowRateAsApr ? 'underline' : 'opacity-50 hover:opacity-100',
+              !displayBorrowRateAsApr
+                ? 'underline'
+                : 'opacity-50 hover:opacity-100',
             )}
           >
             % / h
@@ -209,7 +225,11 @@ export default function BorrowRateChart() {
           };
         })}
       period={period}
-      gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}
+      gmt={
+        period === '1M' || period === '3M' || period === '6M' || period === '1Y'
+          ? 0
+          : getGMT()
+      }
       periods={['1d', '7d', '1M', '3M', '6M', '1Y']}
       setPeriod={setPeriod}
       formatY="percentage"

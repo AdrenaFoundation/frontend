@@ -9,7 +9,11 @@ import Modal from '@/components/common/Modal/Modal';
 import Switch from '@/components/common/Switch/Switch';
 import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { EnrichedPositionApi, PositionExtended, UserProfileExtended } from '@/types';
+import {
+  EnrichedPositionApi,
+  PositionExtended,
+  UserProfileExtended,
+} from '@/types';
 import {
   formatTimeDifference,
   getFullTimeDifference,

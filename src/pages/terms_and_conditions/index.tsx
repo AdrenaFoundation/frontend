@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { PageProps } from '@/types';
 
-export default function TermsAndConditions({ }: PageProps) {
+export default function TermsAndConditions({}: PageProps) {
   const [htmlContent, setHtmlContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +16,7 @@ export default function TermsAndConditions({ }: PageProps) {
       try {
         const [termsResponse, tokenTermsResponse] = await Promise.all([
           fetch('/TermsAndConditions.html'),
-          fetch('/TokenTermsAndConditions.html')
+          fetch('/TokenTermsAndConditions.html'),
         ]);
 
         if (!termsResponse.ok || !tokenTermsResponse.ok) {
@@ -25,7 +25,7 @@ export default function TermsAndConditions({ }: PageProps) {
 
         const [termsHtml, tokenTermsHtml] = await Promise.all([
           termsResponse.text(),
-          tokenTermsResponse.text()
+          tokenTermsResponse.text(),
         ]);
 
         const processHtml = (html: string, scopeClass: string) => {
@@ -35,24 +35,26 @@ export default function TermsAndConditions({ }: PageProps) {
           let scopedStyles = '';
 
           if (styleMatches) {
-            styleMatches.forEach(styleTag => {
+            styleMatches.forEach((styleTag) => {
               const styleContent = styleTag.replace(/<\/?style[^>]*>/gi, '');
 
               const rules = styleContent.split('}');
-              const scopedRules = rules.map(rule => {
-                if (rule.trim() && rule.includes('{')) {
-                  const [selectors, declarations] = rule.split('{');
+              const scopedRules = rules
+                .map((rule) => {
+                  if (rule.trim() && rule.includes('{')) {
+                    const [selectors, declarations] = rule.split('{');
 
-                  if (selectors && declarations) {
-                    const scopedSelectors = selectors
-                      .split(',')
-                      .map(s => `.${scopeClass} ${s.trim()}`)
-                      .join(', ');
-                    return `${scopedSelectors} { ${declarations}`;
+                    if (selectors && declarations) {
+                      const scopedSelectors = selectors
+                        .split(',')
+                        .map((s) => `.${scopeClass} ${s.trim()}`)
+                        .join(', ');
+                      return `${scopedSelectors} { ${declarations}`;
+                    }
                   }
-                }
-                return rule;
-              }).join('}');
+                  return rule;
+                })
+                .join('}');
 
               scopedStyles += scopedRules;
             });
@@ -71,7 +73,10 @@ export default function TermsAndConditions({ }: PageProps) {
         };
 
         const termsContent = processHtml(termsHtml, 'legal-document-1');
-        const tokenTermsContent = processHtml(tokenTermsHtml, 'legal-document-2');
+        const tokenTermsContent = processHtml(
+          tokenTermsHtml,
+          'legal-document-2',
+        );
 
         const combinedContent = `
           <div class="legal-document legal-document-1">
@@ -99,9 +104,12 @@ export default function TermsAndConditions({ }: PageProps) {
     <div className="flex flex-col p-4 min-h-screen">
       <StyledContainer className="w-full max-w-7xl mx-auto" bodyClassName="p-0">
         <div className="p-8 pb-6">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2">Legal Information</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2">
+            Legal Information
+          </h1>
           <p className="text-txtfade mb-6">
-            Please review our Terms of Service, Token Terms and Conditions, and Privacy Policy
+            Please review our Terms of Service, Token Terms and Conditions, and
+            Privacy Policy
           </p>
         </div>
 
@@ -168,11 +176,11 @@ export default function TermsAndConditions({ }: PageProps) {
         }
 
         .legal-content :global(a) {
-          color: #FA6724 !important;
+          color: #fa6724 !important;
         }
 
         .legal-content :global(a:hover) {
-          color: #FAD524 !important;
+          color: #fad524 !important;
         }
 
         .legal-content :global(strong),

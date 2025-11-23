@@ -240,10 +240,15 @@ export default function StopLossTakeProfitInput({
       <p className="text-sm text-nowrap">{title}</p>
 
       {priceIsOk === true &&
-        displayValue !== null &&
-        !isLoading &&
-        position.collateralUsd ? (
-        <div className={twMerge("flex items-center overflow-x-auto", title.includes('Update') ? 'max-w-[110px]' : "max-w-[150px]")}>
+      displayValue !== null &&
+      !isLoading &&
+      position.collateralUsd ? (
+        <div
+          className={twMerge(
+            'flex items-center overflow-x-auto',
+            title.includes('Update') ? 'max-w-[110px]' : 'max-w-[150px]',
+          )}
+        >
           <FormatNumber
             nb={Math.abs(displayValue)}
             prefix={isPositive ? '+' : '-'}
@@ -268,8 +273,8 @@ export default function StopLossTakeProfitInput({
     </div>
   );
   return (
-    <div className={twMerge("flex flex-col w-full", className)}>
-      {(!isLight || type === 'Stop Loss') ? (
+    <div className={twMerge('flex flex-col w-full', className)}>
+      {!isLight || type === 'Stop Loss' ? (
         <div
           className={twMerge(
             'border-t border-bcolor w-full h-[1px]',
