@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { ADRENA_TEAM_WALLET } from '@/constant';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import usePoolInfo from '@/hooks/usePoolInfo';
+import usePoolInfo from '@/hooks/trading-position/usePoolInfo';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 import { PageProps } from '@/types';
 import { getWalletAddress } from '@/utils';
 

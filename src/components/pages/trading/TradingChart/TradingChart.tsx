@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
-import { useChartDrawing } from '@/hooks/useChartDrawing';
+import { useChartDrawing } from '@/hooks/trading-position/useChartDrawing';
 import { TokenSymbol } from '@/types';
 import { getTokenSymbol } from '@/utils';
 

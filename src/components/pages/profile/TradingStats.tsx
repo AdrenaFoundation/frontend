@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 import LoaderWrapper from '@/components/Loader/LoaderWrapper';
 import FormatNumber from '@/components/Number/FormatNumber';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { EnrichedTraderInfo } from '@/types';
 import { formatSecondsToTimeDifference } from '@/utils';
@@ -20,21 +20,21 @@ export default function TradingStats({
   className?: string;
   livePositionsNb: number | null;
   data?:
-  | {
-    date: Date;
-    stats: {
-      totalPositions: number;
-      winrate: number;
-      color: string;
-      size: number;
-      pnl: number;
-      volume: number;
-      increaseSize: number;
-      totalFees: number;
-      bubbleSize: number;
-    } | null;
-  }[]
-  | null;
+    | {
+        date: Date;
+        stats: {
+          totalPositions: number;
+          winrate: number;
+          color: string;
+          size: number;
+          pnl: number;
+          volume: number;
+          increaseSize: number;
+          totalFees: number;
+          bubbleSize: number;
+        } | null;
+      }[]
+    | null;
 }) {
   const isMobile = useBetterMediaQuery('(max-width: 768px)');
 
@@ -139,18 +139,21 @@ export default function TradingStats({
             stat.nb ? (
               <li
                 key={stat.title}
-                className={twMerge("flex flex-row items-center justify-between border border-bcolor bg-third flex-1 p-2 px-3 rounded-md",
-                  stat?.onClick && "cursor-pointer"
+                className={twMerge(
+                  'flex flex-row items-center justify-between border border-bcolor bg-third flex-1 p-2 px-3 rounded-md',
+                  stat?.onClick && 'cursor-pointer',
                 )}
                 onClick={stat?.onClick}
               >
                 <div>
-                  <div className='flex flex-row items-center gap-1'>
+                  <div className="flex flex-row items-center gap-1">
                     <p className="text-sm font-semibold opacity-50">
                       {stat.title}
                     </p>{' '}
                     {stat.title == 'Total PnL' ? (
-                      <p className='text-xxs opacity-50'>{isPnlWithFees ? 'w/ fees' : 'w/o fees'}</p>
+                      <p className="text-xxs opacity-50">
+                        {isPnlWithFees ? 'w/ fees' : 'w/o fees'}
+                      </p>
                     ) : null}
                   </div>
                   <LoaderWrapper height="1.6875rem" isLoading={!traderInfo}>
@@ -159,10 +162,10 @@ export default function TradingStats({
                         nb={stat.nb}
                         format={
                           stat.format as
-                          | 'currency'
-                          | 'percentage'
-                          | 'number'
-                          | 'time'
+                            | 'currency'
+                            | 'percentage'
+                            | 'number'
+                            | 'time'
                         }
                         precision={stat.precision ?? 2}
                         className={twMerge('text-xl', stat.className)}

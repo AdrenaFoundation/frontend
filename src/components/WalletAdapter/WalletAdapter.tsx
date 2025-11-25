@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import {
@@ -11,7 +11,7 @@ import {
 } from '@/actions/walletActions';
 import { PROFILE_PICTURES } from '@/constant';
 import { useWalletSidebar } from '@/contexts/WalletSidebarContext';
-import { WalletAdapterName } from '@/hooks/useWalletAdapters';
+import { WalletAdapterName } from '@/hooks/wallet/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileExtended, WalletAdapterExtended } from '@/types';
 import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
@@ -61,9 +61,8 @@ export default function WalletAdapter({
   );
 
   const isConnecting = useMemo(() => {
-    return adapters.some((adapter) => adapter.connecting)
-  }, [adapters],
-  );
+    return adapters.some((adapter) => adapter.connecting);
+  }, [adapters]);
 
   const isConnected = useMemo(() => {
     return adapters.some((adapter) => adapter.connected);
@@ -97,7 +96,9 @@ export default function WalletAdapter({
       const wasPrivyConnection = lastConnectedWalletRef.current === 'Privy';
 
       if (wasPrivyConnection) {
-        console.log('🚫 Skipping native auto-connect - last connection was via Privy');
+        console.log(
+          '🚫 Skipping native auto-connect - last connection was via Privy',
+        );
         return;
       }
 
@@ -130,7 +131,12 @@ export default function WalletAdapter({
       const newWalletAddress = walletPubkey.toBase58();
 
       if (currentWalletAddress && currentWalletAddress !== newWalletAddress) {
-        console.log('🔄 Account changed from', currentWalletAddress.slice(0, 8), 'to', newWalletAddress.slice(0, 8));
+        console.log(
+          '🔄 Account changed from',
+          currentWalletAddress.slice(0, 8),
+          'to',
+          newWalletAddress.slice(0, 8),
+        );
         dispatch({
           type: 'connect',
           payload: {
@@ -166,7 +172,11 @@ export default function WalletAdapter({
                 className="flex flex-row items-center gap-1.5 border border-[#414E5E] rounded-full py-1.5 px-2 hover:bg-third transition-colors cursor-pointer"
               >
                 <Image
-                  src={userProfile ? PROFILE_PICTURES[userProfile.profilePicture] : PROFILE_PICTURES[0]}
+                  src={
+                    userProfile
+                      ? PROFILE_PICTURES[userProfile.profilePicture]
+                      : PROFILE_PICTURES[0]
+                  }
                   alt="Profile"
                   width={16}
                   height={16}
@@ -175,7 +185,10 @@ export default function WalletAdapter({
                 <span className="text-xs leading-none">
                   {userProfile
                     ? getAbbrevNickname(userProfile.nickname, 16)
-                    : getAbbrevWalletAddress(wallet?.walletAddress ?? 'User', 4)}
+                    : getAbbrevWalletAddress(
+                        wallet?.walletAddress ?? 'User',
+                        4,
+                      )}
                 </span>
                 <Image
                   src={chevronDownIcon}
@@ -193,12 +206,15 @@ export default function WalletAdapter({
                     className,
                     'py-1 px-2 ml-1 xl:ml-0 hover:bg-third transition-colors cursor-pointer',
                     'border-bcolor rounded-none rounded-l-lg border-r border-r-[#414E5E] gap-1 xl:gap-2 text-xs h-auto bg-transparent',
-                    'whitespace-nowrap'
+                    'whitespace-nowrap',
                   )}
                   title={
                     userProfile
                       ? getAbbrevNickname(userProfile.nickname, 16)
-                      : getAbbrevWalletAddress(wallet?.walletAddress ?? 'User', 6)
+                      : getAbbrevWalletAddress(
+                          wallet?.walletAddress ?? 'User',
+                          6,
+                        )
                   }
                   leftIcon={
                     userProfile
@@ -345,7 +361,11 @@ export default function WalletAdapter({
                     if (!connected || !connectedAdapter) return;
 
                     if (wallet?.isPrivy) {
-                      dispatch(disconnectWalletAction(adapters.find((x) => x.name === 'Privy')!));
+                      dispatch(
+                        disconnectWalletAction(
+                          adapters.find((x) => x.name === 'Privy')!,
+                        ),
+                      );
                     } else {
                       dispatch(disconnectWalletAction(connectedAdapter));
                     }
@@ -365,7 +385,9 @@ export default function WalletAdapter({
             isIconOnly && 'p-0 h-8 w-8 rounded-full',
             isConnecting && 'opacity-50 cursor-not-allowed',
           )}
-          title={!isIconOnly ? (isConnecting ? 'Connecting...' : 'Connect') : null}
+          title={
+            !isIconOnly ? (isConnecting ? 'Connecting...' : 'Connect') : null
+          }
           leftIcon={isConnecting ? undefined : walletIcon}
           alt="wallet icon"
           leftIconClassName="w-4 h-4"
@@ -385,7 +407,13 @@ export default function WalletAdapter({
             isIconOnly && 'p-0 h-8 w-8 rounded-full',
             isConnecting && 'opacity-50 cursor-not-allowed',
           )}
-          title={!isIconOnly ? (isConnecting ? 'Connecting...' : 'Connect wallet') : null}
+          title={
+            !isIconOnly
+              ? isConnecting
+                ? 'Connecting...'
+                : 'Connect wallet'
+              : null
+          }
           leftIcon={isConnecting ? undefined : walletIcon}
           alt="wallet icon"
           leftIconClassName="w-4 h-4"
@@ -397,11 +425,10 @@ export default function WalletAdapter({
             }
           }}
         />
-      )
-      }
+      )}
 
       <WalletSelectionModal adapters={adapters} />
       <SignMessageModal adapters={adapters} />
-    </div >
+    </div>
   );
 }

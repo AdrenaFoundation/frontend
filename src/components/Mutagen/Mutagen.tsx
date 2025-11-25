@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import useUserMutagens from '@/hooks/useUserMutagens';
+import useUserMutagens from '@/hooks/auth-profile/useUserMutagens';
 import { useSelector } from '@/store/store';
 import { EnrichedMutagenSeason, EnrichedUserMutagens } from '@/types';
 import { formatNumber } from '@/utils';
@@ -272,15 +272,15 @@ export default function Mutagen({ isMobile = false }: { isMobile?: boolean }) {
           />
         </div>
 
-          {isModalOpen && (
-            <Modal
-              close={() => setIsModalOpen(false)}
-              className="flex flex-col w-full p-5 relative overflow-visible"
-            >
-              {content}
-            </Modal>
-          )}
-        </AnimatePresence>
+        {isModalOpen && (
+          <Modal
+            close={() => setIsModalOpen(false)}
+            className="flex flex-col w-full p-5 relative overflow-visible"
+          >
+            {content}
+          </Modal>
+        )}
+      </AnimatePresence>
     );
   }
 

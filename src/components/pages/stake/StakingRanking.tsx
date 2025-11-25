@@ -2,7 +2,7 @@ import Tippy from '@tippyjs/react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
-import useStakingRanking from '@/hooks/useStakingRanking';
+import useStakingRanking from '@/hooks/staking/useStakingRanking';
 import { formatNumber, getOrdinalSuffix } from '@/utils';
 
 interface StakingRankingProps {

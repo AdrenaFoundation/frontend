@@ -2,8 +2,8 @@ import Image from 'next/image';
 import { useMemo } from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
-import useAPR from '@/hooks/useAPR';
-import useMainPool from '@/hooks/useMainPool';
+import useAPR from '@/hooks/analytics-metrics/useAPR';
+import useMainPool from '@/hooks/trading-position/useMainPool';
 import { useSelector } from '@/store/store';
 
 export default function ALPHeader() {

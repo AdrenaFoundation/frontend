@@ -8,7 +8,7 @@ import monster10 from '@/../public/images/monster-10.png';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import QuestComp from '@/components/QuestMenu/QuestComp';
-import useUserSeasonProgress from '@/hooks/useSeasonProgress';
+import useUserSeasonProgress from '@/hooks/analytics-metrics/useSeasonProgress';
 import { useSelector } from '@/store/store';
 import { getNextSaturdayUTC, getNextUTCDate } from '@/utils';
 

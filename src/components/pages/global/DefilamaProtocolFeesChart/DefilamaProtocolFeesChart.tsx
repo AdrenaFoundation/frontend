@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import defillamaImg from '@/../public/images/defillama.png';
 import StakedBarRecharts from '@/components/ReCharts/StakedBarRecharts';
-import useDefilamaFeesData from '@/hooks/useDefilamaFeesData';
+import useDefilamaFeesData from '@/hooks/analytics-metrics/useDefilamaFeesData';
 import { RechartsData } from '@/types';
 
 interface FeesChartProps {

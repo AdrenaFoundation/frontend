@@ -4,7 +4,7 @@ import { ResponsiveContainer, Treemap } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
-import { AllStakingStats } from '@/hooks/useAllStakingStats';
+import { AllStakingStats } from '@/hooks/staking/useAllStakingStats';
 import { useSelector } from '@/store/store';
 import { getAccountExplorer } from '@/utils';
 

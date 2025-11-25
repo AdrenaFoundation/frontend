@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
+import {
+  EntityId,
+  IChartingLibraryWidget,
+  IChartWidgetApi,
+} from '@/../public/charting_library/charting_library';
 import { ChartPreferences } from '@/components/pages/trading/TradingChart/types';
 import {
   blueColor,
@@ -9,6 +14,7 @@ import {
   purpleColor,
   redColor,
 } from '@/constant';
+import useTPSL from '@/hooks/trading-position/useTPSL';
 import {
   EnrichedPositionApi,
   LimitOrder,
@@ -17,13 +23,6 @@ import {
   TradingViewChartSavedDrawing,
 } from '@/types';
 import { formatPriceInfo, getTokenSymbol } from '@/utils';
-
-import {
-  EntityId,
-  IChartingLibraryWidget,
-  IChartWidgetApi,
-} from '../../public/charting_library/charting_library';
-import useTPSL from './useTPSL';
 
 // Global variable to track temporary lines and cleanup
 /*

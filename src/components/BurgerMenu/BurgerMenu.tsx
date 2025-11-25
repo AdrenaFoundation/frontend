@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { twMerge } from 'tailwind-merge';
 
-import useAPR from '@/hooks/useAPR';
+import useAPR from '@/hooks/analytics-metrics/useAPR';
 import { useSelector } from '@/store/store';
 import {
   LinksType,

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 
+import reloadIcon from '@/../public/images/Icons/arrow-down-up.svg';
 import chartIcon from '@/../public/images/Icons/chart-icon.svg';
 import listIcon from '@/../public/images/Icons/list-ul.svg';
 import Button from '@/components/common/Button/Button';
@@ -14,10 +15,8 @@ import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import {
   SuperchargedUserProfile,
   useAllUserSuperchargedProfiles,
-} from '@/hooks/useAllUserSupercharedProfiles';
+} from '@/hooks/auth-profile/useAllUserSuperchargedProfiles';
 import { UserProfileExtended } from '@/types';
-
-import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
 
 type SortableKeys = 'pnl' | 'volume' | 'fees';
 

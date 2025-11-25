@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { FetchedSettingsType } from '@/hooks/useFetchUserSettings';
+import { FetchedSettingsType } from '@/hooks/auth-profile/useFetchUserSettings';
 import supabaseServiceClient from '@/supabaseServiceClient';
 
 export default async function handler(

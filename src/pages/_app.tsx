@@ -27,15 +27,15 @@ import { PrivyLedgerWrapper } from '@/components/PrivyLedgerWrapper';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
 import initConfig from '@/config/init';
 import { WalletSidebarProvider } from '@/contexts/WalletSidebarContext';
-import useCustodies from '@/hooks/useCustodies';
-import useMainPool from '@/hooks/useMainPool';
-import useRpc from '@/hooks/useRPC';
-import useSettingsPersistence from '@/hooks/useSettingsPersistence';
-import useUserProfile from '@/hooks/useUserProfile';
-import useWallet from '@/hooks/useWallet';
-import useWalletAdapters from '@/hooks/useWalletAdapters';
-import useWatchBorrowRates from '@/hooks/useWatchBorrowRates';
-import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
+import useSettingsPersistence from '@/hooks/auth-profile/useSettingsPersistence';
+import useUserProfile from '@/hooks/auth-profile/useUserProfile';
+import useCustodies from '@/hooks/staking/useCustodies';
+import useMainPool from '@/hooks/trading-position/useMainPool';
+import useWatchBorrowRates from '@/hooks/trading-position/useWatchBorrowRates';
+import useWatchTokenPrices from '@/hooks/trading-position/useWatchTokenPrices';
+import useRpc from '@/hooks/ux/useRPC';
+import useWallet from '@/hooks/wallet/useWallet';
+import useWalletAdapters from '@/hooks/wallet/useWalletAdapters';
 import initializeApp, { createReadOnlyAdrenaProgram } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { VestExtended } from '@/types';
@@ -103,64 +103,72 @@ export default function App(props: AppProps) {
   }
 
   // Create dynamic Privy configuration that updates when RPC changes
-  const privyConfigDynamic = useMemo(() => ({
-    appId: privyAppId,
-    supportedChains: ['solana'],
-    config: {
-      solana: {
-        rpcs: {
-          'solana:mainnet': {
-            rpc: createSolanaRpc(activeRpc?.connection?.rpcEndpoint || `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`),
-            rpcSubscriptions: createSolanaRpcSubscriptions(
-              (activeRpc?.connection?.rpcEndpoint || `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`)
-                .replace('https', 'wss')
-            )
-          },
-        }
-      },
-      appearance: {
-        theme: 'dark' as const,
-        accentColor: '#f5f5f5' as const,
-        logo: '/images/logo.svg',
-        showWalletLoginFirst: false,
-        walletList: ['detected_solana_wallets'] as WalletListEntry[],
-        walletChainType: 'solana-only' as const,
-      },
-      //loginMethods: ['email' as const, 'google' as const, 'twitter' as const, 'discord' as const, 'wallet' as const, 'github' as const], // apple, line, tiktok, linkedin have to be configured first // remove to enable whatsapp
-      embeddedWallets: {
+  const privyConfigDynamic = useMemo(
+    () => ({
+      appId: privyAppId,
+      supportedChains: ['solana'],
+      config: {
         solana: {
-          createOnLogin: 'all-users' as const,
-        },
-        fundingConfig: {
-          methods: ['moonpay', 'external'] as const,
-          options: {
-            defaultRecommendedCurrency: 'SOL_SOLANA' as const,
-            promptFundingOnWalletCreation: true,
-          },
-        },
-        fundingMethodConfig: {
-          moonpay: {
-            useSandbox: false,
-            paymentMethod: 'credit_debit_card' as const,
-            uiConfig: {
-              theme: 'dark' as const,
-              accentColor: '#f5f5f5' as const,
+          rpcs: {
+            'solana:mainnet': {
+              rpc: createSolanaRpc(
+                activeRpc?.connection?.rpcEndpoint ||
+                  `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`,
+              ),
+              rpcSubscriptions: createSolanaRpcSubscriptions(
+                (
+                  activeRpc?.connection?.rpcEndpoint ||
+                  `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY}`
+                ).replace('https', 'wss'),
+              ),
             },
           },
         },
-      },
-      externalWallets: {
-        walletConnect: {
-          enabled: true,
+        appearance: {
+          theme: 'dark' as const,
+          accentColor: '#f5f5f5' as const,
+          logo: '/images/logo.svg',
+          showWalletLoginFirst: false,
+          walletList: ['detected_solana_wallets'] as WalletListEntry[],
+          walletChainType: 'solana-only' as const,
         },
-        solana: {
-          connectors: toSolanaWalletConnectors(),
+        //loginMethods: ['email' as const, 'google' as const, 'twitter' as const, 'discord' as const, 'wallet' as const, 'github' as const], // apple, line, tiktok, linkedin have to be configured first // remove to enable whatsapp
+        embeddedWallets: {
+          solana: {
+            createOnLogin: 'all-users' as const,
+          },
+          fundingConfig: {
+            methods: ['moonpay', 'external'] as const,
+            options: {
+              defaultRecommendedCurrency: 'SOL_SOLANA' as const,
+              promptFundingOnWalletCreation: true,
+            },
+          },
+          fundingMethodConfig: {
+            moonpay: {
+              useSandbox: false,
+              paymentMethod: 'credit_debit_card' as const,
+              uiConfig: {
+                theme: 'dark' as const,
+                accentColor: '#f5f5f5' as const,
+              },
+            },
+          },
         },
+        externalWallets: {
+          walletConnect: {
+            enabled: true,
+          },
+          solana: {
+            connectors: toSolanaWalletConnectors(),
+          },
+        },
+        walletConnectCloudProjectId: '549f49d83c4bc0a5c405d8ef6db7972a',
+        whatsAppEnabled: true,
       },
-      walletConnectCloudProjectId: '549f49d83c4bc0a5c405d8ef6db7972a',
-      whatsAppEnabled: true,
-    }
-  }), [activeRpc?.connection?.rpcEndpoint]);
+    }),
+    [activeRpc?.connection?.rpcEndpoint],
+  );
 
   // The Loaded is rendered while the app init, but also rendered in SSR.
   if (initStatus !== 'done' || !activeRpc) return <Loader />;
@@ -192,7 +200,7 @@ export default function App(props: AppProps) {
           </CookiesProvider>
         </Provider>
       </PrivyLedgerWrapper>
-    </PrivyProvider >
+    </PrivyProvider>
   );
 }
 
@@ -242,9 +250,8 @@ function AppComponent({
 
   const walletState = useSelector((s) => s.walletState.wallet);
   const walletAddress = walletState?.walletAddress;
-  const { userProfile, isUserProfileLoading, triggerUserProfileReload } = useUserProfile(
-    walletAddress ?? null,
-  );
+  const { userProfile, isUserProfileLoading, triggerUserProfileReload } =
+    useUserProfile(walletAddress ?? null);
 
   useSettingsPersistence();
   useWatchTokenPrices();

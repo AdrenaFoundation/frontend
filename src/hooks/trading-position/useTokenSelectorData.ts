@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
-import useDailyStats from '@/hooks/useDailyStats';
-import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
+import useDailyStats from '@/hooks/analytics-metrics/useDailyStats';
+import useDynamicCustodyAvailableLiquidity from '@/hooks/trading-position/useDynamicCustodyAvailableLiquidity';
 import { useSelector } from '@/store/store';
 import { CustodyExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';

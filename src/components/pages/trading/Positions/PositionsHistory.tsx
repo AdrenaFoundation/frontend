@@ -4,7 +4,7 @@ import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
-import usePositionsHistory from '@/hooks/usePositionHistory';
+import usePositionsHistory from '@/hooks/trading-position/usePositionHistory';
 import { UserProfileExtended } from '@/types';
 
 import PositionHistoryTable from '../../monitoring/PositionHistoryTable/PositionHistoryTable';

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Button from '@/components/common/Button/Button';
 import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
-import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
+import useWalletStakingAccounts from '@/hooks/staking/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
 import { LockedStakeExtended } from '@/types';
 import { formatNumber, getAlpLockedStakes, nativeToUi } from '@/utils';
@@ -13,9 +13,8 @@ import adrenaMonsters from '../../../../public/images/adrena-monsters.png';
 import xIcon from '../../../../public/images/x-black-bg.png';
 
 export default function GenesisEndView({ connected }: { connected: boolean }) {
-  const walletAddress = useSelector(
-    (state) => state.walletState.wallet,
-  )?.walletAddress ?? null;
+  const walletAddress =
+    useSelector((state) => state.walletState.wallet)?.walletAddress ?? null;
 
   const { stakingAccounts } = useWalletStakingAccounts(walletAddress);
   const [totalStakedAmount, setTotalStakedAmount] = useState<number | null>(
@@ -68,9 +67,9 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
   const twitterText =
     totalStakedAmount !== null && totalStakedAmount > 0 && connected
       ? `I just bought ${formatNumber(
-        totalStakedAmount,
-        2,
-      )} ALP locked and staked for 180 days! @adrenaprotocol`
+          totalStakedAmount,
+          2,
+        )} ALP locked and staked for 180 days! @adrenaprotocol`
       : 'Check out Adrena \nThe new community owned, 100% rev share, perp dex on Solana!';
 
   return (

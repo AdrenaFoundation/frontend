@@ -7,7 +7,7 @@ import Button from '@/components/common/Button/Button';
 import CopyButton from '@/components/common/CopyButton/CopyButton';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
+import { useAllUserProfiles } from '@/hooks/auth-profile/useAllUserProfiles';
 import { UserProfileExtended } from '@/types';
 import { addNotification } from '@/utils';
 

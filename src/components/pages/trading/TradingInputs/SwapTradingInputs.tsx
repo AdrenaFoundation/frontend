@@ -10,7 +10,7 @@ import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
-import { useDebounce } from '@/hooks/useDebounce';
+import { useDebounce } from '@/hooks/ux/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
 import { SwapAmountAndFees, Token } from '@/types';
 import {

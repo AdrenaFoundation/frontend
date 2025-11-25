@@ -1,10 +1,9 @@
 import { useRouter } from 'next/router';
-import React from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import { WALLPAPERS } from '@/constant';
-import useUserProfile from '@/hooks/useUserProfile';
+import useUserProfile from '@/hooks/auth-profile/useUserProfile';
 
 export default function ViewOnlyProfile() {
   const router = useRouter();

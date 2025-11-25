@@ -12,7 +12,7 @@ import ActivityCalendar from '@/components/pages/monitoring/ActivityCalendar';
 import PositionStatsCard from '@/components/pages/monitoring/PositionStatsCard';
 import TopTraders from '@/components/pages/monitoring/TopTraders';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import usePositionStats from '@/hooks/usePositionStats';
+import usePositionStats from '@/hooks/trading-position/usePositionStats';
 import { CustodyExtended, UserProfileExtended } from '@/types';
 
 export default function Flow({

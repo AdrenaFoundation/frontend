@@ -7,7 +7,7 @@ import Button from '@/components/common/Button/Button';
 import Select from '@/components/common/Select/Select';
 import Loader from '@/components/Loader/Loader';
 import DataApiClient from '@/DataApiClient';
-import { SuperchargedUserProfile } from '@/hooks/useAllUserSupercharedProfiles';
+import { SuperchargedUserProfile } from '@/hooks/auth-profile/useAllUserSuperchargedProfiles';
 import { TraderByVolumeInfo, UserProfileExtended } from '@/types';
 import {
   formatNumberShort,
@@ -102,59 +102,59 @@ const AllUserProfileStatsChart = ({
   const data = useMemo(() => {
     return traderWithUserProfiles
       ? traderWithUserProfiles
-        .map((trader) => {
-          const key = trader.userPubkey.toBase58();
-          const pubkey = trader.userPubkey.toBase58();
-          const name =
-            trader.userProfile?.profile?.nickname ??
-            getAbbrevWalletAddress(pubkey);
-          const volume = trader.totalVolume;
-          const pnl = trader.totalPnl;
+          .map((trader) => {
+            const key = trader.userPubkey.toBase58();
+            const pubkey = trader.userPubkey.toBase58();
+            const name =
+              trader.userProfile?.profile?.nickname ??
+              getAbbrevWalletAddress(pubkey);
+            const volume = trader.totalVolume;
+            const pnl = trader.totalPnl;
 
-          const colorArray = [
-            '#2a0505',
-            '#500f0f',
-            '#802f2f',
-            '#a06464',
-            '#4ca54c',
-            '#308f30',
-            '#1e5f1e',
-            '#032803',
-          ];
+            const colorArray = [
+              '#2a0505',
+              '#500f0f',
+              '#802f2f',
+              '#a06464',
+              '#4ca54c',
+              '#308f30',
+              '#1e5f1e',
+              '#032803',
+            ];
 
-          const color = (() => {
-            if (pnl < -50_000) return colorArray[0];
-            if (pnl < -10_000) return colorArray[1];
-            if (pnl < -1000) return colorArray[2];
-            if (pnl < 0) return colorArray[3];
-            if (pnl < 1000) return colorArray[4];
-            if (pnl < 10_000) return colorArray[5];
-            if (pnl < 50_000) return colorArray[6];
-            return colorArray[7];
-          })();
+            const color = (() => {
+              if (pnl < -50_000) return colorArray[0];
+              if (pnl < -10_000) return colorArray[1];
+              if (pnl < -1000) return colorArray[2];
+              if (pnl < 0) return colorArray[3];
+              if (pnl < 1000) return colorArray[4];
+              if (pnl < 10_000) return colorArray[5];
+              if (pnl < 50_000) return colorArray[6];
+              return colorArray[7];
+            })();
 
-          return {
-            name,
-            key,
-            children: [
-              {
-                color,
-                key,
-                name,
-                pubkey,
-                volume,
-                pnl,
-              },
-            ],
-          };
-        })
-        .filter((key) => key?.children[0].key !== undefined)
-        .sort((a, b) => {
-          if (!a || !b) {
-            return 0;
-          }
-          return a.children[0].volume < b.children[0].volume ? 1 : -1;
-        })
+            return {
+              name,
+              key,
+              children: [
+                {
+                  color,
+                  key,
+                  name,
+                  pubkey,
+                  volume,
+                  pnl,
+                },
+              ],
+            };
+          })
+          .filter((key) => key?.children[0].key !== undefined)
+          .sort((a, b) => {
+            if (!a || !b) {
+              return 0;
+            }
+            return a.children[0].volume < b.children[0].volume ? 1 : -1;
+          })
       : [];
   }, [traderWithUserProfiles]);
 
@@ -370,7 +370,8 @@ const AllUserProfileStatsChart = ({
             <div
               className="h-2 w-24 border"
               style={{
-                background: 'linear-gradient(to right, #2a0505, #500f0f, #802f2f, #a06464, #4ca54c, #308f30, #1e5f1e, #032803)',
+                background:
+                  'linear-gradient(to right, #2a0505, #500f0f, #802f2f, #a06464, #4ca54c, #308f30, #1e5f1e, #032803)',
               }}
             />
           </div>
@@ -409,62 +410,84 @@ const CustomizedContent: React.FC<{
   name,
   showVolume = true,
 }) => {
-    const [isHovered, setIsHovered] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-    return (
-      <g
-        key={`node-${index}-${depth}-${name}`}
-        className={twMerge('relative', depth > 1 ? 'cursor-pointer' : '')}
-        onMouseEnter={() => {
-          setIsHovered(true);
+  return (
+    <g
+      key={`node-${index}-${depth}-${name}`}
+      className={twMerge('relative', depth > 1 ? 'cursor-pointer' : '')}
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+      }}
+    >
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        style={{
+          fill: color,
+          stroke: '#fff',
+          strokeWidth: depth === 1 ? 5 : 1,
+          strokeOpacity: 1,
+          opacity: isHovered ? 1 : 0.9,
         }}
-        onMouseLeave={() => {
-          setIsHovered(false);
-        }}
-      >
-        <rect
-          x={x}
-          y={y}
-          width={width}
-          height={height}
-          style={{
-            fill: color,
-            stroke: '#fff',
-            strokeWidth: depth === 1 ? 5 : 1,
-            strokeOpacity: 1,
-            opacity: isHovered ? 1 : 0.9,
-          }}
-        />
+      />
 
-        {depth === 2 && width > 75 && showVolume && volume !== null ? (
-          <text
-            x={x + width / 2}
-            y={y + height / 2 + 7}
-            textAnchor="middle"
-            fill="#fff"
-            fontSize={width > 80 && height > 80 ? 12 : width > 50 ? 10 : width > 40 ? 8 : 6}
-          >
-            ${formatNumberShort(Number(volume))}
-          </text>
-        ) : null}
+      {depth === 2 && width > 75 && showVolume && volume !== null ? (
+        <text
+          x={x + width / 2}
+          y={y + height / 2 + 7}
+          textAnchor="middle"
+          fill="#fff"
+          fontSize={
+            width > 80 && height > 80
+              ? 12
+              : width > 50
+                ? 10
+                : width > 40
+                  ? 8
+                  : 6
+          }
+        >
+          ${formatNumberShort(Number(volume))}
+        </text>
+      ) : null}
 
-        {depth === 2 && width > 75 && !showVolume && pnl !== null ? (
-          <text
-            x={x + width / 2}
-            y={y + height / 2 + 7}
-            textAnchor="middle"
-            fill="#fff"
-            fontSize={width > 80 && height > 80 ? 12 : width > 50 ? 10 : width > 40 ? 8 : 6}
-          >
-            {formatPriceInfo(pnl)}
-          </text>
-        ) : null}
+      {depth === 2 && width > 75 && !showVolume && pnl !== null ? (
+        <text
+          x={x + width / 2}
+          y={y + height / 2 + 7}
+          textAnchor="middle"
+          fill="#fff"
+          fontSize={
+            width > 80 && height > 80
+              ? 12
+              : width > 50
+                ? 10
+                : width > 40
+                  ? 8
+                  : 6
+          }
+        >
+          {formatPriceInfo(pnl)}
+        </text>
+      ) : null}
 
-        {name && width > 100 ? (
-          <text x={x + 10} y={y + 22} fill="#fff" fontSize={width > 50 ? 12 : width > 40 ? 10 : 8} fillOpacity={0.5}>
-            {name}
-          </text>
-        ) : null}
-      </g>
-    );
-  };
+      {name && width > 100 ? (
+        <text
+          x={x + 10}
+          y={y + 22}
+          fill="#fff"
+          fontSize={width > 50 ? 12 : width > 40 ? 10 : 8}
+          fillOpacity={0.5}
+        >
+          {name}
+        </text>
+      ) : null}
+    </g>
+  );
+};

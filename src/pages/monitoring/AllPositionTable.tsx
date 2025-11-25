@@ -15,7 +15,7 @@ import {
 } from '@/components/pages/monitoring/PositionHistoryTable/PositionTableComp/PositionCells';
 import Table, { TableHeaderType } from '@/components/pages/monitoring/Table';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 import { PositionExtended } from '@/types';
 import { getNonUserProfile } from '@/utils';
 

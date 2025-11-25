@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import { AllAdxStakingProvider } from '@/contexts/AllAdxStakingContext';
-import useStakingAccount from '@/hooks/useStakingAccount';
+import useStakingAccount from '@/hooks/staking/useStakingAccount';
 import {
   DEFAULT_LOCKED_STAKE_LOCK_DURATION,
   LIQUID_STAKE_LOCK_DURATION,
@@ -72,10 +72,10 @@ export default function StakeOverview({
     return savedConfig
       ? JSON.parse(savedConfig)
       : {
-        size: 'desc',
-        duration: 'asc',
-        lastClicked: 'duration',
-      };
+          size: 'desc',
+          duration: 'asc',
+          lastClicked: 'duration',
+        };
   });
 
   const [roundPassed, setRoundPassed] = useState<boolean>(false);

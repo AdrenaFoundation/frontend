@@ -9,7 +9,7 @@ import {
 } from "@/types";
 import { calculateWeeksPassed } from "@/utils";
 
-import { WalletAdapterName } from "./useWalletAdapters";
+import { WalletAdapterName } from "../wallet/useWalletAdapters";
 
 const RAFFLE_WINNERS = [
   {

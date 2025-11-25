@@ -1,17 +1,17 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
-import React from 'react';
 
 import crossIcon from '@/../public/images/Icons/cross.svg';
 import mutagenIcon from '@/../public/images/mutagen.png';
 import solanaIDLogo from '@/../public/images/solana-id-logo.png';
 import solanaIDMonster from '@/../public/images/solana-id-monster.png';
 import { SOLANA_ID_TIERS_MUTAGEN } from '@/constant';
-import useSolanaID from '@/hooks/useSolanaID';
+import useSolanaID from '@/hooks/wallet/useSolanaID';
 
 function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
   const { data } = useSolanaID({ walletAddress });
-  const isSolanaIDDismissed = window.localStorage.getItem('solanaIDDismissed') === 'true';
+  const isSolanaIDDismissed =
+    window.localStorage.getItem('solanaIDDismissed') === 'true';
 
   if (!data || isSolanaIDDismissed) return null;
 
@@ -20,19 +20,22 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
   return (
     <Tippy
       className="relative tippy-no-padding border-2"
-      content={<div className='p-2 flex flex-col items-center gap-2'>
-        <div className='font-regular'>
-          Welcome to Adrena!
-        </div>
+      content={
+        <div className="p-2 flex flex-col items-center gap-2">
+          <div className="font-regular">Welcome to Adrena!</div>
 
-        <div className='text-center text-sm'>
-          As a {solanaID.solidUser.tierGroup} user, you will receive +{SOLANA_ID_TIERS_MUTAGEN[solanaID.solidUser.tierGroup].mutagen} free mutagens on your first trade.
-        </div>
+          <div className="text-center text-sm">
+            As a {solanaID.solidUser.tierGroup} user, you will receive +
+            {SOLANA_ID_TIERS_MUTAGEN[solanaID.solidUser.tierGroup].mutagen} free
+            mutagens on your first trade.
+          </div>
 
-        <div className='text-center text-sm'>
-          Bonus mutagens are awarded when you close your position and may take up to 24 hours to appear.
+          <div className="text-center text-sm">
+            Bonus mutagens are awarded when you close your position and may take
+            up to 24 hours to appear.
+          </div>
         </div>
-      </div>}
+      }
     >
       <div className="relative w-full border border-[#2c2e4f] rounded-md overflow-hidden my-2">
         <div>
@@ -47,7 +50,7 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
         </div>
 
         <div className="relative z-10 p-3">
-          <div className='flex flex-row gap-2 items-center justify-between'>
+          <div className="flex flex-row gap-2 items-center justify-between">
             <div className="flex flex-row gap-2 items-center">
               <Image
                 src={solanaIDLogo}
@@ -71,12 +74,16 @@ function SolanaIDInfo({ walletAddress }: { walletAddress: string | null }) {
                 window.localStorage.setItem('solanaIDDismissed', 'true');
               }}
             />
-
           </div>
 
-
           <div className="flex flex-row gap-1 items-center mt-2">
-            <Image src={mutagenIcon} alt="mutagen" className="w-3 mr-1" width={12} height={12} />
+            <Image
+              src={mutagenIcon}
+              alt="mutagen"
+              className="w-3 mr-1"
+              width={12}
+              height={12}
+            />
 
             <p className="font-semibold">
               Get{' '}

@@ -11,10 +11,10 @@ import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
 import DataApiClient from '@/DataApiClient';
-import { useDebounce } from '@/hooks/useDebounce';
-import useDynamicCustodyAvailableLiquidity from '@/hooks/useDynamicCustodyAvailableLiquidity';
-import { useFavorites } from '@/hooks/useFavoriteToken';
-import { useReferral } from '@/hooks/useReferral';
+import useDynamicCustodyAvailableLiquidity from '@/hooks/trading-position/useDynamicCustodyAvailableLiquidity';
+import { useFavorites } from '@/hooks/trading-position/useFavoriteToken';
+import { useDebounce } from '@/hooks/ux/useDebounce';
+import { useReferral } from '@/hooks/ux/useReferral';
 import { useDispatch, useSelector } from '@/store/store';
 import { ChaosLabsPricesExtended, PositionExtended } from '@/types';
 import {
@@ -75,7 +75,7 @@ export default function LongShortTradingInputs({
       return walletState.walletAddress;
     }
 
-    return null
+    return null;
   }, [walletState?.walletAddress]);
 
   const [takeProfitInput, setTakeProfitInput] = useState<number | null>(null);
@@ -119,11 +119,7 @@ export default function LongShortTradingInputs({
       return [usdcCustody];
     }
     return [];
-  }, [
-    side,
-    positionInfo.custody,
-    usdcCustody,
-  ]);
+  }, [side, positionInfo.custody, usdcCustody]);
 
   const custodyLiquidity = useDynamicCustodyAvailableLiquidity(custodyArray);
 
@@ -453,33 +449,33 @@ export default function LongShortTradingInputs({
 
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
-          owner: new PublicKey(walletAddress),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: entryPrice,
-          collateralAmount,
-          leverage: uiLeverageToNative(inputState.leverage),
-          notification,
-          stopLossLimitPrice,
-          takeProfitLimitPrice,
-          isIncrease: !!openedPosition,
-          referrerProfile: r ? r.pubkey : undefined,
-          swapSlippage,
-        })
+            owner: new PublicKey(walletAddress),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: entryPrice,
+            collateralAmount,
+            leverage: uiLeverageToNative(inputState.leverage),
+            notification,
+            stopLossLimitPrice,
+            takeProfitLimitPrice,
+            isIncrease: !!openedPosition,
+            referrerProfile: r ? r.pubkey : undefined,
+            swapSlippage,
+          })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
-          owner: new PublicKey(walletAddress),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: entryPrice,
-          collateralAmount,
-          leverage: uiLeverageToNative(inputState.leverage),
-          notification,
-          stopLossLimitPrice,
-          takeProfitLimitPrice,
-          isIncrease: !!openedPosition,
-          referrerProfile: r ? r.pubkey : undefined,
-          swapSlippage,
-        }));
+            owner: new PublicKey(walletAddress),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: entryPrice,
+            collateralAmount,
+            leverage: uiLeverageToNative(inputState.leverage),
+            notification,
+            stopLossLimitPrice,
+            takeProfitLimitPrice,
+            isIncrease: !!openedPosition,
+            referrerProfile: r ? r.pubkey : undefined,
+            swapSlippage,
+          }));
 
       dispatch(fetchWalletTokenBalances());
       setInputState((prev) => ({

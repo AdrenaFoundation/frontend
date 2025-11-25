@@ -4,7 +4,7 @@ import { PointerEvent, ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { twMerge } from 'tailwind-merge';
 
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 
 import adrenaLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import closeBtnIcon from '../../../../public/images/Icons/cross.svg';

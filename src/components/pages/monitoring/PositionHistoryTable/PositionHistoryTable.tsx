@@ -8,8 +8,8 @@ import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import Select from '@/components/common/Select/Select';
 import DataApiClient from '@/DataApiClient';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { PositionSortOption } from '@/hooks/usePositionHistory';
+import { PositionSortOption } from '@/hooks/trading-position/usePositionHistory';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import {
   EnrichedPositionApi,

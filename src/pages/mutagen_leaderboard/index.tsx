@@ -10,8 +10,8 @@ import Loader from '@/components/Loader/Loader';
 import MutagenMechanicsButton from '@/components/Mutagen/MutagenMechanicsButton';
 import MutagenLeaderboard from '@/components/pages/mutagen_leaderboard/MutagenLeaderboard';
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
-import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
-import useMutagenLeaderboardData from '@/hooks/useMutagenLeaderboardData';
+import useMutagenLeaderboardData from '@/hooks/analytics-metrics/useMutagenLeaderboardData';
+import { useAllUserProfilesMetadata } from '@/hooks/auth-profile/useAllUserProfilesMetadata';
 import { UserProfileExtended } from '@/types';
 import { getNonUserProfile } from '@/utils';
 

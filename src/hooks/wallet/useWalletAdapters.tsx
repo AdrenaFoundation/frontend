@@ -4,14 +4,13 @@ import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
 import { useStandardWalletAdapters } from '@solana/wallet-standard-wallet-adapter-react';
 import { useMemo } from 'react';
 
+import backpackLogo from '@/../public/images/backpack.png';
+import coinbaseLogo from '@/../public/images/coinbase.png';
+import phantomLogo from '@/../public/images/phantom.svg';
+import solflareLogo from '@/../public/images/solflare.png';
+import squadxLogo from '@/../public/images/squadx-logo.png';
+import { usePrivyAdapter } from "@/hooks/wallet/usePrivyAdapter";
 import { ImageRef, WalletAdapterExtended } from "@/types";
-
-import backpackLogo from '../../public/images/backpack.png';
-import coinbaseLogo from '../../public/images/coinbase.png';
-import phantomLogo from '../../public/images/phantom.svg';
-import solflareLogo from '../../public/images/solflare.png';
-import squadxLogo from '../../public/images/squadx-logo.png';
-import { usePrivyAdapter } from "./usePrivyAdapter";
 
 export const WALLET_ICONS = {
   Phantom: phantomLogo,

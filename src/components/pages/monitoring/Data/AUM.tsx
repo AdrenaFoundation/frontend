@@ -1,5 +1,5 @@
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
-import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
+import useAssetsUnderManagement from '@/hooks/analytics-metrics/useAssetsUnderManagement';
 
 export default function AUM({ connected }: { connected: boolean }) {
   const aumUsd = useAssetsUnderManagement();

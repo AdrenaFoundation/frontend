@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
-import useClaimHistory from '@/hooks/useClaimHistory';
+import useClaimHistory from '@/hooks/staking/useClaimHistory';
 
 import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
 import ClaimHistorySection from './ClaimHistorySection';
@@ -36,7 +36,7 @@ export default function ALPStakingRecap({
       (sum, claim) =>
         sum +
         (claim.rewards_adx + claim.rewards_adx_genesis) *
-        claim.adx_price_at_claim,
+          claim.adx_price_at_claim,
       0,
     ) ?? 0;
 

@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { useOnClickOutside } from '@/hooks/onClickOutside';
+import { useOnClickOutside } from '@/hooks/ux/onClickOutside';
 
 export default function Menu({
   forceOpen,

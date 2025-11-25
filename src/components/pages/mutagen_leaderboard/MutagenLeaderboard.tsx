@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import needle from '@/../../public/images/needle.png';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { PROFILE_PICTURES, USER_PROFILE_TITLES } from '@/constant';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import useBetterMediaQuery from '@/hooks/ux/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { MutagenLeaderboardData } from '@/types';
 import { formatNumber, getAbbrevWalletAddress } from '@/utils';
@@ -272,7 +272,9 @@ export default function MutagenLeaderboard({
       <span className="opacity-50" key="rank">
         #
       </span>,
-      <span className="opacity-50" key="trader">Trader</span>,
+      <span className="opacity-50" key="trader">
+        Trader
+      </span>,
     ];
 
     if (breakpoint5) {

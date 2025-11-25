@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useWalletSidebar } from '@/contexts/WalletSidebarContext';
-import { useMaintenanceMessages } from '@/hooks/useMaintenanceMessages';
+import { useMaintenanceMessages } from '@/hooks/communication/useMaintenanceMessages';
 import { useSelector } from '@/store/store';
 
 import crossIcon from '../../../../public/images/Icons/cross.svg';

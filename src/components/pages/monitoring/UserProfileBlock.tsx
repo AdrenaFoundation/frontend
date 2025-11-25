@@ -1,8 +1,7 @@
 import { motion } from 'framer-motion';
-import React from 'react';
 
 import FormatNumber from '@/components/Number/FormatNumber';
-import { SuperchargedUserProfile } from '@/hooks/useAllUserSupercharedProfiles';
+import { SuperchargedUserProfile } from '@/hooks/auth-profile/useAllUserSuperchargedProfiles';
 import { UserProfileExtended } from '@/types';
 import { getAbbrevWalletAddress, getNonUserProfile } from '@/utils';
 
@@ -31,7 +30,7 @@ export default function UserProfileBlock({
           onClick={() =>
             setActiveProfile(
               superchargedProfile.profile ||
-              getNonUserProfile(superchargedProfile.wallet.toBase58()),
+                getNonUserProfile(superchargedProfile.wallet.toBase58()),
             )
           }
         >

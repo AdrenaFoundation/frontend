@@ -2,7 +2,7 @@ import { AccountLayout, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
-import { useAllAdxStaking } from './useAllAdxStaking';
+import { useAllAdxStaking } from '@/hooks/staking/useAllAdxStaking';
 
 let interval: NodeJS.Timeout | null = null;
 
