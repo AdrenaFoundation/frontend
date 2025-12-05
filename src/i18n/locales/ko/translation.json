@@ -1,0 +1,22 @@
+{
+  "welcome": "환영합니다",
+  "hello": "안녕하세요",
+  "goodbye": "안녕히 가세요",
+  "language": "언어",
+  "settings": "설정",
+  "nav": {
+    "trade": "거래",
+    "profile": "프로필",
+    "vest": "베스트",
+    "stake": "스테이크",
+    "ranked": "랭크드",
+    "provideLiquidity": "유동성 제공",
+    "monitor": "모니터",
+    "referral": "추천",
+    "achievements": "업적",
+    "leaderboard": "리더보드",
+    "vote": "투표",
+    "learn": "학습",
+    "faucet": "파우셋"
+  }
+}

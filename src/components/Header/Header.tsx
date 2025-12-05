@@ -30,6 +30,7 @@ import { NotificationBell } from '../Notifications/NotificationBell';
 import FormatNumber from '../Number/FormatNumber';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
+import LanguageSwitcher from '../LanguageSwitcher';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 import MoreMenu from './MoreMenu';
 
@@ -281,6 +282,8 @@ export default function Header({
             isOpen={isSettingsOpen}
             setIsOpen={setIsSettingsOpen}
           />
+
+          <LanguageSwitcher />
         </div>
 
         <WalletAdapter userProfile={userProfile} adapters={adapters} />

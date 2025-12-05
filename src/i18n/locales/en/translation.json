@@ -1,0 +1,22 @@
+{
+  "welcome": "Welcome",
+  "hello": "Hello",
+  "goodbye": "Goodbye",
+  "language": "Language",
+  "settings": "Settings",
+  "nav": {
+    "trade": "Trade",
+    "profile": "Profile",
+    "vest": "Vest",
+    "stake": "Stake",
+    "ranked": "Ranked",
+    "provideLiquidity": "Provide Liquidity",
+    "monitor": "Monitor",
+    "referral": "Referral",
+    "achievements": "Achievements",
+    "leaderboard": "Leaderboard",
+    "vote": "Vote",
+    "learn": "Learn",
+    "faucet": "Faucet"
+  }
+}

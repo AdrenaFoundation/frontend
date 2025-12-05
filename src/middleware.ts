@@ -1,5 +1,12 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import {
+  cookieName,
+  fallbackLng,
+  headerName,
+  languages,
+} from './i18n/settings';
+import acceptLanguage from 'accept-language';
 
 import { rateLimiterMiddleware } from './middleware/rateLimiter';
 
@@ -11,6 +18,19 @@ export async function middleware(request: NextRequest) {
       return rateLimitResponse;
     }
   }
+
+  // i18n translation settings for all routes
+  let lng;
+  // Try to get language from cookie
+  if (request.cookies.has(cookieName))
+    lng = acceptLanguage.get(request.cookies.get(cookieName)?.value || '');
+  // If no cookie, check the Accept-Language header
+  if (!lng) lng = acceptLanguage.get(request.headers.get('Accept-Language'));
+  // Default to fallback language if still undefined
+  if (!lng) lng = fallbackLng;
+
+  const headers = new Headers(request.headers);
+  headers.set(headerName, lng);
 
   if (request.nextUrl.pathname.startsWith('/api/')) {
     const origin = request.headers.get('origin');
@@ -109,8 +129,10 @@ export async function middleware(request: NextRequest) {
 
     return response;
   }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: '/api/:path*',
+  matcher: '/((?!_next|favicon.ico).*)',
 };
