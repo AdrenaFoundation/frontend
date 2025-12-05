@@ -7,7 +7,9 @@
     "fmt": "prettier -w . --ignore-path .prettierignore",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:e2e": "playwright test",
+    "test:e2e:production": "TEST_ENV=production playwright test"
   },
   "dependencies": {
     "@bonfida/spl-name-service": "=3.0.14",
@@ -78,6 +80,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "=3.3.1",
+    "@playwright/test": "^1.57.0",
     "@supabase/auth-js": "=2.69.1",
     "@types/big.js": "=6.2.2",
     "@types/bn.js": "=5.2.0",
