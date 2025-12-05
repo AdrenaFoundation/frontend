@@ -80,7 +80,7 @@ const PARTNERS: Partner[] = [
     gradientColors:
       'bg-[linear-gradient(110deg,#c9c8ff,#0075ff,#c9c8ff)] animate-text-shimmer bg-[length:250%_100%]',
     bgColor: 'bg-secondary/[0.99]',
-    link: 'https://app.loopscale.com/loops/alpLi5yWGzpTWMQ1iWHG5CrGYAdBkhyEdsuSugjDUqwj',
+    link: 'https://app.loopscale.com/loops/alp-usdc',
   },
   {
     description: 'Earn Fixed Yield on ALP',
