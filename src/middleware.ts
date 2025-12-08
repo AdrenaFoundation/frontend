@@ -1,12 +1,13 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import acceptLanguage from 'accept-language';
+
 import {
   cookieName,
   fallbackLng,
   headerName,
   languages,
 } from './i18n/settings';
-import acceptLanguage from 'accept-language';
 
 import { rateLimiterMiddleware } from './middleware/rateLimiter';
 

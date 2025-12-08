@@ -21,7 +21,7 @@ export function useT(ns?: string | string[], options?: any) {
     useEffect(() => {
       if (!lng || i18next.resolvedLanguage === lng) return
       i18next.changeLanguage(lng)
-    }, [lng, i18next])
+    }, [lng])
   }
   return useTranslation(ns, options)
 }

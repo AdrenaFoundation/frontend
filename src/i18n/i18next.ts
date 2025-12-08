@@ -2,6 +2,7 @@ import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import resourcesToBackend from 'i18next-resources-to-backend';
 import { initReactI18next } from 'react-i18next/initReactI18next';
+
 import { fallbackLng, languages, defaultNS } from './settings';
 
 const runsOnServerSide = typeof window === 'undefined';

@@ -1,8 +1,7 @@
-import i18next from './i18next'
-import { headerName } from './settings'
-import { headers } from 'next/headers'
+import { headers } from 'next/headers';
 
-import { fallbackLng } from './settings'
+import i18next from './i18next';
+import { fallbackLng, headerName } from './settings';
 
 export async function getT(ns?: string | string[], options?: { keyPrefix?: string }) {
   const headerList = await headers()
