@@ -1,6 +1,7 @@
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Modal from '@/components/common/Modal/Modal';
 import { Congrats } from '@/components/Congrats/Congrats';
@@ -34,6 +35,8 @@ export default function Positions({
   setTokenB: (token: Token) => void;
   userProfile: UserProfileExtended | false | null;
 }) {
+  const { t } = useTranslation();
+
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
 
@@ -57,11 +60,10 @@ export default function Positions({
               <div className="ml-2 flex flex-row gap-2 items-center">
                 <h2 className="font-semibold">Close</h2>
                 <p
-                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${
-                    positionToClose.side === 'long'
-                      ? 'text-green bg-green/20'
-                      : 'text-red bg-red/20'
-                  }`}
+                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToClose.side === 'long'
+                    ? 'text-green bg-green/20'
+                    : 'text-red bg-red/20'
+                    }`}
                 >
                   {positionToClose.side}
                 </p>
@@ -96,13 +98,12 @@ export default function Positions({
           <Modal
             customTitle={
               <div className="ml-2 flex flex-row gap-2 items-center">
-                <h2 className="font-semibold">Edit</h2>
+                <h2 className="font-semibold">{t('trade.editPosition.edit')}</h2>
                 <p
-                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${
-                    positionToEdit.side === 'long'
-                      ? 'text-green bg-green/20'
-                      : 'text-red bg-red/20'
-                  }`}
+                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToEdit.side === 'long'
+                    ? 'text-green bg-green/20'
+                    : 'text-red bg-red/20'
+                    }`}
                 >
                   {positionToEdit.side}
                 </p>
@@ -138,11 +139,10 @@ export default function Positions({
               <div className="ml-2 flex flex-row gap-2 items-center">
                 <h2 className="font-semibold">TP/SL</h2>
                 <p
-                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${
-                    positionToStopLossTakeProfit.side === 'long'
-                      ? 'text-green bg-green/20'
-                      : 'text-red bg-red/20'
-                  }`}
+                  className={`text-base m-auto p-0.5 px-2 capitalize font-mono rounded-md ${positionToStopLossTakeProfit.side === 'long'
+                    ? 'text-green bg-green/20'
+                    : 'text-red bg-red/20'
+                    }`}
                 >
                   {positionToStopLossTakeProfit.side}
                 </p>

@@ -199,7 +199,7 @@ export default function StopLossTakeProfit({
                 alt={`${getTokenSymbol(position.token.symbol)} logo`}
               />
               <div className="text-sm text-bold">
-                {getTokenSymbol(position.token.symbol)} Price
+                {getTokenSymbol(position.token.symbol)} {t('trade.editPosition.price')}
               </div>
             </div>
             <FormatNumber
@@ -214,7 +214,7 @@ export default function StopLossTakeProfit({
 
           <div className="w-full flex justify-between">
             <div className="flex w-full justify-between items-center">
-              <span className="text-sm opacity-50">Entry</span>
+              <span className="text-sm opacity-50">{t('trade.entry')}</span>
 
               <FormatNumber
                 nb={position.price}
@@ -233,7 +233,7 @@ export default function StopLossTakeProfit({
 
           <div className="w-full flex justify-between">
             <div className="flex w-full justify-between items-center">
-              <span className="text-sm opacity-50">Liquidation</span>
+              <span className="text-sm opacity-50">{t('trade.liquidationPrice')}</span>
 
               <FormatNumber
                 nb={position.liquidationPrice}
@@ -253,7 +253,7 @@ export default function StopLossTakeProfit({
         <div className="flex-col items-center justify-center text-sm w-full bg-[#040D14] rounded-md border p-3 py-2.5">
 
           <div className="flex w-full justify-between items-center">
-            <span className="text-sm text-txtfade">Net Value</span>
+            <span className="text-sm text-txtfade">{t('trade.editPosition.netValue')}</span>
             <>
               <NetValueTooltip position={position}>
                 <span className="underline-dashed">
@@ -272,7 +272,7 @@ export default function StopLossTakeProfit({
 
           <div className="flex w-full justify-between items-center">
             <div className="text-sm text-txtfade">
-              PnL <span className="test-xs text-txtfade">(after fees)</span>
+              {t('trade.editPosition.pnl')} <span className="test-xs text-txtfade">({t('trade.editPosition.afterFees')})</span>
             </div>
             <div
               className={twMerge(

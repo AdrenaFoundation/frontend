@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import * as htmlToImage from 'html-to-image';
 import Image from 'next/image';
 import { useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -74,6 +75,7 @@ export default function SharePositionModal({
   position: PositionExtended & { exitPrice?: number };
   userProfile: UserProfileExtended | false | null;
 }) {
+  const { t } = useTranslation();
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const cardRef = useRef<HTMLDivElement | null>(null);
 
@@ -156,8 +158,8 @@ export default function SharePositionModal({
       if (!isCorsError(error)) {
         console.error('Failed to download image:', error);
         addNotification({
-          title: 'Failed to download image',
-          message: 'Please try again',
+          title: t('trade.sharePositionModal.failedToDownloadImage'),
+          message: t('trade.sharePositionModal.pleaseTryAgain'),
           type: 'error',
           duration: 'regular',
         });
@@ -184,16 +186,16 @@ export default function SharePositionModal({
       ]);
 
       addNotification({
-        title: 'Image copied to clipboard',
-        message: 'Ready to share on social media!',
+        title: t('trade.sharePositionModal.imageCopiedToClipboard'),
+        message: t('trade.sharePositionModal.readyToShareOnSocialMedia'),
         type: 'success',
         duration: 'regular',
       });
     } catch (error) {
       if (isCorsError(error)) {
         addNotification({
-          title: 'Image copied to clipboard',
-          message: 'Ready to share on social media!',
+          title: t('trade.sharePositionModal.imageCopiedToClipboard'),
+          message: t('trade.sharePositionModal.readyToShareOnSocialMedia'),
           type: 'success',
           duration: 'regular',
         });
@@ -202,8 +204,8 @@ export default function SharePositionModal({
 
       console.error('Failed to copy to clipboard:', error);
       addNotification({
-        title: 'Failed to copy image',
-        message: 'Please try downloading instead',
+        title: t('trade.sharePositionModal.failedToCopyImage'),
+        message: t('trade.sharePositionModal.pleaseTryDownloadingInstead'),
         type: 'error',
         duration: 'regular',
       });
@@ -220,9 +222,11 @@ export default function SharePositionModal({
       console.error('Failed to copy image, opening Twitter anyway:', error);
     }
 
-    const baseText = `I just made ${
-      isPnlUsd ? `$${pnlUsd?.toFixed(2)}` : `${pnlPercentage?.toFixed(2)}%`
-    } on ${position.side} position on $${position.token.symbol}!`;
+    const baseText = t('trade.sharePositionModal.iJustMadeOnPosition', {
+      value: isPnlUsd ? `$${pnlUsd?.toFixed(2)}` : `${pnlPercentage?.toFixed(2)}%`,
+      side: position.side,
+      token: position.token.symbol
+    });
 
     const tweetContent = referralLink
       ? `${baseText}\n\nCome trade with me on @AdrenaProtocol:\n${referralLink}`
@@ -290,7 +294,7 @@ export default function SharePositionModal({
         <ul className="flex flex-row gap-6 mt-[0.625rem] sm:mt-7 relative z-10">
           <li className="flex flex-col gap-1">
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
-              Entry Price
+              {t('trade.sharePositionModal.entryPrice')}
             </span>
             <span className="font-archivoblack text-sm sm:text-lg">
               {formatPriceInfo(
@@ -301,7 +305,7 @@ export default function SharePositionModal({
           </li>
           <li className="flex flex-col gap-1">
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
-              {position?.exitPrice ? 'Exit Price' : 'Mark Price'}
+              {position?.exitPrice ? t('trade.sharePositionModal.exitPrice') : t('trade.sharePositionModal.markPrice')}
             </span>
             <span className="font-archivoblack text-sm sm:text-lg">
               {position?.exitPrice
@@ -316,7 +320,7 @@ export default function SharePositionModal({
           </li>
           <li className="flex flex-col gap-1">
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
-              Opened on
+              {t('trade.sharePositionModal.openedOn')}
             </span>
             <span className="font-archivoblack text-sm sm:text-lg">
               {openedOn}
@@ -361,7 +365,7 @@ export default function SharePositionModal({
         </AnimatePresence>
       </div>
 
-      <p className="opacity-50 mb-3 mt-6">Customize</p>
+      <p className="opacity-50 mb-3 mt-6">{t('trade.sharePositionModal.customize')}</p>
 
       <div className="flex flex-row gap-3">
         {MONSTER_OPTIONS.map((opt) => (
@@ -398,7 +402,7 @@ export default function SharePositionModal({
           className="flex flex-row justify-between gap-3 bg-secondary border border-bcolor p-3 rounded-md cursor-pointer select-none"
           onClick={() => setIsPnlUsd(!isPnlUsd)}
         >
-          <p className="font-semibold text-base">Display PnL in USD</p>
+          <p className="font-semibold text-base">{t('trade.sharePositionModal.displayPnlInUsd')}</p>
           <label className="flex items-center ml-1 cursor-pointer">
             <Switch
               className="mr-0.5"
@@ -415,7 +419,7 @@ export default function SharePositionModal({
           className="flex flex-row justify-between gap-3 bg-secondary border border-bcolor p-3 rounded-md cursor-pointer select-none"
           onClick={() => setIsPnlWFees(!isPnlWFees)}
         >
-          <p className="font-semibold text-base">Display PnL with fees</p>
+          <p className="font-semibold text-base">{t('trade.sharePositionModal.displayPnlWithFees')}</p>
           <label className="flex items-center ml-1 cursor-pointer">
             <Switch
               className="mr-0.5"
@@ -432,14 +436,14 @@ export default function SharePositionModal({
         <div className="flex flex-row items-center gap-3">
           <Button
             size="lg"
-            title="Download Image"
+            title={t('trade.sharePositionModal.downloadImage')}
             className="w-full py-3 text-base flex-1"
             onClick={handleDownloadImage}
           />
 
           <Button
             size="lg"
-            title="Copy Image"
+            title={t('trade.sharePositionModal.copyImage')}
             className="w-full py-3 text-base flex-1"
             onClick={handleCopyImage}
           />
@@ -447,7 +451,7 @@ export default function SharePositionModal({
 
         <Button
           size="lg"
-          title="Share on X (just paste your PnL image)"
+          title={t('trade.sharePositionModal.shareOnX')}
           className="w-full py-3 text-base"
           onClick={handleShareTwitter}
           leftIcon={xLogo}
@@ -457,12 +461,12 @@ export default function SharePositionModal({
         {blinkParams && (
           <Button
             size="lg"
-            title="Share a Blink"
+            title={t('trade.sharePositionModal.shareABlink')}
             className="w-full py-3 text-base"
             leftIcon={dialectLogo}
             leftIconClassName="w-4 h-4"
             href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-              `Copy my position on $${position.token.symbol}! @AdrenaProtocol`,
+              t('trade.sharePositionModal.copyMyPositionOn', { token: position.token.symbol }),
             )}&url=${encodeURIComponent(
               `https://dial.to/?action=${encodeURIComponent(
                 `solana-action:https://${window.location.hostname}/api/blink/openPosition?${blinkParams}`,

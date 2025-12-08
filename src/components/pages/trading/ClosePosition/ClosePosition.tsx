@@ -2,6 +2,7 @@ import { BN } from '@coral-xyz/anchor';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
@@ -50,6 +51,7 @@ export default function ClosePosition({
   onClose: () => void;
   setShareClosePosition: (position: PositionExtended) => void;
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const settings = useSelector((state) => state.settings);
 
@@ -83,11 +85,11 @@ export default function ClosePosition({
     // Find the saved token, or default to USDC
     let token = savedTokenSymbol
       ? [...window.adrena.client.tokens, ...ALTERNATIVE_SWAP_TOKENS].find(
-          (t) => t.symbol === savedTokenSymbol,
-        )
+        (t) => t.symbol === savedTokenSymbol,
+      )
       : [...window.adrena.client.tokens, ...ALTERNATIVE_SWAP_TOKENS].find(
-          (t) => t.symbol === 'USDC',
-        );
+        (t) => t.symbol === 'USDC',
+      );
 
     // Fallback to position token if USDC not found
     if (!token) {
@@ -176,7 +178,7 @@ export default function ClosePosition({
 
         if (!jupiterQuote) {
           setAmountOut(null);
-          setErrorMsg('Cannot find jupiter route');
+          setErrorMsg(t('trade.closePosition.cannotFindJupiterRoute'));
           setIsCalculating(false);
           return;
         }
@@ -257,11 +259,11 @@ export default function ClosePosition({
         const priceWithSlippage =
           position.side === 'short'
             ? priceAndFee.price
-                .mul(new BN(10_000))
-                .div(new BN(10_000 - slippageInBps))
+              .mul(new BN(10_000))
+              .div(new BN(10_000 - slippageInBps))
             : priceAndFee.price
-                .mul(new BN(10_000 - slippageInBps))
-                .div(new BN(10_000));
+              .mul(new BN(10_000 - slippageInBps))
+              .div(new BN(10_000));
 
         // Use collateral token if specified, otherwise use redeemToken
         const tokenToUse = useCollateralToken
@@ -384,7 +386,7 @@ export default function ClosePosition({
     if (v === null || isNaN(v) || v < 0) {
       setCustomAmount(null);
       setActivePercent(null);
-      setErrorMsg('Please enter a valid amount');
+      setErrorMsg(t('trade.closePosition.pleaseEnterAValidAmount'));
       return;
     }
 
@@ -408,7 +410,7 @@ export default function ClosePosition({
 
     const remainingCollateral = position.collateralUsd * (1 - percent);
     if (percent < 1 && remainingCollateral < 10) {
-      setErrorMsg('Remaining collateral must be at least $10');
+      setErrorMsg(t('trade.closePosition.remainingCollateralMustBeAtLeast10'));
     } else {
       setErrorMsg(null);
     }
@@ -527,45 +529,50 @@ export default function ClosePosition({
     showArrow?: boolean;
     remainingValue?: number | null;
     isBold?: boolean;
-  }) => (
-    <div className={rowStyle}>
-      <div className="text-sm">
-        {label} <span className="text-txtfade">(net)</span>
-      </div>
+  }) => {
 
-      <div className="flex flex-row items-center text-sm font-mono">
-        <FormatNumber
-          nb={value}
-          prefix={getPnLPrefix(value)}
-          format="currency"
-          precision={3}
-          className={`text-${getPnLColorClass(value)} ${isBold ? 'font-bold' : ''}`}
-          isDecimalDimmed={false}
-        />
+    const { t } = useTranslation()
 
-        <div
-          style={{
-            display: showArrow && remainingValue !== null ? 'flex' : 'none',
-          }}
-          className="items-center"
-        >
-          {rightArrowElement}
-          <div className="flex flex-col">
-            <div className="flex flex-col items-end text-sm">
-              <FormatNumber
-                nb={remainingValue}
-                format="currency"
-                precision={3}
-                prefix={getPnLPrefix(remainingValue)}
-                className={`font-bold text-${getPnLColorClass(remainingValue)}`}
-                isDecimalDimmed={false}
-              />
+    return (
+      <div className={rowStyle}>
+        <div className="text-sm">
+          {label} <span className="text-txtfade">{t('trade.closePosition.net')}</span>
+        </div>
+
+        <div className="flex flex-row items-center text-sm font-mono">
+          <FormatNumber
+            nb={value}
+            prefix={getPnLPrefix(value)}
+            format="currency"
+            precision={3}
+            className={`text-${getPnLColorClass(value)} ${isBold ? 'font-bold' : ''}`}
+            isDecimalDimmed={false}
+          />
+
+          <div
+            style={{
+              display: showArrow && remainingValue !== null ? 'flex' : 'none',
+            }}
+            className="items-center"
+          >
+            {rightArrowElement}
+            <div className="flex flex-col">
+              <div className="flex flex-col items-end text-sm">
+                <FormatNumber
+                  nb={remainingValue}
+                  format="currency"
+                  precision={3}
+                  prefix={getPnLPrefix(remainingValue)}
+                  className={`font-bold text-${getPnLColorClass(remainingValue)}`}
+                  isDecimalDimmed={false}
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    )
+  };
 
   return (
     <div
@@ -580,8 +587,8 @@ export default function ClosePosition({
             <div>
               <p className="text-sm font-semibold mb-2">
                 {activePercent && activePercent !== 1
-                  ? 'Size to Partially Close'
-                  : 'Size to Close'}
+                  ? t('trade.closePosition.sizeToPartiallyClose')
+                  : t('trade.closePosition.sizeToClose')}
               </p>
 
               <div className="flex flex-col gap-2">
@@ -600,7 +607,7 @@ export default function ClosePosition({
                     min={0.01}
                   />
 
-                  <p className="font-semibold opacity-50 cursor-default">USD</p>
+                  <p className="font-semibold opacity-50 cursor-default">{t('trade.closePosition.usd')}</p>
                 </div>
 
                 <div className="flex flex-row gap-3 w-full">
@@ -614,7 +621,7 @@ export default function ClosePosition({
                         className={twMerge(
                           'flex-grow text-xs bg-third border border-bcolor text-opacity-50 hover:text-opacity-100 hover:border-white/10 rounded-md flex-1 font-mono',
                           percent / 100 === activePercent &&
-                            'border-white/10 text-opacity-100',
+                          'border-white/10 text-opacity-100',
                         )}
                         onClick={() => {
                           const newPercent = percent / 100;
@@ -626,7 +633,7 @@ export default function ClosePosition({
                           // Validate size is greater than 0
                           if (newAmount === null || newAmount <= 0) {
                             setErrorMsg(
-                              'Size to close must be greater than $0',
+                              t('trade.closePosition.sizeToCloseMustBeGreaterThan0'),
                             );
                             return;
                           }
@@ -635,7 +642,7 @@ export default function ClosePosition({
                             position.collateralUsd * (1 - newPercent);
                           if (newPercent < 1 && remainingCollateral < 10) {
                             setErrorMsg(
-                              'Remaining collateral must be at least $10',
+                              t('trade.closePosition.remainingCollateralMustBeAtLeast10'),
                             );
                           } else {
                             setErrorMsg(null);
@@ -654,14 +661,14 @@ export default function ClosePosition({
 
             <div className="my-3">
               <div className="flex items-center justify-between mb-2">
-                <p className="font-semibold text-sm">Receive</p>
+                <p className="font-semibold text-sm">{t('trade.closePosition.receive')}</p>
                 {isCalculating ? (
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-txtfade">
                       {isCalculatingNative
-                        ? 'Calculating...'
+                        ? t('trade.closePosition.calculating')
                         : isCalculatingJupiter
-                          ? 'Calculating Jupiter route...'
+                          ? t('trade.closePosition.calculatingJupiterRoute')
                           : null}
                     </span>
                   </div>
@@ -689,8 +696,8 @@ export default function ClosePosition({
                         exitPriceAndFee.amountOut,
                         position.collateralToken.decimals,
                       ) *
-                        collateralMarkPrice *
-                        (activePercent ?? 1)
+                      collateralMarkPrice *
+                      (activePercent ?? 1)
                     }
                     format="currency"
                     className="text-txtfade text-sm"
@@ -771,15 +778,13 @@ export default function ClosePosition({
                   />
                   <div className="flex flex-col gap-2">
                     <div>
-                      Cannot find Jupiter route for{' '}
-                      {position.collateralToken.symbol} → {redeemToken.symbol}.
+                      {t('trade.closePosition.cannotFindJupiterRouteForSwap', { from: position.collateralToken.symbol, to: redeemToken.symbol })}
                     </div>
                     <div className="text-xs text-orange/80">
-                      You can close in {position.collateralToken.symbol}{' '}
-                      instead.
+                      {t('trade.closePosition.youCanCloseInTokenInstead', { token: position.collateralToken.symbol })}
                     </div>
                     <Button
-                      title={`Use ${position.collateralToken.symbol}`}
+                      title={t('trade.closePosition.useToken', { token: position.collateralToken.symbol })}
                       variant="outline"
                       className="bg-third"
                       onClick={() => {
@@ -802,17 +807,15 @@ export default function ClosePosition({
             ) : doJupiterSwap && recommendedToken ? (
               <>
                 <Tippy
-                  content={
-                    'When closing a long position, you receive the same collateral you used to open it. When closing a short position, the collateral is returned in USDC. If you want a different asset, a Jupiter swap is required.'
-                  }
+                  content={t('trade.closePosition.closePositionTooltip')}
                 >
                   <div className="text-xs gap-1 flex w-full items-center justify-center">
                     <span className="text-white/30">
                       {position.collateralToken.symbol}
                     </span>
-                    <span className="text-white/30">auto-swapped to</span>
+                    <span className="text-white/30">{t('trade.closePosition.autoSwappedTo')}</span>
                     <span className="text-white/30">{redeemToken.symbol}</span>
-                    <span className="text-white/30">via Jupiter</span>
+                    <span className="text-white/30">{t('trade.closePosition.viaJupiter')}</span>
                   </div>
                 </Tippy>
 
@@ -829,8 +832,7 @@ export default function ClosePosition({
           <div className="flex flex-col w-full sm:w-1/2">
             <div>
               <div className="text-white text-sm mb-1 font-semibold">
-                Close {formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of
-                Position
+                {t('trade.closePosition.closePercentOfPosition', { percent: formatNumber((activePercent ?? 0) * 100, 2, 0, 2) })}
               </div>
 
               <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-md my-3">
@@ -843,7 +845,7 @@ export default function ClosePosition({
                       alt={`${getTokenSymbol(position.token.symbol)} logo`}
                     />
                     <div className="text-sm text-bold">
-                      {getTokenSymbol(position.token.symbol)} Price
+                      {getTokenSymbol(position.token.symbol)} {t('trade.closePosition.price')}
                     </div>
                   </div>
                   <FormatNumber
@@ -858,7 +860,7 @@ export default function ClosePosition({
 
                 <div className="w-full flex justify-between">
                   <div className="flex w-full justify-between items-center">
-                    <span className="text-sm text-txtfade">Entry</span>
+                    <span className="text-sm text-txtfade">{t('trade.closePosition.entry')}</span>
 
                     <FormatNumber
                       nb={position.price}
@@ -877,7 +879,7 @@ export default function ClosePosition({
 
                 <div className="w-full flex justify-between">
                   <div className="flex w-full justify-between items-center">
-                    <span className="text-sm text-txtfade">Liquidation</span>
+                    <span className="text-sm text-txtfade">{t('trade.closePosition.liquidation')}</span>
 
                     <FormatNumber
                       nb={position.liquidationPrice}
@@ -895,7 +897,7 @@ export default function ClosePosition({
 
               <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-md mt-4">
                 <ValueDisplay
-                  label="Size"
+                  label={t('trade.closePosition.size')}
                   value={position.sizeUsd}
                   format="currency"
                   showArrow={Boolean(activePercent && activePercent !== 1)}
@@ -912,7 +914,7 @@ export default function ClosePosition({
                 <div className="w-full h-[1px] bg-bcolor my-1" />
 
                 <ValueDisplay
-                  label="Size native"
+                  label={t('trade.closePosition.sizeNative')}
                   value={
                     position.side === 'long'
                       ? position.size
@@ -927,7 +929,7 @@ export default function ClosePosition({
                       ? position.side === 'long'
                         ? position.size * (1 - activePercent)
                         : (position.sizeUsd / position.price) *
-                          (1 - activePercent)
+                        (1 - activePercent)
                       : null
                   }
                   isDecimalDimmed={true}
@@ -938,7 +940,7 @@ export default function ClosePosition({
                 <div className="w-full h-[1px] bg-bcolor my-1" />
 
                 <ValueDisplay
-                  label="Collateral"
+                  label={t('trade.closePosition.collateral')}
                   value={position.collateralUsd}
                   format="currency"
                   showArrow={Boolean(activePercent && activePercent !== 1)}
@@ -955,7 +957,7 @@ export default function ClosePosition({
                 <div className="w-full h-[1px] bg-bcolor my-1" />
 
                 <ValueDisplay
-                  label="Initial Leverage"
+                  label={t('trade.closePosition.initialLeverage')}
                   value={position.sizeUsd / position.collateralUsd}
                   format="number"
                   prefix="x"
@@ -966,7 +968,7 @@ export default function ClosePosition({
                 <div className="w-full h-[1px] bg-bcolor my-1" />
 
                 <ValueDisplay
-                  label="Current Leverage"
+                  label={t('trade.closePosition.currentLeverage')}
                   value={position.currentLeverage}
                   format="number"
                   prefix="x"
@@ -979,7 +981,7 @@ export default function ClosePosition({
                 {activePercent && activePercent !== 1 && calculatePnLValues ? (
                   <>
                     <PnLDisplay
-                      label="Realized PnL"
+                      label={t('trade.closePosition.realizedPnL')}
                       value={calculatePnLValues.realizedPnL}
                       isBold={true}
                     />
@@ -991,8 +993,8 @@ export default function ClosePosition({
                 <PnLDisplay
                   label={
                     !activePercent || (activePercent && activePercent !== 1)
-                      ? 'Unrealized PnL'
-                      : 'Realized PnL'
+                      ? t('trade.closePosition.unrealizedPnL')
+                      : t('trade.closePosition.realizedPnL')
                   }
                   value={calculatePnLValues?.totalPnL ?? null}
                   showArrow={Boolean(activePercent && activePercent !== 1)}
@@ -1004,13 +1006,13 @@ export default function ClosePosition({
 
             <div className="pt-4 pb-2">
               <div className="flex justify-between items-center">
-                <div className="text-white text-sm font-semibold">Fees</div>
+                <div className="text-white text-sm font-semibold">{t('trade.closePosition.fees')}</div>
 
                 <button
                   className="text-txtfade text-xs underline pr-2"
                   onClick={() => setShowFees(!showFees)}
                 >
-                  {showFees ? 'Show Less' : 'Show More'}
+                  {showFees ? t('trade.closePosition.showLess') : t('trade.closePosition.showMore')}
                 </button>
               </div>
 
@@ -1018,13 +1020,11 @@ export default function ClosePosition({
                 <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-md mt-2">
                   <div className={rowStyle}>
                     <div className="flex items-center text-sm text-txtfade">
-                      Exit Fees
+                      {t('trade.closePosition.exitFees')}
                       <Tippy
                         content={
                           <p className="font-regular">
-                            Open fees are 0 bps, while close fees are 16 bps.
-                            This average to 8bps entry and close fees, but allow
-                            for opening exactly the requested position size.
+                            {t('trade.closePosition.exitFeesTooltip')}
                           </p>
                         }
                         placement="auto"
@@ -1050,13 +1050,11 @@ export default function ClosePosition({
 
                   <div className={rowStyle}>
                     <div className="flex items-center text-sm text-txtfade">
-                      Borrow Fees
+                      {t('trade.closePosition.borrowFees')}
                       <Tippy
                         content={
                           <p className="font-regular">
-                            Total of fees accruing continuously while the
-                            leveraged position is open, to pay interest rate on
-                            the borrowed assets from the Liquidity Pool.
+                            {t('trade.closePosition.borrowFeesTooltip')}
                           </p>
                         }
                         placement="auto"
@@ -1082,7 +1080,7 @@ export default function ClosePosition({
 
                   <div className={rowStyle}>
                     <div className="flex items-center text-sm text-txtfade">
-                      Total Fees
+                      {t('trade.closePosition.totalFees')}
                     </div>
 
                     <FormatNumber
@@ -1098,7 +1096,7 @@ export default function ClosePosition({
 
                   <div className={rowStyle}>
                     <div className="flex items-center text-sm text-txtfade">
-                      Unrealized Fees
+                      {t('trade.closePosition.unrealizedFees')}
                     </div>
 
                     <FormatNumber
@@ -1126,15 +1124,15 @@ export default function ClosePosition({
               (errorMsg !== null ||
                 (customAmount !== null && customAmount <= 0) ||
                 (activePercent !== null && activePercent < 0.01)) &&
-                'opacity-50 cursor-not-allowed',
+              'opacity-50 cursor-not-allowed',
             )}
             size="lg"
             variant="primary"
             title={
               <span className="text-main text-base font-semibold">
                 {activePercent !== null && activePercent < 0.01
-                  ? 'Cannot close less than 1%'
-                  : `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`}
+                  ? t('trade.closePosition.cannotCloseLessThan1')
+                  : t('trade.closePosition.closePercentOfPosition', { percent: formatNumber((activePercent ?? 0) * 100, 2, 0, 2) })}
               </span>
             }
             disabled={

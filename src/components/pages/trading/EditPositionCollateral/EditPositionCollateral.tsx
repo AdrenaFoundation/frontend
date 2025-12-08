@@ -3,6 +3,7 @@ import { PublicKey, Transaction } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
@@ -42,6 +43,7 @@ export default function EditPositionCollateral({
   triggerUserProfileReload: () => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const settings = useSelector((state) => state.settings);
 
@@ -463,26 +465,26 @@ export default function EditPositionCollateral({
 
   const executeBtnText = (() => {
     if (selectedAction === 'deposit' && !walletBalance)
-      return `No ${depositToken.symbol} in wallet`;
-    if (!input) return 'Enter an amount';
+      return t('trade.editPosition.noTokenInWallet', { token: depositToken.symbol });
+    if (!input) return t('trade.editPosition.enterAmount');
 
     if (selectedAction === 'deposit' && doJupiterSwapOnDeposit && !depositCollateralAmountPostSwap) {
-      return 'Cannot find jupiter route';
+      return t('trade.editPosition.cannotFindJupiterRoute');
     }
 
     if (selectedAction === 'withdraw' && doJupiterSwapOnWithdraw && !redeemCollateralAmountPostSwap) {
-      return 'Cannot find jupiter route';
+      return t('trade.editPosition.cannotFindJupiterRoute');
     }
 
     if (belowMinLeverage) {
-      return 'Leverage under limit';
+      return t('trade.editPosition.leverageUnderLimit');
     }
 
     if (aboveMaxLeverage) {
-      return 'Leverage over limit';
+      return t('trade.editPosition.leverageOverLimit');
     }
 
-    return selectedAction === 'deposit' ? 'Deposit' : `Withdraw`;
+    return selectedAction === 'deposit' ? t('trade.editPosition.deposit') : t('trade.editPosition.withdraw');
   })();
 
   useEffect(() => {
@@ -642,8 +644,8 @@ export default function EditPositionCollateral({
             wrapperClassName="h-12 flex items-center"
             selected={selectedAction}
             tabs={[
-              { title: 'deposit', activeColor: 'border-b-gray-700' },
-              { title: 'withdraw', activeColor: 'border-b-gray-700' },
+              { title: 'deposit', displayTitle: t('trade.editPosition.deposit'), activeColor: 'border-b-gray-700' },
+              { title: 'withdraw', displayTitle: t('trade.editPosition.withdraw'), activeColor: 'border-b-gray-700' },
             ]}
             onClick={(title) => {
               // Reset input when changing selected action
@@ -670,14 +672,13 @@ export default function EditPositionCollateral({
                         width={20}
                         alt="Warning icon"
                       />
-                      This action would take the leverage below the minimum of 1.1x.
-                      Please adjust your input.
+                      {t('trade.editPosition.leverageBelowMinimum')}
                     </div>
                   </div>
                 )}
 
                 <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
-                  <h5>Deposit</h5>
+                  <h5>{t('trade.editPosition.deposit')}</h5>
 
                   <WalletBalance
                     tokenA={depositToken}
@@ -737,13 +738,18 @@ export default function EditPositionCollateral({
                       />
                       <div className="flex flex-col gap-2">
                         <div>
-                          Cannot find Jupiter route for {depositToken.symbol} → {position.collateralToken.symbol}.
+                          {t('trade.editPosition.cannotFindJupiterRouteForSwap', {
+                            from: depositToken.symbol,
+                            to: position.collateralToken.symbol
+                          })}
                         </div>
                         <div className="text-xs text-orange/80">
-                          You can use {position.collateralToken.symbol} directly as collateral instead.
+                          {t('trade.editPosition.useDirectlyAsCollateral', {
+                            token: position.collateralToken.symbol
+                          })}
                         </div>
                         <Button
-                          title={`Use ${position.collateralToken.symbol}`}
+                          title={t('trade.editPosition.useToken', { token: position.collateralToken.symbol })}
                           variant="outline"
                           className="bg-third"
                           onClick={() => {
@@ -759,12 +765,12 @@ export default function EditPositionCollateral({
                     </div>
                   </div>
                 ) : doJupiterSwapOnDeposit && recommendedToken ? <>
-                  <Tippy content={"For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before adding collateral to the position."}>
+                  <Tippy content={t('trade.fullyBackedAssetsTooltip')}>
                     <div className="text-xs gap-1 flex pt-1 pb-1 w-full items-center justify-center">
                       <span className='text-white/30'>{depositToken.symbol}</span>
-                      <span className='text-white/30'>auto-swapped to</span>
+                      <span className='text-white/30'>{t('trade.editPosition.autoSwappedTo')}</span>
                       <span className='text-white/30'>{position.collateralToken.symbol}</span>
-                      <span className='text-white/30'>via Jupiter</span>
+                      <span className='text-white/30'>{t('trade.editPosition.viaJupiter')}</span>
                     </div>
                   </Tippy>
 
@@ -791,8 +797,7 @@ export default function EditPositionCollateral({
                         alt="Info icon"
                       />
                       <span className="text-sm">
-                        Your position is above the maximum leverage of{' '}
-                        {maxInitialLeverage}x, you cannot withdraw more collateral.
+                        {t('trade.editPosition.positionAboveMaxLeverage', { leverage: maxInitialLeverage })}
                       </span>
                     </div>
                   </div>
@@ -847,11 +852,11 @@ export default function EditPositionCollateral({
                     className="inline text-xs text-txtfade"
                     isDecimalDimmed={false}
                   />
-                  of collateral in the position
+                  {t('trade.editPosition.ofCollateralInPosition')}
                 </div>
 
                 <div className='text-sm'>
-                  Withdraw in
+                  {t('trade.editPosition.withdrawIn')}
                 </div>
 
                 <div className='flex items-center border p-4 gap-2 justify-center cursor-pointer rounded-md' onClick={() => setIsPickTokenModalOpen(true)}>
@@ -883,13 +888,18 @@ export default function EditPositionCollateral({
                       />
                       <div className="flex flex-col gap-2">
                         <div>
-                          Cannot find Jupiter route for {position.collateralToken.symbol} → {redeemToken.symbol}.
+                          {t('trade.editPosition.cannotFindJupiterRouteForSwap', {
+                            from: position.collateralToken.symbol,
+                            to: redeemToken.symbol
+                          })}
                         </div>
                         <div className="text-xs text-orange/80">
-                          You can withdraw in {position.collateralToken.symbol} instead.
+                          {t('trade.editPosition.useDirectlyAsCollateral', {
+                            token: position.collateralToken.symbol
+                          })}
                         </div>
                         <Button
-                          title={`Use ${position.collateralToken.symbol}`}
+                          title={t('trade.editPosition.useToken', { token: position.collateralToken.symbol })}
                           variant="outline"
                           className="bg-third"
                           onClick={() => {
@@ -907,9 +917,9 @@ export default function EditPositionCollateral({
                 ) : doJupiterSwapOnWithdraw && recommendedToken ? <>
                   <div className="text-xs gap-1 flex ml-auto mr-auto pt-1 pb-1 w-full items-center justify-center">
                     <span className='text-white/30'>{position.collateralToken.symbol}</span>
-                    <span className='text-white/30'>auto-swapped to</span>
+                    <span className='text-white/30'>{t('trade.editPosition.autoSwappedTo')}</span>
                     <span className='text-white/30'>{redeemToken.symbol}</span>
-                    <span className='text-white/30'>via Jupiter</span>
+                    <span className='text-white/30'>{t('trade.editPosition.viaJupiter')}</span>
                   </div>
 
                   <SwapSlippageSection
@@ -963,7 +973,7 @@ export default function EditPositionCollateral({
                     className="mr-2"
                   />
                   <div className="text-sm text-bold">
-                    {getTokenSymbol(position.token.symbol)} Price
+                    {getTokenSymbol(position.token.symbol)} {t('trade.editPosition.price')}
                   </div>
                 </div>
                 <FormatNumber
@@ -977,7 +987,7 @@ export default function EditPositionCollateral({
               <div className="w-full h-[1px] bg-bcolor my-1" />
 
               <div className={rowStyle}>
-                <div className="text-sm text-txtfade">Entry</div>
+                <div className="text-sm text-txtfade">{t('trade.entry')}</div>
 
                 <FormatNumber
                   nb={position.price}
@@ -992,7 +1002,7 @@ export default function EditPositionCollateral({
               <div className="w-full h-[1px] bg-bcolor my-1" />
 
               <div className={rowStyle}>
-                <div className="text-sm text-txtfade">Liquidation</div>
+                <div className="text-sm text-txtfade">{t('trade.liquidationPrice')}</div>
                 <div className="flex items-center justify-end">
                   <FormatNumber
                     nb={position.liquidationPrice}
@@ -1034,7 +1044,7 @@ export default function EditPositionCollateral({
           <div className="mt-2 w-full">
             <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-md">
               <div className={rowStyle}>
-                <div className="text-sm text-txtfade">Size</div>
+                <div className="text-sm text-txtfade">{t('trade.size')}</div>
 
                 <FormatNumber
                   nb={position.sizeUsd}
@@ -1046,7 +1056,7 @@ export default function EditPositionCollateral({
               <div className="w-full h-[1px] bg-bcolor my-1" />
 
               <div className={rowStyle}>
-                <div className="text-sm text-txtfade">Size native</div>
+                <div className="text-sm text-txtfade">{t('trade.editPosition.sizeNative')}</div>
 
                 <FormatNumber
                   nb={
@@ -1064,7 +1074,7 @@ export default function EditPositionCollateral({
               <div className="w-full h-[1px] bg-bcolor my-1" />
 
               <div className={rowStyle}>
-                <div className="text-sm text-txtfade">Initial Leverage</div>
+                <div className="text-sm text-txtfade">{t('trade.editPosition.initialLeverage')}</div>
 
                 <FormatNumber
                   nb={position.sizeUsd / position.collateralUsd}
@@ -1077,7 +1087,7 @@ export default function EditPositionCollateral({
 
               <div className={rowStyle}>
                 <div className="text-sm">
-                  PnL <span className="test-xs text-txtfade">(after fees)</span>
+                  {t('trade.editPosition.pnl')} <span className="test-xs text-txtfade">({t('trade.editPosition.afterFees')})</span>
                 </div>
 
                 <div className="text-sm font-mono font-bold">
@@ -1095,7 +1105,7 @@ export default function EditPositionCollateral({
               <div className="w-full h-[1px] bg-bcolor my-1" />
 
               <div className={rowStyle}>
-                <div className="text-sm">Collateral</div>
+                <div className="text-sm">{t('trade.editPosition.collateral')}</div>
                 <div className="flex items-center justify-end">
                   <FormatNumber
                     nb={position.collateralUsd}
@@ -1125,7 +1135,7 @@ export default function EditPositionCollateral({
               <div className="w-full h-[1px] bg-bcolor my-1" />
 
               <div className={rowStyle}>
-                <div className="text-sm">Net Value</div>
+                <div className="text-sm">{t('trade.editPosition.netValue')}</div>
                 <div className="flex items-center justify-end">
                   <NetValueTooltip position={position}>
                     <span className="underline-dashed">
@@ -1160,7 +1170,7 @@ export default function EditPositionCollateral({
               <div className="w-full h-[1px] bg-bcolor my-1" />
 
               <div className={rowStyle}>
-                <div className="text-sm">Current Leverage</div>
+                <div className="text-sm">{t('trade.editPosition.currentLeverage')}</div>
                 <div className="flex items-center">
                   <FormatNumber
                     nb={position.currentLeverage}
