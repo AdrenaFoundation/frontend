@@ -11,6 +11,7 @@ import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
+import { useTranslation } from 'react-i18next';
 
 export default function TradingChartHeaderStats({
   className,
@@ -107,6 +108,8 @@ export default function TradingChartHeaderStats({
     }
   }, [selected.mint, volumeStats]);
 
+  const { t } = useTranslation()
+
   useEffect(() => {
     if (selectedTokenPrice !== null && previousTokenPrice !== null) {
       if (selectedTokenPrice > previousTokenPrice) {
@@ -147,10 +150,10 @@ export default function TradingChartHeaderStats({
             {numberLong && numberShort ? (
               <div className="flex gap-0.5">
                 <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
-                  Long: {numberLong}
+                  {t('trade.long')}: {numberLong}
                 </span>
                 <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
-                  Short: {numberShort}
+                  {t('trade.short')}: {numberShort}
                 </span>
               </div>
             ) : (
@@ -307,10 +310,10 @@ export default function TradingChartHeaderStats({
             {numberLong && numberShort ? (
               <div className="flex gap-0.5">
                 <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
-                  Long: {numberLong}
+                  {t('trade.long')}: {numberLong}
                 </span>
                 <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
-                  Short: {numberShort}
+                  {t('trade.short')}: {numberLong}
                 </span>
               </div>
             ) : (
@@ -423,10 +426,10 @@ export default function TradingChartHeaderStats({
               {numberLong && numberShort ? (
                 <div className="flex gap-0.5">
                   <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
-                    Long: {numberLong}
+                    {t('trade.long')}: {numberLong}
                   </span>
                   <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
-                    Short: {numberShort}
+                    {t('trade.short')}: {numberShort}
                   </span>
                 </div>
               ) : (
@@ -485,7 +488,7 @@ export default function TradingChartHeaderStats({
                 href="/monitoring?view=livePositions"
                 className="text-center justify-start text-greenSide text-xxs font-mono"
               >
-                Long:{numberLong}
+                {t('trade.long')}::{numberLong}
               </Link>
             </div>
             <div className="px-2 py-1 bg-red/10 rounded-md inline-flex justify-center items-center gap-2">
@@ -493,7 +496,7 @@ export default function TradingChartHeaderStats({
                 href="/monitoring?view=livePositions"
                 className="text-center justify-start text-redSide text-xxs font-mono"
               >
-                Short:{numberShort}
+                {t('trade.short')}::{numberShort}
               </Link>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -64,10 +65,11 @@ export const MarketOrderContent = ({
 }) => {
   const [showTokenSelector, setShowTokenSelector] = useState(false);
   const isMobile = useBetterMediaQuery('(max-width: 639px)');
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col transition-opacity duration-500 mt-4">
-      <h5 className="flex items-center text-sm font-regular">Size</h5>
+      <h5 className="flex items-center text-sm font-regular">{t('trade.size')}</h5>
 
       <div className="flex items-center h-[3.5rem] pr-3 bg-third mt-1 border rounded-md z-40">
         {/* Token selector button */}
@@ -177,7 +179,7 @@ export const MarketOrderContent = ({
 
       <div className="flex sm:mt-2">
         <div className="flex items-center ml-2">
-          <span className="opacity-50">max size:</span>
+          <span className="opacity-50">{t('trade.maxSize')}</span>
           <FormatNumber
             nb={
               side === 'long'
@@ -189,12 +191,12 @@ export const MarketOrderContent = ({
           />
           <InfoAnnotation
             className="ml-1 inline-flex"
-            text="The maximum size of the position you can open, for that market and side."
+            text={t('trade.maxSizeTooltip')}
           />
         </div>
 
         <div className="ml-auto items-center flex mr-2">
-          <span className="opacity-50 mr-1">avail. liq.:</span>
+          <span className="opacity-50 mr-1">{t('trade.availableLiquidity')}</span>
           <FormatNumber
             nb={
               side === 'long'
@@ -217,7 +219,7 @@ export const MarketOrderContent = ({
           />
           <InfoAnnotation
             className="inline-flex"
-            text="This value represents the total size available for borrowing in this market and side by all traders. It depends on the pool's available liquidity and configuration restrictions."
+            text={t('trade.availableLiquidityTooltip')}
           />
         </div>
       </div>

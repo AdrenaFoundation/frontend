@@ -1,17 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Cookies } from 'react-cookie';
 
 import Modal from './common/Modal/Modal';
 
 export default function LanguageSwitcher() {
     const { i18n, t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
-    const cookies = new Cookies();
 
     const changeLanguage = async (lng: string) => {
         await i18n.changeLanguage(lng);
-        cookies.set('i18next', lng, { path: '/' });
         setIsOpen(false);
         // Reload the page to apply translations fully
         window.location.reload();

@@ -6,6 +6,7 @@ import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { PositionExtended, Token, UserProfileExtended } from '@/types';
 
 import PositionBlockV2 from './PositionBlockV2';
+import { useTranslation } from 'react-i18next';
 
 export function PositionsBlocks({
   connected,
@@ -39,6 +40,8 @@ export function PositionsBlocks({
     );
   }
 
+  const { t } = useTranslation()
+
   return (
     <>
       {positions === null && connected ? (
@@ -46,12 +49,12 @@ export function PositionsBlocks({
           {window.location.pathname === '/trade' ? (
             <div className="flex overflow-hidden bg-main/90 grow border rounded-md h-[15em] items-center justify-center">
               <div className="text-sm opacity-50 font-normal mt-5 font-semibold">
-                Loading ...
+                {t('common.loading')} ...
               </div>
             </div>
           ) : (
             <div className="text-sm opacity-50 font-normal mt-5 mb-5 ml-auto mr-auto font-semibold grow">
-              Loading ...
+              {t('common.loading')} ...
             </div>
           )}
         </>
@@ -62,13 +65,13 @@ export function PositionsBlocks({
           {window.location.pathname === '/trade' ? (
             <div className="flex overflow-hidden bg-main/90 grow border rounded-md h-[15em] items-center justify-center">
               <div className="text-sm opacity-50 font-normal mt-5 font-semibold">
-                No opened position
+                {t('trade.noOpenPositions')}
               </div>
             </div>
           ) : (
             <div className="flex justify-center items-center">
               <Button
-                title="Open a position"
+                title={t('trade.openPositionButton')}
                 href="/trade"
                 size="lg"
                 className="my-4"

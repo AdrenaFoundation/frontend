@@ -1,6 +1,7 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -47,6 +48,8 @@ export default function PositionBlockV2({
   setTokenB,
   setShareClosePosition,
 }: PositionBlockProps) {
+  const { t } = useTranslation();
+
   const [closableIn, setClosableIn] = useState<number | null>(null);
   const [isPnlWithFees, setIsPnlWithFees] = useState(true);
   const [isCompact, setIsCompact] = useState(false);
@@ -116,7 +119,7 @@ export default function PositionBlockV2({
         notification,
         targetPosition: position.pubkey,
       });
-    } catch {}
+    } catch { }
   };
 
   const positionBorrowFeesShouldBeResolved = useMemo(
@@ -127,20 +130,20 @@ export default function PositionBlockV2({
   const positionDataFormatted: PositionDetailType[] = useMemo(
     () => [
       {
-        title: 'Duration',
+        title: t('trade.positionBlock.duration'),
         value: formatTimeDifference(
           getFullTimeDifference(position.openDate, new Date(Date.now())),
         ),
         format: 'time',
       },
       {
-        title: 'Net Value',
+        title: t('trade.positionBlock.netValue'),
         value: position.collateralUsd + (position.pnl ?? 0),
         format: 'currency',
         className: !(isMedium || isMini) ? 'hidden' : undefined,
       },
       {
-        title: 'Cur. Lev',
+        title: t('trade.positionBlock.currentLeverage'),
         value: position.currentLeverage,
         format: 'number',
         suffix: 'x',
@@ -148,7 +151,7 @@ export default function PositionBlockV2({
         isDecimalDimmed: false,
       },
       {
-        title: 'Collateral',
+        title: t('trade.positionBlock.collateral'),
         value: position.collateralUsd,
         format: 'currency',
         onEditClick: () => triggerEditPositionCollateral?.(position),
@@ -164,7 +167,7 @@ export default function PositionBlockV2({
         ),
       },
       {
-        title: 'Size',
+        title: t('trade.positionBlock.size'),
         value: position.sizeUsd,
         format: 'currency',
         tooltip: (
@@ -181,21 +184,21 @@ export default function PositionBlockV2({
         ),
       },
       {
-        title: 'Entry',
+        title: t('trade.positionBlock.entry'),
         value: position.price,
         format: 'currency',
         isDecimalDimmed: position.token.symbol !== 'BONK',
         precision: position.token.displayPriceDecimalsPrecision,
       },
       {
-        title: 'Market',
+        title: t('trade.positionBlock.market'),
         value: tradeTokenPrice,
         format: 'currency',
         isDecimalDimmed: position.token.symbol !== 'BONK',
         precision: position.token.displayPriceDecimalsPrecision,
       },
       {
-        title: 'Liquidation',
+        title: t('trade.positionBlock.liquidation'),
         value:
           typeof position.liquidationPrice !== 'undefined'
             ? position.liquidationPrice
@@ -207,7 +210,7 @@ export default function PositionBlockV2({
         onEditClick: () => triggerEditPositionCollateral?.(position),
       },
       {
-        title: 'Break Even',
+        title: t('trade.positionBlock.breakEven'),
         value:
           typeof position.breakEvenPrice !== 'undefined'
             ? position.breakEvenPrice
@@ -218,7 +221,7 @@ export default function PositionBlockV2({
         precision: position.token.displayPriceDecimalsPrecision,
       },
       {
-        title: 'Stop Loss',
+        title: t('trade.positionBlock.stopLoss'),
         value:
           typeof position.stopLossLimitPrice !== 'undefined'
             ? position.stopLossLimitPrice
@@ -230,7 +233,7 @@ export default function PositionBlockV2({
         onEditClick: () => triggerStopLossTakeProfit?.(position),
       },
       {
-        title: 'Take Profit',
+        title: t('trade.positionBlock.takeProfit'),
         value:
           typeof position.takeProfitLimitPrice !== 'undefined'
             ? position.takeProfitLimitPrice
@@ -242,7 +245,7 @@ export default function PositionBlockV2({
         onEditClick: () => triggerStopLossTakeProfit?.(position),
       },
     ],
-     
+
     [
       tradeTokenPrice,
       triggerEditPositionCollateral,
@@ -300,7 +303,7 @@ export default function PositionBlockV2({
                     POSITION_BLOCK_STYLES.button.base,
                     'min-w-[14em] mt-1',
                   )}
-                  title="Resolve Borrow Fees"
+                  title={t('trade.positionBlock.resolveBorrowFees')}
                   rounded={false}
                   onClick={() => borrowResolve()}
                 />
@@ -334,6 +337,7 @@ const TokenDetails = ({
   position: PositionBlockProps['position'];
   setTokenB?: (token: Token) => void;
 }) => {
+  const { t } = useTranslation();
   return (
     <div
       className="flex flex-row gap-2 items-center cursor-pointer hover:opacity-80 transition-opacity duration-200"
@@ -359,7 +363,7 @@ const TokenDetails = ({
                 : 'bg-red/10 text-redSide',
             )}
           >
-            {position.side}
+            {t(`trade.${position.side}`)}
           </p>
           <FormatNumber
             nb={position.initialLeverage}
@@ -386,6 +390,7 @@ const NetValue = ({
   position: PositionBlockProps['position'];
   showAfterFees: boolean;
 }) => {
+  const { t } = useTranslation();
   if (!position.pnl) return null;
 
   const fees = -(position.exitFeeUsd + (position.borrowFeeUsd ?? 0));
@@ -393,7 +398,7 @@ const NetValue = ({
   return (
     <div className="flex flex-col justify-end items-end">
       <p className="text-xs opacity-50 text-right md:text-center font-semibold mb-1">
-        Net Value
+        {t('trade.positionBlock.netValue')}
       </p>
 
       <NetValueTooltip position={position}>
@@ -423,6 +428,7 @@ const PnLDetails = ({
   showAfterFees: boolean;
   setIsPnlWithFees: (value: boolean) => void;
 }) => {
+  const { t } = useTranslation();
   if (!position.pnl || !position.collateralUsd || position.collateralUsd === 0)
     return null;
 
@@ -437,11 +443,11 @@ const PnLDetails = ({
         }}
       >
         <p className="text-sm sm:text-xs opacity-50 text-center font-semibold">
-          PnL{' '}
+          {t('trade.positionBlock.pnl')}{' '}
         </p>
-        <Switch checked={showAfterFees} size="small" onChange={() => {}} />
+        <Switch checked={showAfterFees} size="small" onChange={() => { }} />
         <span className="text-xs sm:text-xxs opacity-30">
-          {showAfterFees ? ' w/ fees' : ' w/o fees'}
+          {showAfterFees ? t('trade.positionBlock.withFees') : t('trade.positionBlock.withoutFees')}
         </span>
       </div>
 

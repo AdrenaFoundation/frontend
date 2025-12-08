@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import { LinksType } from '@/types';
@@ -21,6 +22,8 @@ export default function MoreMenu({
   EXTERNAL_LINKS: LinksType[];
   pathname: string | null;
 }) {
+  const { t } = useTranslation();
+
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -70,7 +73,7 @@ export default function MoreMenu({
         )}
         onMouseEnter={() => setIsOpen(true)}
       >
-        More
+        {t('nav.more')}
       </h5>
 
       {/* this is necessary to stop menu closing when hovering over the empty space inbetween */}
@@ -87,7 +90,7 @@ export default function MoreMenu({
             key="more-menu"
             className="absolute top-8 left-1/2 -translate-x-1/2 flex flex-row gap-5 bg-secondary border shadow-xl rounded-md p-4 w-[37.5rem]">
             <div className="flex-1">
-              <p className="text-sm mb-1 font-semibold opacity-50">Features</p>
+              <p className="text-sm mb-1 font-semibold opacity-50">{t('nav.features')}</p>
               <div className="flex flex-col gap-3 flex-1">
                 {PAGES.map((page) => {
                   return (
@@ -139,7 +142,7 @@ export default function MoreMenu({
             <div className="flex-1">
               <div>
                 <p className="text-sm mb-1 font-semibold opacity-50">
-                  External Links
+                  {t('nav.externalLinks')}
                 </p>
                 <div className="flex flex-col gap-3 flex-1">
                   {EXTERNAL_LINKS.map((page) => {
@@ -179,7 +182,7 @@ export default function MoreMenu({
               </div>
 
               <div className="mt-3">
-                <p className="text-sm mb-1 font-semibold opacity-50">Socials</p>
+                <p className="text-sm mb-1 font-semibold opacity-50">{t('nav.socials')}</p>
 
                 <div className="flex flex-row gap-3 flex-1">
                   {SOCIAlS_LINKS.map((page) => {

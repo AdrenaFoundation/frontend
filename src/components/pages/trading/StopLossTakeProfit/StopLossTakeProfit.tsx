@@ -15,6 +15,7 @@ import { addNotification, getTokenImage, getTokenSymbol, validateTPSLInputs } fr
 
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import StopLossTakeProfitInput from './StopLossTakeProfitInput';
+import { useTranslation } from 'react-i18next';
 
 export default function StopLossTakeProfit({
   className,
@@ -27,6 +28,8 @@ export default function StopLossTakeProfit({
   triggerUserProfileReload: () => void;
   onClose: () => void;
 }) {
+
+  const { t } = useTranslation()
   const [stopLossInput, setStopLossInput] = useState<number | null>(
     position.stopLossIsSet &&
       position.stopLossLimitPrice &&
@@ -326,7 +329,7 @@ export default function StopLossTakeProfit({
         <Button
           className="font-semibold w-full"
           size="lg"
-          title="Cancel"
+          title={t('trade.cancel')}
           variant="outline"
           onClick={() => onClose()}
         />
@@ -334,7 +337,7 @@ export default function StopLossTakeProfit({
         <Button
           className="font-semibold w-full"
           size="lg"
-          title="Confirm"
+          title={t('trade.confirm')}
           disabled={stopLossError || takeProfitError}
           onClick={() => applyConfiguration()}
         />

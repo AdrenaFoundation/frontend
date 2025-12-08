@@ -1,6 +1,7 @@
 import { Wallet } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
@@ -54,6 +55,7 @@ export default function TradeComp({
 }) {
   const [isJupSwap, setIsJupSwap] = useState(true);
   const [isWhitelistedSwapper, setIsWhitelistedSwapper] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const walletAddress = getWalletAddress(wallet);
@@ -77,9 +79,9 @@ export default function TradeComp({
         <TabSelect
           selected={selectedAction}
           tabs={[
-            { title: 'long', activeColor: 'border-transparent [border-image:linear-gradient(to_right,#10b981,#22c55e,#14b8a6)_1]' },
-            { title: 'short', activeColor: 'border-transparent [border-image:linear-gradient(to_right,#ef4444,#e11d48,#db2777)_1]' },
-            { title: 'swap', activeColor: 'border-white' },
+            { title: 'long', displayTitle: t('trade.long'), activeColor: 'border-transparent [border-image:linear-gradient(to_right,#10b981,#22c55e,#14b8a6)_1]' },
+            { title: 'short', displayTitle: t('trade.short'), activeColor: 'border-transparent [border-image:linear-gradient(to_right,#ef4444,#e11d48,#db2777)_1]' },
+            { title: 'swap', displayTitle: t('trade.swap'), activeColor: 'border-white' },
           ]}
           onClick={(title) => {
             setSelectedAction(title);

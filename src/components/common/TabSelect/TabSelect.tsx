@@ -15,6 +15,7 @@ export default function TabSelect<T extends string | number>({
   initialSelectedIndex?: number;
   tabs: {
     title: T;
+    displayTitle?: string;
     icon?: string;
     activeColor?: string;
     disabled?: boolean;
@@ -43,7 +44,7 @@ export default function TabSelect<T extends string | number>({
         wrapperClassName,
       )}
     >
-      {tabs.map(({ title: title, activeColor, disabled }, index) => (
+      {tabs.map(({ title: title, displayTitle, activeColor, disabled }, index) => (
         <div
           className={twMerge(
             'p-1 w-full cursor-pointer z-10',
@@ -55,7 +56,7 @@ export default function TabSelect<T extends string | number>({
               : 'opacity-50 border-b-[1px]',
             disabled && 'opacity-25 cursor-not-allowed',
             tabs[index].icon &&
-              'flex flex-row gap-1 items-center justify-center ',
+            'flex flex-row gap-1 items-center justify-center ',
           )}
           ref={refs[index]}
           key={title}
@@ -80,7 +81,7 @@ export default function TabSelect<T extends string | number>({
               titleClassName,
             )}
           >
-            {title}
+            {displayTitle || title}
           </h5>
         </div>
       ))}

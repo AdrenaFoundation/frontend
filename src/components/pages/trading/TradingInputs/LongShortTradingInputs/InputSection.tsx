@@ -5,6 +5,7 @@ import { formatPriceInfo } from '@/utils';
 import LeverageSlider from '../../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../../TradingInput/TradingInput';
 import { WalletBalance } from './WalletBalance';
+import { useTranslation } from 'react-i18next';
 
 interface InputSectionProps {
   tokenA: Token;
@@ -33,6 +34,8 @@ export const InputSection = ({
   onMax,
   recommendedToken,
 }: InputSectionProps) => {
+
+  const { t } = useTranslation()
   const handlePercentageClick = (percentage: number) => {
     const balance = walletTokenBalances?.[tokenA.symbol] ?? 0;
     const amount = balance * (percentage / 100);
@@ -45,7 +48,7 @@ export const InputSection = ({
   return (
     <>
       <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
-        <h5 className="text-sm font-regular">Provide</h5>
+        <h5 className="text-sm font-regular">{t('trade.provide')}</h5>
 
         <WalletBalance
           tokenA={tokenA}

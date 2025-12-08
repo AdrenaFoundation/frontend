@@ -1,4 +1,5 @@
 import { useCookies } from 'react-cookie';
+import { useTranslation } from 'react-i18next';
 
 import { ChartPreferences } from '../TradingChart/types';
 import ChartToggleButton from './ChartToggleButton';
@@ -20,6 +21,8 @@ export default function ChartControlsDesktop({
   toggleSizeUsdInChart,
   setToggleSizeUsdInChart,
 }: ChartControlsDesktopProps) {
+  const { t } = useTranslation();
+
   const [, setCookie] = useCookies([
     'showBreakEvenLine',
     'toggleSizeUsdInChart',
@@ -72,35 +75,35 @@ export default function ChartControlsDesktop({
           isActive={chartPreferences.updateTPSLByDrag}
           onClick={handleUpdateTPSLByDragToggle}
         >
-          Drag. SL/TP
+          {t('trade.chartControls.dragSLTP')}
         </ChartToggleButton>
 
         <ChartToggleButton
           isActive={chartPreferences.showPositionHistory}
           onClick={handlePositionHistoryToggle}
         >
-          Position history
+          {t('trade.chartControls.positionHistory')}
         </ChartToggleButton>
 
         <ChartToggleButton
           isActive={chartPreferences.showAllActivePositionsLiquidationLines}
           onClick={handleLiquidationLinesToggle}
         >
-          Liquidations
+          {t('trade.chartControls.liquidations')}
         </ChartToggleButton>
 
         <ChartToggleButton
           isActive={showBreakEvenLine}
           onClick={handleBreakEvenToggle}
         >
-          Break Even line
+          {t('trade.chartControls.breakEvenLine')}
         </ChartToggleButton>
 
         <ChartToggleButton
           isActive={toggleSizeUsdInChart}
           onClick={handleSizeToggle}
         >
-          Show size in chart
+          {t('trade.chartControls.showSizeInChart')}
         </ChartToggleButton>
       </div>
     </div>

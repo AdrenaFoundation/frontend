@@ -6,6 +6,7 @@ import { PositionExtended, Token } from '@/types';
 
 import StopLossTakeProfitInput from '../../StopLossTakeProfit/StopLossTakeProfitInput';
 import { PositionInfoState } from './types';
+import { useTranslation } from 'react-i18next';
 
 export default function TPSLModeSelector({
   positionInfo,
@@ -32,6 +33,8 @@ export default function TPSLModeSelector({
   isConnected: boolean;
   openedPosition: PositionExtended | null;
 }) {
+
+  const { t } = useTranslation()
   const position = {
     price: positionInfo.newPositionInfo?.entryPrice,
     liquidationPrice: positionInfo.newPositionInfo?.liquidationPrice,
@@ -58,7 +61,7 @@ export default function TPSLModeSelector({
           setStopLossInput(null);
         }}
       >
-        <h5>{(!isTPSL || !isConnected) ? 'Take Profit / Stop Loss' : ''}</h5>
+        <h5>{(!isTPSL || !isConnected) ? `${t('trade.takeProfit')} / ${t('trade.stopLoss')}` : ''}</h5>
         <label className={twMerge("flex items-center ml-1 cursor-pointer", !isConnected ? "opacity-50" : "")}>
           <Switch
             className={twMerge("mr-0.5", isTPSL ? "bg-green" : "bg-inputcolor")}

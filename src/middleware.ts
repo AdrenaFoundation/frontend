@@ -19,18 +19,15 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // i18n translation settings for all routes
-  let lng;
-  // Try to get language from cookie
-  if (request.cookies.has(cookieName))
-    lng = acceptLanguage.get(request.cookies.get(cookieName)?.value || '');
-  // If no cookie, check the Accept-Language header
-  if (!lng) lng = acceptLanguage.get(request.headers.get('Accept-Language'));
-  // Default to fallback language if still undefined
-  if (!lng) lng = fallbackLng;
+  acceptLanguage.languages(languages);
 
-  const headers = new Headers(request.headers);
-  headers.set(headerName, lng);
+  // i18n translation settings for all routes
+  // Ignore paths with "icon" or "chrome"
+  if (
+    request.nextUrl.pathname.indexOf('icon') > -1 ||
+    request.nextUrl.pathname.indexOf('chrome') > -1
+  )
+    return NextResponse.next();
 
   if (request.nextUrl.pathname.startsWith('/api/')) {
     const origin = request.headers.get('origin');
@@ -130,7 +127,30 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  return NextResponse.next();
+  let lng;
+  // Try to get language from cookie
+  if (request.cookies.has(cookieName))
+    lng = acceptLanguage.get(request.cookies.get(cookieName)?.value || '');
+  // If no cookie, check the Accept-Language header
+  if (!lng) lng = acceptLanguage.get(request.headers.get('Accept-Language'));
+  // Default to fallback language if still undefined
+  if (!lng) lng = fallbackLng;
+
+  const headers = new Headers(request.headers);
+  headers.set(headerName, lng);
+
+  // If a referer exists, try to detect the language from there and set the cookie accordingly
+  if (request.headers.has('referer')) {
+    const refererUrl = new URL(request.headers.get('referer')!);
+    const lngInReferer = languages.find((l) =>
+      refererUrl.pathname.startsWith(`/${l}`),
+    );
+    const response = NextResponse.next({ headers });
+    if (lngInReferer) response.cookies.set(cookieName, lngInReferer);
+    return response;
+  }
+
+  return NextResponse.next({ headers });
 }
 
 export const config = {

@@ -1,13 +1,16 @@
 import { twMerge } from 'tailwind-merge';
 
 import Switch from '@/components/common/Switch/Switch';
+import { useTranslation } from 'react-i18next';
 
 interface ExecutionModeSelectorProps {
+    displayTitle: string,
     isLimitOrder: boolean;
     onModeChange: (isLimit: boolean) => void;
 }
 
 export const ExecutionModeSelector = ({
+    displayTitle,
     isLimitOrder,
     onModeChange,
 }: ExecutionModeSelectorProps) => (
@@ -15,7 +18,7 @@ export const ExecutionModeSelector = ({
         onClick={() => onModeChange(!isLimitOrder)}
     >
         <h5 className="flex items-center text-sm">
-            Limit order
+            {displayTitle}
         </h5>
 
         <Switch

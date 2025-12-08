@@ -8,6 +8,8 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenSymbol } from '@/utils';
+import { useTranslation } from 'react-i18next';
+import { useMemo } from 'react';
 
 const determinePrecision = (price: number): number => {
   if (price < 0.01) return 8;
@@ -230,6 +232,18 @@ export default function StopLossTakeProfitInput({
   const isLong = position.side === 'long';
   const isNegative = (isLong && isStopLoss) || (!isLong && !isStopLoss);
 
+  const { t } = useTranslation()
+
+  const translatedTitle = useMemo(() => {
+
+    if (type === 'Take Profit') {
+      return title.includes('Update') ? t('trade.updateTakeProfit') : t('trade.takeProfit')
+    }
+
+    return title.includes('Update') ? t('trade.updateStopLoss') : t('trade.stopLoss')
+
+  }, [type, title])
+
   const titleComp = (
     <div
       className={twMerge(
@@ -237,7 +251,7 @@ export default function StopLossTakeProfitInput({
         isLight && 'px-2 sm:px-4',
       )}
     >
-      <p className="text-sm text-nowrap">{title}</p>
+      <p className="text-sm text-nowrap">{translatedTitle}</p>
 
       {priceIsOk === true &&
         displayValue !== null &&
@@ -338,7 +352,7 @@ export default function StopLossTakeProfitInput({
                 className="absolute right-2 cursor-pointer text-txtfade hover:text-white"
                 onClick={() => setInput(null)}
               >
-                clear
+                {t('trade.clear')}
               </div>
             )}
           </div>
@@ -384,7 +398,7 @@ export default function StopLossTakeProfitInput({
                 isDecimalDimmed={true}
                 precision={determinePrecision(markPrice ?? 0)}
                 format="currency"
-                prefix="min: "
+                prefix={`${t('trade.min')}: `}
                 prefixClassName={twMerge(
                   'opacity-50 font-mono',
                   priceIsOk === -1 && 'text-redbright',
@@ -410,7 +424,7 @@ export default function StopLossTakeProfitInput({
                 isDecimalDimmed={true}
                 precision={determinePrecision(markPrice ?? 0)}
                 format="currency"
-                prefix="max: "
+                prefix={`${t('trade.max')}: `}
                 prefixClassName={twMerge(
                   'opacity-50 font-mono',
                   max === null && 'text-txtfade',

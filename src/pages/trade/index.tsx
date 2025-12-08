@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import resizeIcon from '@/../public/images/Icons/resize.svg';
@@ -85,6 +86,7 @@ export default function Trade({
 }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const settings = useSelector((state) => state.settings);
 
@@ -339,7 +341,7 @@ export default function Trade({
     if (!limitOrderBook || limitOrderBook.limitOrders.length === 0) return;
 
     const notification = MultiStepNotification.newForRegularTransaction(
-      'Cancel All Limit Order',
+      t('trade.cancelAllLimitOrder'),
     ).fire();
 
     try {
@@ -385,7 +387,7 @@ export default function Trade({
         const positionsGroup = positions.slice(i * 2, (i + 1) * 2);
 
         const notification = MultiStepNotification.newForRegularTransaction(
-          `Close All Positions${nbTransactions > 1 ? ` (${i + 1}/${nbTransactions})` : ''}`,
+          `${t('trade.closeAllPositions')}${nbTransactions > 1 ? ` (${i + 1}/${nbTransactions})` : ''}`,
         ).fire();
 
         // 1%
@@ -542,7 +544,7 @@ export default function Trade({
               >
                 <Image
                   src={resizeIcon}
-                  alt="Resize Chart"
+                  alt={t('trade.resizeChart')}
                   width={14}
                   height={14}
                   className="-rotate-45"
@@ -740,7 +742,7 @@ export default function Trade({
             <li>
               <Button
                 className="bg-transparent font-semibold border-[#10e1a3] text-[#10e1a3]"
-                title="Long"
+                title={t('trade.long')}
                 variant="outline"
                 size="lg"
                 onClick={() => {
@@ -752,7 +754,7 @@ export default function Trade({
             <li>
               <Button
                 className="bg-transparent font-semibold border-[#f24f4f] text-[#f24f4f]"
-                title="Short"
+                title={t('trade.short')}
                 variant="outline"
                 size="lg"
                 onClick={() => {
@@ -764,7 +766,7 @@ export default function Trade({
             <li>
               <Button
                 className="bg-transparent font-semibold border-white text-white"
-                title="Swap"
+                title={t('trade.swap')}
                 variant="outline"
                 size="lg"
                 onClick={() => {
@@ -778,9 +780,7 @@ export default function Trade({
           <AnimatePresence>
             {activePositionModal && (
               <Modal
-                title={`${activePositionModal.charAt(0).toUpperCase() +
-                  activePositionModal.slice(1)
-                  } Position`}
+                title={t(`trade.${activePositionModal}Position`)}
                 close={() => setActivePositionModal(null)}
                 className="flex flex-col overflow-y-auto w-full"
               >

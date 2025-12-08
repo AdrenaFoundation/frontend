@@ -1,4 +1,5 @@
 import { useCookies } from 'react-cookie';
+import { useTranslation } from 'react-i18next';
 
 import { ChartPreferences } from '../TradingChart/types';
 import ChartToggleButton from './ChartToggleButton';
@@ -24,6 +25,8 @@ export default function ChartControlsMobile({
   isResizing,
   setIsResizing,
 }: ChartControlsMobileProps) {
+  const { t } = useTranslation();
+
   const [, setCookie] = useCookies([
     'showBreakEvenLine',
     'toggleSizeUsdInChart',
@@ -53,7 +56,7 @@ export default function ChartControlsMobile({
             });
           }}
         >
-          Liquidations
+          {t('trade.chartControls.liquidations')}
         </ChartToggleButton>
 
         <ChartToggleButton
@@ -66,7 +69,7 @@ export default function ChartControlsMobile({
             }));
           }}
         >
-          History
+          {t('trade.chartControls.history')}
         </ChartToggleButton>
 
         <div
@@ -87,14 +90,14 @@ export default function ChartControlsMobile({
               isActive={showBreakEvenLine}
               onClick={handleBreakEvenToggle}
             >
-              Break Even
+              {t('trade.chartControls.breakEven')}
             </ChartToggleButton>
 
             <ChartToggleButton
               isActive={toggleSizeUsdInChart}
               onClick={handleSizeToggle}
             >
-              Size
+              {t('trade.chartControls.showSize')}
             </ChartToggleButton>
           </div>
         </div>
