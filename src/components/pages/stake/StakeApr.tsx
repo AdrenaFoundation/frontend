@@ -1,6 +1,7 @@
 
 import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
@@ -37,6 +38,7 @@ export default function StakeApr({
   token: 'ADX' | 'ALP';
   className?: string;
 }) {
+  const { t } = useTranslation();
   const [apr, setApr] = useState<Awaited<ReturnType<typeof DataApiClient.getRolling7dAprsInfo> | null>>(null);
 
   const [moreInfo, setMoreInfo] = useState(false);
@@ -59,7 +61,7 @@ export default function StakeApr({
     <div className={twMerge("flex flex-col bg-main rounded-md border h-18", className)}>
       <div className={twMerge("flex flex-wrap p-2")}>
         {token === 'ALP' ? <NumberDisplayBoilerplate
-          title="LIQUID APR"
+          title={t('stake.liquidApr')}
           nb={!apr || !apr.aprs ? null : apr.aprs[0].liquid_apr}
         /> : null}
 
@@ -80,19 +82,16 @@ export default function StakeApr({
         <div className='flex flex-col ml-8 mr-8 mt-4'>
           <p className='opacity-75 text-base bg-third p-4 w-full text-justify border border-bcolor rounded flex flex-col gap-2'>
             {token === "ALP" ? <span className='text-sm'>
-              The displayed APR are projected values based on the last 7 days rolling. The liquid USDC rewards is given to each ALP, staked or not. Therefore the APR displayed below is the sum of liquid and locked APR.
-              To give the most accurate estimate, the APR calculation uses the price of ADX at the time the staking round is resolved.
-              The APR does not include Genesis ADX rewards.
+              {t('stake.aprInfo')}
             </span> : <span className='text-sm'>
-              The displayed APR are projected values based on the last 7 days rolling.
-              To give the most accurate estimate, the APR calculation uses the price of ADX at the time the staking round is resolved.
+              {t('stake.aprInfoAdx')}
             </span>}
           </p>
         </div>
 
         <div className='flex flex-col w-full sm:w-[90%] ml-auto mr-auto mb-4 border pt-2 pl-2 pr-2'>
           <div className='flex w-full border-b pb-2'>
-            <div className={titleClassName}>YIELD</div>
+            <div className={titleClassName}>{t('stake.yield')}</div>
 
             <div className={twMerge('grid grid-cols-4 grow', token === 'ADX' && 'grid-cols-5')}>
               {periods.map((lockPeriod) => <div key={lockPeriod} className='text-txtfade text-xs sm:text-sm items-center justify-center flex'>{`${lockPeriod}D APR`}</div>)}
@@ -100,7 +99,7 @@ export default function StakeApr({
           </div>
 
           <div className='flex w-full'>
-            <div className={titleClassName}>FEES (USDC)</div>
+            <div className={titleClassName}>{t('stake.fees')} (USDC)</div>
 
             <div className={twMerge('grid grid-cols-4 grow', token === 'ADX' && 'grid-cols-5')}>
               {periods.map((lockPeriod) => {
@@ -133,7 +132,7 @@ export default function StakeApr({
           <div className='w-full border-b'></div>
 
           <div className='flex w-full'>
-            <div className={titleClassName}>TOTAL</div>
+            <div className={titleClassName}>{t('stake.total')}</div>
 
             <div className={twMerge('grid grid-cols-4 grow', token === 'ADX' && 'grid-cols-5')}>
               {periods.map((lockPeriod) => (

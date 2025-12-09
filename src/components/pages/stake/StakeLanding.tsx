@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
@@ -25,6 +26,7 @@ export default function StakeLanding({
 }) {
   const [selectedAdxDays, setSelectedAdxDays] = useState('180d');
 
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const handleClick = () => {
@@ -36,23 +38,23 @@ export default function StakeLanding({
 
   const token = useMemo(() => ({
     name: 'ADX',
-    desc: 'Own a share of the protocol: Adx governance token provides yield and voting power when staked. Align with the protocol\'s long term success and earn more. 20% of the protocol fees and revenues are distributed to stakers.',
+    desc: t('stake.ownShareProtocol'),
     logo: adxLogo,
     sellingPoints: [
       {
-        title: 'USDC yield',
-        desc: 'Base yield for all staker in the form of USDC. They originate from platform fees and revenues (20%)',
+        title: t('stake.usdcYield'),
+        desc: t('stake.usdcYieldDescription'),
         icon: window.adrena.client.tokens.find((t) => t.symbol === 'USDC')
           ?.image,
       },
       {
-        title: 'ADX yield',
-        desc: 'For the most committed users who Lock Stake their ALP, an extra yield distributed as ADX token. The yield amount is a function of the lock duration.',
+        title: t('stake.adxYield'),
+        desc: t('stake.adxYieldDescription'),
         icon: window.adrena.client.adxToken.image,
       },
       {
-        title: 'Governance Boost',
-        desc: 'Lock Stake your ADX and receive amplified voting rights to influence the protocol. The additional voting rights is a function of the lock duration, and only available during the lock duration.',
+        title: t('stake.governanceBoost'),
+        desc: t('stake.governanceBoostDescription'),
         icon: governanceIcon,
       },
     ],
@@ -60,7 +62,7 @@ export default function StakeLanding({
     benefits: ADX_STAKE_MULTIPLIERS,
     selectedDay: selectedAdxDays,
     setSelectedDay: setSelectedAdxDays,
-  }), [selectedAdxDays]);
+  }), [selectedAdxDays, t]);
 
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
 
@@ -115,7 +117,7 @@ export default function StakeLanding({
 
         <Button
           size="lg"
-          title={`Stake ${token.name}`}
+          title={`${t('stake.stake')} ${token.name}`}
           className={twMerge(
             'mt-5 px-16 text-white border border-white/10',
             'bg-gradient-to-r from-[#DA1A31] to-[#DE1933]',
@@ -152,24 +154,24 @@ export default function StakeLanding({
           <Table
             className="bg-transparent border-none"
             columnsTitles={token.days.map((d) =>
-              d === 0 ? 'liquid' : `${d}d`,
+              d === 0 ? t('stake.liquid') : `${d}d`,
             )}
             columnTitlesClassName="text-lg sm:text-sm text-white sm:opacity-50"
             rowTitleClassName="text-base sm:text-sm text-white opacity-50 uppercase font-semibold"
             columnWrapperClassName="ml-1"
             data={[
               {
-                rowTitle: 'USDC yield',
+                rowTitle: t('stake.usdcYield'),
                 values: Object.values(token.benefits).map((v) => `${v.usdc}x`),
               },
               {
-                rowTitle: 'ADX yield',
+                rowTitle: t('stake.adxYield'),
                 values: Object.values(token.benefits).map((v) => `${v.adx}x`),
               },
             ].concat(
               token.name === 'ADX'
                 ? {
-                  rowTitle: 'Voting power',
+                  rowTitle: t('stake.votingPower'),
                   values: Object.values(ADX_STAKE_MULTIPLIERS).map(
                     (v) => `${v.votes}x`,
                   ),

@@ -2,6 +2,7 @@ import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
@@ -61,6 +62,7 @@ export const DEFAULT_LOCKED_STAKE_LOCK_DURATION = 180;
 export const LIQUID_STAKE_LOCK_DURATION = 0;
 
 export default function Stake({ connected }: PageProps) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
@@ -548,10 +550,10 @@ export default function Stake({ connected }: PageProps) {
         ),
         ...(swapInstructions.cleanupInstruction
           ? [
-              jupInstructionToTransactionInstruction(
-                swapInstructions.cleanupInstruction,
-              ),
-            ]
+            jupInstructionToTransactionInstruction(
+              swapInstructions.cleanupInstruction,
+            ),
+          ]
           : []),
       ];
 
@@ -777,7 +779,7 @@ export default function Stake({ connected }: PageProps) {
 
   const modal = activeStakingToken && (
     <Modal
-      title={`Stake ${activeStakingToken}${lockPeriod === 0 ? ' (Liquid)' : ''}`}
+      title={lockPeriod === 0 ? t('stake.stakeTokenLiquid', { token: activeStakingToken }) : t('stake.stakeToken', { token: activeStakingToken })}
       close={() => {
         setAmount(null);
         setLockPeriod(DEFAULT_LOCKED_STAKE_LOCK_DURATION);
@@ -924,7 +926,7 @@ export default function Stake({ connected }: PageProps) {
 
               {upgradeLockedStake && (
                 <Modal
-                  title="Upgrade Locked Stake"
+                  title={t('stake.upgradeLockedStake')}
                   close={() => {
                     setLockedStake(null);
                     setUpgradeLockedStake(false);
@@ -942,7 +944,7 @@ export default function Stake({ connected }: PageProps) {
 
               {activeRedeemLiquidADX && (
                 <Modal
-                  title="Redeem Liquid ADX"
+                  title={t('stake.redeemLiquidADX')}
                   close={() => setActiveRedeemLiquidADX(false)}
                   className="max-w-[25em]"
                 >

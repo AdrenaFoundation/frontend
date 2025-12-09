@@ -1,4 +1,5 @@
 import Tippy from '@tippyjs/react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -14,12 +15,13 @@ export default function StakingRanking({
   walletAddress,
   className,
 }: StakingRankingProps) {
+  const { t } = useTranslation();
   const { stakingRanking } = useStakingRanking(walletAddress);
 
   if (!stakingRanking || !stakingRanking.userRank) {
     return (
       <div className={twMerge('flex flex-col', className)}>
-        <span className="opacity-50 text-base">My rank</span>
+        <span className="opacity-50 text-base">{t('stake.myRank')}</span>
         <span className="text-base sm:text-2xl">-</span>
       </div>
     );
@@ -59,7 +61,7 @@ export default function StakingRanking({
 
   return (
     <div className={twMerge('flex flex-col', className)}>
-      <span className="opacity-50 text-base">My rank</span>
+      <span className="opacity-50 text-base">{t('stake.myRank')}</span>
       <Tippy
         content={
           <div className="p-2">

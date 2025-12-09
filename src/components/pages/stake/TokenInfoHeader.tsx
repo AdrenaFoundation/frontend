@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 
@@ -14,6 +15,7 @@ export default function TokenInfoHeader({
   totalStakeAmount,
   walletAddress,
 }: TokenInfoHeaderProps) {
+  const { t } = useTranslation();
 
   return (
     <div className="p-5 pb-0">
@@ -21,7 +23,7 @@ export default function TokenInfoHeader({
         <div className="flex items-center justify-between w-full rounded-t-md p-3 bg-gradient-to-r from-red via-rose-600 to-pink-600">
           <div className="flex items-center gap-10">
             <div className="flex flex-col">
-              <p className="opacity-50 text-base">Total staked</p>
+              <p className="opacity-50 text-base">{t('stake.totalStaked')}</p>
               <div className="text-base sm:text-2xl">
                 <FormatNumber
                   nb={totalStakeAmount}
@@ -49,10 +51,7 @@ export default function TokenInfoHeader({
 
         <div className="p-3">
           <p className="opacity-75 text-base">
-            Align with the protocol&apos;s long term success: the longer the
-            period, the higher the rewards.
-            <br />
-            20% of protocol fees are distributed to ADX stakers.
+            {t('stake.alignWithProtocolSuccess')}
           </p>
         </div>
       </div>

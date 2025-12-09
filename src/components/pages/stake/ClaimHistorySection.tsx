@@ -9,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import DatePicker from 'react-datepicker';
+import { useTranslation } from 'react-i18next';
 import { CSSTransition } from 'react-transition-group';
 import { twMerge } from 'tailwind-merge';
 
@@ -53,6 +54,7 @@ export default function ClaimHistorySection({
   optimisticClaim,
   setOptimisticClaim,
 }: ClaimHistorySectionProps) {
+  const { t } = useTranslation();
   const [isClaimHistoryVisible, setIsClaimHistoryVisible] =
     React.useState(false);
   const nodeRef = useRef(null); // Reference for CSSTransition
@@ -184,11 +186,11 @@ export default function ClaimHistorySection({
 
   // Message to display when no data is available
   const getNoDataMessage = () => {
-    if (!claimsHistory) return 'No claim history available.';
-    if (totalItems === 0) return 'No claim history available.';
-    if (currentPage > totalPages) return "This page doesn't exist.";
-    if (isLoadingClaimHistory) return 'Loading...';
-    return 'No data available for this page.';
+    if (!claimsHistory) return t('stake.noClaimHistoryAvailable');
+    if (totalItems === 0) return t('stake.noClaimHistoryAvailable');
+    if (currentPage > totalPages) return t('stake.pageDoesNotExist');
+    if (isLoadingClaimHistory) return t('common.loading');
+    return t('stake.noDataAvailable');
   };
 
   // Download handler - new server-side export
@@ -332,7 +334,7 @@ export default function ClaimHistorySection({
       {/* Export Modal */}
       {showExportModal && (
         <Modal
-          title={`Export Claim History - ${token}`}
+          title={`${t('stake.exportClaimHistory')} - ${token}`}
           close={() => {
             setExportWarning(''); // Clear warning when closing modal
             setShowExportModal(false);
@@ -341,9 +343,9 @@ export default function ClaimHistorySection({
           <div className="flex flex-col gap-6 p-6 min-w-[400px] sm:min-w-[500px]">
             {/* Year Option */}
             <div className="flex flex-col gap-3">
-              <h3 className="text-xl text-white">Export by Year</h3>
+              <h3 className="text-xl text-white">{t('stake.exportByYear')}</h3>
               <div className="flex items-center gap-3">
-                <label className="text-xs text-white/60">Year:</label>
+                <label className="text-xs text-white/60">{t('stake.year')}</label>
                 <div className="relative flex items-center bg-[#0A1117] rounded-md border border-gray-800/50">
                   <Select
                     selected={String(exportOptions.year || getCurrentYear())}
@@ -371,16 +373,16 @@ export default function ClaimHistorySection({
             {/* Divider */}
             <div className="flex items-center gap-4">
               <div className="flex-1 h-px bg-white/10"></div>
-              <span className="text-xs text-white/40">OR</span>
+              <span className="text-xs text-white/40">{t('stake.or')}</span>
               <div className="flex-1 h-px bg-white/10"></div>
             </div>
 
             {/* Date Range Option */}
             <div className="flex flex-col gap-3">
-              <h3 className="text-xl text-white">Export by Date Range</h3>
+              <h3 className="text-xl text-white">{t('stake.exportByDateRange')}</h3>
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex flex-col gap-2 flex-1">
-                  <label className="text-xs text-white/60">From:</label>
+                  <label className="text-xs text-white/60">{t('stake.from')}</label>
                   <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
                     <DatePicker
                       selected={
@@ -399,7 +401,7 @@ export default function ClaimHistorySection({
                         });
                       }}
                       className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
-                      placeholderText="Select start date"
+                      placeholderText={t('stake.selectStartDate')}
                       dateFormat="yyyy-MM-dd"
                       minDate={new Date('2024-09-25')}
                       maxDate={
@@ -414,7 +416,7 @@ export default function ClaimHistorySection({
                 </div>
 
                 <div className="flex flex-col gap-2 flex-1">
-                  <label className="text-xs text-white/60">To:</label>
+                  <label className="text-xs text-white/60">{t('stake.to')}</label>
                   <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
                     <DatePicker
                       selected={
@@ -431,7 +433,7 @@ export default function ClaimHistorySection({
                         });
                       }}
                       className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
-                      placeholderText="Select end date"
+                      placeholderText={t('stake.selectEndDate')}
                       dateFormat="yyyy-MM-dd"
                       minDate={
                         exportOptions.startDate
@@ -463,13 +465,13 @@ export default function ClaimHistorySection({
                 }}
                 variant="secondary"
                 className="px-4 py-2"
-                title="Cancel"
+                title={t('stake.cancel')}
               />
               <Button
                 onClick={handleExportSubmit}
                 disabled={!isExportValid()}
                 className="px-4 py-2"
-                title={isDownloading ? 'Exporting...' : 'Export'}
+                title={isDownloading ? t('stake.exporting') : t('stake.export')}
               />
             </div>
           </div>
@@ -481,7 +483,7 @@ export default function ClaimHistorySection({
           <div className="flex flex-row gap-2 items-center select-none">
             <div className="flex items-center justify-between">
               <div className="mr-2">
-                <h3 className="md:text-lg font-semibold">Claim History</h3>
+                <h3 className="md:text-lg font-semibold">{t('stake.claimHistory')}</h3>
               </div>
 
               <h3 className="text-lg font-semibold text-txtfade">
@@ -511,13 +513,13 @@ export default function ClaimHistorySection({
             </div>
           </div>
 
-          <p className="text-xs text-txtfade">Subject to 30s delay</p>
+          <p className="text-xs text-txtfade">{t('stake.subjectTo30sDelay')}</p>
         </div>
 
         {/* TOTALs */}
         <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-md border border-bcolor pt-1 pb-1 pl-2 pr-2">
           <div className="flex flex-row items-center">
-            <p className="text-txtfade">All time claimed amounts:</p>
+            <p className="text-txtfade">{t('stake.allTimeClaimedAmounts')}</p>
           </div>
           <div className="flex flex-row space-x-4 text-xs">
             <div className="flex items-center">

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Button from '@/components/common/Button/Button';
 import { formatNumber } from '@/utils';
@@ -12,13 +13,14 @@ export default function StakeRedeem({
   totalLiquidStaked: number;
   handleRemoveLiquidStake: (amount: number) => void;
 }) {
+  const { t } = useTranslation();
   const [amount, setAmount] = useState<number | null>(null);
 
   return (
     <div className="p-5">
       <div>
         <div className="flex flex-row items-center justify-between">
-          <p className="text-sm font-semibold"> Amount</p>
+          <p className="text-sm font-semibold">{t('stake.amount')}</p>
           <p
             className="text-sm font-mono cursor-pointer"
             onClick={() => {
@@ -28,7 +30,7 @@ export default function StakeRedeem({
               setAmount(totalLiquidStaked);
             }}
           >
-            <span className="opacity-50"> Total reedemable · </span>
+            <span className="opacity-50"> {t('stake.totalRedeemable')} · </span>
             {totalLiquidStaked
               ? `${formatNumber(totalLiquidStaked, 2)} ${tokenSymbol}`
               : '–'}
@@ -67,7 +69,7 @@ export default function StakeRedeem({
         variant="primary"
         className="w-full mt-6"
         size="lg"
-        title="Remove stake"
+        title={t('stake.removeStake')}
         disabled={!amount}
         onClick={() => {
           if (!amount) {

@@ -1,6 +1,7 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -36,6 +37,7 @@ export default function PendingRewardsSection({
   onResolveStakingRound,
   onClaimAndBuyAdx,
 }: PendingRewardsSectionProps) {
+  const { t } = useTranslation();
   const { stakingAccount } = useStakingAccount(
     window.adrena.client.lmTokenMint,
   );
@@ -48,17 +50,15 @@ export default function PendingRewardsSection({
         )}
       >
         <div className="flex items-center gap-1">
-          <h3 className="text-lg font-semibold">Pending Rewards</h3>
+          <h3 className="text-lg font-semibold">{t('stake.pendingRewards')}</h3>
           <Tippy
             content={
               <div className="p-2">
                 <p className="text-sm mb-1">
-                  ADX rewards automatically accrue at the end of every staking
-                  round.
+                  {t('stake.adxRewardsAccrue')}
                 </p>
                 <p className="text-sm">
-                  Liquid staked ADX can be unstaked at any time. Locked ADX can
-                  be retrieved once the locking period is over.
+                  {t('stake.liquidStakedADXUnstake')}
                 </p>
               </div>
             }
@@ -84,8 +84,8 @@ export default function PendingRewardsSection({
             size="sm"
             title={
               isClaimingAndBuyAdxRewards
-                ? 'Claiming & buying ADX...'
-                : 'Claim & Buy ADX'
+                ? t('stake.claimingAndBuyingADX')
+                : t('stake.claimAndBuyADX')
             }
             className={twMerge('px-5 w-full sm:w-auto')}
             onClick={onClaimAndBuyAdx}
@@ -100,7 +100,7 @@ export default function PendingRewardsSection({
           <Button
             variant="danger"
             size="sm"
-            title={isClaimingRewards ? 'Claiming...' : 'Claim'}
+            title={isClaimingRewards ? t('stake.claiming') : t('common.claim')}
             className={twMerge('px-5 w-full sm:w-auto')}
             onClick={onClaim}
             disabled={
@@ -120,7 +120,7 @@ export default function PendingRewardsSection({
           <div className="flex flex-col gap-3 sm:gap-1 flex-grow">
             <div className="flex flex-col sm:flex-row justify-between">
               <span className="text-txtfade">
-                Your share of 20% platform&apos;s revenue:
+                {t('stake.yourSharePlatformRevenue')}
               </span>
               <div className="flex items-center">
                 <FormatNumber nb={userPendingUsdcRewards} />
@@ -135,19 +135,19 @@ export default function PendingRewardsSection({
             </div>
             <div className="flex flex-col sm:flex-row justify-between">
               <span className="text-txtfade">
-                LM rewards
+                {t('stake.lmRewards')}
                 <span className="text-txtfade ">
                   {' '}
-                  (see
+                  {t('stake.seeSchedule')}
                   <Link
                     href="https://docs.adrena.trade/tokenomics/adx/staked-adx-rewards-emissions-schedule"
                     className="underline ml-1"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    schedule
+                    {t('stake.schedule')}
                   </Link>
-                  ):
+                  )
                 </span>
               </span>
               <div className="flex items-center">
@@ -215,13 +215,7 @@ export default function PendingRewardsSection({
             <Tippy
               content={
                 <p className="font-regular">
-                  Each round duration is ~6h (+/- some jitter due to Sablier on
-                  chain decentralized execution).
-                  <br />
-                  At the end of a round, the accrued rewards become claimable,
-                  and a new round starts.
-                  <br />
-                  The ADX and ALP rounds are not necessarily in sync.
+                  {t('stake.roundDurationTooltip')}
                 </p>
               }
               placement="auto"
@@ -234,7 +228,7 @@ export default function PendingRewardsSection({
                 className="inline-block mr-1"
               />
             </Tippy>
-            New rewards unlocking in:
+            {t('stake.newRewardsUnlockingIn')}
           </span>
 
           <div className="flex items-center">
@@ -259,7 +253,7 @@ export default function PendingRewardsSection({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                learn more &gt;
+                {t('stake.learnMore')}
               </Link>
             </div>
           </div>

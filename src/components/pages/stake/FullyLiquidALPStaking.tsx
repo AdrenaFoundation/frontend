@@ -4,6 +4,7 @@ import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -52,6 +53,7 @@ export default function FullyLiquidALPStaking({
   optimisticClaim?: ClaimHistoryExtended | null;
   setOptimisticClaim?: (claim: ClaimHistoryExtended | null) => void;
 }) {
+  const { t } = useTranslation();
   const [showMoreStakingInfo, setShowMoreStakingInfo] = useState(false);
   const storageKey = 'alpStakeSortConfig';
   const [isClaimingRewardsAndRedeeming, setIsClaimingRewardsAndRedeeming] =
@@ -208,7 +210,7 @@ export default function FullyLiquidALPStaking({
           >
             <div className="flex flex-row items-center gap-6">
               <div>
-                <p className="opacity-50 text-base">Total staked</p>
+                <p className="opacity-50 text-base">{t('stake.totalStaked')}</p>
                 <FormatNumber
                   nb={totalStakeAmount}
                   minimumFractionDigits={totalStakeAmount < 1000 ? 2 : 0}
@@ -418,8 +420,8 @@ export default function FullyLiquidALPStaking({
         onClick={() => setShowMoreStakingInfo(!showMoreStakingInfo)}
       >
         {!showMoreStakingInfo
-          ? 'Show more information about my stakes'
-          : 'Hide additional information about my stakes'}
+          ? t('stake.showMoreInformationAboutMyStakes')
+          : t('stake.hideAdditionalInformationAboutMyStakes')}
       </div>
 
       {showMoreStakingInfo ? (
@@ -443,7 +445,7 @@ export default function FullyLiquidALPStaking({
           <div className="px-5 mb-6">
             <div className="flex flex-col sm:flex-row justify-between items-center mb-2">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold mr-2">My Locked Stakes</h3>
+                <h3 className="text-lg font-semibold mr-2">{t('stake.myLockedStakes')}</h3>
                 <h3 className="text-lg font-semibold text-txtfade">
                   {lockedStakes?.length ? ` (${lockedStakes.length})` : ''}
                 </h3>

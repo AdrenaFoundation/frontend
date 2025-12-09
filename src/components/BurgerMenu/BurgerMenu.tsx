@@ -32,6 +32,7 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
+import LanguageSwitcher from '../LanguageSwitcher';
 import { NotificationBell } from '../Notifications';
 import FormatNumber from '../Number/FormatNumber';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
@@ -319,12 +320,15 @@ export default function BurgerMenu({
             </Link>
 
             {
-              <NotificationBell
-                setIsNotificationModalOpen={setIsNotificationModalOpen}
-                isNotificationModalOpen={isNotificationModalOpen}
-                adapters={adapters}
-                isMobile
-              />
+              <div className="flex items-center gap-2">
+                <LanguageSwitcher />
+                <NotificationBell
+                  setIsNotificationModalOpen={setIsNotificationModalOpen}
+                  isNotificationModalOpen={isNotificationModalOpen}
+                  adapters={adapters}
+                  isMobile
+                />
+              </div>
             }
 
             <button
@@ -1036,12 +1040,15 @@ export default function BurgerMenu({
           </Link>
 
           {
-            <NotificationBell
-              setIsNotificationModalOpen={setIsNotificationModalOpen}
-              isNotificationModalOpen={isNotificationModalOpen}
-              adapters={adapters}
-              isMobile
-            />
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <NotificationBell
+                setIsNotificationModalOpen={setIsNotificationModalOpen}
+                isNotificationModalOpen={isNotificationModalOpen}
+                adapters={adapters}
+                isMobile
+              />
+            </div>
           }
 
           <button
