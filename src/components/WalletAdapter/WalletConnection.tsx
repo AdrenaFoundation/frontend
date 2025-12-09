@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import { useDispatch } from '@/store/store';
 
@@ -9,6 +11,7 @@ export default function WalletConnection({
 }: {
   connected?: boolean;
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const handleClick = () => {
@@ -21,7 +24,7 @@ export default function WalletConnection({
   return (
     <div className="flex flex-col h-full items-center justify-center">
       <Button
-        title="Connect wallet"
+        title={t('common.connectWallet')}
         variant="secondary"
         rightIcon={phantomLogo}
         className="mb-2"
@@ -29,7 +32,7 @@ export default function WalletConnection({
       />
 
       <p className="text-sm opacity-50 font-normal">
-        Waiting for wallet connection
+        {t('common.waitingForWalletConnection')}
       </p>
     </div>
   );
