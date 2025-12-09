@@ -253,6 +253,7 @@ export default function PositionBlockV2({
       isMedium,
       isMini,
       position,
+      t,
     ],
   );
 

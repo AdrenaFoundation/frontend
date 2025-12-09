@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import infoIcon from '../../../../../../public/images/Icons/info.svg';
 
-export default function LimitOrderWarning({ message }: { message: string }) {
+export default function LimitOrderWarning() {
 
   const { t } = useTranslation()
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Switch from '@/components/common/Switch/Switch';
@@ -6,7 +7,6 @@ import { PositionExtended, Token } from '@/types';
 
 import StopLossTakeProfitInput from '../../StopLossTakeProfit/StopLossTakeProfitInput';
 import { PositionInfoState } from './types';
-import { useTranslation } from 'react-i18next';
 
 export default function TPSLModeSelector({
   positionInfo,

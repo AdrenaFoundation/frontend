@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { WalletBalancesState } from '@/reducers/walletBalancesReducer';
 import { Token } from '@/types';
 import { formatPriceInfo } from '@/utils';
@@ -5,7 +7,6 @@ import { formatPriceInfo } from '@/utils';
 import LeverageSlider from '../../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../../TradingInput/TradingInput';
 import { WalletBalance } from './WalletBalance';
-import { useTranslation } from 'react-i18next';
 
 interface InputSectionProps {
   tokenA: Token;

@@ -89,7 +89,7 @@ export default function ViewTabs({
                 <span className="opacity-20">|</span>
 
                 <span className={tabClass(view === 'history')} onClick={() => setView('history')}>
-                    {t('trade.tradeHistory')}
+                    {t('trade.tradeHistoryLabel')}
                 </span>
 
             </div>

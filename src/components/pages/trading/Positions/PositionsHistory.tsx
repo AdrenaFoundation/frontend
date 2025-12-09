@@ -1,6 +1,7 @@
 import 'react-datepicker/dist/react-datepicker.css';
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
@@ -20,6 +21,8 @@ function PositionsHistory({
   walletAddress: string | null;
   userProfile: UserProfileExtended | false | null;
 }) {
+  const { t } = useTranslation();
+
   const {
     positionsData,
     isInitialLoad,
@@ -40,7 +43,7 @@ function PositionsHistory({
       <div className="flex flex-col justify-center min-h-[18rem] flex-none">
         {!positionsData ? (
           <p className="text-sm text-center opacity-50">
-            No trade history available.
+            {t('trade.tradeHistory.noTradeHistory')}
           </p>
         ) : connected ? (
           <PositionHistoryTable

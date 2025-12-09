@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -8,8 +10,6 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenSymbol } from '@/utils';
-import { useTranslation } from 'react-i18next';
-import { useMemo } from 'react';
 
 const determinePrecision = (price: number): number => {
   if (price < 0.01) return 8;
@@ -242,7 +242,7 @@ export default function StopLossTakeProfitInput({
 
     return title.includes('Update') ? t('trade.updateStopLoss') : t('trade.stopLoss')
 
-  }, [type, title])
+  }, [type, title, t])
 
   const titleComp = (
     <div

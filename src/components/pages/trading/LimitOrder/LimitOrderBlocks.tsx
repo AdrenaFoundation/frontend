@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -20,6 +21,7 @@ export function LimitOrderBlocks({
     // isLoading: boolean;
     reload: () => void;
 }) {
+    const { t } = useTranslation();
     // if (isLoading) {
     //     return (
     //         <div className="flex overflow-hidden w-full mt-4 h-[15em] items-center justify-center">
@@ -40,7 +42,7 @@ export function LimitOrderBlocks({
         return (
             <div className="flex overflow-hidden bg-main/90 grow border rounded-md h-[15em] items-center justify-center w-full">
                 <div className="text-sm opacity-50 font-normal mt-5 font-semibold">
-                    No limit orders
+                    {t('trade.limitOrder.noLimitOrders')}
                 </div>
             </div>
         );
@@ -59,7 +61,7 @@ export function LimitOrderBlocks({
                     order={order}
                     onCancel={() => {
                         const notification =
-                            MultiStepNotification.newForRegularTransaction(`Cancel limit order #${order.id}`).fire();
+                            MultiStepNotification.newForRegularTransaction(t('trade.limitOrder.cancelLimitOrder', { id: order.id })).fire();
 
                         window.adrena.client.cancelLimitOrder({
                             id: order.id,

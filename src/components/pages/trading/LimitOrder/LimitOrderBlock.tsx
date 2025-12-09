@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React, { memo, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -18,6 +19,7 @@ interface LimitOrderBlocProps {
 }
 
 export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
+    const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
     const [isCompact, setIsCompact] = useState(false);
     const [isMini, setIsMini] = useState(false);
@@ -81,7 +83,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                                 </div>
                                 <div className={`px-2 py-1 rounded-md justify-center items-center gap-2 flex ${order.side === 'long' ? 'bg-greenSide/10' : 'bg-redSide/10'}`}>
                                     <div className={`text-center text-xs font-mono ${order.side === 'long' ? 'text-greenSide' : 'text-redSide'}`}>
-                                        {order.side.charAt(0).toUpperCase() + order.side.slice(1)}
+                                        {t(`trade.${order.side}`)}
                                     </div>
                                 </div>
                                 <div className="text-center text-whiteLabel text-sm font-extrabold font-mono">
@@ -108,7 +110,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                 isBig && "grid grid-cols-5",
             )}>
                 <ValueColumn
-                    label="Collateral"
+                    label={t('trade.limitOrder.collateral')}
                     value={
                         <div className="flex items-start gap-1">
                             <FormatNumber
@@ -129,7 +131,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                 />
 
                 <ValueColumn
-                    label="Market Price"
+                    label={t('trade.limitOrder.marketPrice')}
                     value={
                         <FormatNumber
                             nb={tradeTokenPrice}
@@ -144,7 +146,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                 />
 
                 <ValueColumn
-                    label="Trigger Price"
+                    label={t('trade.limitOrder.triggerPrice')}
                     value={
                         <FormatNumber
                             nb={order.triggerPrice}
@@ -159,7 +161,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                 />
 
                 <ValueColumn
-                    label="Limit Price"
+                    label={t('trade.limitOrder.limitPrice')}
                     value={
                         order.limitPrice ? (
                             <FormatNumber
@@ -188,7 +190,7 @@ export function LimitOrderBlock({ order, onCancel }: LimitOrderBlocProps) {
                         size="xs"
                         className={isBig ? POSITION_BLOCK_STYLES.button.base : POSITION_BLOCK_STYLES.button.filled}
                         onClick={onCancel}
-                        title="Cancel"
+                        title={t('trade.limitOrder.cancel')}
                         rounded={false}
                     />
                 </div>

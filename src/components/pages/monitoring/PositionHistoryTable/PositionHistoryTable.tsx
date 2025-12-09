@@ -3,6 +3,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { AnimatePresence } from 'framer-motion';
 import { useCallback, useState } from 'react';
 import DatePicker from 'react-datepicker';
+import { useTranslation } from 'react-i18next';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -62,6 +63,7 @@ export default function PositionHistoryTable({
   breakpoint?: string;
   userProfile?: UserProfileExtended | false | null;
 }) {
+  const { t } = useTranslation();
   const isMobile = useBetterMediaQuery(`(max-width: ${breakpoint})`);
 
   const [activePosition, setActivePosition] =
@@ -115,7 +117,7 @@ export default function PositionHistoryTable({
           await DataApiClient.exportPositions(exportParams);
 
         if (!firstPageResult) {
-          setExportWarning('Failed to export positions. Please try again.');
+          setExportWarning(t('trade.failedToExportPositions'));
           return false;
         }
 
@@ -127,7 +129,9 @@ export default function PositionHistoryTable({
           metadata.totalPositions === 0
         ) {
           setExportWarning(
-            `No positions available for ${options.type === 'year' ? `year ${options.year}` : `date range ${options.entryDate} to ${options.exitDate}`}`,
+            options.type === 'year'
+              ? t('trade.noPositionsAvailableForYear', { year: options.year })
+              : t('trade.noPositionsAvailableForDateRange', { from: options.entryDate, to: options.exitDate })
           );
           return false;
         }
@@ -179,13 +183,13 @@ export default function PositionHistoryTable({
         return true; // Success
       } catch (error) {
         console.error('Error downloading position history:', error);
-        setExportWarning('Failed to export positions. Please try again.');
+        setExportWarning(t('trade.tradeHistory.failedToExportPositions'));
         return false;
       } finally {
         setIsDownloading(false);
       }
     },
-    [walletAddress, isDownloading],
+    [walletAddress, isDownloading, t],
   );
 
   const handleExportSubmit = async () => {
@@ -219,37 +223,37 @@ export default function PositionHistoryTable({
   };
 
   const headers: TableHeaderType[] = [
-    { title: 'Token', key: 'token', width: 4.375, sticky: 'left' },
-    { title: 'Side', key: 'side', width: 3.75, sticky: 'left' },
-    { title: 'Lev.', key: 'leverage', width: 3.4375 },
-    { title: 'PnL', key: 'pnl', align: 'right', isSortable: true },
+    { title: t('trade.tradeHistory.token'), key: 'token', width: 4.375, sticky: 'left' },
+    { title: t('trade.tradeHistory.side'), key: 'side', width: 3.75, sticky: 'left' },
+    { title: t('trade.tradeHistory.lev'), key: 'leverage', width: 3.4375 },
+    { title: t('trade.tradeHistory.pnl'), key: 'pnl', align: 'right', isSortable: true },
     {
-      title: 'Volume',
+      title: t('trade.tradeHistory.volume'),
       key: 'volume',
       align: 'right',
       isSortable: true,
     },
     {
-      title: 'Collateral',
+      title: t('trade.tradeHistory.collateral'),
       key: 'collateral_amount',
       isSortable: true,
       align: 'right',
     },
     {
-      title: 'Fees Paid',
+      title: t('trade.tradeHistory.feesPaid'),
       key: 'fees',
       align: 'right',
       isSortable: true,
     },
-    { title: 'Entry', key: 'entry', align: 'right' },
-    { title: 'Exit', key: 'exit', align: 'right' },
+    { title: t('trade.tradeHistory.entry'), key: 'entry', align: 'right' },
+    { title: t('trade.tradeHistory.exit'), key: 'exit', align: 'right' },
     {
-      title: 'Mutagen',
+      title: t('trade.tradeHistory.mutagen'),
       key: 'mutagen',
       align: 'right',
     },
     {
-      title: 'Date',
+      title: t('trade.tradeHistory.date'),
       key: 'entry_date',
       isSortable: true,
       align: 'right',
@@ -316,7 +320,7 @@ export default function PositionHistoryTable({
     <>
       {showExportModal ? (
         <Modal
-          title="Export Position History"
+          title={t('trade.tradeHistory.exportPositionHistory')}
           close={() => {
             setExportWarning(''); // Clear warning when closing modal
             setShowExportModal(false);
@@ -325,9 +329,9 @@ export default function PositionHistoryTable({
           <div className="flex flex-col gap-6 p-6 min-w-[25rem] sm:min-w-[31.25rem]">
             {/* Year Option */}
             <div className="flex flex-col gap-3">
-              <h3 className="text-xl text-white">Export by Year</h3>
+              <h3 className="text-xl text-white">{t('trade.tradeHistory.exportByYear')}</h3>
               <div className="flex items-center gap-3">
-                <label className="text-xs text-white/60">Year:</label>
+                <label className="text-xs text-white/60">{t('trade.tradeHistory.year')}</label>
                 <div className="relative flex items-center bg-[#0A1117] rounded-md border border-gray-800/50">
                   <Select
                     selected={String(exportOptions.year || getCurrentYear())}
@@ -355,16 +359,16 @@ export default function PositionHistoryTable({
             {/* Divider */}
             <div className="flex items-center gap-4">
               <div className="flex-1 h-px bg-white/10"></div>
-              <span className="text-xs text-white/40">OR</span>
+              <span className="text-xs text-white/40">{t('trade.tradeHistory.or')}</span>
               <div className="flex-1 h-px bg-white/10"></div>
             </div>
 
             {/* Date Range Option */}
             <div className="flex flex-col gap-3">
-              <h3 className="text-xl text-white">Export by Date Range</h3>
+              <h3 className="text-xl text-white">{t('trade.tradeHistory.exportByDateRange')}</h3>
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex flex-col gap-2 flex-1">
-                  <label className="text-xs text-white/60">From:</label>
+                  <label className="text-xs text-white/60">{t('trade.tradeHistory.from')}</label>
                   <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
                     <DatePicker
                       selected={
@@ -383,7 +387,7 @@ export default function PositionHistoryTable({
                         });
                       }}
                       className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
-                      placeholderText="Select start date"
+                      placeholderText={t('trade.tradeHistory.selectStartDate')}
                       dateFormat="yyyy-MM-dd"
                       minDate={new Date('2024-09-25')}
                       maxDate={
@@ -398,7 +402,7 @@ export default function PositionHistoryTable({
                 </div>
 
                 <div className="flex flex-col gap-2 flex-1">
-                  <label className="text-xs text-white/60">To:</label>
+                  <label className="text-xs text-white/60">{t('trade.tradeHistory.to')}</label>
                   <div className="h-10 bg-[#0A1117] border border-gray-800/50 rounded overflow-hidden">
                     <DatePicker
                       selected={
@@ -417,7 +421,7 @@ export default function PositionHistoryTable({
                         });
                       }}
                       className="w-full h-full px-3 bg-transparent border-0 text-sm text-white focus:outline-none"
-                      placeholderText="Select end date"
+                      placeholderText={t('trade.tradeHistory.selectEndDate')}
                       dateFormat="yyyy-MM-dd"
                       minDate={
                         exportOptions.entryDate
@@ -449,13 +453,13 @@ export default function PositionHistoryTable({
                 }}
                 variant="secondary"
                 className="px-4 py-2"
-                title="Cancel"
+                title={t('trade.tradeHistory.cancel')}
               />
               <Button
                 onClick={handleExportSubmit}
                 disabled={!isExportValid()}
                 className="px-4 py-2"
-                title={isDownloading ? 'Exporting...' : 'Export'}
+                title={isDownloading ? t('trade.tradeHistory.exporting') : t('trade.tradeHistory.export')}
               />
             </div>
           </div>
@@ -464,7 +468,7 @@ export default function PositionHistoryTable({
 
       <div className="border-t p-3 overflow-hidden">
         <Table
-          title="Position History"
+          title={t('trade.tradeHistory.positionHistory')}
           headers={headers}
           data={formattedData}
           sortBy={sortBy}

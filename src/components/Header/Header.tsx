@@ -25,12 +25,12 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
+import LanguageSwitcher from '../LanguageSwitcher';
 import Mutagen from '../Mutagen/Mutagen';
 import { NotificationBell } from '../Notifications/NotificationBell';
 import FormatNumber from '../Number/FormatNumber';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
-import LanguageSwitcher from '../LanguageSwitcher';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 import MoreMenu from './MoreMenu';
 

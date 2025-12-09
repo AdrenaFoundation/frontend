@@ -2,6 +2,7 @@ import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import chevronDownIcon from '@/../public/images/chevron-down.svg';
@@ -11,7 +12,6 @@ import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
-import { useTranslation } from 'react-i18next';
 
 export default function TradingChartHeaderStats({
   className,

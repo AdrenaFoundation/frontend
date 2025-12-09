@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useWalletSidebar } from '@/contexts/WalletSidebarContext';
@@ -9,7 +10,6 @@ import { useSelector } from '@/store/store';
 
 import crossIcon from '../../../../public/images/Icons/cross.svg';
 import infoIcon from '../../../../public/images/Icons/info.svg';
-import { useTranslation } from 'react-i18next';
 
 export default function ViewsWarning() {
   const router = useRouter();

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import infoIcon from '../../../../../../public/images/Icons/info.svg';
 
-export const ShortWarning = ({ messages }: { messages: string[] }) => {
+export const ShortWarning = () => {
 
     const { t } = useTranslation()
 

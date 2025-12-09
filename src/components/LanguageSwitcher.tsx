@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Modal from './common/Modal/Modal';
 
 export default function LanguageSwitcher() {
-    const { i18n, t } = useTranslation();
+    const { i18n } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
 
     const changeLanguage = async (lng: string) => {

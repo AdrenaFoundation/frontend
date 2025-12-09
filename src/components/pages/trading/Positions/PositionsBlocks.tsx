@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -6,7 +7,6 @@ import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { PositionExtended, Token, UserProfileExtended } from '@/types';
 
 import PositionBlockV2 from './PositionBlockV2';
-import { useTranslation } from 'react-i18next';
 
 export function PositionsBlocks({
   connected,
@@ -32,6 +32,8 @@ export function PositionsBlocks({
   setShareClosePosition: (p: PositionExtended) => void;
   userProfile: UserProfileExtended | false | null;
 }) {
+  const { t } = useTranslation();
+
   if (positions === null && !connected) {
     return (
       <div className="flex overflow-hidden bg-main/90 w-full border rounded-md mt-4 h-[15em] items-center justify-center">
@@ -39,8 +41,6 @@ export function PositionsBlocks({
       </div>
     );
   }
-
-  const { t } = useTranslation()
 
   return (
     <>

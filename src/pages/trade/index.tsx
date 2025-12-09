@@ -370,7 +370,7 @@ export default function Trade({
     } catch (error) {
       console.error('error', error);
     }
-  }, [limitOrderBook, reload]);
+  }, [limitOrderBook, reload, t]);
 
   const triggerCloseAllPosition = useCallback(async () => {
     if (!positions || positions.length === 0) return;
@@ -432,7 +432,7 @@ export default function Trade({
     } catch (error) {
       console.error('error', error);
     }
-  }, [positions, tokenPrices]);
+  }, [positions, tokenPrices, t]);
 
   const allActivePositions = tokenB
     ? allPositions.filter((p) => p.token.mint.equals(tokenB.mint))

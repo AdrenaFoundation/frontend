@@ -1,6 +1,6 @@
+import acceptLanguage from 'accept-language';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import acceptLanguage from 'accept-language';
 
 import {
   cookieName,

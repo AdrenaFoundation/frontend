@@ -1,8 +1,8 @@
 import Tippy from '@tippyjs/react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import SelectOptions from '@/components/common/SelectOptions/SelectOptions';
-import { useTranslation } from 'react-i18next';
 
 export const SwapSlippageSection = ({
   swapSlippage,

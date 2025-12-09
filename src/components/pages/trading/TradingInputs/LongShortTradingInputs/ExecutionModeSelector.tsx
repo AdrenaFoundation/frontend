@@ -1,7 +1,6 @@
 import { twMerge } from 'tailwind-merge';
 
 import Switch from '@/components/common/Switch/Switch';
-import { useTranslation } from 'react-i18next';
 
 interface ExecutionModeSelectorProps {
     displayTitle: string,

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -8,7 +9,6 @@ import { Token } from '@/types';
 
 import { ErrorDisplay } from './ErrorDisplay';
 import { calculateLimitOrderTriggerPrice } from './utils';
-import { useTranslation } from 'react-i18next';
 
 const triggerPricePresets = [0.1, 0.25, 0.5, 1, 5] as const;
 const limitOrderSlippagePresets = [0.1, 0.25, 0.5, 1, 5, null] as const;
@@ -56,7 +56,7 @@ export const LimitOrderContent = ({
           value={
             limitOrderTriggerPrice === null ? undefined : limitOrderTriggerPrice
           }
-          placeholder="$100"
+          placeholder={t('trade.limitOrderPlaceholder')}
           className="font-mono border-0 outline-none bg-transparent h-8"
           onChange={onTriggerPriceChange}
           inputFontSize="1.4em"
@@ -130,14 +130,14 @@ export const LimitOrderContent = ({
       >
         <SelectOptions
           selected={
-            limitOrderSlippage === null ? 'none' : `${limitOrderSlippage}%`
+            limitOrderSlippage === null ? t('trade.slippageNone') : `${limitOrderSlippage}%`
           }
           options={limitOrderSlippagePresets.map((slippage) =>
-            slippage === null ? 'none' : `${slippage}%`,
+            slippage === null ? t('trade.slippageNone') : `${slippage}%`,
           )}
           onClick={(option) =>
             onSlippageChange(
-              option === 'none' ? null : Number(option.replace('%', '')),
+              option === t('trade.slippageNone') ? null : Number(option.replace('%', '')),
             )
           }
         />

@@ -3,6 +3,7 @@ import { Transaction } from '@solana/web3.js';
 import Image from 'next/image';
 import { useState } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -15,7 +16,6 @@ import { addNotification, getTokenImage, getTokenSymbol, validateTPSLInputs } fr
 
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import StopLossTakeProfitInput from './StopLossTakeProfitInput';
-import { useTranslation } from 'react-i18next';
 
 export default function StopLossTakeProfit({
   className,

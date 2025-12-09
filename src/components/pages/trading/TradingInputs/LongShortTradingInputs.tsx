@@ -1057,7 +1057,7 @@ export default function LongShortTradingInputs({
   return (
     <>
       <div className={twMerge('flex flex-col', className)}>
-        {side === 'short' && <ShortWarning messages={[t('trade.shortWarningLine1'), t('trade.shortWarningLine2'), t('trade.shortWarningLine3')]} />}
+        {side === 'short' && <ShortWarning />}
 
         <InputSection
           tokenA={tokenA}
@@ -1116,7 +1116,7 @@ export default function LongShortTradingInputs({
         />
 
         <ExecutionModeSelector
-          displayTitle={t('trade.limitOrder')}
+          displayTitle={t('trade.limitOrderLabel')}
           isLimitOrder={inputState.isLimitOrder}
           onModeChange={handleModeChange}
         />
@@ -1193,7 +1193,7 @@ export default function LongShortTradingInputs({
             ) : null}
           </>
         )}
-        {inputState.isLimitOrder ? <LimitOrderWarning message={t('trade.limitOrderWarning')} /> : null}
+        {inputState.isLimitOrder ? <LimitOrderWarning /> : null}
       </div>
     </>
   );
