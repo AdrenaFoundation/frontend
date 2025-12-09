@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import arrowIcon from '@/../public/images/Icons/arrow-down.svg';
@@ -35,6 +36,7 @@ export default function PositionHistoryBlockV2({
   showChart?: boolean;
   userProfile: UserProfileExtended | false | null;
 }) {
+  const { t } = useTranslation();
   const [events, setEvents] = useState<FormattedEventsType[][]>([]);
   const [isExpanded, setIsExpanded] = useState(showExpanded);
   const [showAfterFees, setShowAfterFees] = useState(true);
@@ -69,6 +71,30 @@ export default function PositionHistoryBlockV2({
     : positionHistory.pnl + positionHistory.fees;
 
   const totalFees = positionHistory.exitFees + positionHistory.borrowFees;
+
+  const NetValue = ({
+    positionHistory,
+  }: {
+    positionHistory: EnrichedPositionApi;
+  }) => {
+    const pnl = positionHistory.pnl;
+    if (pnl === undefined || pnl === null) return null;
+
+    return (
+      <div className="flex flex-col">
+        <p className="text-xs opacity-50 text-right font-semibold">{t('trade.tradeHistory.netValue')}</p>
+        <div className="underline-dashed">
+          <FormatNumber
+            nb={positionHistory.collateralAmount + pnl}
+            format="currency"
+            className={twMerge('text-base font-mono flex items-end justify-end')}
+            isDecimalDimmed={false}
+          />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       <AnimatePresence>
@@ -108,7 +134,7 @@ export default function PositionHistoryBlockV2({
             <PositionDetail
               data={[
                 {
-                  title: 'Duration',
+                  title: t('trade.tradeHistory.duration'),
                   value: formatTimeDifference(
                     getFullTimeDifference(
                       positionHistory.entryDate,
@@ -118,22 +144,22 @@ export default function PositionHistoryBlockV2({
                   format: 'time',
                 },
                 {
-                  title: 'Leverage',
+                  title: t('trade.tradeHistory.leverage'),
                   value: positionHistory.entryLeverage,
                   format: 'number',
                 },
                 {
-                  title: 'Collateral',
+                  title: t('trade.tradeHistory.collateral'),
                   value: positionHistory.collateralAmount,
                   format: 'currency',
                 },
                 {
-                  title: 'Size',
+                  title: t('trade.tradeHistory.size'),
                   value: positionHistory.entrySize,
                   format: 'currency',
                 },
                 {
-                  title: 'Entry',
+                  title: t('trade.tradeHistory.entry'),
                   value: positionHistory.entryPrice,
                   format: 'currency',
                   isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
@@ -141,7 +167,7 @@ export default function PositionHistoryBlockV2({
                     positionHistory.token.displayPriceDecimalsPrecision,
                 },
                 {
-                  title: 'Exit',
+                  title: t('trade.tradeHistory.exit'),
                   value: positionHistory.exitPrice,
                   format: 'currency',
                   isDecimalDimmed: positionHistory.token.symbol !== 'BONK',
@@ -149,17 +175,17 @@ export default function PositionHistoryBlockV2({
                     positionHistory.token.displayPriceDecimalsPrecision,
                 },
                 {
-                  title: 'Fees',
+                  title: t('trade.tradeHistory.fees'),
                   value: positionHistory.fees,
                   format: 'currency',
                 },
                 {
-                  title: 'Borrow Fees',
+                  title: t('trade.tradeHistory.borrowFees'),
                   value: positionHistory.borrowFees,
                   format: 'currency',
                 },
                 {
-                  title: 'Mutagen',
+                  title: t('trade.tradeHistory.mutagen'),
                   value: positionHistory.totalPoints,
                   format: 'number',
                   color: 'text-mutagen',
@@ -168,7 +194,7 @@ export default function PositionHistoryBlockV2({
               ]}
               itemClassName={twMerge(
                 isMini &&
-                  'border-0 flex-row justify-between items-center w-full p-0',
+                'border-0 flex-row justify-between items-center w-full p-0',
               )}
               readOnly
             />
@@ -190,7 +216,7 @@ export default function PositionHistoryBlockV2({
                 className="flex flex-row items-center gap-1 bg-[#142030] border border-inputcolor p-1 px-2 rounded-md opacity-50 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
                 onClick={() => setIsExpanded(!isExpanded)}
               >
-                <p className="text-sm font-semibold">Events</p>
+                <p className="text-sm font-semibold">{t('trade.tradeHistory.events')}</p>
                 <Image
                   src={arrowIcon}
                   alt="Expand"
@@ -219,7 +245,7 @@ export default function PositionHistoryBlockV2({
                   }}
                 />
                 <p className="text-sm font-semibold opacity-50">
-                  PnL {showAfterFees ? 'w/ fees' : 'w/o fees'}
+                  {t('trade.tradeHistory.pnl')} {showAfterFees ? t('trade.tradeHistory.withFees') : t('trade.tradeHistory.withoutFees')}
                 </p>
               </div>
 
@@ -245,7 +271,7 @@ export default function PositionHistoryBlockV2({
       <AnimatePresence>
         {isShareModalOpen && (
           <Modal
-            title="Share PnL"
+            title={t('trade.tradeHistory.sharePnl')}
             close={() => setIsShareModalOpen(false)}
             className="overflow-y-auto"
             wrapperClassName="h-[80vh] sm:h-auto"
@@ -288,6 +314,8 @@ const TokenDetails = ({
 }: {
   positionHistory: EnrichedPositionApi;
 }) => {
+
+  const { t } = useTranslation()
   return (
     <div className="flex flex-row gap-2 items-center">
       <Image
@@ -310,7 +338,7 @@ const TokenDetails = ({
                 : 'bg-red/10 text-redSide',
             )}
           >
-            {positionHistory.side}
+            {t(`trade.tradeHistory.${positionHistory.side}`)}
           </p>
           <FormatNumber
             nb={positionHistory.entryLeverage}
@@ -337,7 +365,7 @@ const TokenDetails = ({
             : 'bg-red/10 text-redbright border-red',
         )}
       >
-        {positionHistory.status === 'liquidate' ? 'Liquidated' : 'Closed'}
+        {positionHistory.status === 'liquidate' ? t('trade.tradeHistory.liquidated') : t('trade.tradeHistory.closed')}
       </div>
     </div>
   );
@@ -354,6 +382,7 @@ const PnLDetails = ({
   setShowAfterFees: (value: boolean) => void;
   fees: number;
 }) => {
+  const { t } = useTranslation()
   const pnl = positionHistory.pnl;
 
   if (pnl === undefined || pnl === null) return null;
@@ -366,7 +395,7 @@ const PnLDetails = ({
           setShowAfterFees(!showAfterFees);
         }}
       >
-        <p className="text-xs opacity-50 text-center font-semibold">PnL </p>
+        <p className="text-xs opacity-50 text-center font-semibold">{t('trade.tradeHistory.pnl')} </p>
         <Switch
           checked={showAfterFees}
           size="small"
@@ -375,7 +404,7 @@ const PnLDetails = ({
           }}
         />
         <span className="text-xxs opacity-30">
-          {showAfterFees ? ' w/ fees' : ' w/o fees'}
+          {showAfterFees ? ` ${t('trade.tradeHistory.withFees')}` : ` ${t('trade.tradeHistory.withoutFees')}`}
         </span>
       </div>
 
@@ -413,29 +442,6 @@ const PnLDetails = ({
           minimumFractionDigits={2}
           isDecimalDimmed={false}
           className={`text-xs ${(showAfterFees ? pnl : pnl - fees) > 0 ? 'text-[#35C488]' : 'text-redbright'}`}
-        />
-      </div>
-    </div>
-  );
-};
-
-const NetValue = ({
-  positionHistory,
-}: {
-  positionHistory: EnrichedPositionApi;
-}) => {
-  const pnl = positionHistory.pnl;
-  if (pnl === undefined || pnl === null) return null;
-
-  return (
-    <div className="flex flex-col">
-      <p className="text-xs opacity-50 text-right font-semibold">Net Value</p>
-      <div className="underline-dashed">
-        <FormatNumber
-          nb={positionHistory.collateralAmount + pnl}
-          format="currency"
-          className={twMerge('text-base font-mono flex items-end justify-end')}
-          isDecimalDimmed={false}
         />
       </div>
     </div>
