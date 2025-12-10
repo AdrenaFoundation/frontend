@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import React, { memo, ReactNode, useEffect, useMemo, useState } from 'react';
+import React, { memo, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import collapseIcon from '@/../public/images/collapse-all.svg';
@@ -39,7 +40,28 @@ function ChatContainer({
   setIsChatOpen: (open: boolean) => void;
   setOnlineCount: (count: number | null) => void;
 }) {
+  const { t } = useTranslation();
   const { wallet } = useSelector((state) => state.walletState);
+
+  // Function to translate room names
+  const translateRoomName = useCallback((roomName: string) => {
+    switch (roomName) {
+      case 'General':
+      case 'general':
+        return t('footer.general');
+      case 'Team Jito':
+      case 'team jito':
+        return t('footer.teamJito');
+      case 'Team Bonk':
+      case 'team bonk':
+        return t('footer.teamBonk');
+      case 'Announcements':
+      case 'announcements':
+        return t('footer.announcements');
+      default:
+        return roomName;
+    }
+  }, [t]);
   const walletAddress = wallet?.walletAddress || null;
 
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
@@ -123,7 +145,7 @@ function ChatContainer({
           : null;
       const newTitle =
         friend === null
-          ? room?.name
+          ? translateRoomName(room?.name || '')
           : userProfilesMap[friend]?.nickname || getAbbrevWalletAddress(friend);
 
       setTitle(newTitle ?? '');
@@ -135,6 +157,7 @@ function ChatContainer({
     userProfilesMap,
     currentChatroomId,
     setCurrentChatroom,
+    translateRoomName,
   ]);
 
   useEffect(() => {
@@ -286,6 +309,7 @@ function ChatTitle({
   setIsChatroomsOpen: (open: boolean) => void;
   isMobile?: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <div
       className={twMerge(
@@ -319,7 +343,7 @@ function ChatTitle({
           <span className="opacity-50 text-base">
             # {!isChatOpen && !isLoading ? 'Chat:' : null}
           </span>
-          {friendRequestWindowOpen ? 'Friend Requests' : ` ${title}`}{' '}
+          {friendRequestWindowOpen ? t('chat.friendRequests') : ` ${title}`}{' '}
         </p>
       </div>
 

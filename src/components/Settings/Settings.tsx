@@ -2,6 +2,7 @@ import { Connection } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import { setSettings } from '@/actions/settingsActions';
@@ -58,6 +59,7 @@ export default function Settings({
   isOpen?: boolean;
   setIsOpen?: (isOpen: boolean) => void;
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const settings = useSelector((state) => state.settings);
 
@@ -96,9 +98,9 @@ export default function Settings({
 
       <div className="w-full h-[1px] bg-bcolor my-3" />
 
-      <h4 className="font-semibold">Explorer</h4>
+      <h4 className="font-semibold">{t('footer.explorer')}</h4>
       <div className="flex flex-col gap-2 mt-1">
-        <p className="text-sm opacity-50">Select solana explorer</p>
+        <p className="text-sm opacity-50">{t('footer.selectSolanaExplorer')}</p>
         <div className="flex flex-col gap-1">
           {SOLANA_EXPLORERS.map((exp) => (
             <Button
@@ -126,10 +128,10 @@ export default function Settings({
 
       <div className="w-full h-[1px] bg-bcolor my-3" />
 
-      <h4 className="font-semibold">Preferences</h4>
+      <h4 className="font-semibold">{t('footer.preferences')}</h4>
       <div className="flex flex-col gap-1 mt-1">
         <div className="flex flex-row justify-between items-center">
-          <p className="text-sm opacity-50 w-full">Disable chat</p>
+          <p className="text-sm opacity-50 w-full">{t('footer.disableChat')}</p>
           <Switch
             checked={settings.disableChat}
             onChange={() => {
@@ -145,7 +147,7 @@ export default function Settings({
 
         <div className="flex flex-row justify-between items-center">
           <p className="text-sm opacity-50 w-full">
-            Disable Friend Requests
+            {t('footer.disableFriendRequests')}
           </p>
           <Switch
             checked={settings.disableFriendReq}
@@ -162,7 +164,7 @@ export default function Settings({
 
         <div className="flex flex-row justify-between items-center">
           <p className="text-sm opacity-50 w-full">
-            Show fees in PnL
+            {t('footer.showFeesInPnl')}
           </p>
           <Switch
             checked={settings.showFeesInPnl}
@@ -179,7 +181,7 @@ export default function Settings({
 
         <div className="flex flex-row justify-between items-center">
           <p className="text-sm opacity-50 w-full">
-            Display popup when position closes
+            {t('footer.displayPopupWhenPositionCloses')}
           </p>
           <Switch
             checked={settings.showPopupOnPositionClose}
@@ -196,7 +198,7 @@ export default function Settings({
 
         <div className="flex flex-row justify-between items-center">
           <p className="text-sm opacity-50 w-full">
-            Disable in-app notifications
+            {t('footer.disableInAppNotifications')}
           </p>
           <Switch
             checked={!settings.enableAdrenaNotifications}
@@ -215,14 +217,12 @@ export default function Settings({
 
         <Tippy content={
           <div>
-            SQRT scale reduces the gap between small and large values by using their
-            square root. This makes charts easier to read when there are big spikes,
-            since extreme values don&apos;t overshadow the rest of the data.
+            {t('footer.sqrtScaleTooltip')}
           </div>
         }>
           <div className="flex flex-row justify-between items-center">
             <p className="text-sm opacity-50 w-full">
-              Use Sqrt scale for volume & fee chart
+              {t('footer.useSqrtScaleForVolumeAndFeeChart')}
             </p>
 
             <Switch

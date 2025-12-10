@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import adrenaLogo from '@/../public/images/adrena_logo_adx_white.svg';
@@ -63,6 +64,7 @@ export default function SuperchargedFooter({
   setIsPriorityFeeOpen: (open: boolean) => void;
   setIsSettingsOpen: (open: boolean) => void;
 }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -72,7 +74,7 @@ export default function SuperchargedFooter({
     (state) => state.supabaseAuth.verifiedWalletAddresses,
   );
 
-  const [title, setTitle] = useState('Chat');
+  const [title, setTitle] = useState(t('footer.chat'));
 
   const priorityFeeAmounts = usePriorityFee();
   const priorityFeeOption = useSelector(
@@ -133,7 +135,7 @@ export default function SuperchargedFooter({
           >
             <div className="hidden group-hover:block absolute w-full h-2 -top-2 left-0" />
 
-            <p className="text-xs font-regular">Audited by</p>
+            <p className="text-xs font-regular">{t('footer.auditedBy')}</p>
 
             <Image
               src={ottersecLogo}
@@ -178,10 +180,10 @@ export default function SuperchargedFooter({
 
                     <div>
                       <p className="text-base font-regular">
-                        Offside Labs Audit.pdf
+                        {t('footer.offsideLabsAuditPdf')}
                       </p>
                       <p className="text-xs font-mono opacity-50">
-                        December 2024
+                        {t('footer.december2024')}
                       </p>
                     </div>
                   </Link>
@@ -204,9 +206,9 @@ export default function SuperchargedFooter({
 
                     <div>
                       <p className="text-base font-regular">
-                        Ottersec Audit.pdf
+                        {t('footer.ottersecAuditPdf')}
                       </p>
-                      <p className="text-xs font-mono opacity-50">July 2024</p>
+                      <p className="text-xs font-mono opacity-50">{t('footer.july2024')}</p>
                     </div>
                   </Link>
                 </motion.div>
@@ -231,9 +233,9 @@ export default function SuperchargedFooter({
               width={12}
             />
             <p className="text-xs capitalize">
-              {priorityFeeOption}
+              {t(`footer.${priorityFeeOption}`)}
               <span className="font-mono ml-1 text-xs">
-                @ {formatNumber(currentPriorityFeeValue, 0)} μLamport / CU
+                @ {formatNumber(currentPriorityFeeValue, 0)} {t('footer.microLamportPerCu')}
               </span>
             </p>
           </div>

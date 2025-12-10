@@ -1,5 +1,6 @@
 import { Connection } from '@solana/web3.js';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import { addNotification } from '@/utils';
@@ -35,6 +36,7 @@ export default function RPCSettings({
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
 }) {
+  const { t } = useTranslation();
   const [editCustomRpcUrl, setEditCustomRpcUrl] = useState<string | null>(
     customRpcUrl,
   );
@@ -45,7 +47,7 @@ export default function RPCSettings({
         {window.adrena.cluster === 'devnet' ? (
           <h2 className="text-blue-500 pr-1">Devnet</h2>
         ) : null}
-        <h4 className="font-semibold">RPC endpoints</h4>
+        <h4 className="font-semibold">{t('footer.rpcEndpoints')}</h4>
       </div>
 
       <div className="flex flex-row justify-between items-center">
@@ -53,12 +55,12 @@ export default function RPCSettings({
           <InfoAnnotation
             text={
               <p>
-                Automatically selects the best RPC endpoint based on latency
+                {t('footer.automaticallySelectsBestRpc')}
               </p>
             }
             className="w-3 ml-0"
           />
-          <p className="text-sm font-semibold">Automatic switch</p>
+          <p className="text-sm font-semibold">{t('footer.automaticSwitch')}</p>
         </div>
 
         <Switch
@@ -66,7 +68,7 @@ export default function RPCSettings({
           onChange={() => {
             setAutoRpcMode(!autoRpcMode);
             addNotification({
-              title: `Automatic switch ${autoRpcMode ? 'disabled' : 'enabled'}`,
+              title: autoRpcMode ? t('footer.automaticSwitchEnabled') : t('footer.automaticSwitchDisabled'),
               duration: 'fast',
             });
           }}
@@ -77,7 +79,7 @@ export default function RPCSettings({
 
       <div className="w-full flex mb-2">
         <div className="text-sm opacity-30">Preferred</div>
-        <div className="text-sm opacity-30 ml-auto">Latency</div>
+        <div className="text-sm opacity-30 ml-auto">{t('footer.latency')}</div>
       </div>
 
       <ul
@@ -89,7 +91,7 @@ export default function RPCSettings({
         {[
           ...rpcInfos,
           {
-            name: 'Custom RPC',
+            name: t('footer.customRpc'),
             latency: customRpcLatency,
           },
         ]?.map((rpc) => (
@@ -148,7 +150,7 @@ export default function RPCSettings({
               )}
             </div>
 
-            {rpc.name === 'Custom RPC' ? (
+            {rpc.name === t('footer.customRpc') ? (
               <div className="flex flex-row gap-2 items-center w-full mt-2">
                 <div
                   className={twMerge(
@@ -164,11 +166,11 @@ export default function RPCSettings({
                     className={twMerge(
                       'w-full h-[40px] p-1 px-3 max-w-[195px] text-ellipsis text-sm font-mono rounded-md bg-inputcolor transition duration-300',
                     )}
-                    placeholder="Custom RPC URL"
+                    placeholder={t('footer.customRpcUrl')}
                   />
 
                   <Button
-                    title="Save"
+                    title={t('footer.save')}
                     disabled={customRpcUrl === editCustomRpcUrl}
                     size="sm"
                     variant="primary"

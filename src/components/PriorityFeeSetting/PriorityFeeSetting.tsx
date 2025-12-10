@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import { setSettings } from '@/actions/settingsActions';
@@ -26,6 +27,7 @@ export default function PriorityFeeSetting({
   isOpen?: boolean;
   setIsOpen?: (isOpen: boolean) => void;
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const priorityFeeAmounts = usePriorityFee();
 
@@ -39,11 +41,10 @@ export default function PriorityFeeSetting({
 
   const content = (
     <div className="flex flex-col">
-      <h4 className="font-semibold">Priority Fees</h4>
+      <h4 className="font-semibold">{t('footer.priorityFees')}</h4>
 
       <p className="opacity-50 text-sm mt-0">
-        Speed up your transactions with Dynamic Priority Fees following the
-        market rate.
+        {t('footer.speedUpTransactions')}
       </p>
 
       <div className="flex gap-2 w-full mt-4">
@@ -59,7 +60,7 @@ export default function PriorityFeeSetting({
           },
         ].map(({ title }) => (
           <Radio
-            label={title}
+            label={t(`footer.${title}`)}
             checked={priorityFeeOption === title}
             className="w-full"
             onClick={() => {
@@ -81,11 +82,9 @@ export default function PriorityFeeSetting({
       >
         <InfoAnnotation
           className="w-3 h-3 ml-0"
-          text={
-            'The Medium/High/Ultra options are based on the 35th/50th/90th percentile of the current market rate. Accurate values are fetched right before each transaction.'
-          }
+          text={t('footer.priorityFeeOptionsExplanation')}
         />
-        Now @ {formatNumber(currentPriorityFeeValue, 0)} μLamport / CU
+        {t('footer.nowAt', { value: formatNumber(currentPriorityFeeValue, 0) })}
       </div>
 
       <div className="mt-2">
@@ -95,7 +94,7 @@ export default function PriorityFeeSetting({
               TX Size
             </div>
             <div className="w-1/2 items-center flex text-xs font-semibold">
-              Extra Fee
+              {t('footer.extraFee')}
             </div>
           </div>
 
@@ -150,11 +149,9 @@ export default function PriorityFeeSetting({
         >
           <InfoAnnotation
             className="w-3 h-3 ml-0"
-            text={
-              'Maximum amount of SOL to be spent on priority fees per transaction, this ensure you never go over your limit.'
-            }
+            text={t('footer.maxPriorityFeeExplanation')}
           />
-          Max Priority Fee per TX (SOL)
+          {t('footer.maxPriorityFeePerTx')}
         </div>
 
         <div className="mt-1 relative rounded-md shadow-sm">
@@ -203,7 +200,7 @@ export default function PriorityFeeSetting({
         <div className="p-1.5 px-2 hover:bg-third transition-colors cursor-pointer">
           <Image
             src={prioFeeSettingsIcon}
-            alt="Priority Fee Settings"
+            alt={t('footer.priorityFeeSettings')}
             width={0}
             height={0}
             style={{ width: '12px', height: '12px' }}

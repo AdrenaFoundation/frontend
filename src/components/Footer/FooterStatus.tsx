@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import { useSelector } from '@/store/store';
@@ -7,6 +8,7 @@ import { useSelector } from '@/store/store';
 import LiveIcon from '../common/LiveIcon/LiveIcon';
 
 export default function FooterStatus() {
+  const { t } = useTranslation();
   const {
     chatWebSocket,
     notificationsWebSocket,
@@ -42,9 +44,9 @@ export default function FooterStatus() {
     tokenPricesWebSocketLoading;
 
   const text = (() => {
-    if (isLoading) return 'Loading...';
-    if (isOperational) return 'Operational';
-    return 'Refresh';
+    if (isLoading) return t('footer.loading');
+    if (isOperational) return t('footer.operational');
+    return t('footer.refresh');
   })();
 
   return (
@@ -82,15 +84,15 @@ export default function FooterStatus() {
             <ul className="flex flex-col gap-3">
               <li className="flex flex-row items-center gap-2">
                 <LiveIcon isLive={tokenPricesWebSocket} />
-                <p className="font-semibold text-sm opacity-75">Token prices</p>
+                <p className="font-semibold text-sm opacity-75">{t('footer.tokenPrices')}</p>
               </li>
               <li className="flex flex-row items-center gap-2">
                 <LiveIcon isLive={notificationsWebSocket} />
-                <p className="font-semibold text-sm opacity-75">Notifications</p>
+                <p className="font-semibold text-sm opacity-75">{t('footer.notifications')}</p>
               </li>
               <li className="flex flex-row items-center gap-2">
                 <LiveIcon isLive={chatWebSocket} />
-                <p className="font-semibold text-sm opacity-75">Chat</p>
+                <p className="font-semibold text-sm opacity-75">{t('footer.chat')}</p>
               </li>
             </ul>
           </motion.div>
