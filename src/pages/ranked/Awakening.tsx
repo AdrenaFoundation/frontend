@@ -2,6 +2,7 @@ import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { memo, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../../public/images/adx.svg';
@@ -22,7 +23,6 @@ import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDa
 import ViewProfileModal from '@/components/pages/profile/ViewProfileModal';
 import LeaderboardTable from '@/components/pages/ranked/awakening/AwakeningLeaderboardTable';
 import WeeklyReward from '@/components/pages/ranked/awakening/AwakeningWeeklyReward';
-import { TRADING_COMPETITION_SEASONS } from '@/constant';
 import { DIVISIONS } from '@/constants/divisions';
 import { useAllUserProfilesMetadata } from '@/hooks/useAllUserProfilesMetadata';
 import useAwakeningV2 from '@/hooks/useAwakeningV2';
@@ -43,155 +43,152 @@ const CompetitionStats = memo(
     wallet: {
       walletAddress: string;
     } | null;
-  }) => (
-    <div className="flex gap-4 flex-col flex-wrap sm:flex-nowrap">
-      <div className="flex gap-4 flex-row flex-wrap sm:flex-nowrap">
-        <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
-          <h4 className="font-semibold text-base p-2 flex gap-2">
-            Traders <LiveIcon className="absolute right-2" />
-          </h4>
+  }) => {
+    const { t } = useTranslation();
+    return (
+      <div className="flex gap-4 flex-col flex-wrap sm:flex-nowrap">
+        <div className="flex gap-4 flex-row flex-wrap sm:flex-nowrap">
+          <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
+            <h4 className="font-semibold text-base p-2 flex gap-2">
+              {t('ranked.traders')} <LiveIcon className="absolute right-2" />
+            </h4>
 
-          <div className="h-[1px] bg-bcolor w-full" />
+            <div className="h-[1px] bg-bcolor w-full" />
 
-          <div className="flex items-center justify-center w-full h-full pl-2 pr-2">
-            <FormatNumber
-              nb={tradersCount}
-              format="number"
-              className={'text-3xl font-semibold'}
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
-          <h4 className="font-semibold text-base p-2 flex gap-2">
-            Volume <LiveIcon className="absolute right-2" />
-          </h4>
-
-          <div className="h-[1px] bg-bcolor w-full" />
-
-          <div className="flex items-center justify-center w-full h-full pl-2 pr-2">
-            <FormatNumber
-              nb={totalVolume}
-              format="currency"
-              isDecimalDimmed={false}
-              isAbbreviate={true}
-              className={'text-3xl font-semibold'}
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow sm:grow-0 sm:w-[12em] h-[7.5em]">
-          <h4 className="font-semibold text-base p-2">Total Rewards</h4>
-
-          <div className="h-[1px] bg-bcolor w-full" />
-
-          <div className="flex flex-col h-full justify-evenly items-center pl-2 pr-2 pb-2">
-            <div className="flex gap-2 items-center justify-center w-full">
-              <Image
-                src={window.adrena.client.adxToken.image}
-                alt="adx logo"
-                width={18}
-                height={18}
+            <div className="flex items-center justify-center w-full h-full pl-2 pr-2">
+              <FormatNumber
+                nb={tradersCount}
+                format="number"
+                className={'text-3xl font-semibold'}
               />
-              <div className="text-lg font-semibold w-[6.2em]">2.27M ADX</div>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
+            <h4 className="font-semibold text-base p-2 flex gap-2">
+              {t('ranked.volume')} <LiveIcon className="absolute right-2" />
+            </h4>
+
+            <div className="h-[1px] bg-bcolor w-full" />
+
+            <div className="flex items-center justify-center w-full h-full pl-2 pr-2">
+              <FormatNumber
+                nb={totalVolume}
+                format="currency"
+                isDecimalDimmed={false}
+                isAbbreviate={true}
+                className={'text-3xl font-semibold'}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow sm:grow-0 sm:w-[12em] h-[7.5em]">
+            <h4 className="font-semibold text-base p-2">{t('ranked.totalRewards')}</h4>
+
+            <div className="h-[1px] bg-bcolor w-full" />
+
+            <div className="flex flex-col h-full justify-evenly items-center pl-2 pr-2 pb-2">
+              <div className="flex gap-2 items-center justify-center w-full">
+                <Image
+                  src={window.adrena.client.adxToken.image}
+                  alt="adx logo"
+                  width={18}
+                  height={18}
+                />
+                <div className="text-lg font-semibold w-[6.2em]">2.27M ADX</div>
+              </div>
+
+              <div className="flex gap-2 items-center justify-center w-full">
+                <Image src={jtoImage} alt="adx logo" className="w-6 h-6" width={22} height={22} />
+
+                <div className="text-lg font-semibold w-[6.2em]">25,000 JTO</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow h-[7.5em]">
+          <div className="flex flex-col w-full items-center h-auto grow-0">
+            <div className="flex items-center p-2">
+              <Image src={jitoLogo} alt="jito logo" className="w-6 h-6" width={24} height={24} />
+              <div className="font-semibold text-base ml-1">{t('ranked.airdrop')}</div>
+              <span className="text-sm text-txtfade font-semibold ml-1">(6,000</span>
+              <Image src={jtoImage} alt="JTOlogo" className="w-6 h-6" width={24} height={24} />
+              <span className="text-sm text-txtfade font-semibold">)</span>
+              {eligibleJitosolAirdropWallets.includes(
+                wallet?.walletAddress ?? '',
+              ) ? (
+                <span className="ml-2 font-semibold text-green">{t('ranked.youQualify')}</span>
+              ) : (
+                <Tippy
+                  content={
+                    <p className="font-regular">
+                      {t('ranked.qualifyTooltip')}
+                    </p>
+                  }
+                  placement="auto"
+                >
+                  <span className="ml-2  text-sm text-txtfade underline decoration-dotted">
+                    {t('ranked.whoQualify')}?
+                  </span>
+                </Tippy>
+              )}
             </div>
 
-            <div className="flex gap-2 items-center justify-center w-full">
-              <Image src={jtoImage} alt="adx logo" className="w-6 h-6" width={22} height={22} />
+            <div className="h-[1px] bg-bcolor w-full" />
+          </div>
 
-              <div className="text-lg font-semibold w-[6.2em]">25,000 JTO</div>
+          <div className="flex flex-col gap-2 items-center justify-center h-full pb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-txtfade">{t('ranked.airdropProgress', { current: eligibleJitosolAirdropWallets.length })}</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-txtfade">{t('ranked.airdropReward', { reward: Math.round(6000 / eligibleJitosolAirdropWallets.length) })}</span>
             </div>
           </div>
         </div>
       </div>
-
-      <div className="flex flex-col items-center bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative gap-1 grow h-[7.5em]">
-        <div className="flex flex-col w-full items-center h-auto grow-0">
-          <div className="flex items-center p-2">
-            <Image src={jitoLogo} alt="jito logo" className="w-6 h-6" width={24} height={24} />
-            <div className="font-semibold text-base ml-1">Airdrop</div>
-            <span className="text-sm text-txtfade font-semibold ml-1">(6,000</span>
-            <Image src={jtoImage} alt="JTOlogo" className="w-6 h-6" width={24} height={24} />
-            <span className="text-sm text-txtfade font-semibold">)</span>
-            {eligibleJitosolAirdropWallets.includes(
-              wallet?.walletAddress ?? '',
-            ) ? (
-              <span className="ml-2 font-semibold text-green">You qualify!</span>
-            ) : (
-              <Tippy
-                content={
-                  <p className="font-regular">
-                    To qualify your wallet must have been one of the recipient
-                    of the JTO airdrop, and you must have made at least one $10k
-                    size trade. The first 600 participants will qualify, if less
-                    they will split the rewards.
-                  </p>
-                }
-                placement="auto"
-              >
-                <span className="ml-2  text-sm text-txtfade underline decoration-dotted">
-                  Who qualifies?
-                </span>
-              </Tippy>
-            )}
-          </div>
-
-          <div className="h-[1px] bg-bcolor w-full" />
-        </div>
-
-        <div className="flex flex-col gap-2 items-center justify-center h-full pb-2">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-txtfade">Recipients</span>
-            <span className="text-sm font-semibold">
-              {eligibleJitosolAirdropWallets.length} / 600
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-txtfade">Reward per recipient</span>
-            <span className="text-sm font-semibold">
-              {Math.round(6000 / eligibleJitosolAirdropWallets.length)} JTO
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  ),
+    );
+  },
 );
 CompetitionStats.displayName = 'CompetitionStats';
 
 const CompetitionLeaderboard = memo(
-  ({ hasProfile }: { hasProfile: boolean }) => (
-    <div className="flex flex-col sm:flex-row mb-5 gap-4">
-      <div className="flex flex-row gap-3 items-center">
-        <h1 className="font-semibold capitalize">Leaderboards</h1>
-      </div>
-
-      {!hasProfile && (
-        <div className="flex flex-col sm:flex-row items-center bg-blue/30 p-2 border-dashed border-blue rounded text-sm text-center sm:text-left">
-          <div className="flex flex-row items-center">
-            <Image
-              className="opacity-70 mr-2 mb-2 sm:mb-0"
-              src={infoIcon}
-              height={16}
-              width={16}
-              alt="Info icon"
-            />
-            <p className="mr-2 mb-2 sm:mb-0 flex items-center">
-              Create an on-chain profile to track your all-time stats.
-            </p>
-          </div>
-          <Button
-            title="Go!"
-            className="text-xs px-4 py-1 h-[2em] w-full sm:w-auto"
-            onClick={() => {
-              window.location.href = '/my_dashboard';
-            }}
-          />
+  ({ hasProfile }: { hasProfile: boolean }) => {
+    const { t } = useTranslation();
+    return (
+      <div className="flex flex-col sm:flex-row mb-5 gap-4">
+        <div className="flex flex-row gap-3 items-center">
+          <h1 className="font-semibold capitalize">{t('ranked.leaderboards')}</h1>
         </div>
-      )}
-    </div>
-  ),
+
+        {!hasProfile && (
+          <div className="flex flex-col sm:flex-row items-center bg-blue/30 p-2 border-dashed border-blue rounded text-sm text-center sm:text-left">
+            <div className="flex flex-row items-center">
+              <Image
+                className="opacity-70 mr-2 mb-2 sm:mb-0"
+                src={infoIcon}
+                height={16}
+                width={16}
+                alt="Info icon"
+              />
+              <p className="mr-2 mb-2 sm:mb-0 flex items-center">
+                Create an on-chain profile to track your all-time stats.
+              </p>
+            </div>
+            <Button
+              title="Go!"
+              className="text-xs px-4 py-1 h-[2em] w-full sm:w-auto"
+              onClick={() => {
+                window.location.href = '/my_dashboard';
+              }}
+            />
+          </div>
+        )}
+      </div>
+    );
+  },
 );
 CompetitionLeaderboard.displayName = 'CompetitionLeaderboard';
 
@@ -209,47 +206,50 @@ const WeekSelector = memo(
       start: string;
       end: string;
     };
-  }) => (
-    <div className="flex flex-col md:flex-row gap-3 justify-between md:items-center w-full">
-      <div className="flex flex-row gap-3 min-w-[17em]">
-        <p className="opacity-50">
-          ({new Date(weekDates.start).toLocaleDateString()} –{' '}
-          {new Date(weekDates.end).toLocaleDateString()})
-        </p>
+  }) => {
+    const { t } = useTranslation();
+    return (
+      <div className="flex flex-col md:flex-row gap-3 justify-between md:items-center w-full">
+        <div className="flex flex-row gap-3 min-w-[17em]">
+          <p className="opacity-50">
+            ({new Date(weekDates.start).toLocaleDateString()} –{' '}
+            {new Date(weekDates.end).toLocaleDateString()})
+          </p>
 
-        {currentWeek === maxWeek ? (
-          <div className="flex text-xs gap-1">
-            <RemainingTimeToDate
-              timestamp={new Date(weekDates.end).getTime() / 1000}
-              stopAtZero={true}
-            />
-            <span className="text-xs font-semibold">left</span>
-          </div>
-        ) : (
-          <p className="text-xs font-semibold">Week has ended</p>
-        )}
-      </div>
+          {currentWeek === maxWeek ? (
+            <div className="flex text-xs gap-1">
+              <RemainingTimeToDate
+                timestamp={new Date(weekDates.end).getTime() / 1000}
+                stopAtZero={true}
+              />
+              <span className="text-xs font-semibold">{t('ranked.left')}</span>
+            </div>
+          ) : (
+            <p className="text-xs font-semibold">{t('ranked.weekHasEnded')}</p>
+          )}
+        </div>
 
-      <div className="flex flex-row gap-2 items-center">
-        {Array.from({ length: 6 }, (_, i) => (
-          <div
-            key={i}
-            className={twMerge(
-              'rounded-md p-1 whitespace-nowrap px-2 transition border border-transparent duration-300 cursor-pointer select-none',
-              i === currentWeek ? 'bg-[#364250] border-white/25' : 'bg-third',
-              i > maxWeek && 'cursor-not-allowed opacity-25',
-            )}
-            onClick={() => {
-              if (i > maxWeek) return;
-              setWeek(i);
-            }}
-          >
-            <p className="text-xxs sm:text-sm">Week {i + 1}</p>
-          </div>
-        ))}
+        <div className="flex flex-row gap-2 items-center">
+          {Array.from({ length: 6 }, (_, i) => (
+            <div
+              key={i}
+              className={twMerge(
+                'rounded-md p-1 whitespace-nowrap px-2 transition border border-transparent duration-300 cursor-pointer select-none',
+                i === currentWeek ? 'bg-[#364250] border-white/25' : 'bg-third',
+                i > maxWeek && 'cursor-not-allowed opacity-25',
+              )}
+              onClick={() => {
+                if (i > maxWeek) return;
+                setWeek(i);
+              }}
+            >
+              <p className="text-xxs sm:text-sm">{t('ranked.week')} {i + 1}</p>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  ),
+    );
+  },
 );
 WeekSelector.displayName = 'WeekSelector';
 
@@ -262,76 +262,82 @@ export const CompetitionHeader = memo(
     startDate: Date | null;
     endDate: Date | null;
     description: string[];
-  }) => (
-    <>
-      <h1 className="font-semibold text-3xl capitalize">
-        Adrena Trading Competition
-      </h1>
-      <p className="text-base text-txtfade mb-2">
-        From{' '}
-        {startDate?.toLocaleString('en-US', { month: 'short', day: 'numeric' })}{' '}
-        -{' '}
-        {endDate?.toLocaleString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        })}
-      </p>
-      <div className="text-sm max-w-[70em] text-justify flex flex-col gap-3 items-center xl:items-start mt-2 sm:mt-0 pb-2 sm:pb-0">
-        {description.map((text, index) => (
-          <span key={index} className="text-txtfade text-center xl:text-left">
-            {text}
-          </span>
-        ))}
-      </div>
-    </>
-  ),
+  }) => {
+    const { t } = useTranslation();
+    return (
+      <>
+        <h1 className="font-semibold text-3xl capitalize">
+          {t('ranked.adrenaTradingCompetition')}
+        </h1>
+        <p className="text-base text-txtfade mb-2">
+          {t('ranked.from')}{' '}
+          {startDate?.toLocaleString('en-US', { month: 'short', day: 'numeric' })}{' '}
+          -{' '}
+          {endDate?.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          })}
+        </p>
+        <div className="text-sm max-w-[70em] text-justify flex flex-col gap-3 items-center xl:items-start mt-2 sm:mt-0 pb-2 sm:pb-0">
+          {description.map((text, index) => (
+            <span key={index} className="text-txtfade text-center xl:text-left">
+              {text}
+            </span>
+          ))}
+        </div>
+      </>
+    );
+  },
 );
 CompetitionHeader.displayName = 'CompetitionHeader';
 
 export const SocialButtons = memo(
-  ({ twitterText, docsLink }: { twitterText: string; docsLink?: string }) => (
-    <div
-      className={twMerge(
-        'flex gap-4 mt-4 flex-col sm:flex-row',
-        docsLink ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4' : '',
-      )}
-    >
-      <Button
-        title="Join Discord"
-        className="text-sm px-8 w-[15em]"
-        href="https://discord.gg/adrena"
-        isOpenLinkInNewTab
-        rightIcon={discordIcon}
-        rightIconClassName="w-3 h-3"
-      />
-      <Button
-        title="Share on"
-        className="text-sm px-8 w-[15em]"
-        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterText)}&url=${encodeURIComponent(`https://${window.location.hostname}/competition`)}`}
-        isOpenLinkInNewTab
-        rightIcon={xIcon}
-        rightIconClassName="w-3 h-3"
-      />
-
-      {docsLink && (
+  ({ twitterText, docsLink }: { twitterText: string; docsLink?: string }) => {
+    const { t } = useTranslation();
+    return (
+      <div
+        className={twMerge(
+          'flex gap-4 mt-4 flex-col sm:flex-row',
+          docsLink ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4' : '',
+        )}
+      >
         <Button
-          title="Docs"
+          title={t('ranked.joinDiscord')}
           className="text-sm px-8 w-[15em]"
-          href={docsLink}
+          href="https://discord.gg/adrena"
           isOpenLinkInNewTab
+          rightIcon={discordIcon}
           rightIconClassName="w-3 h-3"
         />
-      )}
+        <Button
+          title={t('ranked.shareOn')}
+          className="text-sm px-8 w-[15em]"
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterText)}&url=${encodeURIComponent(`https://${window.location.hostname}/competition`)}`}
+          isOpenLinkInNewTab
+          rightIcon={xIcon}
+          rightIconClassName="w-3 h-3"
+        />
 
-      <Button
-        title="Trade Now"
-        className="text-sm px-8 w-[15em]"
-        href="/trade"
-        rightIconClassName="w-3 h-3"
-      />
-    </div>
-  ),
+        {docsLink && (
+          <Button
+            title={t('ranked.docs')}
+            className="text-sm px-8 w-[15em]"
+            href={docsLink}
+            isOpenLinkInNewTab
+            rightIconClassName="w-3 h-3"
+          />
+        )}
+
+        <Button
+          title={t('ranked.tradeNow')}
+          className="text-sm px-8 w-[15em]"
+          href="/trade"
+          rightIconClassName="w-3 h-3"
+        />
+      </div>
+    );
+  },
 );
 SocialButtons.displayName = 'SocialButtons';
 
@@ -341,8 +347,9 @@ const ProfileBanner = memo(
     currentUserData,
   }: {
     userName: string;
-    currentUserData: UserStats;
+    currentUserData: UserStats | null;
   }) => {
+    const { t } = useTranslation();
     if (!currentUserData) return null;
 
     return (
@@ -409,7 +416,7 @@ const ProfileBanner = memo(
         </div>
 
         <div className="flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center">
-          <span className="text-sm text-txtfade">Volume:</span>
+          <span className="text-sm text-txtfade">{t('ranked.volume')}</span>
 
           <FormatNumber
             nb={currentUserData.volume ?? 0}
@@ -466,6 +473,7 @@ const ProfileBanner = memo(
 ProfileBanner.displayName = 'ProfileBanner';
 
 export default function Awakening() {
+  const { t } = useTranslation();
   // states
   const [week, setWeek] = useState<number>(0);
   const [profile, setProfile] = useState<UserProfileExtended | null>(null);
@@ -559,9 +567,10 @@ export default function Awakening() {
               <CompetitionHeader
                 startDate={startDate}
                 endDate={endDate}
-                description={
-                  TRADING_COMPETITION_SEASONS['awakening'].description
-                }
+                description={[
+                  t('ranked.tradingPreSeasonDescription'),
+                  t('ranked.tradingPreSeasonRules')
+                ]}
               />
               <SocialButtons twitterText={twitterText} />
             </div>
@@ -577,7 +586,7 @@ export default function Awakening() {
 
         <div className="px-4 sm:px-8">
           <div className="flex flex-col lg:flex-row gap-3 w-full mb-3">
-            <h1 className="font-semibold flex-none capitalize">Weekly Rewards</h1>
+            <h1 className="font-semibold flex-none capitalize">{t('ranked.weeklyRewards')}</h1>
 
             <WeekSelector
               currentWeek={week}

@@ -1,6 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 // import Image from 'next/image';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Modal from '@/components/common/Modal/Modal';
 // import bonkLogo from '@/../public/images/bonk.png';
@@ -19,6 +20,7 @@ export default function Interseason3({
 }: {
   jtoPrice: number | null;
 }) {
+  const { t } = useTranslation();
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
   const leaderboardData = useMutagenLeaderboardData({
     allUserProfilesMetadata,
@@ -35,11 +37,10 @@ export default function Interseason3({
     <div className="w-full mx-auto px-4 relative flex flex-col pb-4">
       <div className="flex flex-col gap-2 items-center justify-center text-center px-4 mx-auto max-w-[100em]">
         <span className="text-xs sm:text-sm lg:text-base font-semibold text-white/90 w-full">
-          For this Summer Event, the rule is simple: Top 25 traders will share
-          the prize pool of 21,200 JTO and 3,160,000,000 BONK.
+          {t('ranked.summerEventRule')}
         </span>
         <span className="text-xs sm:text-sm lg:text-base font-semibold text-white/90 w-full">
-          Ready, Set, Trade!
+          {t('ranked.readySetTrade')}
         </span>
 
         {/* <div className="w-full flex justify-center items-center flex-col gap-6 mt-8">

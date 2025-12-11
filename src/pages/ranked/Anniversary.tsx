@@ -2,6 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image, { StaticImageData } from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import firstImage from '@/../public/images/first-place.svg';
@@ -97,75 +98,73 @@ const RAFFLE_DATA = [
 // ============================================================================
 // TRADING CATEGORY DATA
 // ============================================================================
-const TRADING_DATA = [
+const getTradingData = (t: (key: string) => string) => [
   {
-    title: 'Best PnL %',
+    title: t('ranked.bestPnlPercent'),
     prize: 2000,
-    description:
-      'Trader with the highest single profitable trade by percentage.',
+    description: t('ranked.bestPnlPercentDesc'),
     winnerWallet: 'HwkwCLE2aNirKrToTn2h1shMkmyNB8KkEyAm3ZBcTEY7',
     winnerValue: 16456.764,
   },
   {
-    title: 'Top Liquidation',
+    title: t('ranked.topLiquidation'),
     prize: 2000,
-    description: 'Trader with the largest single liquidation in USD value.',
+    description: t('ranked.topLiquidationDesc'),
     winnerWallet: 'ECyvtxvY4KNBt5vfLtdsMrp77mKjL3JD6aha9m3aXBvd',
     winnerValue: 404633.565,
   },
   {
-    title: 'Top Borrow Fees',
+    title: t('ranked.topBorrowFees'),
     prize: 2000,
-    description: 'Trader who paid the most borrow fees in USD.',
+    description: t('ranked.topBorrowFeesDesc'),
     winnerWallet: 'ECyvtxvY4KNBt5vfLtdsMrp77mKjL3JD6aha9m3aXBvd',
     winnerValue: 9528.38,
   },
   {
-    title: 'Top Exit Fees',
+    title: t('ranked.topExitFees'),
     prize: 2000,
-    description: 'Trader who paid the most exit fees in USD.',
+    description: t('ranked.topExitFeesDesc'),
     winnerWallet: '3NCrJhLN62RNkAV9qYpA6qJfyWdKTtUpEEiZhfCLzUa7',
     winnerValue: 3811.901,
   },
   {
-    title: 'Most Trades',
+    title: t('ranked.mostTrades'),
     prize: 500,
-    description: 'Trader who closed the most positions.',
+    description: t('ranked.mostTradesDesc'),
     winnerWallet: '3ZmANGFQg6Zq7ZhF55thWSP1ktggKw1jwqY4dY6rRcpK',
     winnerValue: 673,
   },
   {
-    title: 'Consecutive Wins',
+    title: t('ranked.consecutiveWins'),
     prize: 500,
-    description: 'Trader with the longest winning streak.',
+    description: t('ranked.consecutiveWinsDesc'),
     winnerWallet: 'LXv6ZpUyFENQqPUr9hwpHfyqr5Y1VGMrRpmFF8VSGar',
     winnerValue: 122,
   },
   {
-    title: 'Consecutive Losses',
+    title: t('ranked.consecutiveLosses'),
     prize: 500,
-    description: 'Trader with the longest losing streak.',
+    description: t('ranked.consecutiveLossesDesc'),
     winnerWallet: 'D4iXhbPU6inwJaVcJhW3uygWQ5nzyjL32KWPCXj3rZ2E',
     winnerValue: 607,
   },
   {
-    title: 'Consecutive Liquidations',
+    title: t('ranked.consecutiveLiquidations'),
     prize: 500,
-    description: 'Trader with the longest streak of liquidated trades.',
+    description: t('ranked.consecutiveLiquidationsDesc'),
     winnerWallet: '4JsBNNdQxMtzgAraMZsPqcCZjwVFJywTsEmdXAa1FYX9',
     winnerValue: 12,
   },
   {
-    title: 'First Blood',
+    title: t('ranked.firstBlood'),
     prize: 200,
     description: (
       <div>
         <div>
-          First trader to open and close a position with a PnL/Volume ratio of
-          10% in the competition.
+          {t('ranked.firstBloodDesc')}
         </div>
         <div className="mt-2 text-sm">
-          PnL/Volume ratio formula: PnL / volume * 100
+          {t('ranked.pnlVolumeFormula')}
         </div>
       </div>
     ),
@@ -173,53 +172,48 @@ const TRADING_DATA = [
     winnerValue: 1759507285000,
   },
   {
-    title: 'Last Straw',
+    title: t('ranked.lastStraw'),
     prize: 200,
     description: (
       <div>
         <div>
-          Last trader to close a position with a PnL/Volume ratio of 10% before
-          the competition ends.
+          {t('ranked.lastStrawDesc')}
         </div>
         <div className="mt-2 text-sm">
-          PnL/Volume ratio formula: PnL / volume * 100
+          {t('ranked.pnlVolumeFormula')}
         </div>
       </div>
     ),
-    winnerWallet: 'EJsK69iZKqgVfM7fCh1q7aLtDa6cxcBUP1NEAbprawT',
-    winnerValue: 1761142988000,
+    winnerWallet: '9QpEAtgKQFyDthC9hMjv7N3h3k2v8z1qL7Xw6F5Hj4kK',
+    winnerValue: 1759507285000,
   },
-] as const;
+];
 
 // ============================================================================
 // CREATIVE CATEGORY DATA
 // ============================================================================
-const CREATIVE_DATA = [
+const getCreativeData = (t: (key: string) => string) => [
   {
-    title: 'Best Shitpost Tweet',
+    title: t('ranked.bestShitpostTweet'),
     prize: 500,
-    description:
-      'Funniest or most viral shitpost about Adrena. Winner chosen by the team.',
+    description: t('ranked.bestShitpostTweetDesc'),
   },
   {
-    title: 'Best Anniversary Tweet',
+    title: t('ranked.bestAnniversaryTweet'),
     prize: 500,
-    description:
-      "Best tweet celebrating Adrena's anniversary. Winner chosen by the team.",
+    description: t('ranked.bestAnniversaryTweetDesc'),
   },
   {
-    title: 'Best Feature Idea',
+    title: t('ranked.bestFeatureIdea'),
     prize: 500,
-    description:
-      'Most valuable idea for improving Adrena, submitted on Discord. Winner selected by the team.',
+    description: t('ranked.bestFeatureIdeaDesc'),
   },
   {
-    title: 'Best Artwork',
+    title: t('ranked.bestArtwork'),
     prize: 500,
-    description:
-      'Coolest community artwork related to Adrena. Winner chosen by the team.',
+    description: t('ranked.bestArtworkDesc'),
   },
-] as const;
+];
 
 // ============================================================================
 // UTILITY FUNCTIONS
@@ -281,6 +275,7 @@ function RafflePlace({
   onClickProfile?: (wallet: string) => void;
   walletAddress: string | null;
 }) {
+  const { t } = useTranslation();
   const getDisplayName = useCallback(
     (wallet: string) => {
       const profile = profileMap.get(wallet);
@@ -294,8 +289,8 @@ function RafflePlace({
       const profile = profileMap.get(wallet);
       return profile
         ? PROFILE_PICTURES[
-            profile.profilePicture as keyof typeof PROFILE_PICTURES
-          ]
+        profile.profilePicture as keyof typeof PROFILE_PICTURES
+        ]
         : PROFILE_PICTURES[0];
     },
     [profileMap],
@@ -311,7 +306,7 @@ function RafflePlace({
           {hasWinner ? (
             <>
               <div className="font-semibold mb-2">
-                {placeTitle} Raffle Winner
+                {t('ranked.raffleWinner', { placeTitle })}
               </div>
               <div className="border-t border-gray-600 pt-2">
                 <div className="flex items-center justify-center gap-2 mb-2">
@@ -333,7 +328,7 @@ function RafflePlace({
                     <span className="font-semibold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]">
                       {winnerTickets.toLocaleString()}
                     </span>{' '}
-                    raffle tickets
+                    {t('ranked.raffleTicketsLeaderboard')}
                   </div>
                 )}
               </div>
@@ -353,9 +348,9 @@ function RafflePlace({
         style={
           isCurrentUserWinner
             ? {
-                borderColor: 'rgb(74 222 128 /0.7',
-                transition: 'border-color 0.2s',
-              }
+              borderColor: 'rgb(74 222 128 /0.7',
+              transition: 'border-color 0.2s',
+            }
             : undefined
         }
         onMouseEnter={(e) => {
@@ -397,7 +392,7 @@ function RafflePlace({
         )}
 
         <div className="text-sm font-semibold text-white/90">
-          {placeTitle} Raffle Winner
+          {placeTitle} {t('ranked.raffleWinner')}
         </div>
 
         <div className="flex gap-2 items-center">
@@ -429,6 +424,7 @@ function RaffleAdditionalPrize({
   onClickProfile?: (wallet: string) => void;
   showSecondLine?: boolean;
 }) {
+  const { t } = useTranslation();
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletAddress = wallet?.walletAddress ?? null;
 
@@ -445,8 +441,8 @@ function RaffleAdditionalPrize({
       const profile = profileMap.get(wallet);
       return profile
         ? PROFILE_PICTURES[
-            profile.profilePicture as keyof typeof PROFILE_PICTURES
-          ]
+        profile.profilePicture as keyof typeof PROFILE_PICTURES
+        ]
         : PROFILE_PICTURES[0];
     },
     [profileMap],
@@ -510,9 +506,9 @@ function RaffleAdditionalPrize({
         style={
           isCurrentUserHolder
             ? {
-                borderColor: 'rgb(74 222 128 / 0.7)',
-                transition: 'border-color 0.2s',
-              }
+              borderColor: 'rgb(74 222 128 / 0.7)',
+              transition: 'border-color 0.2s',
+            }
             : undefined
         }
         onMouseEnter={(e) => {
@@ -546,7 +542,7 @@ function RaffleAdditionalPrize({
           <div className="flex items-center gap-2">
             {record?.wallet ? (
               <>
-                <div className="text-xs text-white/40 font-medium">Winner:</div>
+                <div className="text-xs text-white/40 font-medium">{t('ranked.winner')}:</div>
                 <Image
                   src={getProfilePictureUrl(record.wallet)}
                   alt="Profile"
@@ -623,6 +619,7 @@ function CreativePrize({
 }
 
 export default function Anniversary() {
+  const { t } = useTranslation();
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletAddress = wallet?.walletAddress ?? null;
@@ -677,9 +674,8 @@ export default function Anniversary() {
 
       <div className="flex flex-col gap-2 items-center justify-center text-center mx-auto max-w-[100em] w-full">
         <div className="text-xs sm:text-sm lg:text-base font-semibold text-white/90 w-full z-10 mb-4 mt-8">
-          To celebrate our first year, we are hosting a special raffle party!
-          Accumulate raffle tickets by trading and get a chance to win big
-          prizes!
+          {t('ranked.celebrationMessage')}
+          {t('ranked.ticketAccumulationMessage')}
         </div>
 
         <div className="relative w-full sm:max-w-[40em] h-[15em] border-t-2 border-b-2 sm:border-2 sm:border-white/100 overflow-hidden">
@@ -707,14 +703,14 @@ export default function Anniversary() {
               'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
             )}
           >
-            PRIZES
+            {t('ranked.prizes')}
           </h1>
           <div className="flex flex-col gap-2 mt-4 justify-center flex-wrap w-full">
             <div className="flex flex-row gap-2 justify-center flex-wrap w-full">
               {/* Raffle Category - Left side */}
               <div className="w-full lg:w-1/2 lg:max-w-[30.5em] flex flex-col p-4 border bg-main/40">
                 <h2 className="text-sm ml-auto mr-auto mb-4 tracking-wider font-bold">
-                  Raffle Category
+                  {t('ranked.raffleCategory')}
                 </h2>
 
                 <div className="w-full flex flex-row flex-wrap grow">
@@ -755,11 +751,11 @@ export default function Anniversary() {
               {/* Trading Category - Right side */}
               <div className="w-full lg:w-1/2 lg:max-w-[30em] flex flex-col p-4 border bg-main/40">
                 <h2 className="text-sm ml-auto mr-auto mb-4 tracking-wider font-bold">
-                  Trading Category
+                  {t('ranked.tradingCategory')}
                 </h2>
 
                 <div className="relative z-10 w-full flex flex-row flex-wrap items-center justify-center gap-2">
-                  {TRADING_DATA.map((trading) => (
+                  {getTradingData(t).map((trading) => (
                     <TradingPrize
                       key={trading.title}
                       title={trading.title}
@@ -777,11 +773,11 @@ export default function Anniversary() {
             {/* Bottom row: Creative Category */}
             <div className="w-full lg:max-w-[61em] lg:mx-auto flex flex-col p-4 border bg-main/40">
               <h2 className="text-sm ml-auto mr-auto mb-4 tracking-wider font-bold">
-                Creative Category
+                {t('ranked.creativeCategory')}
               </h2>
 
               <div className="relative z-10 w-full flex flex-row flex-wrap items-center justify-center gap-2">
-                {CREATIVE_DATA.map((creative) => (
+                {getCreativeData(t).map((creative) => (
                   <CreativePrize
                     key={creative.title}
                     title={creative.title}
@@ -801,7 +797,7 @@ export default function Anniversary() {
             'bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)]',
           )}
         >
-          RAFFLE TICKETS
+          {t('ranked.raffleTicketsLeaderboard')}
         </h1>
 
         {leaderboardData && leaderboardData.length > 0 ? (

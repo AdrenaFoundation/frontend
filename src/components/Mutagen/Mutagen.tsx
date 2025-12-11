@@ -2,6 +2,7 @@ import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import useUserMutagens from '@/hooks/useUserMutagens';
@@ -179,6 +180,8 @@ const contentIfMutagens = (userMutagens: EnrichedUserMutagens) => {
 };
 
 const SeasonSection = ({ season }: { season: EnrichedMutagenSeason }) => {
+  const { t } = useTranslation();
+
   const stats = [
     { label: 'Trading', value: season.pointsTrading, color: '#cec161f0' },
     { label: 'Mutations', value: season.pointsMutations, color: '#5460cbf0' },
@@ -197,7 +200,7 @@ const SeasonSection = ({ season }: { season: EnrichedMutagenSeason }) => {
             interseason1: 'Inter-season 1',
             interseason2: 'Inter-season 2',
             expanse: 'Season 1: Expanse',
-            interseason3: 'Summer Event',
+            interseason3: t('ranked.summerEvent'),
           }[season.seasonName] ?? season.seasonName}
         </h4>
 
@@ -272,15 +275,15 @@ export default function Mutagen({ isMobile = false }: { isMobile?: boolean }) {
           />
         </div>
 
-          {isModalOpen && (
-            <Modal
-              close={() => setIsModalOpen(false)}
-              className="flex flex-col w-full p-5 relative overflow-visible"
-            >
-              {content}
-            </Modal>
-          )}
-        </AnimatePresence>
+        {isModalOpen && (
+          <Modal
+            close={() => setIsModalOpen(false)}
+            className="flex flex-col w-full p-5 relative overflow-visible"
+          >
+            {content}
+          </Modal>
+        )}
+      </AnimatePresence>
     );
   }
 

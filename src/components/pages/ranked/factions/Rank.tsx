@@ -1,6 +1,7 @@
 import { PublicKey } from "@solana/web3.js";
 import Tippy from "@tippyjs/react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { twMerge } from "tailwind-merge";
 
 import { useSelector } from "@/store/store";
@@ -64,6 +65,7 @@ export default function Rank({
     setActiveProfile: (u: UserProfileExtended | null) => void;
     unlockStep?: number;
 }) {
+    const { t } = useTranslation();
     const wallet = useSelector((s) => s.walletState.wallet);
 
     const [displayVideo, setDisplayVideo] = useState(false);
@@ -94,7 +96,7 @@ export default function Rank({
                     'text-[0.7em]',
                     hover ? 'text-white' : 'text-txtfade',
                 )}>
-                    {rank}
+                    {t(`ranked.${rank.toLowerCase()}`)}
                 </div>
 
                 <div className={twMerge(
@@ -240,7 +242,7 @@ export default function Rank({
                     user.percentagePillage > 0 ? 'text-txtfade/50' : 'text-transparent',
                     unlockStep === 3 ? 'text-[#FA6724FA] tracking-widest' : '',
                 )}>
-                    max pillage +{user.percentagePillage}%
+                    {t('ranked.maxPillage', { percentage: user.percentagePillage })}
                 </div>
 
                 <div className={twMerge(

@@ -1,5 +1,6 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import firstImage from '@/../public/images/first-place.svg';
@@ -29,6 +30,7 @@ export default function AwakeningLeaderboardTable({
     myDivision: boolean;
     handleProfileView: (username: string) => void;
 }) {
+    const { t } = useTranslation();
     return (
         <div className={className}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -39,16 +41,15 @@ export default function AwakeningLeaderboardTable({
             /> : null}
 
             <div className="flex flex-row items-center gap-3 mt-3">
-                <h3 className={twMerge("font-semibold capitalize", division === 'No Division' ? 'ml-auto mr-auto' : '')}>{DIVISIONS[division].title}</h3>
+                <h3 className={twMerge("font-semibold capitalize", division === 'No Division' ? 'ml-auto mr-auto' : '')}>{division === 'No Division' ? t('ranked.noDivision') : t(`ranked.${division.toLowerCase()}Division`)}</h3>
 
                 <Tippy content={`Top ${DIVISIONS[division].topTradersPercentage} percentile of traders by traded VOLUME, minus the ones on previous divisions.`} arrow>
                     <div className={twMerge(`capitalize text-sm tracking-widest font-semibold ${division === 'No Division' ? 'hidden' : ''}`, DIVISIONS[division].color)}>
-                        TIER {index}
-                        <div className={`border-b-2 border-dotted border-gray-400 mt-0`}></div>
+                        {t('ranked.tier')} {index}
                     </div>
                 </Tippy>
 
-                {myDivision ? <div className='font-semibold text-xs bg-yellow-900 bg-opacity-40 rounded-md border border-yellow-900 pt-1 pr-2 pl-2 pb-1 w-20 text-center'>Your division</div> : null}
+                {myDivision ? <div className='font-semibold text-xs bg-yellow-900 bg-opacity-40 rounded-md border border-yellow-900 pt-1 pr-2 pl-2 pb-1 w-20 text-center'>{t('ranked.yourDivision')}</div> : null}
             </div>
 
             <div className="mt-3">
@@ -56,11 +57,11 @@ export default function AwakeningLeaderboardTable({
                     className="bg-transparent gap-1 border-none p-0"
                     columnTitlesClassName="text-sm opacity-50"
                     columnsTitles={[
-                        <span className='-ml-[0.5rem] opacity-50' key='rank'>#</span>,
-                        <span className='opacity-50' key='trader'>Trader</span>,
-                        <span className='opacity-50' key='pnl'>PnL</span>,
-                        <span className='opacity-50' key='volume'>Volume</span>,
-                        <span className='ml-auto opacity-50' key='rewards'>Rewards</span>,
+                        <span className='-ml-[0.5rem] opacity-50' key='rank'>{t('ranked.rank')}</span>,
+                        <span className='opacity-50' key='trader'>{t('ranked.trader')}</span>,
+                        <span className='opacity-50' key='pnl'>{t('ranked.pnl')}</span>,
+                        <span className='opacity-50' key='volume'>{t('ranked.volume')}</span>,
+                        <span className='ml-auto opacity-50' key='rewards'>{t('ranked.rewards')}</span>,
                     ]}
                     rowHovering={true}
                     pagination={true}

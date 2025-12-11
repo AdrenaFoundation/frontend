@@ -1,5 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -29,6 +30,7 @@ export default function MutagenLeaderboardAnniversary({
     className?: string;
     onClickUserProfile: (wallet: PublicKey) => void;
 }) {
+    const { t } = useTranslation();
     const [sortField, setSortField] = useState<SortField>('pointsTrading');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
     const [userRow, setUserRow] = useState<MutagenLeaderboardData[number] | null>(null);
@@ -423,7 +425,7 @@ export default function MutagenLeaderboardAnniversary({
             <span className="opacity-50" key="rank">
                 #
             </span>,
-            <span className="opacity-50" key="trader">Trader</span>,
+            <span className="opacity-50" key="trader">{t('ranked.trader')}</span>,
         ];
 
         if (breakpoint4) {
@@ -433,7 +435,7 @@ export default function MutagenLeaderboardAnniversary({
                     className={getSortButtonClass('totalVolume')}
                     key="totalVolume"
                 >
-                    <span className={getSortTextClass('totalVolume')}>Volume</span>
+                    <span className={getSortTextClass('totalVolume')}>{t('ranked.volume').replace(':', '')}</span>
                     <SortIcon field="totalVolume" />
                 </button>,
             );
@@ -446,7 +448,7 @@ export default function MutagenLeaderboardAnniversary({
                     className={getSortButtonClass('pointsTrading')}
                     key="pointsTrading"
                 >
-                    <span className={getSortTextClass('pointsTrading')}>Mutagen (Trading)</span>
+                    <span className={getSortTextClass('pointsTrading')}>{t('ranked.mutagenTrading')}</span>
                     <SortIcon field="pointsTrading" />
                 </button>,
             );
@@ -458,7 +460,7 @@ export default function MutagenLeaderboardAnniversary({
                 className={getSortButtonClass('tickets')}
                 key="tickets"
             >
-                <span className={getSortTextClass('tickets')}>Tickets</span>
+                <span className={getSortTextClass('tickets')}>{t('ranked.tickets')}</span>
                 <SortIcon field="tickets" />
             </button>,
         );

@@ -2,7 +2,8 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo,useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import jtoLogo from '@/../../public/images/jito-logo-2.png';
@@ -81,6 +82,7 @@ export default function FactionsLeaderboards({
     useState<UserProfileExtended | null>(null);
 
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
+  const { t } = useTranslation();
   const leaderboardData = useFactionsData({ allUserProfilesMetadata });
 
   const [rewardsAs, setRewardsAs] = useState<'tokens' | 'usd'>('tokens');
@@ -267,7 +269,7 @@ export default function FactionsLeaderboards({
 
         <div className="w-full flex justify-center items-center flex-col gap-6">
           <div className="text-xxs tracking-widest text-txtfade w-1/2 text-center uppercase">
-            DAMAGE THE BOSS AND UNLOCK ADX, BONK AND JTO REWARDS
+            {t('ranked.damageTheBossAndUnlockRewards')}
           </div>
 
           <div className="flex h-[2em] items-center justify-center gap-4 opacity-80">
@@ -437,7 +439,7 @@ export default function FactionsLeaderboards({
                 )}
                 onClick={() => setRewardsAs('tokens')}
               >
-                in tokens
+                {t('ranked.inTokens')}
               </div>
               <div className="text-xs text-txtfade">/</div>
               <div
@@ -447,7 +449,7 @@ export default function FactionsLeaderboards({
                 )}
                 onClick={() => setRewardsAs('usd')}
               >
-                in us dollar
+                {t('ranked.inUsdollar')}
               </div>
             </div>
           </div>
@@ -456,7 +458,7 @@ export default function FactionsLeaderboards({
         <div className="w-full h-[1px] bg-bcolor" />
 
         <div className="font-semibold text-sm tracking-[0.2rem] uppercase">
-          DAMAGE METER
+          {t('ranked.damageMeter')}
         </div>
 
         <DamageBar

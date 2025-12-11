@@ -1,6 +1,7 @@
 import { StaticRequire } from 'next/dist/shared/lib/get-img-props';
 import Image, { StaticImageData } from 'next/image';
 import { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import diceImage from '@/../public/images/dice.svg';
@@ -202,6 +203,7 @@ export default function AwakeningWeeklyReward({
     wallet,
     handleProfileView,
 }: WeeklyRewardProps) {
+    const { t } = useTranslation();
     const connectedWalletTickets = useMemo(() => {
         if (!wallet) {
             return { fees: 0, jito: 0 };
@@ -223,7 +225,7 @@ export default function AwakeningWeeklyReward({
 
     const rewards = useMemo(() => [
         {
-            title: 'Top Liquidation',
+            title: t('ranked.topLiquidation'),
             trader: allAchievements.biggestLiquidation.addresses[week],
             result: allAchievements.biggestLiquidation.liquidationAmounts[week] ?
                 Number(allAchievements.biggestLiquidation.liquidationAmounts[week]) :
@@ -232,10 +234,10 @@ export default function AwakeningWeeklyReward({
             reward: allAchievements.biggestLiquidation.reward,
             rewardToken: allAchievements.biggestLiquidation.rewardToken,
             rewardImage: window.adrena.client.adxToken.image,
-            description: 'The trader with the single highest liquidation amount for the week.',
+            description: t('ranked.biggestLiquidationDescription'),
         },
         {
-            title: 'Fees Raffle',
+            title: t('ranked.feesRaffle'),
             allTraders: allAchievements.feesTickets.addresses[week],
             trader: (allAchievements.feesTickets.winner ?? [])[week] ?? null,
             totalTickets: allAchievements.feesTickets.totalTickets[week],
@@ -244,10 +246,10 @@ export default function AwakeningWeeklyReward({
             reward: allAchievements.feesTickets.reward,
             rewardToken: allAchievements.feesTickets.rewardToken,
             rewardImage: window.adrena.client.adxToken.image,
-            description: 'Each $50 fees paid give you an entry. Winner picked at the end of the week.',
+            description: t('ranked.feesRaffleDescription'),
         },
         {
-            title: 'Leverage Monster',
+            title: t('ranked.topDegen'),
             trader: allAchievements.topDegen.addresses[week],
             result: allAchievements.topDegen.pnlAmounts[week] ?
                 Number(allAchievements.topDegen.pnlAmounts[week]) :
@@ -256,10 +258,10 @@ export default function AwakeningWeeklyReward({
             reward: allAchievements.topDegen.reward,
             rewardToken: allAchievements.topDegen.rewardToken,
             rewardImage: window.adrena.client.adxToken.image,
-            description: 'Highest PnL on a 100x initial-leverage position, w/o further increase. Add/remove collateral accepted.',
+            description: t('ranked.topDegenDescription'),
         },
         {
-            title: 'SOL Volume Raffle',
+            title: t('ranked.solVolumeRaffle'),
             allTraders: allAchievements.jitosolTickets.addresses[week],
             trader: (allAchievements.jitosolTickets.winner ?? [])[week] ?? null,
             totalTickets: allAchievements.jitosolTickets.totalTickets[week],
@@ -268,9 +270,9 @@ export default function AwakeningWeeklyReward({
             reward: allAchievements.jitosolTickets.reward,
             rewardToken: allAchievements.jitosolTickets.rewardToken,
             rewardImage: window.adrena.client.adxToken.image,
-            description: 'Each $100k volume of SOL traded give you an entry. Winner picked at the end of the week.',
+            description: t('ranked.solVolumeRaffleDescription'),
         },
-    ], [allAchievements, week, connectedWalletTickets]);
+    ], [allAchievements, week, connectedWalletTickets, t]);
 
     return (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

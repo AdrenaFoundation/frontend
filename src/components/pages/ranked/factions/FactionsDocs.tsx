@@ -1,10 +1,13 @@
 import 'tippy.js/dist/tippy.css';
 
+import { useTranslation } from 'react-i18next';
+
 export default function FactionsDocs({
   showLegacySections = true,
 }: {
   showLegacySections?: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-4">
       {showLegacySections && (
@@ -27,29 +30,26 @@ export default function FactionsDocs({
                   />
                 </svg>
               </div>
-              <div className="font-bold text-lg text-white">Rewards</div>
+              <div className="font-bold text-lg text-white">{t('ranked.docsRewards')}</div>
             </div>
 
             <div className="w-full h-[1px] bg-[#333]" />
 
             <div className="flex flex-col text-base gap-2">
               <div className="text-[#bbb] leading-relaxed">
-                Season 2 rewards are{' '}
-                <span className="text-yellow-400 font-bold">DOUBLED</span>—earn
-                weekly payouts plus massive end-of-season bonuses!
+                {t('ranked.docsRewardsDescription1Part1')}{' '}
+                <span className="text-yellow-400 font-bold">
+                  {t('ranked.docsRewardsDescription1Doubled')}
+                </span>
+                {t('ranked.docsRewardsDescription1Part2')}
               </div>
 
               <div className="text-[#bbb] leading-relaxed">
-                Unlike Season 1&apos;s fixed prize pool, Season 2 features a
-                dynamic prize pool that unlocks progressively across 10
-                action-packed weeks.
+                {t('ranked.docsRewardsDescription2')}
               </div>
 
               <div className="text-[#bbb] leading-relaxed">
-                Attack the boss with mutagens to unlock rewards. Each health bar
-                you destroy releases weekly ADX/JTO/BONK rewards and seasonal
-                ADX bonuses. Defeat the boss every week to claim the full prize
-                pool!
+                {t('ranked.docsRewardsDescription3')}
               </div>
             </div>
           </div>
@@ -71,48 +71,49 @@ export default function FactionsDocs({
                   <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
                 </svg>
               </div>
-              <div className="font-bold text-lg text-white">Officers</div>
+              <div className="font-bold text-lg text-white">
+                {t('ranked.docsOfficers')}
+              </div>
             </div>
 
             <div className="w-full h-[1px] bg-[#333]" />
 
             <div className="flex flex-col text-base gap-2">
               <div className="text-[#bbb] leading-relaxed">
-                Each faction has 3 commanding officers: a{' '}
-                <span className="text-blue-400">General</span>, a{' '}
-                <span className="text-blue-300">Lieutenant</span>, and a{' '}
-                <span className="text-blue-200">Sergeant</span>.
+                {t('ranked.docsOfficersDescription1Part1')}{' '}
+                <span className="text-blue-400">
+                  {t('ranked.docsOfficersGeneral')}
+                </span>
+                {t('ranked.docsOfficersDescription1Part2')}{' '}
+                <span className="text-blue-300">
+                  {t('ranked.docsOfficersLieutenant')}
+                </span>
+                {t('ranked.docsOfficersDescription1Part3')}{' '}
+                <span className="text-blue-200">
+                  {t('ranked.docsOfficersSergeant')}
+                </span>
+                {t('ranked.docsOfficersDescription1Part4')}
               </div>
 
               <div className="text-[#bbb] leading-relaxed">
-                Officers must complete 3 weekly mutagen generation targets to
-                maximize their team&apos;s pillage potential and activate
-                powerful mutagen self-referrals.
+                {t('ranked.docsOfficersDescription2')}
               </div>
 
               <div className="text-[#bbb] leading-relaxed">
-                First week officers are selected from the top 6 traders during
-                interseason.
+                {t('ranked.docsOfficersDescription3')}
               </div>
 
               <div className="text-[#bbb] leading-relaxed mt-1">
-                Leadership can change weekly through a ruthless promotion
-                system:
+                {t('ranked.docsOfficersDescription4')}
               </div>
               <div className="text-[#bbb] leading-relaxed pl-4">
-                → Lieutenants who generate{' '}
-                <span className="text-blue-300 font-regular">2×</span> their
-                General&apos;s mutagen seize command.
+                {t('ranked.docsOfficersPromotion1')}
               </div>
               <div className="text-[#bbb] leading-relaxed pl-4">
-                → Sergeants who produce{' '}
-                <span className="text-blue-300 font-regular">3×</span> their
-                Lieutenant&apos;s mutagen earn promotion.
+                {t('ranked.docsOfficersPromotion2')}
               </div>
               <div className="text-[#bbb] leading-relaxed pl-4">
-                → Any faction member generating{' '}
-                <span className="text-blue-300 font-regular">4×</span> their
-                Sergeant&apos;s mutagen claims the officer role.
+                {t('ranked.docsOfficersPromotion3')}
               </div>
             </div>
           </div>
@@ -133,31 +134,26 @@ export default function FactionsDocs({
                   />
                 </svg>
               </div>
-              <div className="font-bold text-lg text-white">Weekly Trading</div>
+              <div className="font-bold text-lg text-white">{t('ranked.docsWeeklyTrading')}</div>
             </div>
 
             <div className="w-full h-[1px] bg-[#333]" />
 
             <div className="flex flex-col text-base gap-2">
               <div className="text-[#bbb] leading-relaxed">
-                Only trades that are both{' '}
+                {t('ranked.docsWeeklyTradingDescription1Part1')}{' '}
                 <span className="text-yellow-400 font-bold">
-                  opened AND closed
+                  {t('ranked.docsWeeklyTradingOpenedAndClosed')}
                 </span>{' '}
-                within the same weekly period (
-                <span className="text-yellow-400 font-regular">
-                  Saturday 12:00:00 AM UTC to Friday 11:59:59 PM UTC
+                {t('ranked.docsWeeklyTradingDescription1Part2')}
+                <span className="text-yellow-400">
+                  {t('ranked.docsWeeklyTradingPeriod')}
                 </span>
-                ) will count toward that week&apos;s mutagen generation and
-                leaderboard rankings.
+                {t('ranked.docsWeeklyTradingDescription1Part3')}
               </div>
 
               <div className="text-[#bbb] leading-relaxed">
-                Trades carried over from previous weeks or left open at
-                week&apos;s end will{' '}
-                <span className="text-red-400">not contribute</span> to your
-                weekly score. Plan your trading strategy accordingly to maximize
-                your impact!
+                {t('ranked.docsWeeklyTradingDescription2')}
               </div>
             </div>
           </div>
@@ -185,98 +181,70 @@ export default function FactionsDocs({
                   />
                 </svg>
               </div>
-              <div className="font-bold text-lg text-white">Pillage</div>
+              <div className="font-bold text-lg text-white">{t('ranked.docsPillage')}</div>
             </div>
 
             <div className="w-full h-[1px] bg-[#333]" />
 
             <div className="flex flex-col text-base gap-2">
               <div className="text-[#bbb] leading-relaxed">
-                After each battle week, damage differential determines pillage
-                potential. The dominant team can raid up to{' '}
-                <span className="text-white font-regular">30%</span> of enemy
-                rewards—if their officers fulfilled their weekly mutagen
-                generation targets.
+                {t('ranked.docsPillageDescription1Part1')}{' '}
+                <span className="text-white font-bold">
+                  {t('ranked.docsPillage30Percent')}
+                </span>{' '}
+                {t('ranked.docsPillageDescription1Part2')}
               </div>
 
               <div className="p-3 rounded-md mt-1 border border-[#222]">
-                <div className="text-white mb-1">Example 1: Total Victory</div>
-                <div className="text-[#bbb] leading-relaxed">
-                  Team <span className="text-[#5AA6FA] font-regular">JITO</span>
-                  : <span className="text-[#e47dbb]">200</span> mutagen damage |
-                  Team <span className="text-[#FA6724] font-regular">BONK</span>
-                  : <span className="text-[#e47dbb]">150</span> mutagen damage
-                </div>
-                <div className="text-[#bbb] leading-relaxed pl-4">
-                  → <span className="text-[#5AA6FA] font-regular">JITO</span>
-                  &apos;s <span className="text-white font-regular">33%</span>{' '}
-                  damage advantage + completed officer goals giving a max cap of{' '}
-                  <span className="text-white font-regular">30%.</span>
-                </div>
-                <div className="text-[#bbb] leading-relaxed pl-4">
-                  → Result:{' '}
-                  <span className="text-[#5AA6FA] font-regular">JITO</span>{' '}
-                  seizes the maximum{' '}
-                  <span className="text-white font-regular">30%</span> of{' '}
-                  <span className="text-[#FA6724] font-regular">BONK</span>
-                  &apos;s weekly rewards, adding them to their own treasure
-                  hoard.
-                </div>
+                <div className="text-white mb-1">{t('ranked.docsExample1Title')}</div>
+                <div
+                  className="text-[#bbb] leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: t('ranked.docsExample1Description1') }}
+                />
+                <div
+                  className="text-[#bbb] leading-relaxed pl-4"
+                  dangerouslySetInnerHTML={{ __html: t('ranked.docsExample1Description2') }}
+                />
+                <div
+                  className="text-[#bbb] leading-relaxed pl-4"
+                  dangerouslySetInnerHTML={{ __html: t('ranked.docsExample1Description3') }}
+                />
               </div>
 
               <div className="p-3 rounded-md mt-1 border border-[#222]">
                 <div className="text-white mb-1">
-                  Example 2: Partial Success
+                  {t('ranked.docsExample2Title')}
                 </div>
-                <div className="text-[#bbb] leading-relaxed">
-                  Team <span className="text-[#FA6724] font-regular">BONK</span>
-                  : <span className="text-[#e47dbb]">200</span> mutagen damage |
-                  Team <span className="text-[#5AA6FA] font-regular">JITO</span>
-                  : <span className="text-[#e47dbb]">150</span> mutagen damage.
-                </div>
-                <div className="text-[#bbb] leading-relaxed pl-4">
-                  → <span className="text-[#FA6724] font-regular">BONK</span>
-                  &apos;s <span className="text-white font-regular">33%</span>{' '}
-                  damage advantage, but officers only completed half their
-                  missions, giving a max cap of{' '}
-                  <span className="text-white font-regular">15%.</span>
-                </div>
-                <div className="text-[#bbb] leading-relaxed pl-4">
-                  → Result:{' '}
-                  <span className="text-[#FA6724] font-regular">BONK</span>{' '}
-                  pillages just{' '}
-                  <span className="text-white font-regular">15%</span> of{' '}
-                  <span className="text-[#5AA6FA] font-regular">JITO</span>
-                  &apos;s rewards—officer performance halved their raiding
-                  potential.
-                </div>
+                <div
+                  className="text-[#bbb] leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: t('ranked.docsExample2Description1') }}
+                />
+                <div
+                  className="text-[#bbb] leading-relaxed pl-4"
+                  dangerouslySetInnerHTML={{ __html: t('ranked.docsExample2Description2') }}
+                />
+                <div
+                  className="text-[#bbb] leading-relaxed pl-4"
+                  dangerouslySetInnerHTML={{ __html: t('ranked.docsExample2Description3') }}
+                />
               </div>
 
               <div className="p-3 rounded-md mt-1 border border-[#222]">
                 <div className="text-white mb-1">
-                  Example 3: Proportional Plunder
+                  {t('ranked.docsExample3Title')}
                 </div>
-                <div className="text-[#bbb] leading-relaxed">
-                  Team <span className="text-[#5AA6FA] font-regular">JITO</span>
-                  : <span className="text-[#e47dbb]">230</span> mutagen damage |
-                  Team <span className="text-[#FA6724] font-regular">BONK</span>
-                  : <span className="text-[#e47dbb]">200</span> mutagen damage
-                </div>
-                <div className="text-[#bbb] leading-relaxed pl-4">
-                  → <span className="text-[#5AA6FA] font-regular">JITO</span>
-                  &apos;s modest{' '}
-                  <span className="text-white font-regular">15%</span> damage
-                  advantage + fully completed officer goals, giving a max cap of{' '}
-                  <span className="text-white font-regular">30%.</span>
-                </div>
-                <div className="text-[#bbb] leading-relaxed pl-4">
-                  → Result:{' '}
-                  <span className="text-[#5AA6FA] font-regular">JITO</span>{' '}
-                  claims <span className="text-white font-regular">15%</span> of{' '}
-                  <span className="text-[#FA6724] font-regular">BONK</span>
-                  &apos;s rewards—pillage percentage matches their damage
-                  differential.
-                </div>
+                <div
+                  className="text-[#bbb] leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: t('ranked.docsExample3Description1') }}
+                />
+                <div
+                  className="text-[#bbb] leading-relaxed pl-4"
+                  dangerouslySetInnerHTML={{ __html: t('ranked.docsExample3Description2') }}
+                />
+                <div
+                  className="text-[#bbb] leading-relaxed pl-4"
+                  dangerouslySetInnerHTML={{ __html: t('ranked.docsExample3Description3') }}
+                />
               </div>
             </div>
           </div>

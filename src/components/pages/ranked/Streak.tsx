@@ -1,9 +1,10 @@
 import Image from 'next/image';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import wing from '@/../../public/images/wing.svg';
 
 export default function Streak() {
+    const { t } = useTranslation();
     return (
         <div className="flex flex-col gap-3 bg-[#07131D] border p-5 rounded-md mt-4">
             <div className="flex flex-row items-center">
@@ -26,12 +27,12 @@ export default function Streak() {
                 </div>
 
                 <div className="flex flex-col gap-2 items-center justify-center text-center p-3">
-                    <p className="text-lg font-semibold">Trade for 7 consecutive days</p>
+                    <p className="text-lg font-semibold">{t('ranked.tradeFor7ConsecutiveDays')}</p>
                     <p className="opacity-50 font-mono text-[#e47dbb]">+1 / 7 days</p>
                 </div>
 
                 <div className="flex flex-col gap-2 items-center justify-center text-center p-3">
-                    <p className="text-lg font-semibold">Trade for 30 consecutive days</p>
+                    <p className="text-lg font-semibold">{t('ranked.tradeFor30ConsecutiveDays')}</p>
                     <p className="opacity-50 font-mono text-[#e47dbb]">+2 / 30 days</p>
                 </div>
             </div>

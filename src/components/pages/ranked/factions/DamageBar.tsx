@@ -1,5 +1,6 @@
 import Tippy from "@tippyjs/react";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { twMerge } from "tailwind-merge";
 
 import { whiteColor } from "@/constant";
@@ -17,6 +18,7 @@ export default function DamageBar({
     pillageBonkPercentage: number;
     pillageJitoPercentage: number;
 }) {
+    const { t } = useTranslation();
     const bonkPercentage = useMemo(() => {
         if (bonkMutagen === 0 && jitoMutagen === 0) return 50;
         if (bonkMutagen === jitoMutagen) return 50;
@@ -134,34 +136,40 @@ export default function DamageBar({
                 )}
                 style={{ color: isBalanced ? whiteColor : dominanceColor }}
             >
-                {isBalanced ? "NO TEAM DOMINATING" : `${dominantTeam} TEAM ${pillagePercentage >= 15 ? 'DOMINATING' : 'LEADING'}`}
+                {isBalanced ? t('ranked.noTeamDominating') : `${dominantTeam} ${t('ranked.team')} ${pillagePercentage >= 15 ? t('ranked.teamDominating').replace('TEAM ', '') : t('ranked.teamLeading').replace('TEAM ', '')}`}
             </div>
 
             {isBalanced ?
                 <div className='text-xxs tracking-widest text-txtfade w-1/2 text-center uppercase'>
-                    TEAM WITH MOST DAMAGE GET MOST OF THE REWARDS, <Tippy content={<div>
-                        <p>Each team gets 50% of the rewards. On top of that, there&apos;s a mechanism where the team dealing more damage can <strong>pillage up to 30%</strong> of the opposing team&apos;s rewards.</p>
+                    {t('ranked.teamWithMostDamage')} <Tippy content={<div>
+                        <p dangerouslySetInnerHTML={{ __html: t('ranked.balancedTooltipPart1') }} />
 
-                        <p className='mt-2'>The exact percentage depends on two factors:</p>
+                        <p className='mt-2'>{t('ranked.balancedTooltipPart2')}</p>
 
                         <div className='flex flex-col'>
-                            <p>1. Whether the officers hit their weekly goals</p>
-                            <p>2. Whether the team outdamaged the other by 30% or more</p>
+                            <p>{t('ranked.balancedTooltipFactor1')}</p>
+                            <p>{t('ranked.balancedTooltipFactor2')}</p>
                         </div>
                     </div>
                     }>
-                        <span className='underline-dashed text-xxs tracking-widest text-txtfade'>UP TO 65%</span>
-                    </Tippy> OF TOTAL REWARDS.
+                        <span className='underline-dashed text-xxs tracking-widest text-txtfade'>{t('ranked.upTo65Percent')}</span>
+                    </Tippy> {t('ranked.ofTotalRewards')}
                 </div>
                 :
                 <div className='text-xxs text-txtfade tracking-widest uppercase'>
-                    {dominantTeam} TEAM TO PILLAGE <Tippy content={<div>
-                        Due to {dominantTeam} team dealing {dominanceGap.toLocaleString(undefined, { maximumFractionDigits: 0 })} more damage and their officer unlocking up to {dominantTeam === 'BONK' ? pillageBonkPercentage : pillageJitoPercentage}% maximum pillage threshold, they can pillage {pillagePercentage.toFixed(0)}% of the {dominatedTeam} team&apos;s rewards.
+                    {dominantTeam} {t('ranked.team')} {t('ranked.toPillage')} <Tippy content={<div>
+                        {t('ranked.pillageTooltip', {
+                            team: dominantTeam,
+                            damage: dominanceGap.toLocaleString(undefined, { maximumFractionDigits: 0 }),
+                            maxPillage: dominantTeam === 'BONK' ? pillageBonkPercentage : pillageJitoPercentage,
+                            percentage: pillagePercentage.toFixed(0),
+                            enemyTeam: dominatedTeam
+                        })}
                     </div>}>
                         <span className="text-xxs text-txtfade tracking-widest uppercase underline-dashed">
                             {pillagePercentage.toFixed(0)}%
                         </span>
-                    </Tippy> OF {dominatedTeam} TEAM REWARDS
+                    </Tippy> {t('ranked.ofTeam')} {dominatedTeam} {t('ranked.team')} {t('ranked.teamRewards')}
                 </div>
             }
         </div>

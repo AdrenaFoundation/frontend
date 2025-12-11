@@ -2,6 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Modal from '@/components/common/Modal/Modal';
@@ -28,11 +29,12 @@ const numberDisplayClasses =
   'flex flex-col items-center justify-center bg-[#111922] border border-[#1F252F] rounded-md shadow-xl relative pl-4 pr-4 pt-3 pb-3 w-min-[9em] h-[4.5em]';
 
 export default function ExpanseLeaderboards() {
-  const [week, setWeek] = useState<string>('Week 1');
+  const { t } = useTranslation();
+  const [week, setWeek] = useState<string>(`${t('ranked.week')} 1`);
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
   const wallet = useSelector((s) => s.walletState.wallet);
   const leaderboardData = useExpanseData({ allUserProfilesMetadata });
-  const isMobile = useBetterMediaQuery('(max-width: 25em)');
+  const isMobile = useBetterMediaQuery('(max-width: 1024px)');
   const isLarge = useBetterMediaQuery('(min-width: 1500px)');
 
   useEffect(() => {
@@ -46,7 +48,7 @@ export default function ExpanseLeaderboards() {
     });
 
     if (week !== -1) {
-      setWeek(`Week ${week + 1}`);
+      setWeek(`${t('ranked.week')} ${week + 1}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!!leaderboardData]);
@@ -134,14 +136,16 @@ export default function ExpanseLeaderboards() {
 
           <div className="flex flex-col w-[25em] grow max-w-full">
             <div className="w-full uppercase text-center text-[1.2em] xl:text-[1.5em] font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4">
-              Grind weekly
+              {t('ranked.grindWeekly')}
             </div>
 
             <div className="flex flex-col gap-1 pb-8 text-sm text-center">
-              Battle weekly with mutagen to rank in the top 100 and earn season
-              points.
-              <br />
-              Only trades opened and closed within the weekly period count.
+              {t('ranked.grindWeeklyDescription').split('\n').map((line, index) => (
+                <span key={index}>
+                  {line}
+                  {index < t('ranked.grindWeeklyDescription').split('\n').length - 1 && <br />}
+                </span>
+              ))}
             </div>
 
             <div
@@ -150,7 +154,7 @@ export default function ExpanseLeaderboards() {
               )}
             >
               <NumberDisplay
-                title="Traders"
+                title={t('ranked.traders')}
                 nb={weeklyStats?.totalUsers ?? null}
                 format="number"
                 precision={0}
@@ -161,7 +165,7 @@ export default function ExpanseLeaderboards() {
               />
 
               <NumberDisplay
-                title="Volume"
+                title={t('ranked.volume')}
                 nb={weeklyStats?.totalVolume ?? null}
                 format="currency"
                 prefix="$"
@@ -177,7 +181,7 @@ export default function ExpanseLeaderboards() {
               />
 
               <NumberDisplay
-                title="Fees"
+                title={t('ranked.fees')}
                 nb={weeklyStats?.totalFees ?? null}
                 format="currency"
                 prefix="$"
@@ -203,21 +207,21 @@ export default function ExpanseLeaderboards() {
                 <div className="opacity-30 text-xs absolute right-4 top-[-2.4em]">
                   {Date.now() <= weekInfo.startDate.getTime() ? (
                     <div className="flex text-xs gap-1">
-                      <span className="text-xs font-semibold">Starts in</span>
+                      <span className="text-xs font-semibold">{t('ranked.startsIn')}</span>
                       <RemainingTimeToDate
                         timestamp={weekInfo.startDate.getTime() / 1000}
                         stopAtZero={true}
                       />
                     </div>
                   ) : Date.now() > weekInfo.endDate.getTime() ? (
-                    <p className="text-xs font-semibold">Week has ended</p>
+                    <p className="text-xs font-semibold">{t('ranked.weekHasEnded')}</p>
                   ) : (
                     <div className="flex text-xs gap-1">
                       <RemainingTimeToDate
                         timestamp={weekInfo.endDate.getTime() / 1000}
                         stopAtZero={true}
                       />
-                      <span className="text-xs font-semibold">left</span>
+                      <span className="text-xs font-semibold">{t('ranked.left')}</span>
                     </div>
                   )}
                 </div>
@@ -231,8 +235,8 @@ export default function ExpanseLeaderboards() {
                     content={
                       <div>
                         {userWeeklyRank === false
-                          ? 'You are not ranked. Earn Mutagen by trading, completing quests, and maintaining streaks and climb the ladder.'
-                          : `You are ranked #${userWeeklyRank} in this weekly leaderboard. Earn Mutagen by trading, completing quests, and maintaining streaks and climb the ladder.`}
+                          ? t('ranked.notRankedWeekly')
+                          : t('ranked.rankedWeekly', { rank: userWeeklyRank })}
                       </div>
                     }
                   >
@@ -251,7 +255,7 @@ export default function ExpanseLeaderboards() {
                       )}
                     >
                       {userWeeklyRank === false
-                        ? 'Unranked'
+                        ? t('ranked.unranked')
                         : `#${userWeeklyRank}`}
                     </div>
                   </Tippy>
@@ -267,7 +271,7 @@ export default function ExpanseLeaderboards() {
                   selected={week}
                   options={
                     leaderboardData?.weekLeaderboard.map((_, i) => ({
-                      title: `Week ${i + 1}`,
+                      title: `${t('ranked.week')} ${i + 1}`,
                     })) ?? []
                   }
                   onSelect={(week: string) => {
@@ -276,7 +280,7 @@ export default function ExpanseLeaderboards() {
                 />
 
                 <div className="text-xl font-semibold tracking-wider uppercase">
-                  Leaderboard
+                  {t('ranked.leaderboard')}
                 </div>
               </div>
 
@@ -311,14 +315,16 @@ export default function ExpanseLeaderboards() {
 
           <div className="flex flex-col w-[25em] grow max-w-full">
             <div className="w-full uppercase text-center text-[1.2em] xl:text-[1.5em] font-bold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] pb-4">
-              become the champion
+              {t('ranked.becomeChampion')}
             </div>
 
             <div className="flex flex-col gap-1 items-center justify-center text-center pb-8 text-sm">
-              At the end of the season, the top 100 traders will be crowned
-              champions.
-              <br />
-              The ranking is based on the Season Points earned.
+              {t('ranked.becomeChampionDescription').split('\n').map((line, index) => (
+                <span key={index}>
+                  {line}
+                  {index < t('ranked.becomeChampionDescription').split('\n').length - 1 && <br />}
+                </span>
+              ))}
             </div>
 
             <div
@@ -327,7 +333,7 @@ export default function ExpanseLeaderboards() {
               )}
             >
               <NumberDisplay
-                title="Traders"
+                title={t('ranked.traders')}
                 nb={seasonStats?.totalUsers ?? null}
                 format="number"
                 precision={0}
@@ -338,7 +344,7 @@ export default function ExpanseLeaderboards() {
               />
 
               <NumberDisplay
-                title="Volume"
+                title={t('ranked.volume')}
                 nb={seasonStats?.totalVolume ?? null}
                 format="currency"
                 prefix="$"
@@ -354,7 +360,7 @@ export default function ExpanseLeaderboards() {
               />
 
               <NumberDisplay
-                title="Fees"
+                title={t('ranked.fees')}
                 nb={seasonStats?.totalFees ?? null}
                 format="currency"
                 prefix="$"
@@ -379,8 +385,8 @@ export default function ExpanseLeaderboards() {
                     content={
                       <div>
                         {userSeasonRank === false
-                          ? 'You are not ranked. Earn season points in weekly leaderboards to climb the ladder.'
-                          : `You are ranked #${userSeasonRank} in the season. Earn season points in weekly leaderboards to climb the ladder.`}
+                          ? t('ranked.notRankedSeason')
+                          : t('ranked.rankedSeason', { rank: userSeasonRank })}
                       </div>
                     }
                   >
@@ -399,7 +405,7 @@ export default function ExpanseLeaderboards() {
                       )}
                     >
                       {userSeasonRank === false
-                        ? 'Unranked'
+                        ? t('ranked.unranked')
                         : `#${userSeasonRank}`}
                     </div>
                   </Tippy>
@@ -408,7 +414,7 @@ export default function ExpanseLeaderboards() {
 
               <div className="flex pt-4 pb-2 w-full items-center justify-center relative">
                 <div className="text-xl font-semibold tracking-wider uppercase">
-                  Season Leaderboard
+                  {t('ranked.seasonLeaderboard')}
                 </div>
               </div>
 

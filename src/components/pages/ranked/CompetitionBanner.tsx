@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import bonkLogo from '@/../../public/images/bonk.png';
@@ -44,6 +45,42 @@ export default function CompetitionBanner({
   bannerClassName: string;
   jtoPrice: number | null;
 }) {
+  const { t } = useTranslation();
+
+  // Map technical season keys to translated titles and subtitles
+  const getTranslatedTitle = (season: string, originalTitle: string | undefined) => {
+    switch (season) {
+      case 'awakening':
+        return t('ranked.awakening');
+      case 'expanse':
+        return t('ranked.expanse');
+      case 'factions':
+        return t('ranked.factions');
+      case 'interseason3':
+        return t('ranked.summerEvent');
+      case 'anniversary1':
+        return t('ranked.firstAnniversary');
+      default:
+        return originalTitle || '';
+    }
+  };
+
+  const getTranslatedSubTitle = (season: string, originalSubTitle: string | undefined) => {
+    switch (season) {
+      case 'awakening':
+        return t('ranked.preSeason');
+      case 'expanse':
+        return t('ranked.season1');
+      case 'factions':
+        return t('ranked.season2');
+      case 'interseason3':
+        return t('ranked.interseason');
+      case 'anniversary1':
+        return t('ranked.adrena');
+      default:
+        return originalSubTitle || '';
+    }
+  };
   const { days, hours, minutes, seconds } = useCountDown(new Date(), startDate);
 
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -65,54 +102,54 @@ export default function CompetitionBanner({
     usdcRewards,
   ]);
 
-    return (
-        <div className="relative z-20">
-            <div className={twMerge("relative flex flex-col items-center w-full border-b", bannerClassName)}>
-                <div className="mt-[4em]">
-                    <AnimatePresence>
-                        <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{}}
-                            key={title}
-                        >
-                            {seasonName === 'interseason3' || seasonName === 'anniversary1' ? <div
-                                className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-60"
-                                style={{
-                                    backgroundImage: `url(${banner})`,
-                                    backgroundOrigin: 'border-box',
-                                    backgroundPosition: 'center 20%'
-                                }}
-                            /> : <Image
-                                src={banner}
-                                alt="competition banner"
-                                className="absolute top-0 left-0 w-full h-full object-cover opacity-30"
-                                width={1040}
-                                height={1040}
-                            />}
-                        </motion.span>
-                    </AnimatePresence>
-                    <div className="absolute bottom-0 left-0 w-full h-[10em] bg-gradient-to-b from-transparent to-secondary z-10" />
-                    <div className="absolute top-0 right-0 w-[10em] h-full bg-gradient-to-r from-transparent to-secondary z-10" />
-                    <div className="absolute top-0 left-0 w-[10em] h-full bg-gradient-to-l from-transparent to-secondary z-10" />
-                </div>
+  return (
+    <div className="relative z-20">
+      <div className={twMerge("relative flex flex-col items-center w-full border-b", bannerClassName)}>
+        <div className="mt-[4em]">
+          <AnimatePresence>
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{}}
+              key={title}
+            >
+              {seasonName === 'interseason3' || seasonName === 'anniversary1' ? <div
+                className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-60"
+                style={{
+                  backgroundImage: `url(${banner})`,
+                  backgroundOrigin: 'border-box',
+                  backgroundPosition: 'center 20%'
+                }}
+              /> : <Image
+                src={banner}
+                alt="competition banner"
+                className="absolute top-0 left-0 w-full h-full object-cover opacity-30"
+                width={1040}
+                height={1040}
+              />}
+            </motion.span>
+          </AnimatePresence>
+          <div className="absolute bottom-0 left-0 w-full h-[10em] bg-gradient-to-b from-transparent to-secondary z-10" />
+          <div className="absolute top-0 right-0 w-[10em] h-full bg-gradient-to-r from-transparent to-secondary z-10" />
+          <div className="absolute top-0 left-0 w-[10em] h-full bg-gradient-to-l from-transparent to-secondary z-10" />
+        </div>
 
         {seasonName !== 'factions' ? (
           <div className="z-10 text-center">
-            <p className="text-lg tracking-[0.2rem] uppercase">{subTitle}</p>
+            <p className="text-lg tracking-[0.2rem] uppercase">{getTranslatedSubTitle(seasonName, subTitle)}</p>
             <h1
               className={twMerge(
                 'min-h-[6.6rem] sm:min-h-0 text-[2.2em] sm:text-[3em] md:text-[4em] font-archivoblack animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] tracking-[0.3rem]',
                 gradientColor,
               )}
             >
-              {title}
+              {getTranslatedTitle(seasonName, title)}
             </h1>
           </div>
         ) : (
           <div className="z-10 text-center">
-            <p className="text-lg tracking-[0.2rem] uppercase">{subTitle}</p>
+            <p className="text-lg tracking-[0.2rem] uppercase">{getTranslatedSubTitle(seasonName, subTitle)}</p>
             <div className="flex">
               <h1
                 className={twMerge(
@@ -120,7 +157,7 @@ export default function CompetitionBanner({
                   'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)]',
                 )}
               >
-                Fact
+                {seasonName === 'factions' ? t('ranked.factionsPart1') : 'Fact'}
               </h1>
               <h1
                 className={twMerge(
@@ -128,7 +165,7 @@ export default function CompetitionBanner({
                   'bg-[linear-gradient(110deg,#FA6724_40%,#FFD97C_60%,#FA6724)]',
                 )}
               >
-                ions
+                {seasonName === 'factions' ? t('ranked.factionsPart2') : 'ions'}
               </h1>
             </div>
           </div>
@@ -141,7 +178,7 @@ export default function CompetitionBanner({
                 {days >= 0 ? days : '–'}
               </p>
               <p className="text-center text-sm font-semibold tracking-widest">
-                Days
+                {t('ranked.days')}
               </p>
             </li>
             <li className="h-full w-[1px] bg-gradient-to-b from-[#999999]/0 via-[#CCCCCC] to–[#999999]/0 rounded-full" />
@@ -150,7 +187,7 @@ export default function CompetitionBanner({
                 {Number(hours) >= 0 ? hours : '–'}
               </p>
               <p className="text-center text-sm font-semibold tracking-widest">
-                Hours
+                {t('ranked.hours')}
               </p>
             </li>
             <li className="h-full w-[1px] bg-gradient-to-b from-[#999999]/0 via-[#CCCCCC] to–[#999999]/0 rounded-full" />
@@ -159,7 +196,7 @@ export default function CompetitionBanner({
                 {Number(minutes) >= 0 ? minutes : '–'}
               </p>
               <p className="text-center text-sm font-semibold tracking-widest">
-                Minutes
+                {t('ranked.minutes')}
               </p>
             </li>
             <li className="h-full w-[1px] bg-gradient-to-b from-[#999999]/0 via-[#CCCCCC] to–[#999999]/0 rounded-full" />
@@ -168,7 +205,7 @@ export default function CompetitionBanner({
                 {Number(seconds) >= 0 ? seconds : '–'}
               </p>
               <p className="text-center text-sm font-semibold tracking-widest">
-                seconds
+                {t('ranked.seconds')}
               </p>
             </li>
           </ul>
@@ -177,7 +214,7 @@ export default function CompetitionBanner({
         {adxRewards + jtoRewards + bonkRewards + usdcRewards > 0 ? (
           <div className="flex flex-col sm:mt-8 z-10 items-center">
             <div className="text-xs font-thin text-txtfade tracking-wider">
-              {seasonName === 'factions' ? 'MAX' : null} PRIZE POOL
+              {seasonName === 'factions' ? 'MAX' : null} {t('ranked.prizePool')}
             </div>
 
             <div
@@ -228,19 +265,19 @@ export default function CompetitionBanner({
               <div className="flex gap-1 rounded-md pt-2 pb-2 pl-4 pr-4">
                 {seasonName === 'anniversary1' ? (
                   <div className="text-xs text-txtfade uppercase tracking-wider">
-                    Distributed in ADX
+                    {t('ranked.distributedInAdx')}
                   </div>
                 ) : null}
 
-                            {adxRewards > 0 ?
-                                <div className="flex flex-row gap-1 items-center justify-center">
-                                    <Image
-                                        src={window.adrena.client.adxToken.image}
-                                        alt="ADX logo"
-                                        className="w-4 h-4"
-                                        width={16}
-                                        height={16}
-                                    />
+                {adxRewards > 0 ?
+                  <div className="flex flex-row gap-1 items-center justify-center">
+                    <Image
+                      src={window.adrena.client.adxToken.image}
+                      alt="ADX logo"
+                      className="w-4 h-4"
+                      width={16}
+                      height={16}
+                    />
 
                     <FormatNumber
                       format="number"
@@ -319,7 +356,7 @@ export default function CompetitionBanner({
                 : 'mt-[4em]',
             )}
           >
-            <p className="tracking-[0.2rem] uppercase">Sponsored by</p>
+            <p className="tracking-[0.2rem] uppercase">{t('ranked.sponsoredBy')}</p>
 
             <Image
               src={jitoLogo}
@@ -331,7 +368,7 @@ export default function CompetitionBanner({
 
             {seasonName === 'factions' || seasonName === 'interseason3' ? (
               <>
-                <p className="tracking-[0.2rem] uppercase">And</p>
+                <p className="tracking-[0.2rem] uppercase">{t('ranked.and')}</p>
 
                 <Image
                   src={bonkLogo}
@@ -362,12 +399,12 @@ export default function CompetitionBanner({
                   tippyText=""
                 />
                 <span className="ml-2 text-base font-semibold tracking-widest">
-                  left
+                  {t('ranked.left')}
                 </span>
               </>
             ) : (
               <span className="font-semibold tracking-widest text-sm">
-                Begins{' '}
+                {t('ranked.begins')}{' '}
                 {startDate.toLocaleDateString('en-US', {
                   month: 'short',
                   day: 'numeric',
@@ -377,19 +414,19 @@ export default function CompetitionBanner({
             )
           ) : (
             <span className="font-semibold tracking-widest text-sm">
-              Competition has ended
+              {t('ranked.competitionHasEnded')}
             </span>
           )}
         </div>
 
-                <Image
-                    src={timerBg}
-                    alt="background graphic"
-                    className="w-[300px] h-auto rotate-[180deg]"
-                    width={0}
-                    height={0}
-                    style={{ width: '300px', height: 'auto' }}
-                />
-            </div>
-        </div>);
+        <Image
+          src={timerBg}
+          alt="background graphic"
+          className="w-[300px] h-auto rotate-[180deg]"
+          width={0}
+          height={0}
+          style={{ width: '300px', height: 'auto' }}
+        />
+      </div>
+    </div>);
 }
