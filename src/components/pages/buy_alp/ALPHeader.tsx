@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import useAPR from '@/hooks/useAPR';
@@ -7,6 +8,7 @@ import useMainPool from '@/hooks/useMainPool';
 import { useSelector } from '@/store/store';
 
 export default function ALPHeader() {
+  const { t } = useTranslation();
   const { aprs } = useAPR();
   const mainPool = useMainPool();
   const tokenPriceALP = useSelector((s) => s.tokenPrices.ALP);
@@ -59,7 +61,7 @@ export default function ALPHeader() {
           <FormatNumber
             nb={mainPool?.aumUsd}
             format="currency"
-            prefix="Total TVL: "
+            prefix={t('alp.totalTvl') + ' '}
             className="text-sm font-mono opacity-50"
           />
 
@@ -67,7 +69,7 @@ export default function ALPHeader() {
             <FormatNumber
               nb={poolUsage?.totalUsageUsd}
               format="currency"
-              prefix="Pool Usage: "
+              prefix={t('alp.poolUsage') + ' '}
               className="text-sm font-mono opacity-50"
             />
             {poolUsage && poolUsage.totalUsagePercentage !== null ? (
