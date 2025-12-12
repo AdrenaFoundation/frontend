@@ -3,6 +3,7 @@ import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import InputString from '@/components/common/inputString/InputString';
@@ -50,6 +51,7 @@ export default function WalletDigger({
 }: {
   view: string;
 } & PageProps) {
+  const { t } = useTranslation();
   const [activeProfile, setActiveProfile] =
     useState<UserProfileExtended | null>(null);
   const [moreStakingInfo, setMoreStakingInfo] = useState(false);
@@ -261,7 +263,7 @@ export default function WalletDigger({
         setV(!v);
       }}
     >
-      {v ? 'hide' : 'see'} details
+      {v ? t('monitoring.hideDetails') : t('monitoring.seeDetails')}
       <Image
         className={twMerge(
           `h-6 w-6`,
@@ -284,7 +286,7 @@ export default function WalletDigger({
           <div className="flex flex-col w-full items-center justify-center gap-2 relative h-[15em]">
             {snsDomain ? (
               <Tippy
-                content="Registered Domain through Solana Name Service (SNS)"
+                content={t('monitoring.registeredDomainSns')}
                 className="!text-xs !font-semibold"
                 placement="auto"
               >
@@ -302,7 +304,7 @@ export default function WalletDigger({
                 </div>
               </Tippy>
             ) : null}
-            <div>Target Wallet</div>
+            <div>{t('monitoring.targetWallet')}</div>
 
             {targetWalletPubkey ? (
               <OnchainAccountInfo
@@ -333,7 +335,7 @@ export default function WalletDigger({
                 setTargetWallet(null);
               }}
             >
-              reset
+              {t('monitoring.reset')}
             </div>
           </div>
 
@@ -363,14 +365,14 @@ export default function WalletDigger({
             className="p-2 w-full relative"
             bodyClassName="gap-1"
           >
-            <h1 className="ml-auto mr-auto">STAKING</h1>
+            <h1 className="ml-auto mr-auto">{t('monitoring.staking')}</h1>
 
             {moreStakingInfo ? (
               <div
                 className="absolute top-2 right-2 cursor-pointer text-txtfade text-sm underline pr-2"
                 onClick={() => setMoreStakingInfo(false)}
               >
-                hide details
+                {t('monitoring.hideDetails')}
               </div>
             ) : null}
 
@@ -378,7 +380,7 @@ export default function WalletDigger({
 
             <div className="flex gap-y-4 mt-2 flex-wrap">
               <NumberDisplay
-                title="LIQUID STAKED ADX"
+                title={t('monitoring.liquidStakedAdx')}
                 nb={
                   stakingAccounts?.ADX?.liquidStake.amount
                     ? nativeToUi(
@@ -397,7 +399,7 @@ export default function WalletDigger({
               />
 
               <NumberDisplay
-                title="LOCKED STAKED ADX"
+                title={t('monitoring.lockedStakedAdx')}
                 nb={totalStakedAdx}
                 format="number"
                 suffix="ADX"
@@ -410,7 +412,7 @@ export default function WalletDigger({
 
               {totalStakedAlp > 0 ? (
                 <NumberDisplay
-                  title="LOCKED STAKED ALP"
+                  title={t('monitoring.lockedStakedAlp')}
                   nb={totalStakedAlp}
                   format="number"
                   suffix="ALP"
@@ -434,7 +436,7 @@ export default function WalletDigger({
               ) : (
                 <>
                   <NumberDisplay
-                    title="TOTAL CLAIMED USDC"
+                    title={t('monitoring.totalClaimedUsdc')}
                     nb={allTimeClaimedUsdc}
                     format="currency"
                     precision={0}
@@ -442,11 +444,11 @@ export default function WalletDigger({
                     bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
                     headerClassName="pb-2"
                     titleClassName="text-[0.7em] sm:text-[0.7em]"
-                    tippyInfo={`Total amount of USDC that has been claimed by the wallet.
+                    tippyInfo={`${t('monitoring.totalClaimedUsdcTooltip')}
                                 ADX: ${Math.round(allTimeClaimedUsdcAdx)} | ALP: ${Math.round(allTimeClaimedUsdcAlp)}`}
                   />
                   <NumberDisplay
-                    title="TOTAL CLAIMED ADX"
+                    title={t('monitoring.totalClaimedAdx')}
                     nb={allTimeClaimedAdx}
                     format="number"
                     suffix="ADX"
@@ -455,7 +457,7 @@ export default function WalletDigger({
                     bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
                     headerClassName="pb-2"
                     titleClassName="text-[0.7em] sm:text-[0.7em]"
-                    tippyInfo={`Total amount of ADX that has been claimed by the wallet.
+                    tippyInfo={`${t('monitoring.totalClaimedAdxTooltip')}
                                 ADX: ${Math.round(allTimeClaimedAdxAdx)} | ALP: ${Math.round(allTimeClaimedAdxAlp)}`}
                   />
                 </>
@@ -466,7 +468,7 @@ export default function WalletDigger({
               <>
                 <div className="w-full h-[1px] bg-bcolor mt-2" />
 
-                <h4 className="ml-4 mt-4">Staking List</h4>
+                <h4 className="ml-4 mt-4">{t('monitoring.stakingList')}</h4>
 
                 <div className="flex w-full pl-4 pr-4">
                   <div className="flex flex-col w-full">
@@ -503,7 +505,7 @@ export default function WalletDigger({
                     <div className="flex w-full gap-4 mt-2 flex-wrap">
                       <div className="flex flex-col w-[30em] grow">
                         <h4 className="ml-4 mt-4 mb-4">
-                          ADX Staking claim history
+                          {t('monitoring.adxStakingClaimHistory')}
                         </h4>
 
                         {paginatedAdxClaimsHistory?.map((claim) => (
@@ -528,7 +530,7 @@ export default function WalletDigger({
 
                       <div className="flex flex-col w-[30em] grow">
                         <h4 className="ml-4 mt-4 mb-4">
-                          ALP Staking claim history
+                          {t('monitoring.alpStakingClaimHistory')}
                         </h4>
 
                         {paginatedAlpClaimsHistory?.map((claim) => (
@@ -565,14 +567,14 @@ export default function WalletDigger({
             className="p-2 w-full relative"
             bodyClassName="gap-1"
           >
-            <h1 className="ml-auto mr-auto">POSITIONS</h1>
+            <h1 className="ml-auto mr-auto">{t('monitoring.positions')}</h1>
 
             {morePositionInfo ? (
               <div
                 className="absolute top-2 right-2 cursor-pointer text-txtfade text-sm underline pr-2"
                 onClick={() => setMorePositionInfo(false)}
               >
-                hide details
+                {t('monitoring.hideDetails')}
               </div>
             ) : null}
 
@@ -592,7 +594,7 @@ export default function WalletDigger({
               <>
                 <div className="w-full h-[1px] bg-bcolor mt-2" />
 
-                <h4 className="ml-4 mt-4 mb-4">Live Positions</h4>
+                <h4 className="ml-4 mt-4 mb-4">{t('monitoring.livePositions')}</h4>
 
                 <div className="flex flex-col w-full pl-4 pr-4">
                   <div className="flex flex-wrap justify-between gap-2">
@@ -608,13 +610,13 @@ export default function WalletDigger({
                       </div>
                     ) : (
                       <div className="text-center w-full py-4 opacity-50">
-                        No positions 📭
+                        {t('monitoring.noPositions')}
                       </div>
                     )}
                   </div>
                 </div>
 
-                <h4 className="ml-4 mt-4 mb-4">History</h4>
+                <h4 className="ml-4 mt-4 mb-4">{t('monitoring.history')}</h4>
 
                 <div className="flex flex-col w-full pl-4 pr-4">
                   <PositionsHistory
@@ -638,7 +640,7 @@ export default function WalletDigger({
 
         {targetWalletPubkey && expanseRanking && awakeningRanking ? (
           <StyledContainer className="p-2 w-full" bodyClassName="gap-1">
-            <h1 className="ml-auto mr-auto">TRADING COMPETITION</h1>
+            <h1 className="ml-auto mr-auto">{t('monitoring.tradingCompetition')}</h1>
 
             <RankingStats
               expanseRanking={expanseRanking}
@@ -653,13 +655,13 @@ export default function WalletDigger({
 
         {targetWalletPubkey && allRefereesProfiles !== null ? (
           <StyledContainer className="p-2 w-full" bodyClassName="gap-1">
-            <h1 className="ml-auto mr-auto">REFERRALS</h1>
+            <h1 className="ml-auto mr-auto">{t('monitoring.referrals')}</h1>
 
             <div className="w-full h-[1px] bg-bcolor mt-2" />
 
             <div className="flex w-full">
               <NumberDisplay
-                title="REFERRED PROFILES"
+                title={t('monitoring.referredProfiles')}
                 nb={allRefereesProfiles.length}
                 format="number"
                 precision={0}
@@ -670,7 +672,7 @@ export default function WalletDigger({
               />
 
               <NumberDisplay
-                title="CLAIMABLE REWARDS"
+                title={t('monitoring.claimableRewards')}
                 nb={userProfile ? userProfile.claimableReferralFeeUsd : 0}
                 format="currency"
                 precision={2}
@@ -681,7 +683,7 @@ export default function WalletDigger({
               />
 
               <NumberDisplay
-                title="TOTAL GENERATED"
+                title={t('monitoring.totalGenerated')}
                 nb={userProfile ? userProfile.totalReferralFeeUsd : 0}
                 format="currency"
                 precision={2}
@@ -724,7 +726,7 @@ export default function WalletDigger({
               {allRefereesProfiles !== null &&
                 allRefereesProfiles.length === 0 ? (
                 <div className="w-full items-center justify-center flex text-sm opacity-80 pt-8 pb-8">
-                  No referee yet.
+                  {t('monitoring.noRefereeYet')}
                 </div>
               ) : null}
             </div>

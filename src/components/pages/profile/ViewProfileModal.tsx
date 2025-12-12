@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import crossIcon from '@/../public/images/cross.svg';
 import Button from '@/components/common/Button/Button';
@@ -24,6 +25,7 @@ export default function ViewProfileModal({
   profile: UserProfileExtended;
   close: () => void;
 }) {
+  const { t } = useTranslation();
   const walletAddress = profile.owner.toBase58();
   const positions = usePositionsByAddress({
     walletAddress,
@@ -145,7 +147,7 @@ export default function ViewProfileModal({
 
         <div className="flex flex-col gap-3 p-4">
           <div className="flex flex-col gap-3">
-            <h4 className="capitalize font-semibold">Active Positions</h4>
+            <h4 className="capitalize font-semibold">{t('monitoring.activePositions')}</h4>
             <div className="flex flex-wrap justify-between gap-2">
               {positions !== null && positions.length ? (
                 <div className="flex flex-col w-full gap-2">
@@ -159,7 +161,7 @@ export default function ViewProfileModal({
                 </div>
               ) : (
                 <div className="text-center w-full py-4 opacity-50">
-                  No Active Positions
+                  {t('monitoring.noActivePositions')}
                 </div>
               )}
             </div>

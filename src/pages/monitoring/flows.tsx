@@ -3,6 +3,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
+import { useTranslation } from 'react-i18next';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -20,6 +21,7 @@ export default function Flow({
 }: {
   custodies: CustodyExtended[] | null;
 }) {
+  const { t } = useTranslation();
   const {
     groupedStats,
     activityCalendarData,
@@ -32,7 +34,7 @@ export default function Flow({
     isInitialLoad,
   } = usePositionStats();
 
-  const [selectedRange, setSelectedRange] = useState('All time');
+  const [selectedRange, setSelectedRange] = useState(t('monitoring.allTime'));
   const [profile, setProfile] = useState<UserProfileExtended | null>(null);
   const [showTopTraders, setShowTopTraders] = useState(false);
 
@@ -57,28 +59,28 @@ export default function Flow({
                   const date = new Date();
                   setEndDate(date.toISOString());
                   switch (value) {
-                    case 'All time':
+                    case t('monitoring.allTime'):
                       setStartDate('2024-09-25T00:00:00.000Z');
                       break;
-                    case 'Last 7 days':
+                    case t('monitoring.last7Days'):
                       const sevenDaysAgo = new Date();
                       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
                       sevenDaysAgo.setUTCHours(0, 0, 0, 0);
                       setStartDate(sevenDaysAgo.toISOString());
                       break;
-                    case 'Last 30 days':
+                    case t('monitoring.last30Days'):
                       const oneMonthAgo = new Date();
                       oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
                       oneMonthAgo.setUTCHours(0, 0, 0, 0);
                       setStartDate(oneMonthAgo.toISOString());
                       break;
-                    case 'Year to date':
+                    case t('monitoring.yearToDate'):
                       const startOfYear = new Date();
                       startOfYear.setMonth(0, 1);
                       startOfYear.setUTCHours(0, 0, 0, 0);
                       setStartDate(startOfYear.toISOString());
                       break;
-                    case 'Custom':
+                    case t('monitoring.custom'):
                       break;
                     default:
                       break;
@@ -90,18 +92,18 @@ export default function Flow({
                 menuTextClassName="text-xs"
                 menuClassName="w-28"
                 options={[
-                  { title: 'All time' },
-                  { title: 'Last 7 days' },
-                  { title: 'Last 30 days' },
-                  { title: 'Year to date' },
-                  { title: 'Custom' },
+                  { title: t('monitoring.allTime') },
+                  { title: t('monitoring.last7Days') },
+                  { title: t('monitoring.last30Days') },
+                  { title: t('monitoring.yearToDate') },
+                  { title: t('monitoring.custom') },
                 ]}
                 selected={selectedRange}
               />
             </div>
 
             <AnimatePresence>
-              {selectedRange === 'Custom' && (
+              {selectedRange === t('monitoring.custom') && (
                 <motion.div
                   initial={{ opacity: 0, width: 0 }}
                   animate={{ opacity: 1, width: 'auto' }}
@@ -122,7 +124,7 @@ export default function Flow({
                       maxDate={new Date()}
                     />
                   </div>
-                  <span className="text-xs text-gray-500">to</span>
+                  <span className="text-xs text-gray-500">{t('monitoring.to')}</span>
                   <div className="relative flex items-center bg-[#0A1117] rounded-md border border-gray-800/50">
                     <DatePicker
                       selected={new Date(endDate)}
@@ -234,7 +236,7 @@ export default function Flow({
                   <Button
                     onClick={() => setShowTopTraders(true)}
                     className="font-semibold rounded-md ml-auto mr-auto"
-                    title="Show Top 100 Traders"
+                    title={t('monitoring.showTop100Traders')}
                     variant="outline"
                     size="lg"
                     rounded={false}

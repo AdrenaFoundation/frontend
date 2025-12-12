@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
@@ -7,6 +8,7 @@ import DataApiClient from '@/DataApiClient';
 import { getGMT, periodModeToSeconds } from '@/utils';
 
 export default function UtilizationChart() {
+  const { t } = useTranslation();
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
@@ -209,7 +211,7 @@ export default function UtilizationChart() {
 
   return (
     <LineRechart
-      title="Utilization"
+      title={t('monitoring.utilization')}
       data={infos.formattedData}
       labels={Object.keys(infos.formattedData[0])
         .filter((key) => key !== 'time')

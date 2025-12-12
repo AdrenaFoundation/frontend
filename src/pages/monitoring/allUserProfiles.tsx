@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import chartIcon from '@/../public/images/Icons/chart-icon.svg';
 import listIcon from '@/../public/images/Icons/list-ul.svg';
@@ -22,6 +23,7 @@ import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
 type SortableKeys = 'pnl' | 'volume' | 'fees';
 
 export default function AllUserProfiles() {
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [sortConfigs, setSortConfigs] = useState<{
@@ -32,11 +34,11 @@ export default function AllUserProfiles() {
     volume: 'desc',
   });
 
-  const keys = {
-    pnl: 'pnl',
-    'trade volume': 'volume',
-    'fees paid': 'fees',
-  } as const;
+  const getKeys = () => ({
+    [t('monitoring.pnl')]: 'pnl',
+    [t('monitoring.tradeVolume')]: 'volume',
+    [t('monitoring.feesPaid')]: 'fees',
+  } as const);
 
   const [sortOrder, setSortOrder] = useState<string[]>([
     'pnl',
@@ -44,7 +46,7 @@ export default function AllUserProfiles() {
     'fees',
   ]);
 
-  const [viewPage, setViewPage] = useState<string>('List view');
+  const [viewPage, setViewPage] = useState<string>(t('monitoring.listView'));
 
   const [usernameFilter, setUsernameFilter] = useState('');
   const [ownerFilter, setOwnerFilter] = useState('');
@@ -121,19 +123,18 @@ export default function AllUserProfiles() {
     setPaginatedProfiles(paginated);
   }, [currentPage, filteredProfiles]);
 
-  const toggleSortOrder = (criteria: keyof typeof keys) => {
+  const toggleSortOrder = (criteria: string) => {
+    const keys = getKeys();
+    const key = keys[criteria as keyof typeof keys] as SortableKeys;
+
     setSortConfigs((prevConfigs) => ({
       ...prevConfigs,
-      [keys[criteria] as SortableKeys]:
-        prevConfigs[keys[criteria] as SortableKeys] === 'desc' ? 'asc' : 'desc',
+      [key]: prevConfigs[key] === 'desc' ? 'asc' : 'desc',
     }));
 
     setSortOrder((prevOrder) => {
-      const newOrder = prevOrder.filter(
-        (item) => item !== (keys[criteria] as SortableKeys),
-      );
-
-      return [keys[criteria] as SortableKeys, ...newOrder];
+      const newOrder = prevOrder.filter((item) => item !== key);
+      return [key, ...newOrder];
     });
   };
 
@@ -145,11 +146,11 @@ export default function AllUserProfiles() {
             <FilterSidebar
               views={[
                 {
-                  title: 'List view',
+                  title: t('monitoring.listView'),
                   icon: listIcon,
                 },
                 {
-                  title: 'Chart view',
+                  title: t('monitoring.chartView'),
                   icon: chartIcon,
                 },
               ]}
@@ -158,19 +159,19 @@ export default function AllUserProfiles() {
               searches={[
                 {
                   value: ownerFilter,
-                  placeholder: 'Filter by owner (pubkey)',
+                  placeholder: t('monitoring.filterByOwner'),
                   handleChange: setOwnerFilter,
                 },
                 {
                   value: usernameFilter,
-                  placeholder: 'Filter by username',
+                  placeholder: t('monitoring.filterByUsername'),
                   handleChange: setUsernameFilter,
                 },
               ]}
               filterOptions={[
                 {
                   type: 'radio',
-                  name: 'PnL',
+                  name: t('monitoring.pnl'),
                   activeOption: pnlFilter,
                   handleChange: (v: unknown) =>
                     setPnlFilter(v as 'all' | 'positive' | 'negative'),
@@ -179,7 +180,7 @@ export default function AllUserProfiles() {
                     { label: 'positive' },
                     { label: 'negative' },
                   ],
-                  disabled: viewPage === 'Chart view',
+                  disabled: viewPage === t('monitoring.chartView'),
                 },
               ]}
               sortOptions={{
@@ -188,26 +189,26 @@ export default function AllUserProfiles() {
                 >,
                 optionItems: [
                   {
-                    label: 'pnl',
+                    label: t('monitoring.pnl'),
                     order: sortConfigs.pnl,
                     lastClicked: sortOrder[0] === 'pnl',
                   },
                   {
-                    label: 'trade volume',
+                    label: t('monitoring.tradeVolume'),
                     order: sortConfigs.volume,
                     lastClicked: sortOrder[0] === 'volume',
                   },
                   {
-                    label: 'fees paid',
+                    label: t('monitoring.feesPaid'),
                     order: sortConfigs.fees,
                     lastClicked: sortOrder[0] === 'fees',
                   },
                 ],
-                disabled: viewPage === 'Chart view',
+                disabled: viewPage === t('monitoring.chartView'),
               }}
             />
 
-            {viewPage === 'List view' ? (
+            {viewPage === t('monitoring.listView') ? (
               <div className="w-full p-4">
                 <div className="mb-4 w-full">
                   <Button

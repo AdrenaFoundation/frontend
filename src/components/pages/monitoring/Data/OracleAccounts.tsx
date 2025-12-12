@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import { useTranslation } from 'react-i18next';
 
 import { AdrenaClient } from '@/AdrenaClient';
 import CopyButton from '@/components/common/CopyButton/CopyButton';
@@ -16,6 +17,7 @@ export default function OracleAccounts({
   custodies: CustodyExtended[];
   titleClassName?: string;
 }) {
+  const { t } = useTranslation();
   const pythProgramId = new PublicKey(
     'rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ',
   );
@@ -23,8 +25,8 @@ export default function OracleAccounts({
   return (
     <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
-        <p className={titleClassName}>Oracle Accounts</p>
-        <p className="text-base opacity-50">Oracle on-chain accounts (PDAs).</p>
+        <p className={titleClassName}>{t('monitoring.oracleAccounts')}</p>
+        <p className="text-base opacity-50">{t('monitoring.oracleOnchainAccounts')}</p>
       </div>
 
       <Table
@@ -41,9 +43,9 @@ export default function OracleAccounts({
                   notificationTitle="Pyth Program address copied to clipboard"
                   className="mr-2"
                 />
-                Pyth Program
+                {t('monitoring.pythProgram')}
                 <InfoAnnotation
-                  text="Account containing the source code of the Pyth smart contract."
+                  text={t('monitoring.pythProgramDesc')}
                   className="mr-1"
                 />
               </div>
@@ -66,7 +68,7 @@ export default function OracleAccounts({
                         notificationTitle={`${custody.tokenInfo.symbol} Oracle PDA address copied to clipboard`}
                         className="mr-2"
                       />
-                      {custody.tokenInfo.symbol} Oracle
+                      {custody.tokenInfo.symbol} {t('monitoring.oracle')}
                       <TitleAnnotation text="PDA" />
                     </div>
                   ),
@@ -88,7 +90,7 @@ export default function OracleAccounts({
                         notificationTitle={`${custody.tradeTokenInfo.symbol} Oracle PDA address copied to clipboard`}
                         className="mr-2"
                       />
-                      {custody.tradeTokenInfo.symbol} Oracle
+                      {custody.tradeTokenInfo.symbol} {t('monitoring.oracle')}
                       <TitleAnnotation text="PDA" />
                     </div>
                   ),

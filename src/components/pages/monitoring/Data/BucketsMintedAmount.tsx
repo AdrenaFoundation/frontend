@@ -1,6 +1,7 @@
 
 
 
+import { useTranslation } from 'react-i18next';
 import {
   Cell,
   Legend,
@@ -12,7 +13,9 @@ import {
 
 import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { Cortex } from '@/types';
+import {
+  Cortex
+} from '@/types';
 import {
   nativeToUi,
 } from '@/utils';
@@ -25,8 +28,9 @@ export default function BucketsMintedAmount({
   cortex: Cortex;
   titleClassName?: string;
 }) {
+  const { t } = useTranslation();
   const bucketNames = ['coreContributor', 'foundation', 'ecosystem'] as const;
-  const bucketsLabels = ['Core Contrib.', 'Foundation', 'Ecosystem'];
+  const bucketsLabels = [t('monitoring.coreContrib'), t('monitoring.foundation'), t('monitoring.ecosystem')];
   const colors = ['#9F8CAE', '#EB6672', '#7FD7C1'];
   const isBreakpoint = useBetterMediaQuery('(max-width: 500px)');
 

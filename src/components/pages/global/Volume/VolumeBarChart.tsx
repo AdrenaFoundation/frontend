@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScaleType } from 'recharts/types/util/types';
 
 import Loader from '@/components/Loader/Loader';
@@ -14,6 +15,7 @@ interface VolumeChartProps {
 }
 
 export default function VolumeBarChart({ isSmallScreen, yAxisBarScale }: VolumeChartProps) {
+  const { t } = useTranslation();
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
   const [period, setPeriod] = useState<'1M' | '3M' | '6M' | '1Y' | null>('6M');
   const periodRef = useRef(period);
@@ -197,11 +199,11 @@ export default function VolumeBarChart({ isSmallScreen, yAxisBarScale }: VolumeC
 
   return (
     <MixedBarLineChart
-      title={'Daily Volume'}
+      title={t('monitoring.dailyVolume')}
       data={chartData}
       labels={[
-        { name: 'Volume', color: '#cec161', type: 'bar' },
-        { name: 'Cumulative Volume', color: 'rgba(255, 255, 255, 0.7)', type: 'line' },
+        { name: t('monitoring.volume'), color: '#cec161', type: 'bar' },
+        { name: t('monitoring.cumulativeVolume'), color: 'rgba(255, 255, 255, 0.7)', type: 'line' },
       ]}
       period={period}
       setPeriod={setPeriod}

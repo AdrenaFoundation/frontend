@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
@@ -11,6 +12,7 @@ interface CumulativePnlChartProps {
 }
 
 export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
+  const { t } = useTranslation();
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
@@ -198,11 +200,11 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
 
   return (
     <LineRechart
-      title="Traders Realized PnL"
+      title={t('monitoring.tradersRealizedPnl')}
       subValue={totalRealizedPnl}
       data={infos.formattedData}
       labels={[
-        { name: 'Total', color: '#ff0000' },
+        { name: t('monitoring.total'), color: '#ff0000' },
         ...Object.keys(infos.formattedData[0])
           .filter((key) => key !== 'time' && key !== 'Total')
           .map((x, i) => ({

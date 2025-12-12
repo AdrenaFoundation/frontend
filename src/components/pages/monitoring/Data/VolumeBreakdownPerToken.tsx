@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
@@ -13,12 +14,13 @@ export default function VolumeBreakdownPerToken({
   custodies: CustodyExtended[];
   titleClassName?: string;
 }) {
+  const { t } = useTranslation();
   const attributes = Object.keys(custodies[0].nativeObject.volumeStats);
 
   return (
     <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
-        <p className={titleClassName}>Trading Volume Breakdown</p>
+        <p className={titleClassName}>{t('monitoring.tradingVolumeBreakdown')}</p>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4">
@@ -54,12 +56,12 @@ export default function VolumeBreakdownPerToken({
                     <p className={twMerge('text-txtfade text-base')}>
                       {
                         [
-                          'Swap',
-                          'Add Liq.',
-                          'Remove Liq.',
-                          'Open Pos.',
-                          'Close Pos.',
-                          'Liquidation',
+                          t('monitoring.swap'),
+                          t('monitoring.addLiq'),
+                          t('monitoring.removeLiq'),
+                          t('monitoring.openPos'),
+                          t('monitoring.closePos'),
+                          t('monitoring.liquidation'),
                         ][i]
                       }
                     </p>

@@ -171,7 +171,7 @@ export default function ALPSwapSell({
       // we set this error message because we do not get error message from anchor simulate
       setErrorMessage(t('alp.poolRatioReached'));
     }
-  }, [alpInput, collateralToken]);
+  }, [alpInput, collateralToken, t]);
 
   // Trigger calculations
   useEffect(() => {

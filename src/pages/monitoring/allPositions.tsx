@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import chartIcon from '@/../public/images/Icons/chart-icon.svg';
@@ -26,6 +27,7 @@ export default function AllPositions({
     isSmallScreen: boolean;
     view: string;
 }) {
+    const { t } = useTranslation();
     const wallet = useSelector((state) => state.walletState.wallet);
 
     const connected = !!wallet;
@@ -59,7 +61,7 @@ export default function AllPositions({
         PositionExtended[]
     >([]);
 
-    const [viewPage, setViewPage] = useState<string>('List view');
+    const [viewPage, setViewPage] = useState<string>('list');
 
     useEffect(() => {
         if (view !== 'livePositions') return;
@@ -79,6 +81,7 @@ export default function AllPositions({
                 pnlFilter === 'all' ||
                 (pnlFilter === 'profit' && position.pnl && position.pnl > 0) ||
                 (pnlFilter === 'loss' && position.pnl && position.pnl < 0);
+
             return matchesSide && matchesMint && matchesUser && matchesPnl;
         });
 
@@ -189,7 +192,7 @@ export default function AllPositions({
             <StyledContainer className="p-0">
                 <div className="flex flex-wrap justify-between">
                     <NumberDisplay
-                        title="POSITION COUNT"
+                        title={t('monitoring.positionCount')}
                         nb={allPositions.length}
                         format="number"
                         precision={0}
@@ -200,7 +203,7 @@ export default function AllPositions({
                     />
 
                     <NumberDisplay
-                        title="OPEN INTEREST"
+                        title={t('monitoring.openInterest')}
                         nb={sizeUsd}
                         format="currency"
                         precision={0}
@@ -211,7 +214,7 @@ export default function AllPositions({
                     />
 
                     <NumberDisplay
-                        title="UNREALIZED PNL"
+                        title={t('monitoring.unrealizedPnl')}
                         nb={unrealizedPnl}
                         format="currency"
                         precision={0}
@@ -222,7 +225,7 @@ export default function AllPositions({
                     />
 
                     <NumberDisplay
-                        title="UNREALIZED BORROW FEES"
+                        title={t('monitoring.unrealizedBorrowFees')}
                         nb={unrealizedBorrowFee}
                         format="currency"
                         precision={0}
@@ -233,7 +236,7 @@ export default function AllPositions({
                     />
 
                     <NumberDisplay
-                        title="UNREALIZED CLOSE FEES"
+                        title={t('monitoring.unrealizedCloseFees')}
                         nb={unrealizedCloseFee}
                         format="currency"
                         precision={0}
@@ -257,19 +260,25 @@ export default function AllPositions({
                             <FilterSidebar
                                 views={[
                                     {
-                                        title: 'List view',
+                                        title: t('monitoring.listView'),
                                         icon: listIcon,
                                     },
                                     {
-                                        title: 'Chart view',
+                                        title: t('monitoring.chartView'),
                                         icon: chartIcon,
                                     },
                                 ]}
-                                activeView={viewPage}
-                                handleViewChange={setViewPage}
+                                activeView={viewPage === 'list' ? t('monitoring.listView') : t('monitoring.chartView')}
+                                handleViewChange={(title) => {
+                                    if (title === t('monitoring.listView')) {
+                                        setViewPage('list');
+                                    } else if (title === t('monitoring.chartView')) {
+                                        setViewPage('chart');
+                                    }
+                                }}
                                 searches={[
                                     {
-                                        placeholder: 'Filter by owner (pubkey)',
+                                        placeholder: t('monitoring.filterByOwner'),
                                         value: ownerFilter,
                                         handleChange: setOwnerFilter,
                                     },
@@ -277,7 +286,7 @@ export default function AllPositions({
                                 filterOptions={[
                                     {
                                         type: 'radio',
-                                        name: 'Side',
+                                        name: t('monitoring.side'),
                                         activeOption: sideFilter,
                                         handleChange: setSideFilter,
                                         optionItems: [
@@ -288,7 +297,7 @@ export default function AllPositions({
                                     },
                                     {
                                         type: 'checkbox',
-                                        name: 'Mint',
+                                        name: t('monitoring.mint'),
                                         activeOption: mintFilter,
                                         handleChange: setMintFilter,
                                         optionItems: window.adrena.client.tokens
@@ -300,7 +309,7 @@ export default function AllPositions({
                                     },
                                     {
                                         type: 'radio',
-                                        name: 'PnL',
+                                        name: t('monitoring.pnl'),
                                         activeOption: pnlFilter,
                                         handleChange: setPnlFilter,
                                         optionItems: [
@@ -312,13 +321,13 @@ export default function AllPositions({
                                 ]}
                             />
                             <div className="flex flex-col gap-3 w-full p-4 min-w-0">
-                                {viewPage === 'Chart view' ? (
+                                {viewPage === 'chart' ? (
                                     <div className="flex w-full min-h-[34em] h-[34em] grow">
                                         <AllPositionsChart allPositions={sortedPositions} />
                                     </div>
                                 ) : null}
 
-                                {viewPage === 'List view' ? (
+                                {viewPage === 'list' ? (
                                     <>
                                         <div className="flex flex-wrap justify-between gap-2">
                                             <div className="flex flex-row justify-between w-full mb-2">
@@ -373,7 +382,7 @@ export default function AllPositions({
                                                         pnlFilter !== 'all' ? (
                                                         <Button
                                                             variant="text"
-                                                            title="clear all"
+                                                            title={t('monitoring.clearAll')}
                                                             className="p-0"
                                                             onClick={resetFilters}
                                                         />
@@ -404,7 +413,7 @@ export default function AllPositions({
                                                 />
                                             ) : (
                                                 <div className="text-center w-full py-4 opacity-50">
-                                                    No matches 📭
+                                                    {t('monitoring.noMatches')}
                                                 </div>
                                             )}
                                         </div>

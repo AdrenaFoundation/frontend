@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import DatePicker from 'react-datepicker';
+import { useTranslation } from 'react-i18next';
 import { ResponsiveContainer, Treemap } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
@@ -22,6 +23,7 @@ const AllUserProfileStatsChart = ({
   filteredProfiles: SuperchargedUserProfile[] | null;
   setActiveProfile: (profile: UserProfileExtended) => void;
 }) => {
+  const { t } = useTranslation();
   const today = useMemo(() => {
     const date = new Date();
 
@@ -161,8 +163,8 @@ const AllUserProfileStatsChart = ({
   return (
     <div className="flex flex-col w-0 flex-1 h-full items-center p-4">
       <div className="w-full h-[20%] rounded-md flex flex-col items-center justify-center mb-3 sm:mb-0">
-        <h2>Traders by volume</h2>
-        <p className="opacity-50">Click on a trader to view user profile</p>
+        <h2>{t('monitoring.tradersByVolume')}</h2>
+        <p className="opacity-50">{t('monitoring.clickTraderViewProfile')}</p>
       </div>
       <div
         className={twMerge(
@@ -301,7 +303,7 @@ const AllUserProfileStatsChart = ({
       </div>
 
       <div className="flex flex-row gap-3 mb-3">
-        <p className="opacity-25">show: </p>
+        <p className="opacity-25">{t('monitoring.show')} </p>
         {['pnl', 'volume'].map((metric, i) => (
           <p
             className={twMerge(
@@ -311,7 +313,7 @@ const AllUserProfileStatsChart = ({
             onClick={() => setActiveMetric(metric)}
             key={i}
           >
-            {metric}
+            {t(`monitoring.${metric}`)}
           </p>
         ))}
       </div>
@@ -366,7 +368,7 @@ const AllUserProfileStatsChart = ({
       <div className="flex mt-4 items-center justify-center">
         <div className="flex ml-4 gap-8">
           <div className="flex flex-col items-center justify-center text-xs gap-2 font-mono">
-            Trader PnL
+            {t('monitoring.traderPnl')}
             <div
               className="h-2 w-24 border"
               style={{

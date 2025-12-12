@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import CopyButton from '@/components/common/CopyButton/CopyButton';
 import { Cortex } from '@/types';
 
@@ -13,12 +15,13 @@ export default function GovernanceAccounts({
   cortex: Cortex;
   titleClassName?: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
-        <p className={titleClassName}>Governance Accounts</p>
+        <p className={titleClassName}>{t('monitoring.governanceAccounts')}</p>
         <p className="text-base opacity-50">
-          List on-chain accounts related to Governance.
+          {t('monitoring.governanceAccountsDesc')}
         </p>
       </div>
 
@@ -36,9 +39,9 @@ export default function GovernanceAccounts({
                   notificationTitle="Governance Program address copied to clipboard"
                   className="mr-2"
                 />
-                Governance Program
+                {t('monitoring.governanceProgram')}
                 <InfoAnnotation
-                  text="Manages the DAO's operations as the official Solana governance smart contract."
+                  text={t('monitoring.governanceProgramDesc')}
                   className="mr-1"
                 />
               </div>
@@ -58,9 +61,9 @@ export default function GovernanceAccounts({
                   notificationTitle="Governance Realm PDA address copied to clipboard"
                   className="mr-2"
                 />
-                Governance Realm <TitleAnnotation text="PDA" />
+                {t('monitoring.governanceRealm')} <TitleAnnotation text="PDA" />
                 <InfoAnnotation
-                  text="Represents Adrena's DAO within the Solana DAO program."
+                  text={t('monitoring.governanceRealmDesc')}
                   className="mr-1"
                 />
               </div>

@@ -1,6 +1,7 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import React, { ReactNode, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Area,
   CartesianGrid,
@@ -65,9 +66,9 @@ export default function MixedAreaLineChart<T extends string>({
   periods: (
     | T
     | {
-        name: T;
-        disabled?: boolean;
-      }
+      name: T;
+      disabled?: boolean;
+    }
   )[];
   leftDomain?: AxisDomain;
   rightDomain?: AxisDomain;
@@ -84,6 +85,7 @@ export default function MixedAreaLineChart<T extends string>({
   startTimestamp?: number;
   endTimestamp?: number;
 }) {
+  const { t } = useTranslation();
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
   >([]);
@@ -173,14 +175,14 @@ export default function MixedAreaLineChart<T extends string>({
                 className="flex gap-1 items-center cursor-pointer transition-opacity opacity-50 hover:opacity-100"
                 onClick={exportToCSV}
               >
-                <div className="text-sm tracking-wider">Export</div>
+                <div className="text-sm tracking-wider">{t('monitoring.export')}</div>
                 <Image
                   src={downloadIcon}
                   width={0}
                   height={0}
-                                    style={{ width: '14px', height: '12px' }}
+                  style={{ width: '14px', height: '12px' }}
                   alt="Download icon"
-                                    className="w-3.5 h-3.5"
+                  className="w-3.5 h-3.5"
                 />
               </div>
             ) : null}
@@ -199,9 +201,8 @@ export default function MixedAreaLineChart<T extends string>({
                 {lockPeriods.map((period) => (
                   <div
                     key={period}
-                    className={`cursor-pointer ${
-                      lockPeriod === period ? 'underline' : ''
-                    }`}
+                    className={`cursor-pointer ${lockPeriod === period ? 'underline' : ''
+                      }`}
                     onClick={() => setLockPeriod(period)}
                   >
                     {period}d
@@ -240,7 +241,7 @@ export default function MixedAreaLineChart<T extends string>({
                 className="flex gap-1 items-center cursor-pointer transition-opacity opacity-50 hover:opacity-100"
                 onClick={exportToCSV}
               >
-                <div className="text-sm tracking-wider">Export</div>
+                <div className="text-sm tracking-wider">{t('monitoring.export')}</div>
                 <Image
                   src={downloadIcon}
                   width={0}
@@ -266,9 +267,8 @@ export default function MixedAreaLineChart<T extends string>({
                 {lockPeriods.map((period) => (
                   <div
                     key={period}
-                    className={`cursor-pointer ${
-                      lockPeriod === period ? 'underline' : ''
-                    }`}
+                    className={`cursor-pointer ${lockPeriod === period ? 'underline' : ''
+                      }`}
                     onClick={() => setLockPeriod(period)}
                   >
                     {period}d

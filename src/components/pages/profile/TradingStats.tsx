@@ -1,5 +1,6 @@
 import { AnimatePresence } from 'framer-motion';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
@@ -36,6 +37,7 @@ export default function TradingStats({
   }[]
   | null;
 }) {
+  const { t } = useTranslation();
   const isMobile = useBetterMediaQuery('(max-width: 768px)');
 
   const settings = useSelector((state) => state.settings);
@@ -52,7 +54,7 @@ export default function TradingStats({
 
   const STATS = [
     {
-      title: 'Total PnL',
+      title: t('profile.totalPnL'),
       nb: totalProfitLoss,
       format: 'currency',
       precision: 2,
@@ -66,7 +68,7 @@ export default function TradingStats({
       onClick: () => setIsPnlWithFees(!isPnlWithFees),
     },
     {
-      title: 'Total Volume',
+      title: t('profile.totalVolume'),
       nb: traderInfo?.totalVolume ?? 0,
       format: 'currency',
       precision: 0,
@@ -75,7 +77,7 @@ export default function TradingStats({
       })),
     },
     {
-      title: 'Total Fees',
+      title: t('profile.totalFees'),
       nb: traderInfo?.totalFees ?? 0,
       format: 'currency',
       precision: 0,
@@ -84,7 +86,7 @@ export default function TradingStats({
       })),
     },
     {
-      title: 'Positions',
+      title: t('profile.positions'),
       nb: traderInfo?.totalNumberPositions ?? 0,
       suffix: `/${livePositionsNb}`,
       suffixClassName: 'text-sm font-semibold opacity-50',
@@ -96,7 +98,7 @@ export default function TradingStats({
       })),
     },
     {
-      title: 'Best Trade',
+      title: t('profile.bestTrade'),
       nb: traderInfo?.largestWinningTrade
         ? traderInfo.largestWinningTrade > 0
           ? traderInfo.largestWinningTrade
@@ -107,7 +109,7 @@ export default function TradingStats({
       className: 'text-green',
     },
     {
-      title: 'Worst Trade',
+      title: t('profile.worstTrade'),
       nb: traderInfo?.largestLosingTrade
         ? traderInfo.largestLosingTrade < 0
           ? traderInfo.largestLosingTrade
@@ -118,13 +120,13 @@ export default function TradingStats({
       className: 'text-redbright',
     },
     {
-      title: 'Win Rate',
+      title: t('profile.winRate'),
       nb: traderInfo?.winRatePercentage ?? 0,
       format: 'percentage',
       precision: 2,
     },
     {
-      title: 'Avg. Time Opened',
+      title: t('profile.avgTimeOpened'),
       nb: formatSecondsToTimeDifference(traderInfo?.avgHoldingTime ?? 0),
       precision: 0,
       format: 'time',
@@ -149,8 +151,8 @@ export default function TradingStats({
                     <p className="text-sm font-semibold opacity-50">
                       {stat.title}
                     </p>{' '}
-                    {stat.title == 'Total PnL' ? (
-                      <p className='text-xxs opacity-50'>{isPnlWithFees ? 'w/ fees' : 'w/o fees'}</p>
+                    {stat.title == t('profile.totalPnL') ? (
+                      <p className='text-xxs opacity-50'>{isPnlWithFees ? t('profile.withFees') : t('profile.withoutFees')}</p>
                     ) : null}
                   </div>
                   <LoaderWrapper height="1.6875rem" isLoading={!traderInfo}>

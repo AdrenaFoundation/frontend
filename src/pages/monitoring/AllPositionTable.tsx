@@ -1,5 +1,6 @@
 import { AnimatePresence } from 'framer-motion';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -36,6 +37,7 @@ export default function AllPositionTable({
   sortDirection: 'asc' | 'desc';
   sortBy: string;
 }) {
+  const { t } = useTranslation();
   const [isPnlWithFees] = useState<boolean>(true);
   const [isNative] = useState<boolean>(false);
   const [activeTrader, setActiveTrader] = useState<string | null>(null);
@@ -61,27 +63,27 @@ export default function AllPositionTable({
     (position.borrowFeeUsd ?? 0) - (position.paidInterestUsd ?? 0) > 50;
 
   const headers: TableHeaderType[] = [
-    { title: 'Owner', key: 'owner', sticky: 'left' },
-    { title: 'Token', key: 'token', width: 5, sticky: 'left' },
-    { title: 'Side', key: 'side', width: 3.75 },
+    { title: t('monitoring.owner'), key: 'owner', sticky: 'left' },
+    { title: t('monitoring.token'), key: 'token', width: 5, sticky: 'left' },
+    { title: t('monitoring.side'), key: 'side', width: 3.75 },
     {
-      title: 'Leverage',
+      title: t('monitoring.leverage'),
       key: 'leverage',
       width: 5,
       align: 'right',
       isSortable: true,
     },
-    { title: 'PnL', key: 'pnl', align: 'right', isSortable: true },
-    { title: 'Size', key: 'size', align: 'right', isSortable: true },
+    { title: t('monitoring.pnl'), key: 'pnl', align: 'right', isSortable: true },
+    { title: t('monitoring.size'), key: 'size', align: 'right', isSortable: true },
     {
-      title: 'Collateral',
+      title: t('monitoring.collateral'),
       key: 'collateral',
       align: 'right',
     },
-    { title: 'Entry Price', key: 'entryPrice', align: 'right' },
-    { title: 'Liq. Price', key: 'liquidationPrice', align: 'right' },
-    { title: 'Open Date', key: 'openDate', align: 'right' },
-    { title: 'Action', key: 'resolve', width: 8.75, align: 'right' },
+    { title: t('monitoring.entryPrice'), key: 'entryPrice', align: 'right' },
+    { title: t('monitoring.liqPrice'), key: 'liquidationPrice', align: 'right' },
+    { title: t('monitoring.openDate'), key: 'openDate', align: 'right' },
+    { title: t('monitoring.action'), key: 'resolve', width: 8.75, align: 'right' },
   ];
 
   const { maxPnl, minPnl } = useMemo(() => {
@@ -154,7 +156,7 @@ export default function AllPositionTable({
           <Button
             size="sm"
             variant="lightbg"
-            title="Resolve Borrow Fees"
+            title={t('monitoring.resolveBorrowFees')}
             onClick={(e) => {
               e?.stopPropagation();
               borrowResolve(position);
@@ -173,7 +175,7 @@ export default function AllPositionTable({
     <>
       <div className="overflow-hidden">
         <Table
-          title="All Positions"
+          title={t('monitoring.allPositions')}
           headers={headers}
           data={formattedData}
           height="100%"

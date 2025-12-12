@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import { ADRENA_TEAM_WALLET } from '@/constant';
@@ -21,6 +22,7 @@ import WalletDigger from './walletDigger';
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
 export default function Monitoring(pageProps: PageProps) {
+  const { t } = useTranslation();
   const poolInfo = usePoolInfo(pageProps.custodies);
   const isSmallScreen = Boolean(useBetterMediaQuery('(max-width: 500px)'));
   const [showLookupTablePage, setShowLookupTablePage] = useState(false);
@@ -69,15 +71,15 @@ export default function Monitoring(pageProps: PageProps) {
   const [previousView, setPreviousView] = useState<MonitorViews>('lite');
 
   const monitorViewsNames: Record<MonitorViews, string> = {
-    lite: 'Overview',
-    full: 'On-Chain',
-    livePositions: 'Live Positions',
-    userProfiles: 'Traders',
-    tokenomics: 'Tokenomics',
-    allStaking: 'ADX Staking',
-    flows: 'Flows',
-    walletDigger: 'Wallet Digger',
-    lookupTable: 'ALT',
+    lite: t('monitoring.overview'),
+    full: t('monitoring.onChain'),
+    livePositions: t('monitoring.livePositions'),
+    userProfiles: t('monitoring.traders'),
+    tokenomics: t('monitoring.tokenomics'),
+    allStaking: t('monitoring.adxStaking'),
+    flows: t('monitoring.flows'),
+    walletDigger: t('monitoring.walletDigger'),
+    lookupTable: t('monitoring.alt'),
   };
 
   function getTranslateX(
@@ -121,7 +123,7 @@ export default function Monitoring(pageProps: PageProps) {
       case 'lookupTable':
         return <AddressLookupTable view={view} />;
       default:
-        return <div>Invalid view</div>;
+        return <div>{t('monitoring.invalidView')}</div>;
     }
   }
 

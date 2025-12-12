@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Button from '@/components/common/Button/Button';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
@@ -25,6 +26,7 @@ import raydiumImg from '../../../public/images/raydium.png';
 import rugcheckImg from '../../../public/images/rugcheck.jpg';
 
 function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, view: string }) {
+    const { t } = useTranslation();
     const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
 
     const totalSupplyADX = useADXTotalSupply();
@@ -121,7 +123,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
             <StyledContainer className="p-0">
                 <div className="flex flex-wrap justify-between">
                     <NumberDisplay
-                        title="MARKET CAP"
+                        title={t('monitoring.marketCap')}
                         nb={marketCap}
                         format="currency"
                         precision={0}
@@ -132,7 +134,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
                     />
 
                     <NumberDisplay
-                        title="Fully Diluted Value"
+                        title={t('monitoring.fullyDilutedValue')}
                         nb={fullyDilutedValue}
                         format="currency"
                         precision={0}
@@ -143,7 +145,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
                     />
 
                     <NumberDisplay
-                        title="CIRCULATING SUPPLY"
+                        title={t('monitoring.circulatingSupply')}
                         nb={circulatingSupplyADX}
                         format="number"
                         suffix='ADX'
@@ -152,11 +154,11 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
                         bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
                         headerClassName="pb-2"
                         titleClassName="sm:text-[0.85em]"
-                        tippyInfo='All the distributed ADX tokens'
+                        tippyInfo={t('monitoring.allDistributedAdxTokens')}
                     />
 
                     <NumberDisplay
-                        title="TOTAL SUPPLY"
+                        title={t('monitoring.totalSupply')}
                         nb={totalSupplyADX}
                         format="number"
                         suffix='ADX'
@@ -168,7 +170,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
                     />
 
                     <NumberDisplay
-                        title="HOLDER COUNT"
+                        title={t('monitoring.holderCount')}
                         nb={adxHolderCount}
                         format="number"
                         precision={0}
@@ -179,7 +181,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
                     />
 
                     <NumberDisplay
-                        title="LIQUIDITY"
+                        title={t('monitoring.liquidity')}
                         nb={adxJupiterInfo?.liquidity ?? null}
                         format="currency"
                         precision={0}
@@ -187,7 +189,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
                         bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl"
                         headerClassName="pb-2"
                         titleClassName="sm:text-[0.85em]"
-                        tippyInfo='Total liquidity available through Jupiter aggregator'
+                        tippyInfo={t('monitoring.totalLiquidityJupiter')}
                     />
                 </div>
             </StyledContainer>
@@ -195,7 +197,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
             <div className="grid lg:grid-cols-2 gap-2 w-full">
                 <StyledContainer className="p-4" bodyClassName='items-center justify-center'>
                     <div className='flex flex-col items-center justify-center h-full w-full'>
-                        <h2 className='flex'>TOKEN ALLOCATION</h2>
+                        <h2 className='flex'>{t('monitoring.tokenAllocation')}</h2>
 
                         <div className="h-[17em] w-full">
                             <TokenomicsPieChart />
@@ -205,7 +207,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
 
                 <StyledContainer className="p-4" bodyClassName='items-center justify-center h-full min-h-[14em]'>
                     <div className='flex flex-col items-center justify-center w-full h-full pb-6'>
-                        <h2 className='flex mb-4'>CHECK IT OUT</h2>
+                        <h2 className='flex mb-4'>{t('monitoring.checkItOut')}</h2>
 
                         <div className='flex w-full items-center justify-evenly grow relative'>
                             <div className='flex flex-col items-center justify-center gap-y-2 opacity-80 hover:opacity-100 cursor-pointer'>
@@ -219,7 +221,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
                                     }}
                                 />
 
-                                <div className='text-sm font-semibold'>Coingecko</div>
+                                <div className='text-sm font-semibold'>{t('monitoring.coingecko')}</div>
                             </div>
 
                             <div className='flex flex-col items-center justify-center gap-y-2 opacity-80 hover:opacity-100 cursor-pointer'>
@@ -233,7 +235,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
                                     }}
                                 />
 
-                                <div className='text-sm font-semibold'>DEX screener</div>
+                                <div className='text-sm font-semibold'>{t('monitoring.dexScreener')}</div>
                             </div>
 
                             <div className='flex flex-col items-center justify-center gap-y-2 opacity-80 hover:opacity-100 cursor-pointer'>
@@ -247,7 +249,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
                                     }}
                                 />
 
-                                <div className='text-sm font-semibold'>Raydium</div>
+                                <div className='text-sm font-semibold'>{t('monitoring.raydium')}</div>
                             </div>
 
                             <div className='flex flex-col items-center justify-center gap-y-1 opacity-80 hover:opacity-100 cursor-pointer'>
@@ -261,7 +263,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
                                     }}
                                 />
 
-                                <div className='text-sm font-semibold'>Jupiter</div>
+                                <div className='text-sm font-semibold'>{t('monitoring.jupiter')}</div>
                             </div>
 
                             <div className='flex flex-col items-center justify-center gap-y-1 opacity-80 hover:opacity-100 cursor-pointer'>
@@ -276,7 +278,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
                                     }}
                                 />
 
-                                <div className='text-sm font-semibold'>Rugcheck</div>
+                                <div className='text-sm font-semibold'>{t('monitoring.rugcheck')}</div>
                             </div>
                         </div>
 
@@ -289,7 +291,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
                         <div className='flex gap-2 w-full items-center justify-evenly'>
                             <Button
                                 className="mt-auto w-full max-w-[20em]"
-                                title="See docs"
+                                title={t('monitoring.seeDocs')}
                                 variant="outline"
                                 size="lg"
                                 onClick={() => {
@@ -299,7 +301,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
 
                             <Button
                                 className="mt-auto w-full max-w-[20em]"
-                                title="Buy ADX"
+                                title={t('monitoring.buyAdx')}
                                 size="lg"
                                 onClick={() => {
                                     window.open('https://jup.ag/swap/USDC-ADX');
@@ -312,7 +314,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
 
             <StyledContainer className="p-4" bodyClassName='items-center justify-center flex relative'>
                 <div className='flex flex-col items-center justify-center gap-1 w-full'>
-                    <h2 className='flex'>daily emission rate</h2>
+                    <h2 className='flex'>{t('monitoring.dailyEmissionRate')}</h2>
 
                     <div className="h-[20em] w-full mt-4">
                         <EmissionsChart isSmallScreen={isSmallScreen} />
@@ -322,10 +324,10 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
 
             <StyledContainer className="p-4" bodyClassName='items-center justify-center flex relative'>
                 <div className='flex flex-col items-center justify-center gap-1 w-full'>
-                    <h2 className='flex'>VESTS</h2>
+                    <h2 className='flex'>{t('monitoring.vests')}</h2>
                     <div className="flex flex-wrap justify-between">
                         <NumberDisplay
-                            title="CLAIMED"
+                            title={t('monitoring.claimed')}
                             nb={vestingClaimed}
                             format="number"
                             precision={0}
@@ -337,7 +339,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
                         />
 
                         <NumberDisplay
-                            title="CLAIMABLE"
+                            title={t('monitoring.claimable')}
                             nb={vestingClaimable}
                             format="number"
                             precision={0}
@@ -349,7 +351,7 @@ function TokenomicsContent({ isSmallScreen, view }: { isSmallScreen: boolean, vi
                         />
 
                         <NumberDisplay
-                            title="TOTAL VESTED"
+                            title={t('monitoring.totalVested')}
                             nb={vestingVested}
                             format="number"
                             precision={0}

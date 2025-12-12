@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
@@ -14,11 +15,12 @@ export default function PositionsNowBreakdown({
   custodies: CustodyExtended[];
   titleClassName?: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
 
       <div className="flex flex-row items-center gap-2 w-full border-b p-3">
-        <p className={titleClassName}>Live Positions Open Interest</p>
+        <p className={titleClassName}>{t('monitoring.livePositionsOpenInterest')}</p>
 
         <LiveIcon />
       </div>
@@ -45,7 +47,7 @@ export default function PositionsNowBreakdown({
 
                 <div className="flex flex-col">
                   <div className="mt-3">
-                    <div className={twMerge(titleClassName, 'text-green opacity-75')}>Long</div>
+                    <div className={twMerge(titleClassName, 'text-green opacity-75')}>{t('monitoring.long')}</div>
 
                     <div className="flex flex-col">
                       <NumberDisplay
@@ -74,7 +76,7 @@ export default function PositionsNowBreakdown({
                   <div className="w-full h-[1px] bg-bcolor my-1" />
 
                   <div className='mt-2'>
-                    <div className={twMerge(titleClassName, 'mr-4 text-red opacity-75')}>Short</div>
+                    <div className={twMerge(titleClassName, 'mr-4 text-red opacity-75')}>{t('monitoring.short')}</div>
 
                     <NumberDisplay
                       nb={nativeToUi(

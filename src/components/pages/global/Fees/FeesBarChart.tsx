@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScaleType } from 'recharts/types/util/types';
 
 import Loader from '@/components/Loader/Loader';
@@ -14,6 +15,7 @@ interface FeesChartProps {
 }
 
 export default function FeesBarChart({ isSmallScreen, yAxisBarScale }: FeesChartProps) {
+  const { t } = useTranslation();
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
   const [period, setPeriod] = useState<'1M' | '3M' | '6M' | '1Y' | null>('6M');
   const periodRef = useRef(period);
@@ -249,16 +251,16 @@ export default function FeesBarChart({ isSmallScreen, yAxisBarScale }: FeesChart
 
   return (
     <MixedBarLineChart
-      title="Daily Fees"
+      title={t('monitoring.dailyFees')}
       data={chartData}
       labels={[
-        { name: 'Swap Fees', color: '#cec161', type: 'bar' },
-        { name: 'Mint/Redeem ALP Fees', color: '#5460cb', type: 'bar' },
-        { name: 'Open/Close Fees', color: '#7ccbd7', type: 'bar' },
-        { name: 'Liquidation Fees', color: '#BE84CC', type: 'bar' },
-        { name: 'Borrow Fees', color: '#84bd82', type: 'bar' },
-        { name: 'Referral Fees', color: '#f7931a', type: 'line' },
-        { name: 'Cumulative Fees', color: 'rgba(255, 255, 255, 0.7)', type: 'line' },
+        { name: t('monitoring.swapFees'), color: '#cec161', type: 'bar' },
+        { name: t('monitoring.mintRedeemAlpFees'), color: '#5460cb', type: 'bar' },
+        { name: t('monitoring.openCloseFees'), color: '#7ccbd7', type: 'bar' },
+        { name: t('monitoring.liquidationFees'), color: '#BE84CC', type: 'bar' },
+        { name: t('monitoring.borrowFees'), color: '#84bd82', type: 'bar' },
+        { name: t('monitoring.referralFees'), color: '#f7931a', type: 'line' },
+        { name: t('monitoring.cumulativeFees'), color: 'rgba(255, 255, 255, 0.7)', type: 'line' },
       ]}
       period={period}
       setPeriod={setPeriod}

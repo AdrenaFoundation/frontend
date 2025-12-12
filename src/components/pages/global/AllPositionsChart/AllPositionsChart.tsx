@@ -1,5 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ResponsiveContainer, Treemap } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
@@ -99,6 +100,7 @@ export default function AllPositionsChart({
 }: {
   allPositions: PositionExtended[] | null;
 }) {
+  const { t } = useTranslation();
   const showFeesInPnl = useSelector((state) => state.settings.showFeesInPnl);
   const [data, setData] = useState<{
     key: string;
@@ -203,7 +205,7 @@ export default function AllPositionsChart({
 
   if (allPositions !== null && !allPositions.length) {
     return <div className="text-center w-full py-4 opacity-50 mt-auto mb-auto">
-      No matches 📭
+      {t('monitoring.noMatches')}
     </div>
   }
 
@@ -225,7 +227,7 @@ export default function AllPositionsChart({
             readOnly={true}
             setTokenB={() => { }}
           /> :
-          <div className='w-full h-[80%] border-4 border-dashed border-bcolor flex text-xs items-center justify-center opacity-50'>Click on a position to see the detail</div>}
+          <div className='w-full h-[80%] border-4 border-dashed border-bcolor flex text-xs items-center justify-center opacity-50'>{t('monitoring.clickPositionDetail')}</div>}
       </div>
       <ResponsiveContainer width="100%" height="100%">
         <Treemap
@@ -241,7 +243,7 @@ export default function AllPositionsChart({
       <div className='flex mt-4 items-center justify-center'>
         <div className='flex ml-4 gap-8'>
           <div className='flex flex-col items-center justify-center text-xs gap-2 font-mono'>
-            Long PnL
+            {t('monitoring.longPnl')}
             <div
               className='h-2 w-24 border'
               style={{
@@ -251,7 +253,7 @@ export default function AllPositionsChart({
           </div>
 
           <div className='flex flex-col items-center justify-center text-xs gap-2 font-mono'>
-            Short PnL
+            {t('monitoring.shortPnl')}
             <div
               className='h-2 w-24 border'
               style={{

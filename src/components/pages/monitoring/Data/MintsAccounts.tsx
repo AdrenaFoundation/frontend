@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import CopyButton from '@/components/common/CopyButton/CopyButton';
 import { CustodyExtended } from '@/types';
 
@@ -13,10 +15,11 @@ export default function MintAccounts({
   custodies: CustodyExtended[];
   titleClassName?: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
-        <p className={titleClassName}>Mints</p>
+        <p className={titleClassName}>{t('monitoring.mints')}</p>
       </div>
 
       <Table
@@ -33,9 +36,9 @@ export default function MintAccounts({
                   notificationTitle="ADX Mint address copied to clipboard"
                   className="mr-2"
                 />
-                ADX <TitleAnnotation text="Mint" />
+                ADX <TitleAnnotation text={t('monitoring.mint')} />
                 <InfoAnnotation
-                  text="Adrena's Governance token mint, can be staked for governance and revenue share access."
+                  text={t('monitoring.adxMintDesc')}
                   className="mr-1"
                 />
               </div>
@@ -55,9 +58,9 @@ export default function MintAccounts({
                   notificationTitle="ALP Mint address copied to clipboard"
                   className="mr-2"
                 />
-                ALP <TitleAnnotation text="Mint" />
+                ALP <TitleAnnotation text={t('monitoring.mint')} />
                 <InfoAnnotation
-                  text="Adrena's Liquidity Pool token mint, represents a share of the pool."
+                  text={t('monitoring.alpMintDesc')}
                   className="mr-1"
                 />
               </div>
@@ -82,7 +85,7 @@ export default function MintAccounts({
                         className="mr-2"
                       />
                       {custody.tokenInfo.symbol}
-                      <TitleAnnotation text="Mint" />
+                      <TitleAnnotation text={t('monitoring.mint')} />
                     </div>
                   ),
                   value: (
@@ -107,7 +110,7 @@ export default function MintAccounts({
                         className="mr-2"
                       />
                       {custody.tradeTokenInfo.symbol}
-                      <TitleAnnotation text="Mint" />
+                      <TitleAnnotation text={t('monitoring.mint')} />
                     </div>
                   ),
                   value: (

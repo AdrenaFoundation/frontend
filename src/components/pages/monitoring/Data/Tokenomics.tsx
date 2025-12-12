@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Cell,
   Legend,
@@ -15,21 +16,22 @@ export default function Tokenomics({
 }: {
   className?: string;
 }) {
+  const { t } = useTranslation();
   const data = [
     {
-      label: 'Core Contributors',
+      label: t('monitoring.coreContributors'),
       buckedNames: ['Launch Team', 'Investors'],
       data: [21.333333333, 14.666666667],
       color: '#9F8CAE',
     },
     {
-      label: 'Foundation',
+      label: t('monitoring.foundation'),
       buckedNames: ['Foundation Development', 'CEX/DEX Liquidity'],
       data: [5, 4],
       color: '#EB6672',
     },
     {
-      label: 'Ecosystem',
+      label: t('monitoring.ecosystem'),
       buckedNames: [
         'DAO Treasury Reserves',
         'Community Grants',
@@ -56,7 +58,7 @@ export default function Tokenomics({
     )
     .flat();
 
-  const bucketsLabels = ['Core Contrib.', 'Foundation', 'Ecosystem'];
+  const bucketsLabels = [t('monitoring.coreContrib'), t('monitoring.foundation'), t('monitoring.ecosystem')];
   const bucketColors = ['#9F8CAE', '#EB6672', '#7FD7C1'];
 
   return (

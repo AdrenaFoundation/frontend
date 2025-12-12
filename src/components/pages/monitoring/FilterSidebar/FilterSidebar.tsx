@@ -2,6 +2,7 @@ import { Switch } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import arrowIcon from '@/../public/images/Icons/arrow-slim.svg';
@@ -437,6 +438,21 @@ export const Radio: React.FC<RadioProps> = ({
   img,
   className,
 }) => {
+  const { t } = useTranslation();
+
+  // Translate label for display only
+  const getDisplayLabel = (label: string) => {
+    const lowerLabel = label.toLowerCase();
+    if (lowerLabel === 'all') return t('monitoring.all');
+    if (lowerLabel === 'long') return t('monitoring.long');
+    if (lowerLabel === 'short') return t('monitoring.short');
+    if (lowerLabel === 'profit') return t('monitoring.profit');
+    if (lowerLabel === 'loss') return t('monitoring.loss');
+    if (lowerLabel === 'positive') return t('monitoring.positive');
+    if (lowerLabel === 'negative') return t('monitoring.negative');
+    return label;
+  };
+
   return (
     <div
       className={twMerge(
@@ -462,7 +478,7 @@ export const Radio: React.FC<RadioProps> = ({
         )}
       >
         {img && <Image src={img} alt="token icon" width={12} height={12} className="w-3 h-3" />}
-        {label}
+        {getDisplayLabel(label)}
       </label>
     </div>
   );

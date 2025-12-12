@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 
 import { PROFILE_PICTURES } from '@/constant';
 import { ProfilePicture, UserProfileTitle } from '@/types';
@@ -32,6 +33,7 @@ export default function StakingProfileCard({
     walletAddress,
     onCardClick,
 }: StakingProfileCardProps) {
+    const { t } = useTranslation();
     // Shared card styling
     const cardClassName = `
         relative flex flex-col gap-2 px-4 py-2 rounded-md
@@ -47,7 +49,7 @@ export default function StakingProfileCard({
         return (
             <div
                 className={`${cardClassName} cursor-pointer transition hover:border-red hover:shadow-redHoverBig`}
-                title="Click to scroll to your row"
+                title={t('monitoring.clickToScrollToRow')}
                 onClick={onCardClick}
             >
                 <div className="flex items-center justify-center gap-4">
@@ -64,7 +66,7 @@ export default function StakingProfileCard({
                     <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-3">
                             <span className="font-semibold text-white text-xl truncate flex-1 min-w-0 hidden sm:flex">
-                                {userRow.nickname || 'Anonymous Staker'}
+                                {userRow.nickname || t('monitoring.anonymousStaker')}
                             </span>
                             <span className="font-semibold text-txtfade text-xl flex-shrink-0 hidden sm:flex">
                                 |
@@ -86,14 +88,14 @@ export default function StakingProfileCard({
                                 <div className="text-sm text-txtfade mt-1 sm:hidden">
                                     {' '}
                                     {formatNumber(userAboveAmount - (userVirtualAmount || 0), 0, 0)}{' '}
-                                    more to climb!
+                                    {t('monitoring.moreToClimb')}
                                 </div>
 
                                 {/* Desktop version - full text */}
                                 <div className="text-sm text-txtfade mt-1 hidden sm:block">
                                     {' '}
                                     {formatNumber(userAboveAmount - (userVirtualAmount || 0), 0, 0)}{' '}
-                                    more rev. weight to climb the ladder!
+                                    {t('monitoring.moreRevWeightToClimb')}
                                 </div>
                             </>
                         )}
@@ -138,17 +140,17 @@ export default function StakingProfileCard({
                             |
                         </span>
                         <span className="text-sm font-semibold text-white bg-red/50 px-3 py-1 rounded-full shadow flex-shrink-0">
-                            Join {totalStakers || 0} Stakers
+                            {t('monitoring.joinStakers', { count: totalStakers || 0 })}
                         </span>
                     </div>
                     {/* Secondary text about not staking */}
                     <div className="text-sm text-txtfade mt-1">
-                        You haven&apos;t staked yet •{' '}
+                        {t('monitoring.youHaventStakedYet')} •{' '}
                         <Link
                             href="/stake"
                             className="text-red hover:text-red/80 font-semibold underline"
                         >
-                            Start Now
+                            {t('monitoring.startNow')}
                         </Link>
                     </div>
                 </div>

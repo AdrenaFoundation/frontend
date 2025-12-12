@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { AdrenaClient } from '@/AdrenaClient';
 import CopyButton from '@/components/common/CopyButton/CopyButton';
 import { Cortex, CustodyExtended, PoolExtended } from '@/types';
@@ -18,6 +20,7 @@ export default function AdrenaAccounts({
   custodies: CustodyExtended[];
   titleClassName?: string;
 }) {
+  const { t } = useTranslation();
   const lmStakingPda = window.adrena.client.getStakingPda(
     window.adrena.client.lmTokenMint,
   );
@@ -41,9 +44,9 @@ export default function AdrenaAccounts({
   return (
     <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
-        <p className={titleClassName}>Adrena Accounts</p>
+        <p className={titleClassName}>{t('monitoring.adrenaAccounts')}</p>
         <p className="text-base opacity-50">
-          Adrena Program on-chain accounts (PDAs).
+          {t('monitoring.adrenaProgramOnchainAccounts')}
         </p>
       </div>
 
