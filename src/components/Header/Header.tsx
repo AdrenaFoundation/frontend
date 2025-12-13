@@ -264,7 +264,7 @@ export default function Header({
 
         <Mutagen />
 
-        <div className="flex flex-row items-center border border-[#414E5E] rounded-md">
+        <div className="hidden sm:flex flex-row items-center border border-[#414E5E] rounded-md">
           <NotificationBell adapters={adapters} />
 
           <PriorityFeeSetting isOpen={isPriorityFeeOpen} setIsOpen={setIsPriorityFeeOpen} />

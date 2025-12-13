@@ -198,7 +198,12 @@ export default function BurgerMenu({
                 <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
             </button>
+            <div className="flex [@media(min-width:500px)]:hidden size-7 items-center justify-center rounded-lg hover:bg-third/50 transition-colors border border-bcolor">
+              <LanguageSwitcher />
+            </div>
           </div>
+
+
 
           <div className="flex flex-row items-center gap-1">
             <Link href="/buy_alp">
@@ -323,7 +328,6 @@ export default function BurgerMenu({
 
             {
               <div className="flex items-center gap-2">
-                <LanguageSwitcher />
                 <NotificationBell
                   setIsNotificationModalOpen={setIsNotificationModalOpen}
                   isNotificationModalOpen={isNotificationModalOpen}
@@ -1043,7 +1047,6 @@ export default function BurgerMenu({
 
           {
             <div className="flex items-center gap-2">
-              <LanguageSwitcher />
               <NotificationBell
                 setIsNotificationModalOpen={setIsNotificationModalOpen}
                 isNotificationModalOpen={isNotificationModalOpen}
