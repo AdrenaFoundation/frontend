@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import usdcLogo from '@/../../public/images/usdc.svg';
@@ -20,6 +21,7 @@ export default function Referrer({
   setActiveProfile: (profile: UserProfileExtended) => void;
   connected: boolean;
 }) {
+  const { t } = useTranslation();
   const link = useMemo(
     () =>
       userProfile
@@ -44,7 +46,7 @@ export default function Referrer({
       <div className="flex gap-8 pb-8 pt-4 flex-col md:flex-row w-full justify-center items-center md:items-start">
         <div className="flex flex-col items-center gap-8 w-[15em]">
           <div className="font-light uppercase tracking-widest text-md text-txtfade">
-            Referees
+            {t('referral.referees')}
           </div>
 
           <div className="flex items-center justify-center gap-2">
@@ -61,7 +63,7 @@ export default function Referrer({
 
         <div className="flex flex-col items-center gap-8 w-[15em]">
           <div className="font-light uppercase tracking-widest text-md text-txtfade">
-            Pending Rewards
+            {t('referral.pendingRewards')}
           </div>
 
           <div className="flex items-center justify-center gap-2">
@@ -81,11 +83,11 @@ export default function Referrer({
             }
             className="w-[20em]"
             size="lg"
-            title="Claim"
+            title={t('common.claim')}
             onClick={async () => {
               const notification =
                 MultiStepNotification.newForRegularTransaction(
-                  'Claim rewards',
+                  t('referral.claimRewards'),
                 ).fire();
 
               try {
@@ -103,7 +105,7 @@ export default function Referrer({
 
         <div className="flex flex-col items-center gap-8 w-[15em]">
           <div className="font-light uppercase tracking-widest text-md text-txtfade">
-            TOTAL GENERATED
+            {t('referral.totalGenerated')}
           </div>
 
           <div className="flex items-center justify-center gap-2">
@@ -123,7 +125,7 @@ export default function Referrer({
 
       <div className="flex flex-col gap-6 items-center pb-8">
         <div className="font-light uppercase tracking-widest text-md text-txtfade">
-          MY REFERRAL LINK
+          {t('referral.myReferralLink')}
         </div>
 
         <div className="flex rounded-md bg-third">
@@ -134,7 +136,7 @@ export default function Referrer({
           <div className="h-full w-8 bg-inputcolor rounded-tr-lg rounded-br-lg items-center justify-center flex">
             <CopyButton
               textToCopy={link}
-              notificationTitle="Referral link copied to clipboard"
+              notificationTitle={t('referral.referralLinkCopied')}
               className="w-4 h-4"
             />
           </div>
@@ -143,13 +145,13 @@ export default function Referrer({
         <Button
           className="w-[20em]"
           size="lg"
-          title="Share my referral link!"
+          title={t('referral.shareMyReferralLink')}
           onClick={async () => {
             try {
               await navigator.clipboard.writeText(link);
 
               addNotification({
-                title: 'Referral link copied to clipboard',
+                title: t('referral.referralLinkCopied'),
                 message: '',
                 type: 'info',
                 duration: 'regular',
@@ -165,7 +167,7 @@ export default function Referrer({
 
       <div className="pb-8 flex items-center flex-col gap-2 w-full">
         <div className="font-light uppercase tracking-widest text-md text-txtfade pb-6">
-          REFEREES
+          {t('referral.refereesList')}
         </div>
 
         <div className="flex flex-col gap-2 items-center w-[80%] max-w-[40em] border pt-2 pb-2 bg-third/40">
@@ -197,7 +199,7 @@ export default function Referrer({
 
           {allUserProfiles !== null && allUserProfiles.length === 0 ? (
             <div className="w-full items-center justify-center flex text-sm opacity-80 pt-8 pb-8">
-              No referee yet. Share your referral link!
+              {t('referral.noRefereeYet')}
             </div>
           ) : null}
         </div>

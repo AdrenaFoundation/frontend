@@ -50,7 +50,9 @@
     "directConnect": "Direct Connect",
     "directConnectDescription": "Connect directly to your wallet without any intermediaries.",
     "viewWarningPara1": "You need at least",
-    "viewWarningPara2": "SOL to interact with the app, click to open the wallet UI"
+    "viewWarningPara2": "SOL to interact with the app, click to open the wallet UI",
+    "or": "OR",
+    "cancel": "Cancel"
   },
   "layout": {
     "yourAdrenaProfile": "Your Adrena Profile",
@@ -1087,7 +1089,28 @@
     "rankedPerformance": "Ranked Performance",
     "rank": "Rank",
     "pnl": "PnL",
-    "team": "team {teamName}"
+    "team": "team {teamName}",
+    "stakedAdx": "Staked ADX",
+    "liquidStaked": "Liquid Staked",
+    "lockedStakedAdx": "Locked Staked ADX",
+    "totalUsdc": "total USDC",
+    "totalAdx": "total ADX",
+    "claimHistory": "Claim History",
+    "claimedOn": "Claimed On",
+    "source": "Source",
+    "usdcRewards": "USDC rewards",
+    "adxRewards": "ADX rewards",
+    "totalRewards": "Total rewards",
+    "exportClaimHistoryAdx": "Export Claim History - ADX",
+    "exportByYear": "Export by Year",
+    "year": "Year",
+    "exportByDateRange": "Export by Date Range",
+    "from": "From",
+    "to": "To",
+    "selectStartDate": "Select start date",
+    "selectEndDate": "Select end date",
+    "export": "Export",
+    "exporting": "Exporting..."
   },
   "referral": {
     "asReferrer": "As Referrer",
@@ -1118,7 +1141,8 @@
     "supportNickname": "Support {nickname}",
     "updateReferrer": "Update Referrer",
     "supportTeamDescription": "You can support the Adrena team through the referral system by choosing the team as your referrer. This is purely philanthropic. It's a way to show your support and contribute to the team's funding.",
-    "supportTheTeam": "Support the team ❤️"
+    "supportTheTeam": "Support the team ❤️",
+    "supportTeam": "Support the team ❤️"
   },
   "achievements": {
     "bookOfAchievements": "Book of Achievements",
@@ -1131,7 +1155,15 @@
     "show": "show",
     "owned": "Owned",
     "notOwned": "Not Owned",
-    "noAchievementFound": "NO ACHIEVEMENT FOUND"
+    "noAchievementFound": "NO ACHIEVEMENT FOUND",
+    "unlockedBy": "Unlocked by",
+    "users": "users",
+    "achievement": "Achievement",
+    "unlocksTitle": "Unlocks title \"{title}\"",
+    "unlocksProfilePicture": "Unlocks a unique profile picture",
+    "unlocksWallpaper": "Unlocks a unique wallpaper",
+    "category": "category",
+    "achievementPoints": "Achievement points"
   },
   "mutagenLeaderboard": {
     "allTime": "ALL TIME",

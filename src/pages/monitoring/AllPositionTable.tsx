@@ -168,7 +168,7 @@ export default function AllPositionTable({
         ),
         id: position.owner.toBase58(),
       })),
-    [paginatedPositions, isPnlWithFees, isNative, maxPnl, minPnl],
+    [paginatedPositions, isPnlWithFees, isNative, maxPnl, minPnl, t],
   );
 
   return (

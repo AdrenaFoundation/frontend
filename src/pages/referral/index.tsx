@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import banner from '@/../../public/images/referral-wallpaper.jpg';
@@ -13,6 +14,7 @@ import Referrer from '@/components/pages/referral/Referrer';
 import { PageProps, UserProfileExtended } from '@/types';
 
 export default function Referral({ userProfile, connected }: PageProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [activeProfile, setActiveProfile] =
     useState<UserProfileExtended | null>(null);
@@ -83,7 +85,7 @@ export default function Referral({ userProfile, connected }: PageProps) {
                   )}
                   onClick={() => handleViewChange('asReferrer')}
                 >
-                  As Referrer
+                  {t('referral.asReferrer')}
                 </h4>
                 <h4>/</h4>
                 <h4
@@ -95,7 +97,7 @@ export default function Referral({ userProfile, connected }: PageProps) {
                   )}
                   onClick={() => handleViewChange('asReferee')}
                 >
-                  As Referee
+                  {t('referral.asReferee')}
                 </h4>
               </div>
 
@@ -106,14 +108,14 @@ export default function Referral({ userProfile, connected }: PageProps) {
                 )}
               >
                 {view === 'asReferrer'
-                  ? 'SPREAD THE WORD'
-                  : 'SHOW YOUR SUPPORT'}
+                  ? t('referral.spreadTheWord')
+                  : t('referral.showYourSupport')}
               </h1>
 
               <h4 className="text-white/80 tracking-widest uppercase text-md">
                 {view === 'asReferrer'
-                  ? 'And receive 10% of the trading fee'
-                  : 'And grant 10% of your trading fees'}
+                  ? t('referral.receive10PercentFee')
+                  : t('referral.grant10PercentFee')}
               </h4>
             </div>
           </div>
@@ -124,13 +126,13 @@ export default function Referral({ userProfile, connected }: PageProps) {
                 className="absolute w-full flex items-center justify-center top-[30%] z-10 underline cursor-pointer opacity-90 hover:opacity-100"
                 onClick={() => router.push('/profile')}
               >
-                Create your profile to activate referral system
+                {t('referral.createProfileToActivate')}
               </div>
             ) : null}
 
             {!connected ? (
               <div className="absolute w-full flex items-center justify-center top-[calc(50%-1em)] z-10 opacity-60">
-                Connect to access the page
+                {t('referral.connectToAccess')}
               </div>
             ) : null}
 

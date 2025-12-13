@@ -89,7 +89,7 @@ export default function Header({
   const INTERNAL_PAGES = PAGES.filter((p) => !p?.external);
 
   const DROPDOWN_PAGES = INTERNAL_PAGES.filter(
-    (p) => p.dropdown && (p.name !== 'Vest' || userVest || userDelegatedVest),
+    (p) => p.dropdown && (p.link !== '/vest' || userVest || userDelegatedVest),
   );
 
   const MAIN_PAGES = INTERNAL_PAGES.filter((p) => !p?.dropdown);

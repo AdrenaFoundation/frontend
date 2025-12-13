@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import banner from '@/../../public/images/achievements-book-wallpaper.jpg';
@@ -22,6 +23,7 @@ export default function Achievements({
     defaultShowOwned?: boolean;
     defaultShowNotOwned?: boolean;
 }) {
+    const { t } = useTranslation();
     const { allUserProfiles } = useAllUserProfiles({});
     const [showOwned, setShowOwned] = useState<boolean>(defaultShowOwned);
     const [showNotOwned, setShowNotOwned] = useState<boolean>(defaultShowNotOwned);
@@ -138,11 +140,11 @@ export default function Achievements({
                                 'bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)]',
                             )}
                         >
-                            Book of Achievements
+                            {t('achievements.bookOfAchievements')}
                         </h1>
 
                         <h4 className='text-white/80 tracking-widest uppercase text-md'>
-                            Collect them all
+                            {t('achievements.collectThemAll')}
                         </h4>
 
                         <h4 className='text-white/80 tracking-widest uppercase text-md'>
@@ -157,28 +159,28 @@ export default function Achievements({
 
                 <div className='flex w-full items-center justify-center gap-2 flex-col sm:flex-row sm:gap-10'>
                     <div className='flex flex-col gap-2 items-center'>
-                        <div className='text-white/80 tracking-widest uppercase text-xs'>sort by</div>
+                        <div className='text-white/80 tracking-widest uppercase text-xs'>{t('achievements.sortBy')}</div>
 
                         <div className='flex gap-2'>
                             <div
                                 className={twMerge('text-sm text-txtfade cursor-pointer hover:text-white', sort === 'index' && 'text-white')}
                                 onClick={() => setSort('index')}
                             >
-                                ACH-Index
+                                {t('achievements.achIndex')}
                             </div>
                             <div className='text-sm text-txtfade'>/</div>
                             <div
                                 className={twMerge('text-sm text-txtfade cursor-pointer hover:text-white', sort === 'points' && 'text-white')}
                                 onClick={() => setSort('points')}
                             >
-                                Points
+                                {t('achievements.points')}
                             </div>
                             <div className='text-sm text-txtfade'>/</div>
                             <div
                                 className={twMerge('text-sm text-txtfade cursor-pointer hover:text-white', sort === 'completion' && 'text-white')}
                                 onClick={() => setSort('completion')}
                             >
-                                Completion %
+                                {t('achievements.completionPercent')}
                             </div>
                         </div>
                     </div>
@@ -186,18 +188,18 @@ export default function Achievements({
                     <div className='h-full w-[1px] bg-bcolor' />
 
                     <div className='flex flex-col gap-2 items-center'>
-                        <div className='text-white/80 tracking-widest uppercase text-xs'>show</div>
+                        <div className='text-white/80 tracking-widest uppercase text-xs'>{t('achievements.show')}</div>
 
                         <div className='flex gap-2 items-center'>
                             <Checkbox onChange={setShowOwned} checked={showOwned} className={twMerge('h-4 w-4')} variant='white' />
 
-                            <div className='text-sm text-txtfade'>Owned</div>
+                            <div className='text-sm text-txtfade'>{t('achievements.owned')}</div>
 
                             <div className='text-sm text-txtfade'>/</div>
 
                             <Checkbox onChange={setShowNotOwned} checked={showNotOwned} className={twMerge('h-4 w-4')} variant='white' />
 
-                            <div className='text-sm text-txtfade'>Not Owned</div>
+                            <div className='text-sm text-txtfade'>{t('achievements.notOwned')}</div>
                         </div>
                     </div>
                 </div>
@@ -210,7 +212,7 @@ export default function Achievements({
                     />)}
 
                     {filteredAchievements.length === 0 ? <div className='text-white/50 tracking-widest uppercase text-md pt-12 pb-12'>
-                        NO ACHIEVEMENT FOUND
+                        {t('achievements.noAchievementFound')}
                     </div> : null}
                 </div>
             </StyledContainer>
