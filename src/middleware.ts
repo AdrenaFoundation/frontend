@@ -1,7 +1,16 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { rateLimiterMiddleware } from './middleware/rateLimiter';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  // Apply rate limiting first for public API routes
+  if (request.nextUrl.pathname.startsWith('/api/public/')) {
+    const rateLimitResponse = await rateLimiterMiddleware(request);
+    if (rateLimitResponse.status !== 200) {
+      return rateLimitResponse;
+    }
+  }
+
   if (request.nextUrl.pathname.startsWith('/api/')) {
     const origin = request.headers.get('origin');
     const referer = request.headers.get('referer');
