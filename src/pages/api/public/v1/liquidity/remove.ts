@@ -1,12 +1,12 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { Connection, PublicKey, ComputeBudgetProgram } from '@solana/web3.js';
-import BN from 'bn.js';
 import { getAccount } from '@solana/spl-token';
+import { ComputeBudgetProgram, Connection, PublicKey } from '@solana/web3.js';
+import BN from 'bn.js';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 import { AdrenaClient } from '@/AdrenaClient';
 import MainnetConfiguration from '@/config/mainnet';
 import { createReadOnlyAdrenaProgram } from '@/initializeApp';
-import { findATAAddressSync, nativeToUi, uiToNative, isValidPublicKey } from '@/utils';
+import { findATAAddressSync, isValidPublicKey, nativeToUi, uiToNative } from '@/utils';
 
 export default async function handler(
   req: NextApiRequest,
@@ -148,9 +148,9 @@ export default async function handler(
 
       // Build transaction for withdrawing liquidity
       const usdcAta = findATAAddressSync(new PublicKey(account as string), usdcToken.mint);
-      // Note: buildRemoveLiquidityTx is protected, using type assertion as a temporary workaround
-      // Ideally, a public method should be added to AdrenaClient to build the transaction without executing it
-      const ix = await (client as any).buildRemoveLiquidityTx({
+
+      // @ts-expect-error - buildRemoveLiquidityTx is protected, temporary workaround
+      const ix = await client.buildRemoveLiquidityTx({
         lpAmountIn,
         minAmountOut: new BN(0),
         owner: new PublicKey(account as string),
