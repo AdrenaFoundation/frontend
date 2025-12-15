@@ -30,7 +30,7 @@ export default function Achievements({
     const totalCollected = useMemo(() => {
         if (userProfile === null || userProfile === false) return null;
 
-        return ACHIEVEMENTS.reduce((total, achievement) => (userProfile.achievements[achievement.index] ? 1 : 0) + total, 0);
+        return ACHIEVEMENTS.reduce((total) => (1) + total, 0);
     }, [userProfile]);
 
     const achievementsPlusPlus: AchievementInfoExtended[] = useMemo(() => {
@@ -204,7 +204,7 @@ export default function Achievements({
 
                 <div className='flex flex-row flex-wrap items-center justify-center sm:gap-4 pb-6'>
                     {filteredAchievements.map((achievement) => <Achievement
-                        unlocked={userProfile ? (userProfile?.achievements[achievement.index] ?? 0) > 0 : false}
+                        unlocked={true}
                         achievement={achievement}
                         key={`achievement-${achievement.index}`}
                     />)}
