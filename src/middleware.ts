@@ -1,7 +1,17 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-export function middleware(request: NextRequest) {
+import { rateLimiterMiddleware } from './middleware/rateLimiter';
+
+export async function middleware(request: NextRequest) {
+  // Apply rate limiting first for public API routes
+  if (request.nextUrl.pathname.startsWith('/api/public/')) {
+    const rateLimitResponse = await rateLimiterMiddleware(request);
+    if (rateLimitResponse.status !== 200) {
+      return rateLimitResponse;
+    }
+  }
+
   if (request.nextUrl.pathname.startsWith('/api/')) {
     const origin = request.headers.get('origin');
     const referer = request.headers.get('referer');
@@ -50,23 +60,31 @@ export function middleware(request: NextRequest) {
       return false;
     };
 
-    if (process.env.NODE_ENV === 'production') {
-      if (!isOriginAllowed(origin, referer)) {
-        return new NextResponse(
-          JSON.stringify({ error: 'Forbidden - Invalid origin' }),
-          { status: 403, headers: { 'content-type': 'application/json' } },
-        );
-      }
+    // Single check for public APIs that should bypass CORS checks (works in all environments)
+    const isPublicAPI = request.nextUrl.pathname.startsWith('/api/public/');
 
-      if (
-        !referer ||
-        (!allowedOrigins.some((allowed) => referer.startsWith(allowed)) &&
-          !isValidVercelPreview(referer))
-      ) {
-        return new NextResponse(
-          JSON.stringify({ error: 'Forbidden - Invalid referer' }),
-          { status: 403, headers: { 'content-type': 'application/json' } },
-        );
+    // Apply security logic in production
+    if (process.env.NODE_ENV === 'production') {
+      // Skip all CORS checks for public APIs only (both preview and production)
+      if (!isPublicAPI) {
+        // Apply existing security logic for private APIs only
+        if (!isOriginAllowed(origin, referer)) {
+          return new NextResponse(
+            JSON.stringify({ error: 'Forbidden - Invalid origin' }),
+            { status: 403, headers: { 'content-type': 'application/json' } },
+          );
+        }
+
+        if (
+          !referer ||
+          (!allowedOrigins.some((allowed) => referer.startsWith(allowed)) &&
+            !isValidVercelPreview(referer))
+        ) {
+          return new NextResponse(
+            JSON.stringify({ error: 'Forbidden - Invalid referer' }),
+            { status: 403, headers: { 'content-type': 'application/json' } },
+          );
+        }
       }
     }
 
