@@ -148,7 +148,7 @@ export default function EditPositionCollateral({
 
     const notification =
       MultiStepNotification.newForRegularTransaction(
-        `Remove Collateral${doJupiterSwapOnWithdraw ? ' 1/2' : ''}`
+        t('trade.tradeHistory.eventLabel.removeCollateral') + (doJupiterSwapOnWithdraw ? ' 1/2' : '')
       ).fire();
 
     try {
@@ -171,7 +171,7 @@ export default function EditPositionCollateral({
         });
 
       if (doJupiterSwapOnWithdraw) {
-        const notification = MultiStepNotification.newForRegularTransaction('Remove Collateral 2/2').fire();
+        const notification = MultiStepNotification.newForRegularTransaction(t('trade.eventLabel.removeCollateral') + ' 2/2').fire();
 
         const ataBalanceAfter = await getTokenAccountBalanceNullable(window.adrena.client.readonlyConnection, ataAddress)
 
@@ -250,7 +250,7 @@ export default function EditPositionCollateral({
     if (!input) return false;
 
     const notification =
-      MultiStepNotification.newForRegularTransaction('Add Collateral').fire();
+      MultiStepNotification.newForRegularTransaction(t('trade.editPosition.addCollateral')).fire();
 
     try {
       const tokenToUse = useCollateralToken ? position.collateralToken : depositToken;

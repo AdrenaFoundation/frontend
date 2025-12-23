@@ -117,7 +117,7 @@ export default function StakeLanding({
 
         <Button
           size="lg"
-          title={`${t('stake.stake')} ${token.name}`}
+          title={token.name === 'ADX' ? t('stake.stakeADX') : t('stake.stakeALPLiquid')}
           className={twMerge(
             'mt-5 px-16 text-white border border-white/10',
             'bg-gradient-to-r from-[#DA1A31] to-[#DE1933]',

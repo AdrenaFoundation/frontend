@@ -38,6 +38,7 @@ import {
   TransactionMessage,
   VersionedTransaction,
 } from '@solana/web3.js';
+import i18next from 'i18next';
 
 import { Adrena } from '@/target/adrena';
 import AdrenaJson from '@/target/adrena.json';
@@ -6987,7 +6988,7 @@ export class AdrenaClient {
 
       const adrenaError = new AdrenaTransactionError(
         null,
-        'User rejected the request',
+        i18next.t('trade.userRejectedRequest'),
       );
 
       // Sign the transaction failed

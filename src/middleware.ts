@@ -8,7 +8,6 @@ import {
   headerName,
   languages,
 } from './i18n/settings';
-
 import { rateLimiterMiddleware } from './middleware/rateLimiter';
 
 export async function middleware(request: NextRequest) {

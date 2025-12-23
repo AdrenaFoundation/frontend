@@ -70,7 +70,7 @@ export default function ALPSwapBuy({
     }
 
     const notification =
-      MultiStepNotification.newForRegularTransaction('Buying ALP').fire();
+      MultiStepNotification.newForRegularTransaction(t('alp.buyingALP')).fire();
 
     try {
       // The addLiquidity will handle the swap if needed

@@ -81,7 +81,7 @@ export default function ALPSwapSell({
     }
 
     const notification =
-      MultiStepNotification.newForRegularTransaction('Selling ALP').fire();
+      MultiStepNotification.newForRegularTransaction(t('alp.sellingALP')).fire();
 
     try {
       await window.adrena.client.removeLiquidity({

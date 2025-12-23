@@ -587,7 +587,7 @@ export default function WalletSidebar({
 
                                                 try {
                                                     const notification =
-                                                        MultiStepNotification.newForRegularTransaction('Send Tokens').fire();
+                                                        MultiStepNotification.newForRegularTransaction(t('referral.sendTokens')).fire();
 
                                                     await window.adrena.client.signAndExecuteTxAlternative({
                                                         transaction,
@@ -615,7 +615,7 @@ export default function WalletSidebar({
             </AnimatePresence>
         </>;
 
-    }, [isSidebarOpen, wallet, enhancedWalletData, view, enhancedWallets, hasExternalWallets, isLoadingBalances, totalValueUsd, solBalance, refreshBalances, balancesError, tokenBalancesWithPrices, connectedStandardWallets, dispatch, fundWallet, exportWallet, connectedAdapter, closeSidebar, adapters, connectWallet]);
+    }, [isSidebarOpen, wallet, enhancedWalletData, view, enhancedWallets, hasExternalWallets, isLoadingBalances, totalValueUsd, solBalance, refreshBalances, balancesError, tokenBalancesWithPrices, connectedStandardWallets, dispatch, fundWallet, exportWallet, connectedAdapter, closeSidebar, adapters, connectWallet, t]);
 
     return (
         <AnimatePresence>

@@ -162,7 +162,7 @@ export default function ClosePosition({
       // Check remaining collateral validation for all cases
       if (shouldSkipJupiter) {
         setAmountOut(null);
-        setErrorMsg('Remaining collateral must be at least $10');
+        setErrorMsg(t('trade.closePosition.remainingCollateralMustBeAtLeast10'));
         setIsCalculating(false);
         return;
       }
@@ -217,7 +217,7 @@ export default function ClosePosition({
     const intervalId = setInterval(() => {
       const timeSinceLastCalculation = Date.now() - lastCalculationTime;
       if (
-        errorMsg !== 'Remaining collateral must be at least $10' &&
+        errorMsg !== t('trade.closePosition.remainingCollateralMustBeAtLeast10') &&
         timeSinceLastCalculation >= 5000
       ) {
         runCalculation();
@@ -234,7 +234,7 @@ export default function ClosePosition({
     async (useCollateralToken = false) => {
       if (!markPrice) return;
 
-      const notificationTitle = `Close ${formatNumber((activePercent ?? 0) * 100, 2, 0, 2)}% of Position`;
+      const notificationTitle = t('trade.closePosition.closePercentOfPosition', { percent: formatNumber((activePercent ?? 0) * 100, 2, 0, 2) });
 
       const notification =
         MultiStepNotification.newForRegularTransaction(
@@ -369,6 +369,7 @@ export default function ClosePosition({
       onClose,
       showPopupOnPositionClose,
       setShareClosePosition,
+      t
     ],
   );
 
@@ -393,7 +394,7 @@ export default function ClosePosition({
     if (v <= 0) {
       setCustomAmount(v);
       setActivePercent(v / position.sizeUsd);
-      setErrorMsg('Size to close must be greater than $0');
+      setErrorMsg(t('trade.closePosition.sizeToCloseMustBeGreaterThan0'));
       return;
     }
 
@@ -766,7 +767,7 @@ export default function ClosePosition({
             </div>
 
             {/* Jupiter route failure warning */}
-            {doJupiterSwap && errorMsg === 'Cannot find jupiter route' ? (
+            {doJupiterSwap && errorMsg === t('trade.closePosition.cannotFindJupiterRoute') ? (
               <div className="flex flex-col text-sm">
                 <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full pl-10">
                   <Image

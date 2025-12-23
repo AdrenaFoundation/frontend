@@ -42,6 +42,7 @@ export default function TradingChartHeaderStats({
   isStatsExpanded?: boolean;
   setIsStatsExpanded?: (expanded: boolean) => void;
 }) {
+  const { t } = useTranslation();
   const [displayBorrowRateAsApr, setDisplayBorrowRateAsApr] = useState(false);
   const selectedTokenPrice = useSelector(
     (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
@@ -108,8 +109,6 @@ export default function TradingChartHeaderStats({
     }
   }, [selected.mint, volumeStats]);
 
-  const { t } = useTranslation()
-
   useEffect(() => {
     if (selectedTokenPrice !== null && previousTokenPrice !== null) {
       if (selectedTokenPrice > previousTokenPrice) {
@@ -137,9 +136,9 @@ export default function TradingChartHeaderStats({
           ? `${(borrowRateHourly).toFixed(4)}%/h`
           : '-'}
       </span>,
-      borrowRateTippy: displayBorrowRateAsApr ? 'Annual borrow rate in % of position size' : 'Hourly borrow rate in % of position size',
+      borrowRateTippy: displayBorrowRateAsApr ? t('trade.chartControls.annualBorrowRateDescription') : t('trade.chartControls.hourlyBorrowRateDescription'),
     };
-  }, [borrowRateApr, borrowRateHourly, displayBorrowRateAsApr]);
+  }, [borrowRateApr, borrowRateHourly, displayBorrowRateAsApr, t]);
 
   if (showExpandedStatsOnly) {
     return (

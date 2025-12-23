@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { Id, toast } from 'react-toastify';
 import { twMerge } from 'tailwind-merge';
 
@@ -58,7 +59,7 @@ export default class MultiStepNotification {
     protected steps: NotificationSteps,
     protected closingTimeSuccessInMs: number,
     protected closingTimeErrorInMs: number,
-  ) {}
+  ) { }
 
   public static new({
     title,
@@ -91,16 +92,16 @@ export default class MultiStepNotification {
       title,
       steps: [
         {
-          title: 'Prepare transaction',
+          title: 'trade.prepareTransaction',
         },
         {
-          title: 'Sign transaction',
+          title: 'trade.signTransaction',
         },
         {
-          title: 'Execute transaction',
+          title: 'trade.executeTransaction',
         },
         {
-          title: 'Confirm transaction',
+          title: 'trade.confirmTransaction',
         },
       ],
     });
@@ -242,232 +243,237 @@ export default class MultiStepNotification {
 
     // Wrapper to filter out toast-specific props that shouldn't be passed to DOM
     // eslint-disable-next-line react/display-name
-    return () => (
-      <motion.div
-        animate={{
-          height: this.report_code
-            ? '10em'
-            : this.error !== null
-              ? 'auto'
-              : this.steps.length === 5
-                ? '12.873125em'
-                : '11em',
-        }}
-        transition={{ duration: 0.2 }}
-        className="w-[20em] bg-[#08141E] shadow-2xl z-[9999] border border-[#1A2938] rounded-md"
-      >
-        <div className="flex flex-col h-full w-full">
-          <div className="flex w-full justify-between p-2 px-3">
-            <h3 className="font-semibold capitalize">
-              {this.title ?? 'Title'}
-            </h3>
+    return () => {
+      const ContentWrapper = () => {
+        const { t } = useTranslation();
+        return (
+          <motion.div
+            animate={{
+              height: this.report_code
+                ? '10em'
+                : this.error !== null
+                  ? 'auto'
+                  : this.steps.length === 5
+                    ? '12.873125em'
+                    : '11em',
+            }}
+            transition={{ duration: 0.2 }}
+            className="w-[20em] bg-[#08141E] shadow-2xl z-[9999] border border-[#1A2938] rounded-md"
+          >
+            <div className="flex flex-col h-full w-full">
+              <div className="flex w-full justify-between p-2 px-3">
+                <h3 className="font-semibold capitalize">
+                  {this.title || t('trade.title')}
+                </h3>
 
-            <Image
-              className="opacity-20 hover:opacity-40 cursor-pointer"
-              onClick={() => {
-                this.close(0);
-              }}
-              src={closeIcon}
-              alt="close icon"
-              width={20}
-              height={20}
-            />
-          </div>
-
-          <div className="h-[1px] w-full bg-[#1A2938]" />
-
-          {this.report_code !== null ? (
-            <div className="flex flex-col gap-3 p-2 px-3">
-              <div>
-                <p className="mb-1 text-sm font-semibold bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]">
-                  Report code:{' '}
-                  <span className="text-white font-mono">
-                    {this.report_code}
-                  </span>
-                  <CopyButton
-                    textToCopy={this.report_code!}
-                    notificationTitle="Report code copied"
-                    className="inline-block ml-2 opacity-50"
-                  />
-                </p>
-
-                <p className="text-sm text-txtfade">
-                  If you need help, please provide this code to the support
-                  team.
-                </p>
+                <Image
+                  className="opacity-20 hover:opacity-40 cursor-pointer"
+                  onClick={() => {
+                    this.close(0);
+                  }}
+                  src={closeIcon}
+                  alt="close icon"
+                  width={20}
+                  height={20}
+                />
               </div>
-              <Button
-                title="Open Discord"
-                className="w-full text-xs border border-[#1A2938]"
-                leftIcon={discordLogo}
-                onClick={() => {
-                  window.open('https://discord.gg/adrena', '_blank');
-                }}
-                variant="outline"
-              />
-            </div>
-          ) : (
-            <div className="flex flex-col h-full w-full items-center justify-center p-2">
-              {this.error === null ? (
-                <div className="h-full min-w-[11em] w-full flex flex-col justify-center gap-1 max-h-full overflow-auto">
-                  {this.steps.map((step, index) => (
-                    <div
-                      key={index}
-                      className="w-full items-center flex min-h-4 h-auto"
-                    >
-                      <div className="w-[1.6em] h-[1.6em] mr-1 flex items-center justify-center">
-                        {step.state === NotificationStepState.waiting ? (
-                          <Image
-                            className="opacity-40"
-                            src={clockIcon}
-                            alt="clock icon"
-                            width={13}
-                            height={13}
-                          />
-                        ) : null}
 
-                        {step.state === NotificationStepState.inProgress ? (
-                          <Image
-                            src={loaderIcon}
-                            alt="loader icon"
-                            width={28}
-                            height={28}
-                          />
-                        ) : null}
+              <div className="h-[1px] w-full bg-[#1A2938]" />
 
-                        {step.state === NotificationStepState.error ? (
+              {this.report_code !== null ? (
+                <div className="flex flex-col gap-3 p-2 px-3">
+                  <div>
+                    <p className="mb-1 text-sm font-semibold bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]">
+                      {t('trade.reportCode')}: {' '}
+                      <span className="text-white font-mono">
+                        {this.report_code}
+                      </span>
+                      <CopyButton
+                        textToCopy={this.report_code!}
+                        notificationTitle={t('trade.reportCodeCopied')}
+                        className="inline-block ml-2 opacity-50"
+                      />
+                    </p>
+
+                    <p className="text-sm text-txtfade">
+                      {t('trade.provideCodeToSupport')}
+                    </p>
+                  </div>
+                  <Button
+                    title={t('trade.openDiscord')}
+                    className="w-full text-xs border border-[#1A2938]"
+                    leftIcon={discordLogo}
+                    onClick={() => {
+                      window.open('https://discord.gg/adrena', '_blank');
+                    }}
+                    variant="outline"
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col h-full w-full items-center justify-center p-2">
+                  {this.error === null ? (
+                    <div className="h-full min-w-[11em] w-full flex flex-col justify-center gap-1 max-h-full overflow-auto">
+                      {this.steps.map((step, index) => (
+                        <div
+                          key={index}
+                          className="w-full items-center flex min-h-4 h-auto"
+                        >
+                          <div className="w-[1.6em] h-[1.6em] mr-1 flex items-center justify-center">
+                            {step.state === NotificationStepState.waiting ? (
+                              <Image
+                                className="opacity-40"
+                                src={clockIcon}
+                                alt="clock icon"
+                                width={13}
+                                height={13}
+                              />
+                            ) : null}
+
+                            {step.state === NotificationStepState.inProgress ? (
+                              <Image
+                                src={loaderIcon}
+                                alt="loader icon"
+                                width={28}
+                                height={28}
+                              />
+                            ) : null}
+
+                            {step.state === NotificationStepState.error ? (
+                              <Image
+                                src={errorIcon}
+                                alt="error icon"
+                                width={14}
+                                height={14}
+                              />
+                            ) : null}
+
+                            {step.state === NotificationStepState.succeeded ? (
+                              <Image
+                                src={doneIcon}
+                                alt="done icon"
+                                width={15}
+                                height={15}
+                              />
+                            ) : null}
+                          </div>
+
+                          <div
+                            className={twMerge(
+                              'flex flex-row items-center gap-2 w-auto text-sm text-nowrap max-w-full overflow-hidden transition duration-500',
+                              step.state === NotificationStepState.inProgress &&
+                              'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]',
+                              step.state === NotificationStepState.error &&
+                              'text-redbright',
+                              step.state === NotificationStepState.succeeded &&
+                              'text-green',
+                              step.state === NotificationStepState.waiting &&
+                              'opacity-40',
+                              step.title === 'trade.executeTransaction' &&
+                              this.txHash &&
+                              'underline cursor-pointer group',
+                            )}
+                            onClick={() => {
+                              if (
+                                step.title === 'trade.executeTransaction' &&
+                                this.txHash
+                              ) {
+                                window.open(getTxExplorer(this.txHash), '_blank');
+                              }
+                            }}
+                          >
+                            {t(step.title)}
+                            {step.title === 'trade.executeTransaction' && this.txHash ? (
+                              <motion.div
+                                initial={{ opacity: 0, x: -5, filter: 'blur(5px)' }}
+                                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                                transition={{ duration: 0.3 }}
+                              >
+                                <Image
+                                  src={arrowIcon}
+                                  alt="arrow icon"
+                                  className="opacity-50 group-hover:opacity-100 transition-opacity duration-300"
+                                  width={7}
+                                  height={7}
+                                />{' '}
+                              </motion.div>
+                            ) : null}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {this.error !== null ? (
+                    <>
+                      <div className="flex flex-col gap-3 justify-between w-full p-1">
+                        <div className="flex flex-row gap-2 items-center">
                           <Image
                             src={errorIcon}
                             alt="error icon"
-                            width={14}
-                            height={14}
+                            width={12}
+                            height={12}
                           />
-                        ) : null}
 
-                        {step.state === NotificationStepState.succeeded ? (
-                          <Image
-                            src={doneIcon}
-                            alt="done icon"
-                            width={15}
-                            height={15}
-                          />
-                        ) : null}
-                      </div>
-
-                      <div
-                        className={twMerge(
-                          'flex flex-row items-center gap-2 w-auto text-sm text-nowrap max-w-full overflow-hidden transition duration-500',
-                          step.state === NotificationStepState.inProgress &&
-                            'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)] animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%]',
-                          step.state === NotificationStepState.error &&
-                            'text-redbright',
-                          step.state === NotificationStepState.succeeded &&
-                            'text-green',
-                          step.state === NotificationStepState.waiting &&
-                            'opacity-40',
-                          step.title === 'Execute transaction' &&
-                            this.txHash &&
-                            'underline cursor-pointer group',
-                        )}
-                        onClick={() => {
-                          if (
-                            step.title === 'Execute transaction' &&
-                            this.txHash
-                          ) {
-                            window.open(getTxExplorer(this.txHash), '_blank');
-                          }
-                        }}
-                      >
-                        {step.title}
-                        {step.title === 'Execute transaction' && this.txHash ? (
-                          <motion.div
-                            initial={{ opacity: 0, x: -5, filter: 'blur(5px)' }}
-                            animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-                            transition={{ duration: 0.3 }}
+                          <p
+                            className={twMerge(
+                              'text-sm font-semibold text-redbright w-full h-full',
+                              errorMessage.length >= 70 && 'text-xs',
+                            )}
                           >
-                            <Image
-                              src={arrowIcon}
-                              alt="arrow icon"
-                              className="opacity-50 group-hover:opacity-100 transition-opacity duration-300"
-                              width={7}
-                              height={7}
-                            />{' '}
-                          </motion.div>
-                        ) : null}
+                            {errorMessage}
+                          </p>
+                        </div>
+
+                        <div className="flex flex-col gap-2 items-center">
+                          {this.errorActions.length > 0 ? (
+                            this.errorActions.map((action, index) => (
+                              <Button
+                                key={index}
+                                title={action.title}
+                                className="w-full text-xs"
+                                onClick={action.onClick}
+                                variant={action.variant || 'outline'}
+                              />
+                            ))
+                          ) : (
+                            // Show default "Get help" button
+                            <Button
+                              title={t('trade.getHelp')}
+                              className="w-full text-xs border border-[#1A2938]"
+                              onClick={() => this.sendErrorReport()}
+                              disabled={this.isSendingErrorReport}
+                              variant="outline"
+                            />
+                          )}
+
+                          {this.error instanceof AdrenaTransactionError &&
+                            this.error.txHash ? (
+                            <Link
+                              href={getTxExplorer(this.error.txHash)}
+                              target="_blank"
+                              className="flex flex-row underline text-sm opacity-50 hover:opacity-100 items-center gap-1 transition-opacity duration-300 w-full"
+                            >
+                              <p className="font-mono">{t('trade.viewTransaction')}</p>
+                              <Image
+                                src={arrowIcon}
+                                alt="arrow icon"
+                                width={7}
+                                height={7}
+                              />
+                            </Link>
+                          ) : null}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    </>
+                  ) : null}
                 </div>
-              ) : null}
-
-              {this.error !== null ? (
-                <>
-                  <div className="flex flex-col gap-3 justify-between w-full p-1">
-                    <div className="flex flex-row gap-2 items-center">
-                      <Image
-                        src={errorIcon}
-                        alt="error icon"
-                        width={12}
-                        height={12}
-                      />
-
-                      <p
-                        className={twMerge(
-                          'text-sm font-semibold text-redbright w-full h-full',
-                          errorMessage.length >= 70 && 'text-xs',
-                        )}
-                      >
-                        {errorMessage}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col gap-2 items-center">
-                      {this.errorActions.length > 0 ? (
-                        this.errorActions.map((action, index) => (
-                          <Button
-                            key={index}
-                            title={action.title}
-                            className="w-full text-xs"
-                            onClick={action.onClick}
-                            variant={action.variant || 'outline'}
-                          />
-                        ))
-                      ) : (
-                        // Show default "Get help" button
-                        <Button
-                          title="Get help"
-                          className="w-full text-xs border border-[#1A2938]"
-                          onClick={() => this.sendErrorReport()}
-                          disabled={this.isSendingErrorReport}
-                          variant="outline"
-                        />
-                      )}
-
-                      {this.error instanceof AdrenaTransactionError &&
-                      this.error.txHash ? (
-                        <Link
-                          href={getTxExplorer(this.error.txHash)}
-                          target="_blank"
-                          className="flex flex-row underline text-sm opacity-50 hover:opacity-100 items-center gap-1 transition-opacity duration-300 w-full"
-                        >
-                          <p className="font-mono">View transaction</p>
-                          <Image
-                            src={arrowIcon}
-                            alt="arrow icon"
-                            width={7}
-                            height={7}
-                          />
-                        </Link>
-                      ) : null}
-                    </div>
-                  </div>
-                </>
-              ) : null}
+              )}
             </div>
-          )}
-        </div>
-      </motion.div>
-    );
+          </motion.div>
+        );
+      };
+      return <ContentWrapper />;
+    };
   }
 
   public fire(): MultiStepNotification {

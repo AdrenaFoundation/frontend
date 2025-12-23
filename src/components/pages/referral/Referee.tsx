@@ -43,7 +43,7 @@ export default function Referee({
 
     const changeReferrer = useCallback(async (referrerProfile: PublicKey | null,) => {
         const notification =
-            MultiStepNotification.newForRegularTransaction('Update Referrer').fire();
+            MultiStepNotification.newForRegularTransaction(t('referral.updateReferrer')).fire();
 
         try {
             await window.adrena.client.editUserProfile({
@@ -53,7 +53,7 @@ export default function Referee({
         } catch (error) {
             console.log('error', error);
         }
-    }, []);
+    }, [t]);
 
     useEffect(() => {
         if (!allUserProfiles) {

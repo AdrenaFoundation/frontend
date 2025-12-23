@@ -161,7 +161,7 @@ export default function StopLossTakeProfit({
     }
 
     const notification =
-      MultiStepNotification.newForRegularTransaction('TP/SL').fire();
+      MultiStepNotification.newForRegularTransaction(t('trade.editPosition.tpslButton')).fire();
 
     try {
       await window.adrena.client.signAndExecuteTxAlternative({

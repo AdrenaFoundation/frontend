@@ -2,6 +2,7 @@ import { BN, Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
@@ -51,6 +52,7 @@ export default function SwapTradingInputs({
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -212,7 +214,7 @@ export default function SwapTradingInputs({
     }
 
     const notification =
-      MultiStepNotification.newForRegularTransaction('Swap').fire();
+      MultiStepNotification.newForRegularTransaction(t('trade.swap')).fire();
 
     if (!tokenA || !tokenB || !inputA || !inputB) {
       return notification.currentStepErrored('Missing information');
