@@ -2,6 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import jtoLogo from '@/../../public/images/jito-logo-2.png';
@@ -78,6 +79,7 @@ export default function MutagenLeaderboardInterseason3({
     jtoPrice: number | null;
     onClickUserProfile: (wallet: PublicKey) => void;
 }) {
+    const { t } = useTranslation();
     const [sortField, setSortField] = useState<SortField>('pointsTrading');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
     const [totalRewardUsd, setTotalRewardUsd] = useState<number>(0);
@@ -559,7 +561,7 @@ export default function MutagenLeaderboardInterseason3({
             <span className="opacity-50" key="rank">
                 #
             </span>,
-            <span className="opacity-50" key="trader">Trader</span>,
+            <span className="opacity-50" key="trader">{t('ranked.trader')}</span>,
         ];
 
         if (breakpoint4) {
@@ -569,7 +571,7 @@ export default function MutagenLeaderboardInterseason3({
                     className={getSortButtonClass('totalVolume')}
                     key="totalVolume"
                 >
-                    <span className={getSortTextClass('totalVolume')}>Volume</span>
+                    <span className={getSortTextClass('totalVolume')}>{t('ranked.volume').replace(':', '')}</span>
                     <SortIcon field="totalVolume" />
                 </button>,
             );
@@ -582,7 +584,7 @@ export default function MutagenLeaderboardInterseason3({
                     className={getSortButtonClass('pointsTrading')}
                     key="pointsTrading"
                 >
-                    <span className={getSortTextClass('pointsTrading')}>Mutagen (Trading)</span>
+                    <span className={getSortTextClass('pointsTrading')}>{t('ranked.mutagenTrading')}</span>
                     <SortIcon field="pointsTrading" />
                 </button>,
             );
@@ -594,7 +596,7 @@ export default function MutagenLeaderboardInterseason3({
                 className={getSortButtonClass('rewards')}
                 key="rewards"
             >
-                <span className={getSortTextClass('rewards')}>Rewards</span>
+                <span className={getSortTextClass('rewards')}>{t('ranked.rewards')}</span>
                 <SortIcon field="rewards" />
             </button>,
         );

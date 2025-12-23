@@ -4,6 +4,7 @@ import 'tippy.js/dist/tippy.css';
 import { Connection } from '@solana/web3.js';
 import Head from 'next/head';
 import { ReactNode, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ToastContainer } from 'react-toastify';
 import { Toaster } from 'sonner';
 import { twMerge } from 'tailwind-merge';
@@ -76,6 +77,7 @@ export default function RootLayout({
   adapters: WalletAdapterExtended[];
   mainPool: PageProps['mainPool'];
 }) {
+  const { t } = useTranslation();
   const isBigScreen = useBetterMediaQuery('(min-width: 1024px)');
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const isTablet = useBetterMediaQuery(
@@ -89,59 +91,60 @@ export default function RootLayout({
     useState(false);
 
   const [pages, setPages] = useState<LinksType[]>([
-    { name: 'Trade', link: '/trade', icon: tradeIcon },
+    { name: t('nav.trade'), link: '/trade', icon: tradeIcon },
     {
-      name: 'Profile',
+      name: t('nav.profile'),
       link: '/profile',
       dropdown: true,
-      subtitle: 'Your Adrena Profile',
+      subtitle: t('layout.yourAdrenaProfile'),
       icon: personIcon,
     },
     {
-      name: 'Vest',
+      name: t('nav.vest'),
       link: '/vest',
       icon: window.adrena.client.adxToken.image,
       dropdown: true,
-      subtitle: 'Vesting and delegation',
+      subtitle: t('layout.vestingAndDelegation'),
     },
-    { name: 'Stake', link: '/stake', icon: lockIcon },
-    { name: 'Ranked', link: '/ranked', icon: trophyIcon },
+    { name: t('nav.stake'), link: '/stake', icon: lockIcon },
+    { name: t('nav.ranked'), link: '/ranked', icon: trophyIcon },
     {
-      name: 'Provide Liquidity',
+      name: t('nav.provideLiquidity'),
       link: '/buy_alp',
       icon: window.adrena.client.alpToken.image,
     },
-    { name: 'Monitor', link: '/monitoring', icon: monitorIcon },
+    { name: t('nav.monitor'), link: '/monitoring', icon: monitorIcon },
     {
-      name: 'Referral',
+      name: t('nav.referral'),
       link: '/referral',
       icon: shareIcon,
       dropdown: true,
-      subtitle: 'Refer and earn rewards',
+      subtitle: t('layout.referAndEarnRewards'),
     },
     {
-      name: 'Achievements',
+      name: t('nav.achievements'),
       link: '/achievements',
       dropdown: true,
-      subtitle: 'Progress & Milestones',
+      subtitle: t('layout.progressAndMilestones'),
       icon: trophyIcon,
     },
     {
-      name: 'Leaderboard',
+      name: t('nav.leaderboard'),
       link: '/mutagen_leaderboard',
       dropdown: true,
-      subtitle: 'All-Time Mutagen Leaderboard',
+      subtitle: t('layout.allTimeMutagenLeaderboard'),
       icon: mutagenIcon,
     },
     {
-      name: 'Vote',
+      name: t('nav.vote'),
       link: 'https://dao.adrena.trade/',
       external: true,
       dropdown: true,
+      subtitle: t('layout.daoGovernance'),
       icon: voteIcon,
     },
     {
-      name: 'Learn',
+      name: t('nav.learn'),
       link: 'https://docs.adrena.trade/',
       external: true,
       dropdown: true,
@@ -152,10 +155,10 @@ export default function RootLayout({
   useEffect(() => {
     if (window.adrena.cluster === 'devnet') {
       return setPages((prev) =>
-        prev.concat([{ name: 'Faucet', link: '/faucet_devnet' }]),
+        prev.concat([{ name: t('nav.faucet'), link: '/faucet_devnet' }]),
       );
     }
-  }, []);
+  }, [t]);
 
   if (isBigScreen === null || isMobile === null || isTablet === null) {
     return null;
@@ -261,12 +264,12 @@ export default function RootLayout({
       {!isBigScreen && !disableChat && (
         <ChatContainer
           title="Chat"
-          setTitle={() => {}}
-          setIsNewNotification={() => {}}
+          setTitle={() => { }}
+          setIsNewNotification={() => { }}
           isMobile={true}
           isChatOpen={isChatOpen}
           setIsChatOpen={setIsChatOpen}
-          setOnlineCount={() => {}}
+          setOnlineCount={() => { }}
         />
       )}
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Button from '@/components/common/Button/Button';
 import { AdxLockPeriod, AlpLockPeriod, LockedStakeExtended } from '@/types';
@@ -30,6 +31,7 @@ export default function LockedStakesSection({
     onUpdate,
     defaultLockPeriod,
 }: LockedStakesSectionProps) {
+    const { t } = useTranslation();
     // Sort locked stakes
     const sortedLockedStakes = lockedStakes
         ? lockedStakes.sort((a: LockedStakeExtended, b: LockedStakeExtended) => {
@@ -56,7 +58,7 @@ export default function LockedStakesSection({
         <div className="px-5">
             <div className="flex flex-col sm:flex-row justify-between items-center mb-2">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold mr-2">My Locked Stakes</h3>
+                    <h3 className="text-lg font-semibold mr-2">{t('stake.myLockedStakes')}</h3>
                     <h3 className="text-lg font-semibold text-txtfade">
                         {lockedStakes?.length ? ` (${lockedStakes.length})` : ''}
                     </h3>
@@ -68,7 +70,7 @@ export default function LockedStakesSection({
                             className="px-2 py-1 rounded-full transition-colors flex items-center"
                             onClick={() => onSort('size')}
                         >
-                            Amount
+                            {t('stake.amount')}
                             <span className="ml-1 text-txtfade text-[10px]">
                                 {sortConfig.size === 'asc' ? '↑' : '↓'}
                             </span>
@@ -78,7 +80,7 @@ export default function LockedStakesSection({
                             className="px-2 py-1 rounded-full transition-colors flex items-center"
                             onClick={() => onSort('duration')}
                         >
-                            Unlock Date
+                            {t('stake.unlockDate')}
                             <span className="ml-1 text-txtfade text-[10px]">
                                 {sortConfig.duration === 'asc' ? '↑' : '↓'}
                             </span>
@@ -89,7 +91,7 @@ export default function LockedStakesSection({
                         variant="danger"
                         size="sm"
                         className='w-[8em]'
-                        title="Add Stake"
+                        title={t('stake.addStake')}
                         onClick={() => onAddStake(defaultLockPeriod)}
                     />
                 </div>

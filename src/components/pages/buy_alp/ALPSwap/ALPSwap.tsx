@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
@@ -14,9 +15,15 @@ export default function ALPSwap({
   className?: string;
   connected: boolean;
 }) {
+  const { t } = useTranslation();
   const [selectedAction, setSelectedAction] = useState<
     'mint' | 'redeem' | null
   >('mint');
+
+  const tabs = [
+    { id: 'mint', title: t('alp.mint'), activeColor: 'border-white' },
+    { id: 'redeem', title: t('alp.redeem'), activeColor: 'border-white' },
+  ];
 
   return (
     <div
@@ -27,13 +34,13 @@ export default function ALPSwap({
       )}
     >
       <TabSelect
-        selected={selectedAction as string}
-        tabs={[
-          { title: 'mint', activeColor: 'border-white' },
-          { title: 'redeem', activeColor: 'border-white' },
-        ]}
+        selected={tabs.find(tab => tab.id === selectedAction)?.title || ''}
+        tabs={tabs}
         onClick={(title) => {
-          setSelectedAction(title as 'mint' | 'redeem');
+          const selectedTab = tabs.find(tab => tab.title === title);
+          if (selectedTab) {
+            setSelectedAction(selectedTab.id as 'mint' | 'redeem');
+          }
         }}
       />
 

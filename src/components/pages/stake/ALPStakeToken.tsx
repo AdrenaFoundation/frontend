@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
@@ -30,6 +31,7 @@ export default function ALPStakeToken({
   stakeAmount: () => void;
   errorMessage: string;
 }) {
+  const { t } = useTranslation();
   const lockPeriods = ALP_LOCK_PERIODS.map((lockPeriod) => ({
     title: lockPeriod,
     activeColor: 'border-white',
@@ -110,19 +112,19 @@ export default function ALPStakeToken({
 
       <div className="flex flex-col gap-5 justify-between w-full p-5 ">
         <ul className="flex flex-col gap-2">
-          <li className="text-sm opacity-25">Benefits</li>
+          <li className="text-sm opacity-25">{t('stake.benefits')}</li>
           <li className="flex flex-row justify-between">
-            <p className="text-sm opacity-50">Days </p>
+            <p className="text-sm opacity-50">{t('stake.days')}</p>
             <p className="text-sm font-mono"> {lockPeriod} </p>
           </li>
           <li className="flex flex-row justify-between">
-            <p className="text-sm opacity-50"> USDC yield</p>
+            <p className="text-sm opacity-50">{t('stake.usdcYield')}</p>
             <p className="text-sm font-mono">
               {ALP_STAKE_MULTIPLIERS[lockPeriod].usdc}x
             </p>
           </li>
           <li className="flex flex-row justify-between">
-            <p className="text-sm opacity-50">ADX token yield </p>
+            <p className="text-sm opacity-50">{t('stake.adxTokenYield')}</p>
             <p className="text-sm font-mono">
               {ALP_STAKE_MULTIPLIERS[lockPeriod].adx}x
             </p>

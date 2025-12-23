@@ -25,6 +25,7 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
+import LanguageSwitcher from '../LanguageSwitcher';
 import Mutagen from '../Mutagen/Mutagen';
 import { NotificationBell } from '../Notifications/NotificationBell';
 import FormatNumber from '../Number/FormatNumber';
@@ -88,7 +89,7 @@ export default function Header({
   const INTERNAL_PAGES = PAGES.filter((p) => !p?.external);
 
   const DROPDOWN_PAGES = INTERNAL_PAGES.filter(
-    (p) => p.dropdown && (p.name !== 'Vest' || userVest || userDelegatedVest),
+    (p) => p.dropdown && (p.link !== '/vest' || userVest || userDelegatedVest),
   );
 
   const MAIN_PAGES = INTERNAL_PAGES.filter((p) => !p?.dropdown);
@@ -263,7 +264,7 @@ export default function Header({
 
         <Mutagen />
 
-        <div className="flex flex-row items-center border border-[#414E5E] rounded-md">
+        <div className="hidden sm:flex flex-row items-center border border-[#414E5E] rounded-md">
           <NotificationBell adapters={adapters} />
 
           <PriorityFeeSetting isOpen={isPriorityFeeOpen} setIsOpen={setIsPriorityFeeOpen} />
@@ -281,6 +282,8 @@ export default function Header({
             isOpen={isSettingsOpen}
             setIsOpen={setIsSettingsOpen}
           />
+
+          <LanguageSwitcher />
         </div>
 
         <WalletAdapter userProfile={userProfile} adapters={adapters} />

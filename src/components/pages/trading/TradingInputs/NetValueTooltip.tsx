@@ -1,5 +1,6 @@
 import Tippy from '@tippyjs/react';
 import { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -14,22 +15,23 @@ export default function NetValueTooltip({
   className?: string;
   position: PositionExtended;
 }) {
+  const { t } = useTranslation();
   return (
     <Tippy
       content={
         <div className="flex flex-col p-2">
-          <h3>Net Value</h3>
+          <h3>{t('trade.netValueTooltip.netValue')}</h3>
 
-          <h5 className="mt-4">Formula: Collateral + PnL - Fees</h5>
+          <h5 className="mt-4">{t('trade.netValueTooltip.formula')}</h5>
 
           <StyledSubContainer className="flex-col mt-4 p-4 min-w-[20em]">
             <div className="flex w-full items-center justify-between">
-              <span className="text-sm">Collateral</span>
+              <span className="text-sm">{t('trade.netValueTooltip.collateral')}</span>
               <FormatNumber nb={position.collateralUsd} format="currency" />
             </div>
 
             <div className="flex w-full items-center justify-between">
-              <span className="text-sm">PnL</span>
+              <span className="text-sm">{t('trade.netValueTooltip.pnl')}</span>
               <FormatNumber
                 nb={position.pnlMinusFees}
                 format="currency"
@@ -44,7 +46,7 @@ export default function NetValueTooltip({
             </div>
 
             <div className="flex w-full items-center justify-between">
-              <span className="text-sm text-txtfade">Borrow Fee</span>
+              <span className="text-sm text-txtfade">{t('trade.netValueTooltip.borrowFee')}</span>
               <FormatNumber
                 nb={position.borrowFeeUsd}
                 format="currency"
@@ -56,7 +58,7 @@ export default function NetValueTooltip({
               />
             </div>
             <div className="flex w-full items-center justify-between">
-              <span className="text-sm text-txtfade">Trade Fee</span>
+              <span className="text-sm text-txtfade">{t('trade.netValueTooltip.tradeFee')}</span>
               <FormatNumber
                 nb={position.exitFeeUsd}
                 format="currency"
@@ -69,7 +71,7 @@ export default function NetValueTooltip({
             </div>
 
             <div className="flex w-full items-center justify-between">
-              <span className="text-sm">Resulting Net Value</span>
+              <span className="text-sm">{t('trade.netValueTooltip.resultingNetValue')}</span>
               <FormatNumber
                 format="currency"
                 nb={position.pnl ? position.collateralUsd + position.pnl : undefined}

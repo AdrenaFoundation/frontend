@@ -1,6 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
@@ -36,6 +37,7 @@ export default function TopTraders({
   endDate,
   setProfile,
 }: TopTradersProps) {
+  const { t } = useTranslation();
   const [traders, setTraders] = useState<Trader[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -133,8 +135,8 @@ export default function TopTraders({
     <>
       <div className="bg-[#040D14] border rounded-md p-3">
         <div className="flex gap-2">
-          <p className="font-semibold text-lg">Top {numberTraders} traders</p>
-          <p className="font-semibold text-txtfade text-lg">(closed trades)</p>
+          <p className="font-semibold text-lg">{t('monitoring.topTraders', { count: numberTraders })}</p>
+          <p className="font-semibold text-txtfade text-lg">{t('monitoring.closedTrades')}</p>
         </div>
         <div className="px-4">
           <div className="mt-3">
@@ -146,7 +148,7 @@ export default function TopTraders({
                   className="ml-auto mr-auto opacity-50 flex items-center"
                   key="trader"
                 >
-                  Trader
+                  {t('monitoring.trader')}
                 </span>,
                 /*  <button
                                      onClick={() => handleSort('pnl')}
@@ -162,7 +164,7 @@ export default function TopTraders({
                   key="average_trade_time"
                 >
                   <span className={getSortTextClass('average_trade_time')}>
-                    AVG TIME
+                    {t('monitoring.avgTime')}
                   </span>
                   <SortIcon field="average_trade_time" />
                 </button>,
@@ -172,7 +174,7 @@ export default function TopTraders({
                   key="pnl_minus_fees"
                 >
                   <span className={getSortTextClass('pnl_minus_fees')}>
-                    {isExtraLargeScreen ? 'PNL WITH FEES' : 'PNL'}
+                    {isExtraLargeScreen ? t('monitoring.pnlWithFees') : t('monitoring.pnl')}
                   </span>
                   <SortIcon field="pnl_minus_fees" />
                 </button>,
@@ -182,7 +184,7 @@ export default function TopTraders({
                   key="volume"
                 >
                   <span className={getSortTextClass('volume')}>
-                    {isExtraLargeScreen ? 'VOLUME' : 'VOLUME'}
+                    {t('monitoring.volume')}
                   </span>
                   <SortIcon field="volume" />
                 </button>,
@@ -191,7 +193,7 @@ export default function TopTraders({
                   className={getSortButtonClass('fees')}
                   key="fees"
                 >
-                  <span className={getSortTextClass('fees')}>FEES</span>
+                  <span className={getSortTextClass('fees')}>{t('monitoring.fees')}</span>
                   <SortIcon field="fees" />
                 </button>,
                 <button
@@ -206,7 +208,7 @@ export default function TopTraders({
                       'volume_weighted_pnl_percentage',
                     )}
                   >
-                    {isExtraLargeScreen ? 'VOLUME PNL RATIO' : 'VOL. PNL'}
+                    {isExtraLargeScreen ? t('monitoring.volumePnlRatio') : t('monitoring.volPnl')}
                   </span>
                   <SortIcon field="volume_weighted_pnl_percentage" />
                 </button>,
@@ -216,7 +218,7 @@ export default function TopTraders({
                   key="win_rate_percentage"
                 >
                   <span className={getSortTextClass('win_rate_percentage')}>
-                    {isExtraLargeScreen ? 'WIN RATE' : 'WIN%'}
+                    {isExtraLargeScreen ? t('monitoring.winRate') : t('monitoring.win')}
                   </span>
                   <SortIcon field="win_rate_percentage" />
                 </button>,
@@ -226,7 +228,7 @@ export default function TopTraders({
                   key="pnl_volatility"
                 >
                   <span className={getSortTextClass('pnl_volatility')}>
-                    {isExtraLargeScreen ? 'PNL VOLATILITY' : 'PNL VOLAT'}
+                    {isExtraLargeScreen ? t('monitoring.pnlVolatility') : t('monitoring.pnlVolat')}
                   </span>
                   <SortIcon field="pnl_volatility" />
                 </button>,
@@ -236,7 +238,7 @@ export default function TopTraders({
                   key="shortest_trade_time"
                 >
                   <span className={getSortTextClass('shortest_trade_time')}>
-                    {isExtraLargeScreen ? 'SHORTEST TIME' : 'SHORTEST'}
+                    {isExtraLargeScreen ? t('monitoring.shortestTime') : t('monitoring.shortest')}
                   </span>
                   <SortIcon field="shortest_trade_time" />
                 </button>,
@@ -247,7 +249,7 @@ export default function TopTraders({
                   key="positions"
                 >
                   <span className={getSortTextClass('number_positions')}>
-                    {isExtraLargeScreen ? 'POSITIONS' : 'POS'}
+                    {isExtraLargeScreen ? t('monitoring.positions') : t('monitoring.pos')}
                   </span>
                   <SortIcon field="number_positions" />
                 </button>,
@@ -257,7 +259,7 @@ export default function TopTraders({
                   key="transactions"
                 >
                   <span className={getSortTextClass('number_transactions')}>
-                    ACTIONS
+                    {t('monitoring.actions')}
                   </span>
                   <SortIcon field="number_transactions" />
                 </button>,

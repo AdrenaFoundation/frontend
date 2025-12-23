@@ -3,6 +3,7 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
@@ -34,6 +35,7 @@ export default function ALPSwapBuy({
   className?: string;
   connected: boolean;
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -68,7 +70,7 @@ export default function ALPSwapBuy({
     }
 
     const notification =
-      MultiStepNotification.newForRegularTransaction('Buying ALP').fire();
+      MultiStepNotification.newForRegularTransaction(t('alp.buyingALP')).fire();
 
     try {
       // The addLiquidity will handle the swap if needed
@@ -196,7 +198,7 @@ export default function ALPSwapBuy({
       }
 
       // we set this error message because we do not get error message from anchor simulate
-      setErrorMessage('Pool ratio reached for this token');
+      setErrorMessage(t('alp.poolRatioReached'));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -241,7 +243,7 @@ export default function ALPSwapBuy({
       )}
     >
       <div className="flex items-center justify-between mt-4 mb-1">
-        <h5 className="text-white">Collateral</h5>
+        <h5 className="text-white">{t('alp.collateral')}</h5>
 
         <WalletBalance
           tokenA={collateralToken}
@@ -325,7 +327,7 @@ export default function ALPSwapBuy({
 
       <div className="flex flex-row justify-between items-center"></div>
 
-      <h5 className="text-white mt-2 mb-1">Receive</h5>
+      <h5 className="text-white mt-2 mb-1">{t('alp.receive')}</h5>
       <TradingInput
         className="text-xs rounded-full"
         inputClassName="bg-third"

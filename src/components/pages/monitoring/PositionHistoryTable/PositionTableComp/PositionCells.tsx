@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import downloadIcon from '@/../public/images/download.png';
@@ -194,54 +195,58 @@ export const BottomBar = ({
   setIsNative: (value: boolean) => void;
   setIsPnlWithFees: (value: boolean) => void;
   onDownloadClick: () => void;
-}) => (
-  <div className="flex flex-row justify-end sm:justify-between">
-    <div className="hidden sm:block relative p-1 px-3 border-r border-r-inputcolor">
-      <div className="absolute left-3 top-1/2 transform -translate-y-1/2 h-[1rem] w-[0.0625rem] bg-orange" />
-      <p className="text-sm ml-3 font-mono opacity-50">Liquidated</p>
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex flex-row justify-end sm:justify-between">
+      <div className="hidden sm:block relative p-1 px-3 border-r border-r-inputcolor">
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 h-[1rem] w-[0.0625rem] bg-orange" />
+        <p className="text-sm ml-3 font-mono opacity-50">{t('trade.tradeHistory.liquidated')}</p>
+      </div>
+
+      <div className="flex flex-row items-center">
+        <div
+          className="flex flex-row items-center gap-3 p-1 px-3 border-l border-l-inputcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
+          onClick={() => setIsPnlWithFees(!isPnlWithFees)}
+        >
+          <Switch
+            checked={isPnlWithFees}
+            size="small"
+            onChange={() => {
+              // handle toggle in parent div
+            }}
+          />
+          <p className="text-sm opacity-50">{t('trade.tradeHistory.pnlWithFees')}</p>
+        </div>
+
+        <div
+          className="flex flex-row items-center gap-3 p-1 px-3 border-l border-l-inputcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
+          onClick={() => setIsNative(!isNative)}
+        >
+          <Switch
+            checked={isNative}
+            size="small"
+            onChange={() => {
+              // handle toggle in parent div
+            }}
+          />
+          <p className="text-sm opacity-50">{t('trade.tradeHistory.native')}</p>
+        </div>
+
+        <div
+          className="flex flex-row items-center gap-3 p-1.5 px-3 border-l border-l-inputcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
+          onClick={onDownloadClick}
+        >
+          <Image
+            src={downloadIcon}
+            alt="Download"
+            width={16}
+            height={16}
+            className="w-4 h-4"
+          />
+        </div>
+      </div>
     </div>
-
-    <div className="flex flex-row items-center">
-      <div
-        className="flex flex-row items-center gap-3 p-1 px-3 border-l border-l-inputcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
-        onClick={() => setIsPnlWithFees(!isPnlWithFees)}
-      >
-        <Switch
-          checked={isPnlWithFees}
-          size="small"
-          onChange={() => {
-            // handle toggle in parent div
-          }}
-        />
-        <p className="text-sm opacity-50">PnL w/ fees</p>
-      </div>
-
-      <div
-        className="flex flex-row items-center gap-3 p-1 px-3 border-l border-l-inputcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
-        onClick={() => setIsNative(!isNative)}
-      >
-        <Switch
-          checked={isNative}
-          size="small"
-          onChange={() => {
-            // handle toggle in parent div
-          }}
-        />
-        <p className="text-sm opacity-50">Native</p>
-      </div>
-
-      <div
-        className="flex flex-row items-center gap-3 p-1.5 px-3 border-l border-l-inputcolor cursor-pointer hover:bg-[#131D2C] transition-colors duration-300"
-        onClick={onDownloadClick}
-      >
-        <Image
-          src={downloadIcon}
-          alt="Download"
-          width={16}
-          height={16}
-          className="w-4 h-4"
-        />
-      </div>
-    </div>
-  </div>
-);
+  );
+};

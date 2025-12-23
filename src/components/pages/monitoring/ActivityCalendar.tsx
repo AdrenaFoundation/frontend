@@ -2,6 +2,7 @@ import Tippy from '@tippyjs/react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import calendarIcon from '@/../public/images/Icons/calendar.svg';
@@ -56,6 +57,26 @@ export default function ActivityCalendar({
   isLoading: boolean;
   hasData?: boolean;
 }) {
+  const { t } = useTranslation();
+
+  // Map internal values to translated display values
+  const bubbleByOptions = {
+    'pnl': t('monitoring.pnl'),
+    'volume': t('monitoring.volume'),
+    'position count': t('monitoring.positionCount'),
+  };
+
+  // Get the translated display value for the current bubbleBy
+  const getDisplayValue = (internalValue: string) => {
+    return bubbleByOptions[internalValue as keyof typeof bubbleByOptions] || internalValue;
+  };
+
+  // Convert translated display value back to internal value
+  const getInternalValue = (displayValue: string) => {
+    const entry = Object.entries(bubbleByOptions).find(([, v]) => v === displayValue);
+    return entry ? entry[0] : displayValue;
+  };
+
   const {
     positionsData,
     isInitialLoad,
@@ -219,7 +240,7 @@ export default function ActivityCalendar({
         )}
       >
         <div className="flex flex-col sm:flex-row mb-6 px-3 justify-between items-center">
-          <p className="font-semibold text-lg">Daily Trading activity</p>
+          <p className="font-semibold text-lg">{t('monitoring.dailyTradingActivity')}</p>
           <div className="flex flex-row gap-3 animate-pulse">
             <div className="h-4 w-20 bg-third/20 rounded" />
           </div>
@@ -265,16 +286,16 @@ export default function ActivityCalendar({
           />
 
           <p className="font-semibold text-lg sm:text-lg">
-            Daily Trading activity
+            {t('monitoring.dailyTradingActivity')}
           </p>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-0 w-full sm:w-auto">
           <div className="flex flex-row gap-3 p-3 border sm:border-y-0 sm:border-r-0 rounded-md sm:rounded-none sm:border-l border-inputcolor w-full sm:w-auto">
             <SelectOptions
-              selected={bubbleBy}
-              options={['pnl', 'volume', 'position count']}
-              onClick={setBubbleBy}
+              selected={getDisplayValue(bubbleBy)}
+              options={Object.values(bubbleByOptions)}
+              onClick={(displayValue) => setBubbleBy(getInternalValue(displayValue))}
               className="p-0 border-0"
             />
           </div>
@@ -399,7 +420,7 @@ export default function ActivityCalendar({
 
                             <FormatNumber
                               nb={stats.totalPositions}
-                              prefix="positions: "
+                              prefix={`${t('monitoring.positions')}: `}
                               prefixClassName={twMerge(
                                 'font-mono opacity-50',
                                 bubbleBy === 'position count' &&
@@ -410,7 +431,7 @@ export default function ActivityCalendar({
                             <div className="flex items-center gap-2">
                               <FormatNumber
                                 nb={stats.pnl}
-                                prefix="pnl: "
+                                prefix={`${t('monitoring.pnl')}: `}
                                 format="currency"
                                 prefixClassName={twMerge(
                                   'font-mono opacity-50',
@@ -433,7 +454,7 @@ export default function ActivityCalendar({
 
                             <FormatNumber
                               nb={stats.size}
-                              prefix="size: "
+                              prefix={`${t('monitoring.size')}: `}
                               format="currency"
                               prefixClassName={twMerge(
                                 'font-mono opacity-50',
@@ -445,7 +466,7 @@ export default function ActivityCalendar({
 
                             <FormatNumber
                               nb={stats.volume}
-                              prefix="volume: "
+                              prefix={`${t('monitoring.volume')}: `}
                               format="currency"
                               prefixClassName={twMerge(
                                 'font-mono opacity-50',
@@ -455,7 +476,7 @@ export default function ActivityCalendar({
                             />
                             <FormatNumber
                               nb={stats.totalFees}
-                              prefix="fees: "
+                              prefix={`${t('monitoring.fees')}: `}
                               format="currency"
                               prefixClassName={twMerge(
                                 'font-mono opacity-50',
@@ -467,7 +488,7 @@ export default function ActivityCalendar({
 
                             <FormatNumber
                               nb={stats.winrate}
-                              prefix="winrate: "
+                              prefix={`${t('monitoring.winrate')}: `}
                               format="percentage"
                               prefixClassName="font-mono opacity-50"
                             />
@@ -532,13 +553,13 @@ export default function ActivityCalendar({
 
                 <div className="flex flex-row items-center justify-center mt-3 gap-6">
                   <div className="flex flex-row gap-2 items-center">
-                    <p className="font-mono opacity-30 text-sm">pnl</p>
+                    <p className="font-mono opacity-30 text-sm">{t('monitoring.pnl')}</p>
 
                     <div className="flex flex-row items-center gap-1">
                       {[
-                        { color: '#AB2E42', label: 'Loss' },
-                        { color: '#BD773E', label: 'Below Avg' },
-                        { color: '#17AC81', label: 'Above Avg' },
+                        { color: '#AB2E42', label: t('monitoring.loss') },
+                        { color: '#BD773E', label: t('monitoring.belowAvg') },
+                        { color: '#17AC81', label: t('monitoring.aboveAvg') },
                       ].map(({ color, label }, i) => (
                         <Tippy key={i} content={label}>
                           <div
@@ -554,7 +575,7 @@ export default function ActivityCalendar({
                       onClick={exportCalendarData}
                       className="text-xs opacity-30 hover:opacity-100 transition-opacity duration-300 flex items-center gap-1"
                     >
-                      Export CSV
+                      {t('monitoring.exportCsv')}
                       <svg
                         className="w-3 h-3 translate-y-[-0.35em]"
                         viewBox="0 0 24 24"

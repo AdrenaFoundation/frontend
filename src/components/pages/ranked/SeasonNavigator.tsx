@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import lockIcon from '@/../public/images/Icons/lock.svg';
@@ -14,9 +15,22 @@ export default function SeasonNavigator({
     React.SetStateAction<keyof typeof TRADING_COMPETITION_SEASONS>
   >;
 }) {
+  const { t } = useTranslation();
   const SEASON_NAMES = Object.keys(
     TRADING_COMPETITION_SEASONS,
   ) as (keyof typeof TRADING_COMPETITION_SEASONS)[];
+
+  // Map technical season keys to semantic translation keys
+  const getTranslationKey = (season: string) => {
+    switch (season) {
+      case 'interseason3':
+        return 'summerEvent';
+      case 'anniversary1':
+        return 'anniversary';
+      default:
+        return season;
+    }
+  };
 
   return (
     <div className="absolute top-0 grid grid-cols-2 lg:grid-cols-7 gap-3 w-full min-h-[4em] bg-main/80 backdrop-blur-md border-b p-2 z-30">
@@ -38,7 +52,7 @@ export default function SeasonNavigator({
               season === 'anniversary1' ? 'lg:text-sm ' : '',
             )}
           >
-            {TRADING_COMPETITION_SEASONS[season].bannerTitle}
+            {t(`ranked.${getTranslationKey(season)}`)}
           </p>
 
           {season === 'interseason3' || season === 'anniversary1' ?

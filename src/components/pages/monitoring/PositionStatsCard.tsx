@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
@@ -32,6 +33,7 @@ export default function PositionStatsCard({
   className,
   isLoading = false,
 }: PositionStatsCardProps) {
+  const { t } = useTranslation();
   if (isLoading) {
     return (
       <div
@@ -79,7 +81,7 @@ export default function PositionStatsCard({
 
             <div className="space-y-2 text-sm">
               <div className="flex justify-between items-center">
-                <span className="text-txtfade">Positions:</span>
+                <span className="text-txtfade">{t('monitoring.positions')}:</span>
                 <FormatNumber
                   nb={stat.countPositions}
                   precision={0}
@@ -89,7 +91,7 @@ export default function PositionStatsCard({
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-txtfade">Total PnL:</span>
+                <span className="text-txtfade">{t('monitoring.totalPnl')}:</span>
                 <FormatNumber
                   nb={stat.totalPnl}
                   precision={0}
@@ -104,7 +106,7 @@ export default function PositionStatsCard({
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-txtfade">Volume:</span>
+                <span className="text-txtfade">{t('monitoring.volume')}:</span>
                 <div className="text-right">
                   <FormatNumber
                     nb={stat.totalVolume}
@@ -114,7 +116,7 @@ export default function PositionStatsCard({
                     className="font-regular"
                   />
                   <span className="text-txtfade ml-1">
-                    (avg.{' '}
+                    ({t('monitoring.avg')}{' '}
                     <FormatNumber
                       nb={stat.averageVolume}
                       precision={0}
@@ -127,7 +129,7 @@ export default function PositionStatsCard({
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-txtfade">Worst / Best PnL:</span>
+                <span className="text-txtfade">{t('monitoring.worstBestPnl')}:</span>
                 <div className="text-right">
                   <FormatNumber
                     nb={stat.minPnl}
@@ -154,7 +156,7 @@ export default function PositionStatsCard({
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-txtfade">Smallest / Largest Volume:</span>
+                <span className="text-txtfade">{t('monitoring.smallestLargestVolume')}:</span>
                 <div className="text-right">
                   <FormatNumber
                     nb={stat.minVolume}

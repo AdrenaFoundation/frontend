@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import addCollateralIcon from '@/../public/images/Icons/add-collateral-icon.svg';
@@ -20,7 +21,9 @@ export type FormattedEventsType = {
   className?: string;
   dotClassName?: string;
   label: string;
+  displayLabel?: string;
   value: number | string | null;
+  displayValue?: string;
   icon?: ImageRef;
   suffix?: string;
   format: 'currency' | 'number' | 'percentage' | 'text';
@@ -50,6 +53,7 @@ export default function EventBlocks({
   events: FormattedEventsType[][];
   setEvents: React.Dispatch<React.SetStateAction<FormattedEventsType[][]>>;
 }) {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [hoveredEvent, setHoveredEvent] = useState<LabelType | null>(null);
 
@@ -85,58 +89,69 @@ export default function EventBlocks({
       const data = [
         {
           label: 'transactionDate',
+          displayLabel: t('trade.tradeHistory.eventLabel.transactionDate'),
           value: event.transactionDate,
           format: 'text',
         },
         {
           label: 'PnL',
+          displayLabel: t('trade.tradeHistory.eventLabel.pnl'),
           value: event.additionalInfos.pnl,
           format: 'currency',
         },
         {
           label: 'Fees',
+          displayLabel: t('trade.tradeHistory.eventLabel.fees'),
           value: event.additionalInfos.fees,
           format: 'currency',
         },
         {
           label: 'Leverage',
+          displayLabel: t('trade.tradeHistory.eventLabel.leverage'),
           value: event.additionalInfos.leverage,
           format: 'number',
           suffix: 'x',
         },
         {
           label: 'Size',
+          displayLabel: t('trade.tradeHistory.eventLabel.size'),
           value: event.additionalInfos.size,
           format: 'currency',
         },
         {
           label: 'Price',
+          displayLabel: t('trade.tradeHistory.eventLabel.price'),
           value: event.additionalInfos.price,
           precision: token.displayPriceDecimalsPrecision,
           format: 'currency',
         },
         {
           label: 'Exit Fees',
+          displayLabel: t('trade.tradeHistory.eventLabel.exitFees'),
           value: event.additionalInfos.exitFees,
           format: 'currency',
         },
         {
           label: 'Borrow Fees',
+          displayLabel: t('trade.tradeHistory.eventLabel.borrowFees'),
           value: event.additionalInfos.borrowFees,
           format: 'currency',
         },
         {
           label: 'Collateral',
+          displayLabel: t('trade.tradeHistory.eventLabel.collateral'),
           value: event.additionalInfos.collateralAmountUsd,
           format: 'currency',
         },
         {
           label: 'Collateral Native',
+          displayLabel: t('trade.tradeHistory.eventLabel.collateralNative'),
           value: event.additionalInfos.collateralAmountNative,
           format: 'number',
         },
         {
           label: 'Exit Amount Native',
+          displayLabel: t('trade.tradeHistory.eventLabel.exitAmountNative'),
           value: event.additionalInfos.exitAmountNative,
           format: 'number',
         },
@@ -156,7 +171,9 @@ export default function EventBlocks({
                 className: 'text-[#ff344e] font-interSemibold',
                 dotClassName: '#ff344e',
                 label: 'Method',
+                displayLabel: t('trade.tradeHistory.eventLabel.method'),
                 value: 'Close Position',
+                displayValue: t('trade.tradeHistory.eventLabel.closePosition'),
                 icon: closeIcon,
                 format: 'text',
               },
@@ -169,7 +186,9 @@ export default function EventBlocks({
               className: 'text-[#FE7B47] font-interSemibold',
               dotClassName: '#FE7B47',
               label: 'Method',
+              displayLabel: t('trade.tradeHistory.eventLabel.method'),
               value: `Partial Close (${formatNumber(event.additionalInfos.percentage, 2)}%)`,
+              displayValue: `${t('trade.tradeHistory.eventLabel.partialClose')} (${formatNumber(event.additionalInfos.percentage, 2)}%)`,
               icon: partialCloseIcon,
               format: 'text',
             },
@@ -183,7 +202,9 @@ export default function EventBlocks({
               className: 'text-[#35C469] font-interSemibold',
               dotClassName: '#35C469',
               label: 'Method',
+              displayLabel: t('trade.tradeHistory.eventLabel.method'),
               value: 'Add Collateral',
+              displayValue: t('trade.tradeHistory.eventLabel.addCollateral'),
               icon: addCollateralIcon,
               format: 'text',
             },
@@ -197,7 +218,9 @@ export default function EventBlocks({
               className: 'text-[#FEB14C] font-interSemibold',
               dotClassName: '#FEB14C',
               label: 'Method',
+              displayLabel: t('trade.tradeHistory.eventLabel.method'),
               value: 'Remove Collateral',
+              displayValue: t('trade.tradeHistory.eventLabel.removeCollateral'),
               icon: removeCollateralIcon,
               format: 'text',
             },
@@ -211,7 +234,9 @@ export default function EventBlocks({
               className: 'text-[#3FD5A5] font-interSemibold',
               dotClassName: '#3FD5A5',
               label: 'Method',
+              displayLabel: t('trade.tradeHistory.eventLabel.method'),
               value: 'Increase Position',
+              displayValue: t('trade.tradeHistory.eventLabel.increasePosition'),
               icon: increaseCollateralIcon,
               format: 'text',
             },
@@ -225,7 +250,9 @@ export default function EventBlocks({
               className: 'text-orange font-interSemibold',
               dotClassName: '#FFA500',
               label: 'Method',
+              displayLabel: t('trade.tradeHistory.eventLabel.method'),
               value: 'Liquidated',
+              displayValue: t('trade.tradeHistory.eventLabel.liquidated'),
               icon: liquidatedIcon,
               format: 'text',
             },
@@ -239,7 +266,9 @@ export default function EventBlocks({
               className: 'text-[#7DAFF4] font-interSemibold',
               dotClassName: '#7DAFF4',
               label: 'Method',
+              displayLabel: t('trade.tradeHistory.eventLabel.method'),
               value: 'Open Position',
+              displayValue: t('trade.tradeHistory.eventLabel.openPosition'),
               icon: openPositionIcon,
               format: 'text',
             },
@@ -249,7 +278,7 @@ export default function EventBlocks({
           return data;
       }
     },
-    [token.displayPriceDecimalsPrecision],
+    [token.displayPriceDecimalsPrecision, t],
   );
 
   return (
@@ -265,7 +294,7 @@ export default function EventBlocks({
       className="bg-main border-b border-bcolor max-h-[24rem] overflow-hidden"
     >
       <p className="font-bold text-xs opacity-30 mb-3 px-5 pt-5">
-        {!isLoading ? events.length : ''} Events
+        {!isLoading ? events.length : ''} {t('trade.tradeHistory.events')}
       </p>
 
       <div className="flex flex-row gap-4 relative max-h-[20rem] overflow-y-auto custom-chat-scrollbar overscroll-contain">
@@ -360,6 +389,7 @@ export default function EventBlocks({
                           formattedData={event}
                           hoveredEvent={hoveredEvent}
                           setHoveredEvent={setHoveredEvent}
+                          transactionDateLabel="transactionDate"
                         />
                       </div>
                     </div>
@@ -367,7 +397,7 @@ export default function EventBlocks({
                 </div>
               ) : (
                 <div className="flex items-center justify-center p-4">
-                  <p className="text-sm opacity-50">No events found</p>
+                  <p className="text-sm opacity-50">{t('trade.tradeHistory.noEventsFound')}</p>
                 </div>
               )}
             </motion.div>
@@ -382,15 +412,17 @@ const EventBlock = ({
   formattedData,
   hoveredEvent,
   setHoveredEvent,
+  transactionDateLabel,
 }: {
   formattedData: FormattedEventsType[];
   hoveredEvent: LabelType | null;
   setHoveredEvent: (event: LabelType | null) => void;
+  transactionDateLabel: string;
 }) => {
   // Filter out transactionDate since it's displayed in the header
   const displayData = useMemo(
-    () => formattedData.filter((item) => item.label !== 'transactionDate'),
-    [formattedData],
+    () => formattedData.filter((item) => item.label !== transactionDateLabel),
+    [formattedData, transactionDateLabel],
   );
 
   return (
@@ -410,7 +442,7 @@ const EventBlock = ({
           key={index}
         >
           <p className="font-semibold text-sm sm:text-xs opacity-50">
-            {item.label}
+            {item.displayLabel}
           </p>
           <div className="flex items-center gap-1">
             {item.icon && (
@@ -425,7 +457,7 @@ const EventBlock = ({
             {item.value !== null && item.value !== undefined ? (
               item.format === 'text' ? (
                 <p className={twMerge('text-sm font-mono', item.className)}>
-                  {item.value}
+                  {item.displayValue || item.value}
                   {item.suffix && (
                     <span className="opacity-50">{item.suffix}</span>
                   )}
@@ -441,7 +473,7 @@ const EventBlock = ({
                 />
               ) : (
                 <p className={twMerge('text-sm font-mono', item.className)}>
-                  {item.value}
+                  {item.displayValue}
                   {item.suffix && (
                     <span className="opacity-50">{item.suffix}</span>
                   )}

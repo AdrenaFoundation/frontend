@@ -1,5 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { twMerge } from "tailwind-merge";
 
 import Button from '@/components/common/Button/Button';
@@ -20,6 +21,7 @@ export default function Referee({
     setActiveProfile: (profile: UserProfileExtended) => void;
     connected: boolean;
 }) {
+    const { t } = useTranslation();
     const [referrerProfile, setReferrerProfile] = useState<UserProfileExtended | null>(null);
     const [newReferrerNickname, setNewReferrerNickname] = useState<string>('');
     const [newReferrerProfile, setNewReferrerProfile] = useState<UserProfileExtended | null | false>(null);
@@ -41,7 +43,7 @@ export default function Referee({
 
     const changeReferrer = useCallback(async (referrerProfile: PublicKey | null,) => {
         const notification =
-            MultiStepNotification.newForRegularTransaction('Update Referrer').fire();
+            MultiStepNotification.newForRegularTransaction(t('referral.updateReferrer')).fire();
 
         try {
             await window.adrena.client.editUserProfile({
@@ -51,7 +53,7 @@ export default function Referee({
         } catch (error) {
             console.log('error', error);
         }
-    }, []);
+    }, [t]);
 
     useEffect(() => {
         if (!allUserProfiles) {
@@ -70,7 +72,7 @@ export default function Referee({
     return <div className={twMerge('flex flex-col gap-6 w-full pb-8 items-center', userProfile === false || !connected ? 'blur-2xl pointer-events-none' : '')}>
         <div className='font-semibold w-full items-center flex justify-center flex-col gap-4 text-white/80 mt-4'>
             {referrerProfile ? <div className="flex gap-2">
-                <div className="font-semibold">You are currently supporting</div>
+                <div className="font-semibold">{t('referral.youAreSupporting')}</div>
 
                 <div
                     className='flex gap-1 hover:opacity-90 font-semibold animate-text-shimmer bg-clip-text text-transparent bg-[length:250%_100%] bg-[linear-gradient(110deg,#FA6724,45%,#FAD524,55%,#FA6724)] cursor-pointer'
@@ -81,10 +83,10 @@ export default function Referee({
                     {referrerProfile?.pubkey.toBase58() === ADRENA_TEAM_PROFILE.toBase58() ?
                         <div className='text-xl'>❤️</div> : null}
                 </div>
-            </div> : 'You are currently not supporting anyone'}
+            </div> : t('referral.notSupportingAnyone')}
 
             {referrerProfile ? <Button
-                title="Pull my support"
+                title={t('referral.pullMySupport')}
                 variant='outline'
                 onClick={() => changeReferrer(null)}
                 className="w-60 mt-4"
@@ -92,7 +94,7 @@ export default function Referee({
 
             <div className='w-full h-[1px] bg-bcolor mt-2 mb-2' />
 
-            <div className="font-semibold">Support someone else</div>
+            <div className="font-semibold">{t('referral.supportSomeoneElse')}</div>
 
             <div className="max-w-[25em] w-[90%] flex relative">
                 <InputString
@@ -100,7 +102,7 @@ export default function Referee({
                         setNewReferrerProfile(null);
                         setNewReferrerNickname(value ?? '');
                     }}
-                    placeholder="Nickname"
+                    placeholder={t('referral.nickname')}
                     value={newReferrerNickname}
                     className={twMerge("mt-4 pt-[0.5em] pb-[0.5em] pl-4 pr-4 border border-gray-700 bg-transparent rounded-md placeholder:text-txtfade text-center w-full")}
                     inputFontSize="0.8em"
@@ -121,7 +123,7 @@ export default function Referee({
             </div>
 
             <Button
-                title={newReferrerNickname.length === 0 ? "Support" : newReferrerProfile === null ? "Checking the referrer..." : newReferrerProfile === false ? "Cannot find referrer" : `Support ${newReferrerProfile.nickname}`}
+                title={newReferrerNickname.length === 0 ? t('referral.support') : newReferrerProfile === null ? t('referral.checkingReferrer') : newReferrerProfile === false ? t('referral.cannotFindReferrer') : `${t('referral.support')} ${newReferrerProfile.nickname}`}
                 variant='outline'
                 disabled={newReferrerProfile === false || newReferrerProfile === null}
                 onClick={() => changeReferrer(newReferrerProfile ? newReferrerProfile.pubkey : null)}
@@ -133,11 +135,11 @@ export default function Referee({
             <div className='w-full h-[1px] bg-bcolor mt-2 mb-2' />
 
             <div className='text-center text-sm max-w-[60em] w-[100%] pl-4 pr-4'>
-                You can support the Adrena team through the referral system by choosing the team as your referrer. This is purely philanthropic. It&apos;s a way to show your support and contribute to the team&apos;s funding.
+                {t('referral.supportTeamDescription')}
             </div>
 
             <Button
-                title="Support the team ❤️"
+                title={t('referral.supportTeam')}
                 variant='outline'
                 onClick={() => changeReferrer(ADRENA_TEAM_PROFILE)}
                 className="w-60 mt-4"

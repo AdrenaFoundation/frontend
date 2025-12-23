@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -33,6 +34,7 @@ export const ButtonGroup = ({
     triggerClosePosition,
     setIsOpen
 }: ButtonGroupProps) => {
+    const { t } = useTranslation();
     const containerClasses = twMerge(
         "flex gap-2",
         isMini && "col-span-2 w-full",
@@ -51,15 +53,15 @@ export const ButtonGroup = ({
 
     const buttons = [
         {
-            title: "Edit",
+            title: t('trade.editPosition.editButton'),
             onClick: () => triggerEditPositionCollateral?.(position)
         },
         {
-            title: "TP/SL",
+            title: t('trade.editPosition.tpslButton'),
             onClick: () => triggerStopLossTakeProfit?.(position)
         },
         {
-            title: closableIn === 0 || closableIn === null ? "Close" : `Close (${Math.floor(closableIn / 1000)}s)`,
+            title: closableIn === 0 || closableIn === null ? t('trade.editPosition.closeButton') : `${t('trade.editPosition.closeButton')} (${Math.floor(closableIn / 1000)}s)`,
             onClick: () => triggerClosePosition?.(position),
             disabled: closableIn !== 0
         },

@@ -3,6 +3,7 @@ import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../../public/images/adx.svg';
@@ -77,6 +78,7 @@ export default function OwnerBloc({
   activeUpdateTab?: TabType;
   walletAddress?: string;
 }) {
+  const { t } = useTranslation();
   const snsDomain = useSNSPrimaryDomain(walletAddress);
 
   const [alreadyTakenNicknames, setAlreadyTakenNicknames] = useState<
@@ -108,7 +110,7 @@ export default function OwnerBloc({
 
   const editNickname = useCallback(async () => {
     const notification =
-      MultiStepNotification.newForRegularTransaction('Edit Nickname').fire();
+      MultiStepNotification.newForRegularTransaction(t('profile.editNickname')).fire();
 
     if (
       trimmedUpdatedNickname.length < 3 ||
@@ -151,6 +153,7 @@ export default function OwnerBloc({
     trimmedUpdatedNickname,
     userProfile,
     walletPubkey,
+    t
   ]);
 
   const updateProfile = useCallback(async () => {
@@ -190,7 +193,7 @@ export default function OwnerBloc({
     }
 
     const notification =
-      MultiStepNotification.newForRegularTransaction('Update Profile').fire();
+      MultiStepNotification.newForRegularTransaction(t('profile.updateProfile')).fire();
 
     if (!walletPubkey)
       return notification.currentStepErrored(

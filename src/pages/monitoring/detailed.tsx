@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Menu from '@/components/common/Menu/Menu';
@@ -45,6 +46,7 @@ export default function DetailedMonitoring({
   poolInfo: PoolInfo | null;
   view: string;
 }) {
+  const { t } = useTranslation();
   const [selectedTab, setSelectedTab] = useState<(typeof tabs)[number]>('All');
 
   const cortex = useCortex();
@@ -83,8 +85,20 @@ export default function DetailedMonitoring({
     'Accounts',
   ] as const;
 
+  const getTranslatedTitle = (tab: string) => {
+    switch (tab) {
+      case 'All': return t('monitoring.all');
+      case 'Pool': return t('monitoring.pool');
+      case 'Fees': return t('monitoring.fees');
+      case 'Staking': return t('monitoring.staking');
+      case 'Trading': return t('monitoring.trading');
+      case 'Accounts': return t('monitoring.accounts');
+      default: return tab;
+    }
+  };
+
   const tabsFormatted = tabs.map((x) => ({
-    title: x,
+    title: getTranslatedTitle(x),
     activeColor: 'border-white',
   }));
 
@@ -93,20 +107,22 @@ export default function DetailedMonitoring({
       <TabSelect
         wrapperClassName="hidden md:flex gap-6 border-b p-3 pb-0 select-none mb-3"
         titleClassName="whitespace-nowrap text-sm"
-        selected={selectedTab}
-        initialSelectedIndex={tabsFormatted.findIndex(
-          (tab) => tab.title === selectedTab,
-        )}
+        selected={getTranslatedTitle(selectedTab)}
+        initialSelectedIndex={tabs.findIndex((tab) => tab === selectedTab)}
         tabs={tabsFormatted}
         onClick={(tab) => {
-          handleTabChange(tab);
+          // Find the original English tab name from the translated title
+          const originalTab = tabs.find((t) => getTranslatedTitle(t) === tab);
+          if (originalTab) {
+            handleTabChange(originalTab);
+          }
         }}
       />
 
       <Menu
         trigger={
           <div className="flex flex-row justify-between bg-secondary border w-full p-3 rounded-md cursor-pointer text-lg font-semibold select-none">
-            {selectedTab}
+            {getTranslatedTitle(selectedTab)}
 
             <Image
               src={arrowDownIcon}
@@ -127,7 +143,7 @@ export default function DetailedMonitoring({
               selected={selectedTab === tab}
               className="p-2 text-lg"
             >
-              {tab}
+              {getTranslatedTitle(tab)}
             </MenuItem>
           ))}
         </MenuItems>
@@ -171,7 +187,7 @@ export default function DetailedMonitoring({
                     className="w-full"
                   >
                     <NumberDisplay
-                      title="LOCKED STAKED ADX"
+                      title={t('monitoring.lockedStakedAdx')}
                       nb={nativeToUi(
                         adxStakingAccount.nbLockedTokens,
                         adxStakingAccount.stakedTokenDecimals,
@@ -207,7 +223,7 @@ export default function DetailedMonitoring({
                     className="w-full"
                   >
                     <NumberDisplay
-                      title="ALL TIME FEES"
+                      title={t('monitoring.allTimeFees')}
                       nb={mainPool.totalFeeCollected}
                       format="currency"
                       precision={0}

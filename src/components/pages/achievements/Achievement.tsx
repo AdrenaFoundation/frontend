@@ -1,6 +1,7 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import card from '@/../public/images/card-template.jpg';
@@ -20,6 +21,7 @@ export default function Achievement({
     className?: string;
     statPlacement?: 'bottom' | 'top';
 }) {
+    const { t } = useTranslation();
     const [hover, setHover] = useState(false);
 
     // Get appropriate color for this achievement category
@@ -32,7 +34,7 @@ export default function Achievement({
     }[achievement.category]), [achievement.category]);
 
     const stat = achievement.nbUserProfiles ? <div className='flex gap-1 text-nowrap'>
-        <div className='text-xs text-txtfade tracking-widest'>Unlocked by</div>
+        <div className='text-xs text-txtfade tracking-widest'>{t('achievements.unlockedBy')}</div>
 
         <div className='flex gap-0.5'>
             <FormatNumber
@@ -56,7 +58,7 @@ export default function Achievement({
             />
         </div>
 
-        <div className='text-xs text-txtfade tracking-widest'>users</div>
+        <div className='text-xs text-txtfade tracking-widest'>{t('achievements.users')}</div>
 
         <FormatNumber
             nb={achievement.completionPercentage}
@@ -103,14 +105,14 @@ export default function Achievement({
 
                     {/* Achievement number + Title + Wallpaper + Profile Picture */}
                     <div className='absolute top-[12.25em] left-[1.5em] z-10 flex items-center justify-center gap-1'>
-                        <Tippy content={<div className='text-xs'>Achievement {achievement.index + 1}/{ACHIEVEMENTS.length}</div>} className='z-20'>
+                        <Tippy content={<div className='text-xs'>{t('achievements.achievement')} {achievement.index + 1}/{ACHIEVEMENTS.length}</div>} className='z-20'>
                             <div className='text-black/80 text-xxs'>
                                 ACH-{achievement.index + 1}
                             </div>
                         </Tippy>
 
                         {typeof achievement.titleUnlock !== 'undefined' ?
-                            <Tippy content={<div className='text-xs'>Unlocks title &ldquo;{USER_PROFILE_TITLES[achievement.titleUnlock]}&ldquo;</div>} className='z-20'>
+                            <Tippy content={<div className='text-xs'>{t('achievements.unlocksTitle', { title: USER_PROFILE_TITLES[achievement.titleUnlock] })}</div>} className='z-20'>
                                 <div className='text-xxs font-mono text-white rounded-full bg-black w-[1.2em] h-[1.2em] flex items-center justify-center relative bottom-[0.1em]'>T</div>
                             </Tippy>
                             : null}
@@ -119,7 +121,7 @@ export default function Achievement({
                             <Tippy content={
                                 <div className='flex flex-col items-center justify-center gap-2'>
                                     <div className='text-xs'>
-                                        Unlocks a unique profile picture
+                                        {t('achievements.unlocksProfilePicture')}
                                     </div>
 
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -138,7 +140,7 @@ export default function Achievement({
                             <Tippy content={
                                 <div className='flex flex-col items-center justify-center gap-2'>
                                     <div className='text-xs'>
-                                        Unlocks a unique wallpaper
+                                        {t('achievements.unlocksWallpaper')}
                                     </div>
 
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -155,7 +157,7 @@ export default function Achievement({
                     </div>
 
                     {/* Category */}
-                    <Tippy content={<div className='text-xs'>{achievement.category} category</div>} className='z-20'>
+                    <Tippy content={<div className='text-xs'>{achievement.category} {t('achievements.category')}</div>} className='z-20'>
                         <div className='absolute top-[12.1em] right-[1.5em] z-10'>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
@@ -167,7 +169,7 @@ export default function Achievement({
                     </Tippy>
 
                     {/* Achievement points */}
-                    <Tippy content={<div className='text-xs'>Achievement points</div>} className='z-20'>
+                    <Tippy content={<div className='text-xs'>{t('achievements.achievementPoints')}</div>} className='z-20'>
                         <div
                             className="absolute bottom-[1em] right-[1.1em] w-[3em] h-[1.5em] flex items-center justify-center z-30"
                             style={{

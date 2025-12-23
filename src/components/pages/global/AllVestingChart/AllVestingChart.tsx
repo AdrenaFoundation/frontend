@@ -1,6 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ResponsiveContainer, Treemap } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
@@ -62,6 +63,7 @@ export const CustomizedContent: React.FC<{
   startUnlockTimestamp,
   endUnlockTimestamp,
 }) => {
+    const { t } = useTranslation();
     const [isHovered, setIsHovered] = useState(false);
 
     const num: string = formatNumAbbreviated(size);
@@ -70,7 +72,7 @@ export const CustomizedContent: React.FC<{
     return (
       <Tippy content={<div className='flex flex-col items-center min-w-[12em]'>
         <div className='flex items-center justify-between w-full'>
-          <div className='text-txtfade pr-2 text-sm'>Vested:</div>
+          <div className='text-txtfade pr-2 text-sm'>{t('monitoring.vested')}</div>
 
           <FormatNumber
             nb={size}
@@ -81,7 +83,7 @@ export const CustomizedContent: React.FC<{
         </div>
 
         <div className='flex items-center justify-between w-full'>
-          <div className='text-txtfade pr-2 text-sm'>Claimed:</div>
+          <div className='text-txtfade pr-2 text-sm'>{t('monitoring.claimed')}:</div>
 
           <FormatNumber
             nb={claimedAmount}
@@ -92,7 +94,7 @@ export const CustomizedContent: React.FC<{
         </div>
 
         <div className='flex items-center justify-between w-full'>
-          <div className='text-txtfade pr-2 text-sm'>Claimable:</div>
+          <div className='text-txtfade pr-2 text-sm'>{t('monitoring.claimable')}:</div>
 
           <FormatNumber
             nb={claimableAmount}
@@ -103,13 +105,13 @@ export const CustomizedContent: React.FC<{
         </div>
 
         <div className='flex items-center justify-between w-full'>
-          <div className='text-txtfade pr-2 text-sm'>Start Unlock:</div>
+          <div className='text-txtfade pr-2 text-sm'>{t('monitoring.startUnlock')}</div>
 
           <div className='text-sm font-semibold'>{startUnlockTimestamp.toLocaleDateString()}</div>
         </div>
 
         <div className='flex items-center justify-between w-full'>
-          <div className='text-txtfade pr-2 text-sm'>End Unlock:</div>
+          <div className='text-txtfade pr-2 text-sm'>{t('monitoring.endUnlock')}</div>
 
           <div className='text-sm font-semibold'>{endUnlockTimestamp.toLocaleDateString()}</div>
         </div>
@@ -185,7 +187,7 @@ export const CustomizedContent: React.FC<{
                   window.open(getAccountExplorer(vestPubkey), '_blank');
                 }}
               >
-                {claimedAmountFormatted} {width > 80 ? 'claimed' : ''}
+                {claimedAmountFormatted} {width > 80 ? t('monitoring.claimed').toLowerCase().replace(':', '') : ''}
               </text> : null}
             </>
             ) : null
@@ -208,6 +210,7 @@ export default function AllVestingChart({
 }: {
   vests: VestExtended[] | null;
 }) {
+  const { t } = useTranslation(); // Add useTranslation hook here
   const [data, setData] = useState<{
     name: string;
     type: 'team' | 'investor' | 'foundation';
@@ -234,7 +237,7 @@ export default function AllVestingChart({
 
     setData([
       {
-        name: 'Team vest',
+        name: t('monitoring.teamVest'),
         type: 'team',
         color: `transparent`,
         children: sortedVests.filter((vest) => vest.voteMultiplier === 40000 && vest.originBucket === 0).map((vest) => ({
@@ -249,7 +252,7 @@ export default function AllVestingChart({
         })),
       },
       {
-        name: 'Investors vest',
+        name: t('monitoring.investorsVest'),
         type: 'investor',
         color: `transparent`,
         children: sortedVests.filter((vest) => vest.voteMultiplier === 10000 && vest.originBucket === 0).map((vest) => ({
@@ -264,7 +267,7 @@ export default function AllVestingChart({
         })),
       },
       {
-        name: 'Foundation vest',
+        name: t('monitoring.foundationVest'),
         type: 'foundation',
         color: `transparent`,
         children: sortedVests.filter((vest) => vest.originBucket === 1).map((vest) => ({
@@ -279,7 +282,7 @@ export default function AllVestingChart({
         })),
       },
     ]);
-  }, [vests]);;
+  }, [vests, t]);;
 
   if (!data || !data.length) {
     return (

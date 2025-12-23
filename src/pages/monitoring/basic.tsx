@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
@@ -30,6 +31,7 @@ export default function BasicMonitoring({
   isSmallScreen: boolean;
   view: string;
 }) {
+  const { t } = useTranslation();
   const [allTimeTraders, setAllTimeTraders] = React.useState<number | null>(
     null,
   );
@@ -87,7 +89,7 @@ export default function BasicMonitoring({
         <StyledContainer className="p-0">
           <div className="flex flex-wrap justify-between">
             <NumberDisplay
-              title="TOTAL TRADING VOLUME"
+              title={t('footer.totalTradingVolume')}
               nb={mainPool.totalTradingVolume}
               format="currency"
               precision={0}
@@ -100,8 +102,8 @@ export default function BasicMonitoring({
                   <VelocityIndicator
                     dailyChange={velocityData['24h'].tradingVolumeChange}
                     weeklyChange={velocityData['7d'].tradingVolumeChange}
-                    dailyTippyContent="Change over the last 24 hours"
-                    weeklyTippyContent="Change over the last 7 days"
+                    dailyTippyContent={t('footer.changeOverLast24Hours')}
+                    weeklyTippyContent={t('footer.changeOverLast7Days')}
                     className="mt-1"
                     format="currency"
                   />
@@ -110,7 +112,7 @@ export default function BasicMonitoring({
             />
 
             <NumberDisplay
-              title="TOTAL LIQUIDATION VOLUME"
+              title={t('footer.totalLiquidationVolume')}
               nb={mainPool.totalLiquidationVolume}
               format="currency"
               precision={0}
@@ -123,8 +125,8 @@ export default function BasicMonitoring({
                   <VelocityIndicator
                     dailyChange={velocityData['24h'].liquidationVolumeChange}
                     weeklyChange={velocityData['7d'].liquidationVolumeChange}
-                    dailyTippyContent="Change over the last 24 hours"
-                    weeklyTippyContent="Change over the last 7 days"
+                    dailyTippyContent={t('footer.changeOverLast24Hours')}
+                    weeklyTippyContent={t('footer.changeOverLast7Days')}
                     className="mt-1"
                     format="currency"
                   />
@@ -133,7 +135,7 @@ export default function BasicMonitoring({
             />
 
             <NumberDisplay
-              title="TOTAL FEES"
+              title={t('footer.totalFees')}
               nb={mainPool.totalFeeCollected}
               format="currency"
               precision={0}
@@ -146,8 +148,8 @@ export default function BasicMonitoring({
                   <VelocityIndicator
                     dailyChange={velocityData['24h'].totalFeesChange}
                     weeklyChange={velocityData['7d'].totalFeesChange}
-                    dailyTippyContent="Change over the last 24 hours"
-                    weeklyTippyContent="Change over the last 7 days"
+                    dailyTippyContent={t('footer.changeOverLast24Hours')}
+                    weeklyTippyContent={t('footer.changeOverLast7Days')}
                     className="mt-1"
                     format="currency"
                   />
@@ -156,7 +158,7 @@ export default function BasicMonitoring({
             />
 
             <NumberDisplay
-              title="ALP Rolling 7D APR"
+              title={t('footer.alpRolling7dApr')}
               nb={aprs?.lp ?? null}
               format="percentage"
               precision={2}
@@ -165,14 +167,14 @@ export default function BasicMonitoring({
               bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
               headerClassName="pb-1 text-center"
               titleClassName="text-[0.85em] sm:text-[0.85em] text-center"
-              tippyInfo="Average yield for ALP in the last 7 days"
+              tippyInfo={t('footer.averageYieldForAlp')}
               footer={
                 <div className="flex justify-center">
                   <VelocityIndicator
                     dailyChange={velocityData['24h'].alpAprChange}
                     weeklyChange={velocityData['7d'].alpAprChange}
-                    dailyTippyContent="Difference from yesterday's APR"
-                    weeklyTippyContent="Difference from last week's APR"
+                    dailyTippyContent={t('footer.differenceFromYesterdayApr')}
+                    weeklyTippyContent={t('footer.differenceFromLastWeekApr')}
                     className="mt-1"
                     format="percentage"
                   />
@@ -181,7 +183,7 @@ export default function BasicMonitoring({
             />
 
             <NumberDisplay
-              title="ADX Rolling 7D APR"
+              title={t('footer.adxRolling7dApr')}
               nb={aprs?.lm ?? null}
               format="percentage"
               precision={2}
@@ -190,14 +192,14 @@ export default function BasicMonitoring({
               bodyClassName="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center"
               headerClassName="pb-1 text-center"
               titleClassName="text-[0.85em] sm:text-[0.85em] text-center"
-              tippyInfo="Average yield for 540d staked ADX in the last 7 days"
+              tippyInfo={t('footer.averageYieldForStakedAdx')}
               footer={
                 <div className="flex justify-center">
                   <VelocityIndicator
                     dailyChange={velocityData['24h'].adxAprChange}
                     weeklyChange={velocityData['7d'].adxAprChange}
-                    dailyTippyContent="Difference from yesterday's APR"
-                    weeklyTippyContent="Difference from last week's APR"
+                    dailyTippyContent={t('footer.differenceFromYesterdayApr')}
+                    weeklyTippyContent={t('footer.differenceFromLastWeekApr')}
                     className="mt-1"
                     format="percentage"
                   />
@@ -206,7 +208,7 @@ export default function BasicMonitoring({
             />
 
             <NumberDisplay
-              title="Total Traders"
+              title={t('footer.totalTraders')}
               nb={allTimeTraders ?? null}
               format="number"
               precision={0}
@@ -219,8 +221,8 @@ export default function BasicMonitoring({
                   <VelocityIndicator
                     dailyChange={velocityData['24h'].newTraders}
                     weeklyChange={velocityData['7d'].newTraders}
-                    dailyTippyContent="New traders in the last 24 hours"
-                    weeklyTippyContent="New traders in the last 7 days"
+                    dailyTippyContent={t('footer.newTradersLast24Hours')}
+                    weeklyTippyContent={t('footer.newTradersLast7Days')}
                     className="mt-1"
                     format="number"
                   />

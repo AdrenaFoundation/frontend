@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Loader from '@/components/Loader/Loader';
 import MixedAreaLineChart from '@/components/ReCharts/MixedAreaLineChart';
@@ -8,6 +9,7 @@ import { RechartsData } from '@/types';
 import { formatSnapshotTimestamp, getGMT, periodModeToSeconds } from '@/utils';
 
 export default function AumChart() {
+  const { t } = useTranslation();
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
   const [period, setPeriod] = useState<'1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null>('6M');
   const periodRef = useRef(period);
@@ -149,12 +151,12 @@ export default function AumChart() {
 
   return (
     <MixedAreaLineChart
-      title={'AUM & ALP Price'}
+      title={t('monitoring.aumAndAlpPrice')}
       subValue={latestAum}
       data={chartData}
       labels={[
-        { name: 'AUM', color: '#5460cb', type: 'area', yAxisId: 'left' },
-        { name: 'ALP Price', color: '#fde000', type: 'line', yAxisId: 'right' }
+        { name: t('monitoring.aum'), color: '#5460cb', type: 'area', yAxisId: 'left' },
+        { name: t('monitoring.alpPrice'), color: '#fde000', type: 'line', yAxisId: 'right' }
       ]}
       period={period}
       gmt={period === '1M' || period === '3M' || period === '6M' || period === '1Y' ? 0 : getGMT()}

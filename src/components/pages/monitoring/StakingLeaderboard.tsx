@@ -2,6 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -25,6 +26,7 @@ export default function StakingLeaderboard({
   allUserProfilesMetadata,
   setProfile,
 }: StakingLeaderboardProps) {
+  const { t } = useTranslation();
   const { data, isLoading, error } = useStakingLeaderboard(
     walletAddress,
     allUserProfilesMetadata,
@@ -241,29 +243,29 @@ export default function StakingLeaderboard({
           // Locked and Liquid (only on md+ screens) - matches line 147-177
           ...(breakpoint1
             ? [
-                <div
-                  key={`ph-locked-${i}`}
-                  className="flex items-center justify-end w-full"
-                >
-                  <FormatNumber
-                    nb={0}
-                    precision={0}
-                    className="text-xs font-semibold text-txtfade"
-                    isDecimalDimmed={false}
-                  />
-                </div>,
-                <div
-                  key={`ph-liquid-${i}`}
-                  className="flex items-center justify-end w-full"
-                >
-                  <FormatNumber
-                    nb={0}
-                    precision={0}
-                    className="text-xs font-semibold text-txtfade"
-                    isDecimalDimmed={false}
-                  />
-                </div>,
-              ]
+              <div
+                key={`ph-locked-${i}`}
+                className="flex items-center justify-end w-full"
+              >
+                <FormatNumber
+                  nb={0}
+                  precision={0}
+                  className="text-xs font-semibold text-txtfade"
+                  isDecimalDimmed={false}
+                />
+              </div>,
+              <div
+                key={`ph-liquid-${i}`}
+                className="flex items-center justify-end w-full"
+              >
+                <FormatNumber
+                  nb={0}
+                  precision={0}
+                  className="text-xs font-semibold text-txtfade"
+                  isDecimalDimmed={false}
+                />
+              </div>,
+            ]
             : []),
         ],
       }),
@@ -278,33 +280,33 @@ export default function StakingLeaderboard({
         #
       </div>,
       <div key="staker" className="flex items-center justify-start">
-        Staker
+        {t('monitoring.staker')}
       </div>,
       <Tippy
         key="rev-weight-tooltip"
         content={
           <div className="text-sm">
             <div className="mb-2 font-semibold">
-              Revenue Weight Multipliers:
+              {t('monitoring.revenueWeightMultipliers')}
             </div>
             <div className="space-y-1 text-xs">
               <div>
-                • 0 Day Lock: <span className="font-semibold text-sm">1x</span>
+                • 0 {t('monitoring.dayLock')}: <span className="font-semibold text-sm">1x</span>
               </div>
               <div>
-                • 90 Day Lock:{' '}
+                • 90 {t('monitoring.dayLock')}:{' '}
                 <span className="font-semibold text-sm">1.75x</span>
               </div>
               <div>
-                • 180 Day Lock:{' '}
+                • 180 {t('monitoring.dayLock')}:{' '}
                 <span className="font-semibold text-sm">2.5x</span>
               </div>
               <div>
-                • 360 Day Lock:{' '}
+                • 360 {t('monitoring.dayLock')}:{' '}
                 <span className="font-semibold text-sm">3.25x</span>
               </div>
               <div>
-                • 540 Day Lock:{' '}
+                • 540 {t('monitoring.dayLock')}:{' '}
                 <span className="font-semibold text-sm">4x</span>
               </div>
             </div>
@@ -317,7 +319,7 @@ export default function StakingLeaderboard({
           key="rev-weight"
           className="flex items-center justify-end cursor-help border-b border-dashed border-white/50"
         >
-          Rev. Weight
+          {t('monitoring.revWeight')}
         </div>
       </Tippy>,
     ];
@@ -325,16 +327,16 @@ export default function StakingLeaderboard({
     if (breakpoint1) {
       columns.push(
         <div key="locked" className="flex items-center justify-end">
-          $ADX Locked
+          {t('monitoring.adxLocked')}
         </div>,
         <div key="liquid" className="flex items-center justify-end">
-          $ADX Liquid
+          {t('monitoring.adxLiquid')}
         </div>,
       );
     }
 
     return columns;
-  }, [breakpoint1]);
+  }, [breakpoint1, t]);
 
   if (error) {
     return (
@@ -390,9 +392,9 @@ export default function StakingLeaderboard({
               <div className="flex shrink-0" style={{ width: '0%' }}></div>
               {[
                 '#',
-                'Staker',
-                'Rev. Weight',
-                ...(breakpoint1 ? ['$ADX Locked', '$ADX Liquid'] : []),
+                t('monitoring.staker'),
+                t('monitoring.revWeight'),
+                ...(breakpoint1 ? [t('monitoring.adxLocked'), t('monitoring.adxLiquid')] : []),
               ].map((title, i) => (
                 <div
                   key={i}
@@ -400,18 +402,16 @@ export default function StakingLeaderboard({
                   style={{ maxWidth: i === 0 ? '3rem' : 'auto' }}
                 >
                   <div
-                    className={`h-6 bg-[#0B131D] animate-loader rounded opacity-50 w-full flex items-center ${
-                      i === 0
-                        ? 'justify-center'
-                        : i === 1
-                          ? 'justify-start'
-                          : 'justify-end'
-                    }`}
+                    className={`h-6 bg-[#0B131D] animate-loader rounded opacity-50 w-full flex items-center ${i === 0
+                      ? 'justify-center'
+                      : i === 1
+                        ? 'justify-start'
+                        : 'justify-end'
+                      }`}
                   >
                     <div
-                      className={`bg-[#0B131D] animate-loader rounded ${
-                        i === 0 ? 'w-3 h-3' : 'w-10 h-3'
-                      }`}
+                      className={`bg-[#0B131D] animate-loader rounded ${i === 0 ? 'w-3 h-3' : 'w-10 h-3'
+                        }`}
                     ></div>
                   </div>
                 </div>
@@ -466,7 +466,8 @@ export default function StakingLeaderboard({
                   </>
                 )}
               </div>
-            ))}
+            ))
+            }
 
             {/* Pagination */}
             <div className="mt-auto pt-2 flex justify-center scale-[80%]">
@@ -479,9 +480,9 @@ export default function StakingLeaderboard({
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </div >
+        </div >
+      </div >
     );
   }
 

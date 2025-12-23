@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
@@ -9,6 +10,7 @@ import { RechartsData } from '@/types';
 import { getCustodyByMint, getGMT, periodModeToSeconds } from '@/utils';
 
 export default function CompositionChart() {
+  const { t } = useTranslation();
   const [data, setData] = useState<RechartsData[] | null>(null);
   const [custodyInfo, setCustodyInfo] = useState<TokenInfo[] | null>(null);
   const [period, setPeriod] = useState<'1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null>('6M');
@@ -170,7 +172,7 @@ export default function CompositionChart() {
 
   return (
     <LineRechart
-      title="Pool Composition"
+      title={t('monitoring.poolComposition')}
       data={data}
       labels={custodyInfo.map((info: TokenInfo) => ({
         name: info.symbol,

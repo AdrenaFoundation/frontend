@@ -2,6 +2,7 @@ import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import chevronDownIcon from '@/../public/images/chevron-down.svg';
@@ -41,6 +42,7 @@ export default function TradingChartHeaderStats({
   isStatsExpanded?: boolean;
   setIsStatsExpanded?: (expanded: boolean) => void;
 }) {
+  const { t } = useTranslation();
   const [displayBorrowRateAsApr, setDisplayBorrowRateAsApr] = useState(false);
   const selectedTokenPrice = useSelector(
     (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
@@ -134,9 +136,9 @@ export default function TradingChartHeaderStats({
           ? `${(borrowRateHourly).toFixed(4)}%/h`
           : '-'}
       </span>,
-      borrowRateTippy: displayBorrowRateAsApr ? 'Annual borrow rate in % of position size' : 'Hourly borrow rate in % of position size',
+      borrowRateTippy: displayBorrowRateAsApr ? t('trade.chartControls.annualBorrowRateDescription') : t('trade.chartControls.hourlyBorrowRateDescription'),
     };
-  }, [borrowRateApr, borrowRateHourly, displayBorrowRateAsApr]);
+  }, [borrowRateApr, borrowRateHourly, displayBorrowRateAsApr, t]);
 
   if (showExpandedStatsOnly) {
     return (
@@ -147,10 +149,10 @@ export default function TradingChartHeaderStats({
             {numberLong && numberShort ? (
               <div className="flex gap-0.5">
                 <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
-                  Long: {numberLong}
+                  {t('trade.long')}: {numberLong}
                 </span>
                 <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
-                  Short: {numberShort}
+                  {t('trade.short')}: {numberShort}
                 </span>
               </div>
             ) : (
@@ -307,10 +309,10 @@ export default function TradingChartHeaderStats({
             {numberLong && numberShort ? (
               <div className="flex gap-0.5">
                 <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
-                  Long: {numberLong}
+                  {t('trade.long')}: {numberLong}
                 </span>
                 <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
-                  Short: {numberShort}
+                  {t('trade.short')}: {numberLong}
                 </span>
               </div>
             ) : (
@@ -423,10 +425,10 @@ export default function TradingChartHeaderStats({
               {numberLong && numberShort ? (
                 <div className="flex gap-0.5">
                   <span className="text-greenSide text-xxs leading-none bg-green/10 rounded-lg px-2 py-1.5">
-                    Long: {numberLong}
+                    {t('trade.long')}: {numberLong}
                   </span>
                   <span className="text-redSide text-xxs leading-none bg-red/10 rounded-lg px-2 py-1.5">
-                    Short: {numberShort}
+                    {t('trade.short')}: {numberShort}
                   </span>
                 </div>
               ) : (
@@ -485,7 +487,7 @@ export default function TradingChartHeaderStats({
                 href="/monitoring?view=livePositions"
                 className="text-center justify-start text-greenSide text-xxs font-mono"
               >
-                Long:{numberLong}
+                {t('trade.long')}::{numberLong}
               </Link>
             </div>
             <div className="px-2 py-1 bg-red/10 rounded-md inline-flex justify-center items-center gap-2">
@@ -493,7 +495,7 @@ export default function TradingChartHeaderStats({
                 href="/monitoring?view=livePositions"
                 className="text-center justify-start text-redSide text-xxs font-mono"
               >
-                Short:{numberShort}
+                {t('trade.short')}::{numberShort}
               </Link>
             </div>
           </div>

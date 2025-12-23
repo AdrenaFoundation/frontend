@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import { SuperchargedUserProfile } from '@/hooks/useAllUserSupercharedProfiles';
@@ -19,6 +20,8 @@ export default function UserProfileBlock({
   setActiveProfile,
   className,
 }: UserProfileBlockProps) {
+  const { t } = useTranslation();
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -52,7 +55,7 @@ export default function UserProfileBlock({
 
         <div className="flex flex-1 flex-col">
           <div className="flex w-full font-mono text-xxs text-txtfade">
-            Total Fees Paid
+            {t('monitoring.totalFeesPaid')}
           </div>
           <div className="flex">
             <FormatNumber
@@ -67,7 +70,7 @@ export default function UserProfileBlock({
 
         <div className="flex flex-1 flex-col">
           <div className="flex w-full font-mono text-xxs text-txtfade">
-            Total Open Volume
+            {t('monitoring.totalOpenVolume')}
           </div>
           <div className="flex">
             <FormatNumber
@@ -82,7 +85,7 @@ export default function UserProfileBlock({
 
         <div className="flex flex-1 flex-col mt-2 sm:mt-0">
           <div className="flex w-full font-mono text-xxs text-txtfade">
-            Total PnL
+            {t('monitoring.totalPnl')}
           </div>
           <div className="flex">
             <FormatNumber

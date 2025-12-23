@@ -2,6 +2,7 @@ import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import useUserMutagens from '@/hooks/useUserMutagens';
@@ -20,215 +21,8 @@ interface MutagenSource {
   comingSoonText?: string;
 }
 
-const mutagenSources: MutagenSource[] = [
-  {
-    title: 'Trading Season',
-    description:
-      'Complete quests, streaks and earn Mutagen, battle against others to win rewards in our 10 weeks long recurring events.',
-    comingSoon: true,
-    comingSoonText: 'Starts February 1st',
-  },
-  {
-    title: 'Leveraged Trading',
-    description:
-      'Continuously earn Mutagen by executing leveraged trades on the platform. The higher the size and leverage, the more Mutagen. Mutagen is retro-generated since platform launch for all traders.',
-  },
-];
-
-const contentIfNoMutagens = (
-  <div className="flex flex-col mb-3 items-center">
-    <h2 className="flex">Mutagen</h2>
-
-    <p className="text-txtfade text-sm mt-2 text-center">
-      Mutagen is an elusive resource earned through trading, quests, streaks and
-      mutations. Accumulate it to increase your Airdrop share and your rank in
-      the leaderboard.
-    </p>
-
-    <div className="w-full mt-4 space-y-3">
-      {mutagenSources.map((source, index) => (
-        <div
-          key={index}
-          className="bg-[#0f1114] p-4 rounded-md border border-[#1f2124] hover:border-[#2f3134] transition-colors"
-        >
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold">{source.title}</h3>
-          </div>
-          <p className="text-xs text-txtfade mt-1">{source.description}</p>
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-const contentIfMutagens = (userMutagens: EnrichedUserMutagens) => {
-  const stats = [
-    {
-      label: 'Trading',
-      value: userMutagens.totalPointsTrading,
-      color: '#cec161f0',
-    },
-    {
-      label: 'Mutations',
-      value: userMutagens.totalPointsMutations,
-      color: '#5460cbf0',
-    },
-    {
-      label: 'Streaks',
-      value: userMutagens.totalPointsStreaks,
-      color: '#7ccbd7f0',
-    },
-    {
-      label: 'Quests',
-      value: userMutagens.totalPointsQuests,
-      color: '#84bd82f0',
-    },
-  ];
-
-  const calculateWidth = (value: number) =>
-    ((value / userMutagens.totalTotalPoints) * 100).toFixed(2);
-  const calculatePercentage = (value: number) => {
-    const percentage = (value / userMutagens.totalTotalPoints) * 100;
-    return percentage.toFixed(0);
-  };
-
-  return (
-    <div className="flex flex-col mb-3 items-center">
-      <p className="text-txtfade text-sm mt-2 text-center">
-        <span className="font-semibold">Mutagen</span> is an elusive resource
-        earned through trading, quests, streaks and mutations. Accumulate it to
-        increase your Airdrop share and your rank in the leaderboard.
-      </p>
-
-      <div className="h-[1px] bg-bcolor w-full mt-4 mb-2" />
-
-      <div className="w-full mt-4 flex flex-col gap-4">
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <h4 className="text-white/80 tracking-wider font-semibold uppercase text-xs">
-              All seasons
-            </h4>
-            <p className="gap-1 flex items-center">
-              <span className="font-semibold text-white/80 text-xxs">
-                Earned
-              </span>
-
-              <span className="font-mono text-xs text-white/80">
-                {formatNumber(userMutagens.totalTotalPoints, 2, 2)}
-              </span>
-
-              <span className="font-semibold text-white/80 text-xxs">
-                mutagen
-              </span>
-            </p>
-          </div>
-
-          <div className="w-full h-2 bg-[#07131D] rounded-full flex overflow-hidden">
-            {stats.map((stat, index) => (
-              <div
-                key={index}
-                className="h-full transition-all duration-300"
-                style={{
-                  width: `${calculateWidth(stat.value)}%`,
-                  backgroundColor: stat.color,
-                }}
-              />
-            ))}
-          </div>
-
-          <div className="flex justify-between flex-wrap text-xs">
-            {stats.map((stat, index) => (
-              <div key={index} className="flex items-center gap-1">
-                <div
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: stat.color }}
-                />
-
-                <span
-                  className="text-[1.1em] font-semibold"
-                  style={{ color: stat.color }}
-                >
-                  {stat.label}
-                </span>
-
-                <span
-                  className="text-xs font-mono"
-                  style={{ color: stat.color }}
-                >
-                  ({calculatePercentage(stat.value)}%)
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="h-[1px] bg-bcolor w-full mt-4 mb-2" />
-
-      <div className="text-xs uppercase font-semibold tracking-wider text-white/80 mt-2">
-        Breakdown Per Season
-      </div>
-
-      <div className="w-full mt-4 space-y-1 bg-[#111922] border border-[#1F252F] rounded-md shadow-xl">
-        {userMutagens.seasons.map((season, index) => (
-          <SeasonSection key={index} season={season} />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const SeasonSection = ({ season }: { season: EnrichedMutagenSeason }) => {
-  const stats = [
-    { label: 'Trading', value: season.pointsTrading, color: '#cec161f0' },
-    { label: 'Mutations', value: season.pointsMutations, color: '#5460cbf0' },
-    { label: 'Streaks', value: season.pointsStreaks, color: '#7ccbd7f0' },
-    { label: 'Quests', value: season.pointsQuests, color: '#84bd82f0' },
-  ];
-
-  return (
-    <div className="p-4 rounded-md tracking-widest">
-      <div className="flex items-center justify-between mb-2">
-        <h4 className="text-white/80 font-bold uppercase text-xxs">
-          {{
-            void: 'Inbetween seasons',
-            genesis: 'Protocol Launch',
-            awakening: 'Pre-season: Awakening',
-            interseason1: 'Inter-season 1',
-            interseason2: 'Inter-season 2',
-            expanse: 'Season 1: Expanse',
-            interseason3: 'Summer Event',
-          }[season.seasonName] ?? season.seasonName}
-        </h4>
-
-        <p className="gap-1 flex items-center">
-          <span className="font-semibold text-white/80 text-xxs">Earned</span>
-
-          <span className="font-mono text-xxs text-white/80">
-            {formatNumber(season.totalPoints, 2, 2)}
-          </span>
-
-          <span className="font-semibold text-white/80 text-xxs">mutagen</span>
-        </p>
-      </div>
-
-      <div className="w-full h-1.5 bg-[#07131D] rounded-full flex overflow-hidden">
-        {stats.map((stat, index) => (
-          <div
-            key={index}
-            className="h-full transition-all duration-300"
-            style={{
-              width: `${(stat.value / season.totalPoints) * 100}%`,
-              backgroundColor: stat.color,
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
 export default function Mutagen({ isMobile = false }: { isMobile?: boolean }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const wallet = useSelector((state) => state.walletState.wallet);
@@ -236,7 +30,211 @@ export default function Mutagen({ isMobile = false }: { isMobile?: boolean }) {
     walletAddress: wallet?.walletAddress ?? null,
   });
 
-  let content = contentIfNoMutagens;
+  const contentIfNoMutagens = () => {
+    const mutagenSources: MutagenSource[] = [
+      {
+        title: t('mutagenLeaderboard.tradingSeason'),
+        description: t('mutagenLeaderboard.tradingSeasonDescription'),
+        comingSoon: true,
+        comingSoonText: t('mutagenLeaderboard.startsFebruary1st'),
+      },
+      {
+        title: t('mutagenLeaderboard.leveragedTrading'),
+        description: t('mutagenLeaderboard.leveragedTradingDescription'),
+      },
+    ];
+
+    return (
+      <div className="flex flex-col mb-3 items-center">
+        <h2 className="flex">{t('mutagenLeaderboard.mutagen')}</h2>
+
+        <p className="text-txtfade text-sm mt-2 text-center">
+          {t('mutagenLeaderboard.mutagenDescription')}
+        </p>
+
+        <div className="w-full mt-4 space-y-3">
+          {mutagenSources.map((source, index) => (
+            <div
+              key={index}
+              className="bg-[#0f1114] p-4 rounded-md border border-[#1f2124] hover:border-[#2f3134] transition-colors"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold">{source.title}</h3>
+              </div>
+              <p className="text-xs text-txtfade mt-1">{source.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const contentIfMutagens = (userMutagens: EnrichedUserMutagens) => {
+    const stats = [
+      {
+        label: t('mutagenLeaderboard.trading'),
+        value: userMutagens.totalPointsTrading,
+        color: '#cec161f0',
+      },
+      {
+        label: t('mutagenLeaderboard.mutation'),
+        value: userMutagens.totalPointsMutations,
+        color: '#5460cbf0',
+      },
+      {
+        label: t('mutagenLeaderboard.streaks'),
+        value: userMutagens.totalPointsStreaks,
+        color: '#7ccbd7f0',
+      },
+      {
+        label: t('mutagenLeaderboard.quests'),
+        value: userMutagens.totalPointsQuests,
+        color: '#84bd82f0',
+      },
+    ];
+
+    const calculateWidth = (value: number) =>
+      ((value / userMutagens.totalTotalPoints) * 100).toFixed(2);
+    const calculatePercentage = (value: number) => {
+      const percentage = (value / userMutagens.totalTotalPoints) * 100;
+      return percentage.toFixed(0);
+    };
+
+    return (
+      <div className="flex flex-col mb-3 items-center">
+        <p className="text-txtfade text-sm mt-2 text-center">
+          <span className="font-semibold">{t('mutagenLeaderboard.mutagen')}</span> {t('mutagenLeaderboard.mutagenDescription')}
+        </p>
+
+        <div className="h-[1px] bg-bcolor w-full mt-4 mb-2" />
+
+        <div className="w-full mt-4 flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <h4 className="text-white/80 tracking-wider font-semibold uppercase text-xs">
+                {t('mutagenLeaderboard.allSeasons')}
+              </h4>
+              <p className="gap-1 flex items-center">
+                <span className="font-semibold text-white/80 text-xxs">
+                  {t('mutagenLeaderboard.earned')}
+                </span>
+
+                <span className="font-mono text-xs text-white/80">
+                  {formatNumber(userMutagens.totalTotalPoints, 2, 2)}
+                </span>
+
+                <span className="font-semibold text-white/80 text-xxs">
+                  {t('mutagenLeaderboard.mutagen')}
+                </span>
+              </p>
+            </div>
+
+            <div className="w-full h-2 bg-[#07131D] rounded-full flex overflow-hidden">
+              {stats.map((stat, index) => (
+                <div
+                  key={index}
+                  className="h-full transition-all duration-300"
+                  style={{
+                    width: `${calculateWidth(stat.value)}%`,
+                    backgroundColor: stat.color,
+                  }}
+                />
+              ))}
+            </div>
+
+            <div className="flex justify-between flex-wrap text-xs">
+              {stats.map((stat, index) => (
+                <div key={index} className="flex items-center gap-1">
+                  <div
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: stat.color }}
+                  />
+
+                  <span
+                    className="text-[1.1em] font-semibold"
+                    style={{ color: stat.color }}
+                  >
+                    {stat.label}
+                  </span>
+
+                  <span
+                    className="text-xs font-mono"
+                    style={{ color: stat.color }}
+                  >
+                    ({calculatePercentage(stat.value)}%)
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="h-[1px] bg-bcolor w-full mt-4 mb-2" />
+
+        <div className="text-xs uppercase font-semibold tracking-wider text-white/80 mt-2">
+          {t('mutagenLeaderboard.breakdownPerSeason')}
+        </div>
+
+        <div className="w-full mt-4 space-y-1 bg-[#111922] border border-[#1F252F] rounded-md shadow-xl">
+          {userMutagens.seasons.map((season, index) => (
+            <SeasonSection key={index} season={season} />
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const SeasonSection = ({ season }: { season: EnrichedMutagenSeason }) => {
+    const stats = [
+      { label: t('mutagenLeaderboard.trading'), value: season.pointsTrading, color: '#cec161f0' },
+      { label: t('mutagenLeaderboard.mutation'), value: season.pointsMutations, color: '#5460cbf0' },
+      { label: t('mutagenLeaderboard.streaks'), value: season.pointsStreaks, color: '#7ccbd7f0' },
+      { label: t('mutagenLeaderboard.quests'), value: season.pointsQuests, color: '#84bd82f0' },
+    ];
+
+    return (
+      <div className="p-4 rounded-md tracking-widest">
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="text-white/80 font-bold uppercase text-xxs">
+            {{
+              void: t('mutagenLeaderboard.inbetweenSeasons'),
+              genesis: t('mutagenLeaderboard.protocolLaunch'),
+              awakening: t('mutagenLeaderboard.preSeasonAwakening'),
+              interseason1: t('mutagenLeaderboard.interseason1'),
+              interseason2: t('mutagenLeaderboard.interseason2'),
+              expanse: t('mutagenLeaderboard.season1Expanse'),
+              interseason3: t('ranked.summerEvent'),
+            }[season.seasonName] ?? season.seasonName}
+          </h4>
+
+          <p className="gap-1 flex items-center">
+            <span className="font-semibold text-white/80 text-xxs">{t('mutagenLeaderboard.earned')}</span>
+
+            <span className="font-mono text-xxs text-white/80">
+              {formatNumber(season.totalPoints, 2, 2)}
+            </span>
+
+            <span className="font-semibold text-white/80 text-xxs">{t('mutagenLeaderboard.mutagen')}</span>
+          </p>
+        </div>
+
+        <div className="w-full h-1.5 bg-[#07131D] rounded-full flex overflow-hidden">
+          {stats.map((stat, index) => (
+            <div
+              key={index}
+              className="h-full transition-all duration-300"
+              style={{
+                width: `${(stat.value / season.totalPoints) * 100}%`,
+                backgroundColor: stat.color,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  let content: React.ReactNode = contentIfNoMutagens();
 
   if (userMutagens && userMutagens.totalTotalPoints > 0) {
     content = contentIfMutagens(userMutagens);
@@ -254,7 +252,7 @@ export default function Mutagen({ isMobile = false }: { isMobile?: boolean }) {
                         cursor-pointer
                         transition hover:border-mutagen/80 hover:shadow-mutagenHoverSmall duration-300"
           onClick={() => setIsModalOpen(true)}
-          title="Click to scroll to your row"
+          title={t('mutagenLeaderboard.clickToScrollToRow')}
         >
           <div className="text-xxs sm:text-xs font-mono">
             {userMutagens?.totalTotalPoints
@@ -272,15 +270,15 @@ export default function Mutagen({ isMobile = false }: { isMobile?: boolean }) {
           />
         </div>
 
-          {isModalOpen && (
-            <Modal
-              close={() => setIsModalOpen(false)}
-              className="flex flex-col w-full p-5 relative overflow-visible"
-            >
-              {content}
-            </Modal>
-          )}
-        </AnimatePresence>
+        {isModalOpen && (
+          <Modal
+            close={() => setIsModalOpen(false)}
+            className="flex flex-col w-full p-5 relative overflow-visible"
+          >
+            {content}
+          </Modal>
+        )}
+      </AnimatePresence>
     );
   }
 

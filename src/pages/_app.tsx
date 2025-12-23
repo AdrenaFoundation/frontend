@@ -1,4 +1,5 @@
 import '@/styles/globals.scss';
+import '../i18n/i18next';
 
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { PrivyProvider, usePrivy, WalletListEntry } from '@privy-io/react-auth';

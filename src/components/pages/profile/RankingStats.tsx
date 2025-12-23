@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import LoaderWrapper from '@/components/Loader/LoaderWrapper';
@@ -26,9 +27,10 @@ export default function RankingStats({
   userProfile: UserProfileExtended | null | false;
   isLoading: boolean;
 }) {
+  const { t } = useTranslation();
   const SEASONS = [
     {
-      name: 'Awakening',
+      name: t('monitoring.awakening'),
       img: TRADING_COMPETITION_SEASONS.awakening.img,
       gradient: TRADING_COMPETITION_SEASONS.awakening.gradient,
       startDate: awakeningRanking?.startDate,
@@ -51,7 +53,7 @@ export default function RankingStats({
           : null,
     },
     {
-      name: 'Expanse',
+      name: t('monitoring.expanse'),
       img: TRADING_COMPETITION_SEASONS.expanse.img,
       gradient: TRADING_COMPETITION_SEASONS.expanse.gradient,
       startDate: expanseRanking?.startDate,
@@ -72,7 +74,7 @@ export default function RankingStats({
         expanseRanking && 'pnl' in expanseRanking ? expanseRanking.pnl : null,
     },
     {
-      name: 'Factions',
+      name: t('monitoring.factions'),
       img: TRADING_COMPETITION_SEASONS.factions.img,
       gradient: 'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)]',
       startDate: TRADING_COMPETITION_SEASONS.factions.startDate,
@@ -95,7 +97,7 @@ export default function RankingStats({
 
   return (
     <div className={twMerge('p-3', className)}>
-      <h3 className="capitalize mb-2 opacity-90">Ranked Performance</h3>
+      <h3 className="capitalize mb-2 opacity-90">{t('monitoring.rankedPerformance')}</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center gap-3">
         {SEASONS.map((season, index) => (
           <LoaderWrapper
@@ -125,7 +127,7 @@ export default function RankingStats({
                   )}
                 >
                   {season.name}
-                  {season.name === 'Factions' &&
+                  {season.name === t('monitoring.factions') &&
                     season.userTeam !== undefined &&
                     season.userTeam !== null &&
                     season.userTeam !== 0 ? (
@@ -137,14 +139,14 @@ export default function RankingStats({
                           : 'text-blue',
                       )}
                     >
-                      team {TEAMS[season.userTeam as keyof typeof TEAMS]}
+                      {t('monitoring.team')} {TEAMS[season.userTeam as keyof typeof TEAMS]}
                     </p>
                   ) : null}
                 </div>
               </div>
               <div className="flex flex-row items-center gap-2 p-2">
                 <div className="flex flex-row items-center bg-third justify-between border rounded-md p-2 flex-1">
-                  <p className="opacity-50 text-sm">Rank</p>{' '}
+                  <p className="opacity-50 text-sm">{t('monitoring.rank')}</p>{' '}
                   <p className="font-mono ml-1 text-sm">
                     {season.userRank}{' '}
                     <span className="font-mono opacity-50">
@@ -153,7 +155,7 @@ export default function RankingStats({
                   </p>
                 </div>
                 <div className="flex flex-row items-center bg-third justify-between border rounded-md p-2 flex-1">
-                  <p className="opacity-50 text-sm">PnL</p>{' '}
+                  <p className="opacity-50 text-sm">{t('monitoring.pnl')}</p>{' '}
                   <FormatNumber
                     nb={season.userPnL || 0}
                     precision={2}

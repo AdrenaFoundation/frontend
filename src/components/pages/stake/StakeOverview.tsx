@@ -1,6 +1,7 @@
 import '../../../styles/Animation.css';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import { AllAdxStakingProvider } from '@/contexts/AllAdxStakingContext';
@@ -59,6 +60,7 @@ export default function StakeOverview({
   optimisticClaim: ClaimHistoryExtended | null;
   setOptimisticClaim: (claim: ClaimHistoryExtended | null) => void;
 }) {
+  const { t } = useTranslation();
   const storageKey = 'adxStakeSortConfig';
   const { stakingAccount, triggerReload } = useStakingAccount(
     window.adrena.client.lmTokenMint,
@@ -136,7 +138,7 @@ export default function StakeOverview({
 
   const triggerResolveStakingRound = async () => {
     const notification = MultiStepNotification.newForRegularTransaction(
-      'Resolve ADX Staking Round',
+      t('stake.resolveADXStakingRound'),
     ).fire();
 
     try {

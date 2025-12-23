@@ -3,6 +3,7 @@ import { Transaction } from '@solana/web3.js';
 import Image from 'next/image';
 import { useState } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -27,6 +28,8 @@ export default function StopLossTakeProfit({
   triggerUserProfileReload: () => void;
   onClose: () => void;
 }) {
+
+  const { t } = useTranslation()
   const [stopLossInput, setStopLossInput] = useState<number | null>(
     position.stopLossIsSet &&
       position.stopLossLimitPrice &&
@@ -158,7 +161,7 @@ export default function StopLossTakeProfit({
     }
 
     const notification =
-      MultiStepNotification.newForRegularTransaction('TP/SL').fire();
+      MultiStepNotification.newForRegularTransaction(t('trade.editPosition.tpslButton')).fire();
 
     try {
       await window.adrena.client.signAndExecuteTxAlternative({
@@ -196,7 +199,7 @@ export default function StopLossTakeProfit({
                 alt={`${getTokenSymbol(position.token.symbol)} logo`}
               />
               <div className="text-sm text-bold">
-                {getTokenSymbol(position.token.symbol)} Price
+                {getTokenSymbol(position.token.symbol)} {t('trade.editPosition.price')}
               </div>
             </div>
             <FormatNumber
@@ -211,7 +214,7 @@ export default function StopLossTakeProfit({
 
           <div className="w-full flex justify-between">
             <div className="flex w-full justify-between items-center">
-              <span className="text-sm opacity-50">Entry</span>
+              <span className="text-sm opacity-50">{t('trade.entry')}</span>
 
               <FormatNumber
                 nb={position.price}
@@ -230,7 +233,7 @@ export default function StopLossTakeProfit({
 
           <div className="w-full flex justify-between">
             <div className="flex w-full justify-between items-center">
-              <span className="text-sm opacity-50">Liquidation</span>
+              <span className="text-sm opacity-50">{t('trade.liquidationPrice')}</span>
 
               <FormatNumber
                 nb={position.liquidationPrice}
@@ -250,7 +253,7 @@ export default function StopLossTakeProfit({
         <div className="flex-col items-center justify-center text-sm w-full bg-[#040D14] rounded-md border p-3 py-2.5">
 
           <div className="flex w-full justify-between items-center">
-            <span className="text-sm text-txtfade">Net Value</span>
+            <span className="text-sm text-txtfade">{t('trade.editPosition.netValue')}</span>
             <>
               <NetValueTooltip position={position}>
                 <span className="underline-dashed">
@@ -269,7 +272,7 @@ export default function StopLossTakeProfit({
 
           <div className="flex w-full justify-between items-center">
             <div className="text-sm text-txtfade">
-              PnL <span className="test-xs text-txtfade">(after fees)</span>
+              {t('trade.editPosition.pnl')} <span className="test-xs text-txtfade">({t('trade.editPosition.afterFees')})</span>
             </div>
             <div
               className={twMerge(
@@ -326,7 +329,7 @@ export default function StopLossTakeProfit({
         <Button
           className="font-semibold w-full"
           size="lg"
-          title="Cancel"
+          title={t('trade.cancel')}
           variant="outline"
           onClick={() => onClose()}
         />
@@ -334,7 +337,7 @@ export default function StopLossTakeProfit({
         <Button
           className="font-semibold w-full"
           size="lg"
-          title="Confirm"
+          title={t('trade.confirm')}
           disabled={stopLossError || takeProfitError}
           onClick={() => applyConfiguration()}
         />

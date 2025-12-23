@@ -1,6 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import needle from '@/../../public/images/needle.png';
@@ -30,6 +31,7 @@ export default function MutagenLeaderboard({
   className?: string;
   onClickUserProfile: (wallet: PublicKey) => void;
 }) {
+  const { t } = useTranslation();
   const [sortField, setSortField] = useState<SortField>('totalPoints');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const wallet = useSelector((s) => s.walletState.wallet);
@@ -270,9 +272,9 @@ export default function MutagenLeaderboard({
   const columns = useMemo(() => {
     const columns = [
       <span className="opacity-50" key="rank">
-        #
+        {t('mutagenLeaderboard.rankSymbol')}
       </span>,
-      <span className="opacity-50" key="trader">Trader</span>,
+      <span className="opacity-50" key="trader">{t('mutagenLeaderboard.trader')}</span>,
     ];
 
     if (breakpoint5) {
@@ -282,7 +284,7 @@ export default function MutagenLeaderboard({
           className={getSortButtonClass('totalVolume')}
           key="totalVolume"
         >
-          <span className={getSortTextClass('totalVolume')}>Volume</span>
+          <span className={getSortTextClass('totalVolume')}>{t('mutagenLeaderboard.volume')}</span>
           <SortIcon field="totalVolume" />
         </button>,
       );
@@ -295,7 +297,7 @@ export default function MutagenLeaderboard({
           className={getSortButtonClass('pointsTrading')}
           key="pointsTrading"
         >
-          <span className={getSortTextClass('pointsTrading')}>Trading</span>
+          <span className={getSortTextClass('pointsTrading')}>{t('mutagenLeaderboard.trading')}</span>
           <SortIcon field="pointsTrading" />
         </button>,
       );
@@ -308,7 +310,7 @@ export default function MutagenLeaderboard({
           className={getSortButtonClass('pointsMutations')}
           key="pointsMutations"
         >
-          <span className={getSortTextClass('pointsMutations')}>Mutation</span>
+          <span className={getSortTextClass('pointsMutations')}>{t('mutagenLeaderboard.mutation')}</span>
           <SortIcon field="pointsMutations" />
         </button>,
       );
@@ -321,7 +323,7 @@ export default function MutagenLeaderboard({
           className={getSortButtonClass('pointsQuests')}
           key="pointsQuests"
         >
-          <span className={getSortTextClass('pointsQuests')}>Quests</span>
+          <span className={getSortTextClass('pointsQuests')}>{t('mutagenLeaderboard.quests')}</span>
           <SortIcon field="pointsQuests" />
         </button>,
       );
@@ -334,7 +336,7 @@ export default function MutagenLeaderboard({
           className={getSortButtonClass('pointsStreaks')}
           key="pointsStreaks"
         >
-          <span className={getSortTextClass('pointsStreaks')}>Streaks</span>
+          <span className={getSortTextClass('pointsStreaks')}>{t('mutagenLeaderboard.streaks')}</span>
           <SortIcon field="pointsStreaks" />
         </button>,
       );
@@ -346,7 +348,7 @@ export default function MutagenLeaderboard({
         className={getSortButtonClass('totalPoints')}
         key="totalPoints"
       >
-        <span className={getSortTextClass('totalPoints')}>Mutagen</span>
+        <span className={getSortTextClass('totalPoints')}>{t('mutagenLeaderboard.mutagen')}</span>
         <SortIcon field="totalPoints" />
       </button>,
     );
@@ -406,7 +408,7 @@ export default function MutagenLeaderboard({
                         cursor-pointer
                         transition hover:border-mutagen/80 hover:shadow-mutagenHoverBig
                     "
-          title="Click to scroll to your row"
+          title={t('mutagenLeaderboard.clickToScrollToRow')}
           onClick={() => {
             if (!wallet || !sortedTraders) return;
             setCurrentPage(
@@ -447,7 +449,7 @@ export default function MutagenLeaderboard({
                   |
                 </span>
                 <span className="font-semibold text-white text-xl sm:flex hidden flex-shrink-0">
-                  Rank:
+                  {t('mutagenLeaderboard.rankLabel')}
                 </span>
                 <span className="text-sm font-semibold text-white bg-mutagen/40 px-3 py-1 rounded-full shadow flex-shrink-0">
                   #{userRow.rank}
@@ -456,7 +458,7 @@ export default function MutagenLeaderboard({
                   |
                 </span>
                 <span className="font-semibold text-white text-xl sm:flex hidden flex-shrink-0">
-                  Mutagen:
+                  {t('mutagenLeaderboard.mutagenLabel')}
                 </span>
                 <span className="text-xl font-semibold text-mutagen sm:flex hidden flex-shrink-0">
                   {formatNumber(userRow.totalPoints, 2, 0)}

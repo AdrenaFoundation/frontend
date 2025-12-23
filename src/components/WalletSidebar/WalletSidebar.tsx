@@ -6,6 +6,7 @@ import Tippy from '@tippyjs/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { QRCode } from 'react-qrcode-logo';
 
 import chevronDownIcon from '@/../public/images/Icons/chevron-down.svg';
@@ -38,6 +39,7 @@ export default function WalletSidebar({
 }: {
     adapters: WalletAdapterExtended[];
 }) {
+    const { t } = useTranslation();
     const [view, setView] = useState<'tokens' | 'wallet-selection' | 'send'>('tokens');
     const { fundWallet } = useFundWallet();
     const { exportWallet } = useExportWallet();
@@ -585,7 +587,7 @@ export default function WalletSidebar({
 
                                                 try {
                                                     const notification =
-                                                        MultiStepNotification.newForRegularTransaction('Send Tokens').fire();
+                                                        MultiStepNotification.newForRegularTransaction(t('referral.sendTokens')).fire();
 
                                                     await window.adrena.client.signAndExecuteTxAlternative({
                                                         transaction,
@@ -613,7 +615,7 @@ export default function WalletSidebar({
             </AnimatePresence>
         </>;
 
-    }, [isSidebarOpen, wallet, enhancedWalletData, view, enhancedWallets, hasExternalWallets, isLoadingBalances, totalValueUsd, solBalance, refreshBalances, balancesError, tokenBalancesWithPrices, connectedStandardWallets, dispatch, fundWallet, exportWallet, connectedAdapter, closeSidebar, adapters, connectWallet]);
+    }, [isSidebarOpen, wallet, enhancedWalletData, view, enhancedWallets, hasExternalWallets, isLoadingBalances, totalValueUsd, solBalance, refreshBalances, balancesError, tokenBalancesWithPrices, connectedStandardWallets, dispatch, fundWallet, exportWallet, connectedAdapter, closeSidebar, adapters, connectWallet, t]);
 
     return (
         <AnimatePresence>
@@ -653,14 +655,14 @@ export default function WalletSidebar({
                                     <BulletPoint text="Auto-confirm" />
                                 )}
                                 <div className={`text-xs text-txtfade ${wallet.isPrivy && enhancedWalletData?.isEmbedded ? '' : 'flex-1 text-right'}`}>
-                                    Powered by <span className="text-white font-semibold">
+                                    {t('common.poweredBy')} <span className="text-white font-semibold">
                                         {wallet.isPrivy && enhancedWalletData?.isEmbedded
                                             ? 'Privy'
                                             : wallet.isPrivy && enhancedWalletData?.walletName
                                                 ? enhancedWalletData.walletName
                                                 : wallet.adapterName}
                                     </span>
-                                    {wallet.isPrivy && !enhancedWalletData?.isEmbedded && <> through <span className="text-white font-semibold">Privy</span></>}
+                                    {wallet.isPrivy && !enhancedWalletData?.isEmbedded && <> {t('common.through')} <span className="text-white font-semibold">Privy</span></>}
                                 </div>
                             </div>
                         )}

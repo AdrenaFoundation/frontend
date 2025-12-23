@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 interface Partner {
@@ -57,50 +58,52 @@ const PartnerCard: React.FC<Partner> = ({
   </a>
 );
 
-const PARTNERS: Partner[] = [
-  {
-    description: 'Boost your ALP with leverage loop',
-    icon: '/images/carrot.svg',
-    gradientColors:
-      'bg-[linear-gradient(110deg,#34D399,#F98635,#34D399)] animate-text-shimmer bg-[length:250%_100%]',
-    bgColor: 'bg-secondary/[0.99]',
-    link: 'https://boost.deficarrot.com/boost/tokens/GyTsdytwPU2oRK9YfpJz8Nb5auxuPegSPrTA5gWTb2o/',
-  },
-  {
-    description: 'Multiply your yield with low-risk',
-    icon: '/images/kamino.svg',
-    gradientColors:
-      'bg-[linear-gradient(110deg,#2b5dff,#001763,#2b5dff)] animate-text-shimmer bg-[length:250%_100%]',
-    bgColor: 'bg-secondary/[0.99]',
-    link: 'https://app.kamino.finance/multiply/CTthJu49dgPkCgu9TKQProuaQnkHsRPQV33sSJ96vxpG/D1ZdZSNfn6nfzEyK6uvFCcRi8SzihnPdYHLtnjBjwxGn/5bgPMvzZv29jkFEuMwxQRJQf64gKcPfLEEUHhyrP8tce',
-  },
-  {
-    description: 'Loop your ALP up to 5x',
-    icon: '/images/loopscale.svg',
-    gradientColors:
-      'bg-[linear-gradient(110deg,#c9c8ff,#0075ff,#c9c8ff)] animate-text-shimmer bg-[length:250%_100%]',
-    bgColor: 'bg-secondary/[0.99]',
-    link: 'https://app.loopscale.com/loops/alp-usdc',
-  },
-  {
-    description: 'Earn Fixed Yield on ALP',
-    icon: '/images/exponent.svg',
-    gradientColors:
-      'bg-[linear-gradient(110deg,#001b03,#00ee1a,#001b03)] animate-text-shimmer bg-[length:250%_100%]',
-    bgColor: 'bg-secondary/[0.99]',
-    link: 'https://www.exponent.finance/liquidity/alp-20Oct25',
-  },
-  {
-    description: 'ADX incentives for ALP market',
-    icon: '/images/sandglass.svg',
-    gradientColors:
-      'bg-[linear-gradient(110deg,#0075ff,#c9c8ff,#0075ff)] animate-text-shimmer bg-[length:250%_100%]',
-    bgColor: 'bg-secondary/[0.99]',
-    link: 'https://sandglass.so/markets',
-  },
-];
-
 export default function PartnerCards({ className }: { className?: string }) {
+  const { t } = useTranslation();
+
+  const PARTNERS: Partner[] = [
+    {
+      description: t('alp.boostAlpLeverageLoop'),
+      icon: '/images/carrot.svg',
+      gradientColors:
+        'bg-[linear-gradient(110deg,#34D399,#F98635,#34D399)] animate-text-shimmer bg-[length:250%_100%]',
+      bgColor: 'bg-secondary/[0.99]',
+      link: 'https://boost.deficarrot.com/boost/tokens/GyTsdytwPU2oRK9YfpJz8Nb5auxuPegSPrTA5gWTb2o/',
+    },
+    {
+      description: t('alp.multiplyYieldLowRisk'),
+      icon: '/images/kamino.svg',
+      gradientColors:
+        'bg-[linear-gradient(110deg,#2b5dff,#001763,#2b5dff)] animate-text-shimmer bg-[length:250%_100%]',
+      bgColor: 'bg-secondary/[0.99]',
+      link: 'https://app.kamino.finance/multiply/CTthJu49dgPkCgu9TKQProuaQnkHsRPQV33sSJ96vxpG/D1ZdZSNfn6nfzEyK6uvFCcRi8SzihnPdYHLtnjBjwxGn/5bgPMvzZv29jkFEuMwxQRJQf64gKcPfLEEUHhyrP8tce',
+    },
+    {
+      description: t('alp.loopAlp5x'),
+      icon: '/images/loopscale.svg',
+      gradientColors:
+        'bg-[linear-gradient(110deg,#c9c8ff,#0075ff,#c9c8ff)] animate-text-shimmer bg-[length:250%_100%]',
+      bgColor: 'bg-secondary/[0.99]',
+      link: 'https://app.loopscale.com/loops/alp-usdc',
+    },
+    {
+      description: t('alp.earnFixedYieldAlp'),
+      icon: '/images/exponent.svg',
+      gradientColors:
+        'bg-[linear-gradient(110deg,#001b03,#00ee1a,#001b03)] animate-text-shimmer bg-[length:250%_100%]',
+      bgColor: 'bg-secondary/[0.99]',
+      link: 'https://www.exponent.finance/liquidity/alp-20Oct25',
+    },
+    {
+      description: t('alp.adxIncentivesAlp'),
+      icon: '/images/sandglass.svg',
+      gradientColors:
+        'bg-[linear-gradient(110deg,#0075ff,#c9c8ff,#0075ff)] animate-text-shimmer bg-[length:250%_100%]',
+      bgColor: 'bg-secondary/[0.99]',
+      link: 'https://sandglass.so/markets',
+    },
+  ];
+
   return (
     <div className={twMerge('w-full', className)}>
       <div className="grid grid-cols-1 gap-2">

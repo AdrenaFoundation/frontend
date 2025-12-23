@@ -2,6 +2,7 @@ import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import { fetchWalletTokenBalances } from '@/actions/thunks';
@@ -27,6 +28,7 @@ export default function ALPSwapSell({
   className?: string;
   connected: boolean;
 }) {
+  const { t } = useTranslation();
   const usdcToken = window.adrena.client.getUsdcToken();
   const dispatch = useDispatch();
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
@@ -79,7 +81,7 @@ export default function ALPSwapSell({
     }
 
     const notification =
-      MultiStepNotification.newForRegularTransaction('Selling ALP').fire();
+      MultiStepNotification.newForRegularTransaction(t('alp.sellingALP')).fire();
 
     try {
       await window.adrena.client.removeLiquidity({
@@ -167,9 +169,9 @@ export default function ALPSwapSell({
       }
 
       // we set this error message because we do not get error message from anchor simulate
-      setErrorMessage('Pool ratio reached for this token');
+      setErrorMessage(t('alp.poolRatioReached'));
     }
-  }, [alpInput, collateralToken]);
+  }, [alpInput, collateralToken, t]);
 
   // Trigger calculations
   useEffect(() => {
@@ -185,7 +187,7 @@ export default function ALPSwapSell({
       )}
     >
       <div className="flex flex-row gap-2 items-center justify-between mt-4 mb-1">
-        <h5 className="text-white">Collateral</h5>
+        <h5 className="text-white">{t('alp.collateral')}</h5>
         {walletTokenBalances ? (
           <div
             className="flex flex-row justify-end items-center cursor-pointer"
@@ -222,7 +224,7 @@ export default function ALPSwapSell({
 
       <div className="ml-auto items-center flex mr-2 mt-1">
         <span className="text-txtfade mr-1">
-          available pool {collateralToken.symbol} liquidity:
+          {t('alp.availablePoolLiquidity', { symbol: collateralToken.symbol })}
         </span>
         <FormatNumber
           nb={collateralTokenCustodyLiquidityUsd}
@@ -235,24 +237,21 @@ export default function ALPSwapSell({
           text={
             <div className="flex flex-col gap-2 text-sm">
               <div>
-                Available {collateralToken.symbol} depends on pool ratios and
-                what&nbsp;s currently borrowed by traders.
+                {t('alp.availableTokenDependsOnPool', { symbol: collateralToken.symbol })}
               </div>
               <div>
-                If {collateralToken.symbol} is fully utilized, wait for traders
-                to close positions.
+                {t('alp.ifTokenFullyUtilized', { symbol: collateralToken.symbol })}
               </div>
               <div>
-                If you try to redeem more than available, consider DCA or
-                another pair — the pool will rebalance automatically.
+                {t('alp.ifRedeemMoreThanAvailable')}
               </div>
-              <div>Need help? Reach out on Discord.</div>
+              <div>{t('alp.needHelpDiscord')}</div>
             </div>
           }
         />
       </div>
 
-      <h5 className="text-white mt-4 mb-2">Receive</h5>
+      <h5 className="text-white mt-4 mb-2">{t('alp.receive')}</h5>
 
       <TradingInput
         className="text-xs rounded-full"

@@ -2,6 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import jtoLogo from '@/../../public/images/jito-logo-2.png';
@@ -57,6 +58,7 @@ export default function FactionsWeeklyLeaderboard({
   triggerUserProfileReload: () => void;
   jtoPrice: number | null;
 }) {
+  const { t } = useTranslation();
   const wallet = useSelector((s) => s.walletState.wallet);
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -334,23 +336,23 @@ export default function FactionsWeeklyLeaderboard({
         <div className="tracking-[0.3em] uppercase">
           {team === 'A'
             ? userProfile && userProfile.team === TEAMS_MAPPING.BONK
-              ? 'YOUR TEAM!'
-              : 'BONK TEAM'
+              ? t('ranked.yourTeam')
+              : t('ranked.bonkTeam')
             : userProfile && userProfile.team === TEAMS_MAPPING.JITO
-              ? 'YOUR TEAM!'
-              : 'JITO TEAM'}
+              ? t('ranked.yourTeam')
+              : t('ranked.jitoTeam')}
         </div>
 
         {wallet && userProfile === false ? (
           <div className="mt-3 text-sm">
-            Create a profile to join the competition!
+            {t('ranked.createProfileToJoin')}
           </div>
         ) : null}
 
         {userProfile && userProfile.team === TEAMS_MAPPING.DEFAULT ? (
           <>
             <Button
-              title="JOIN"
+              title={t('ranked.join')}
               className="mt-2 w-[14em]"
               variant="primary"
               onClick={async () => {
@@ -358,7 +360,7 @@ export default function FactionsWeeklyLeaderboard({
 
                 await window.adrena.client.editUserProfile({
                   notification: MultiStepNotification.newForRegularTransaction(
-                    `Pick ${team === 'A' ? 'BONK' : 'JITO'} Team`,
+                    t('ranked.pickTeam', { team: team === 'A' ? 'BONK' : 'JITO' }),
                   ).fire(),
                   team: team === 'A' ? TEAMS_MAPPING.BONK : TEAMS_MAPPING.JITO,
                 });
@@ -368,7 +370,7 @@ export default function FactionsWeeklyLeaderboard({
             />
 
             <div className="mt-3 text-sm text-orange">
-              Careful this choice is definitive for the entire season!
+              {t('ranked.carefulChoiceDefinitive')}
             </div>
           </>
         ) : null}
@@ -378,7 +380,7 @@ export default function FactionsWeeklyLeaderboard({
         className={twMerge('flex-wrap flex-row w-full flex gap-6 pl-4 pr-4')}
       >
         <NumberDisplay
-          title="Traders"
+          title={t('ranked.traders')}
           nb={weeklyStats?.totalUsers ?? null}
           format="number"
           precision={0}
@@ -389,7 +391,7 @@ export default function FactionsWeeklyLeaderboard({
         />
 
         <NumberDisplay
-          title="Mutagens"
+          title={t('ranked.mutagens')}
           nb={weeklyDamageTeam}
           format="number"
           isAbbreviate={true}
@@ -404,7 +406,7 @@ export default function FactionsWeeklyLeaderboard({
         />
 
         <NumberDisplay
-          title="Volume"
+          title={t('ranked.volume')}
           nb={weeklyStats?.totalVolume ?? null}
           format="currency"
           prefix="$"
@@ -420,7 +422,7 @@ export default function FactionsWeeklyLeaderboard({
         />
 
         <NumberDisplay
-          title="Fees"
+          title={t('ranked.fees')}
           nb={weeklyStats?.totalFees ?? null}
           format="currency"
           prefix="$"
@@ -441,21 +443,21 @@ export default function FactionsWeeklyLeaderboard({
       <div className="flex items-center w-full justify-center scale-[72%] sm:scale-100">
         <Rank
           team={team}
-          rank="Lieutenant"
+          rank={'Lieutenant'}
           user={officers.lieutenant}
           setActiveProfile={setActiveProfile}
           unlockStep={officers.lieutenant.steps}
         />
         <Rank
           team={team}
-          rank="General"
+          rank={'General'}
           user={officers.general}
           setActiveProfile={setActiveProfile}
           unlockStep={officers.general.steps}
         />
         <Rank
           team={team}
-          rank="Sergeant"
+          rank={'Sergeant'}
           user={officers.sergeant}
           setActiveProfile={setActiveProfile}
           unlockStep={officers.sergeant.steps}
@@ -469,20 +471,20 @@ export default function FactionsWeeklyLeaderboard({
         columnTitlesClassName="text-sm opacity-50"
         columnsTitles={[
           <span className="opacity-50" key="rank">
-            #
+            {t('ranked.rank')}
           </span>,
 
           <span className="opacity-50" key="trader">
-            Trader
+            {t('ranked.trader')}
           </span>,
 
           <div className="opacity-50 flex justify-center w-full" key="pnl">
-            mutagen
+            {t('ranked.mutagen')}
           </div>,
 
           !isMobile ? (
             <div className="opacity-50 flex justify-center w-full" key="volume">
-              volume
+              {t('ranked.volume')}
             </div>
           ) : (
             false
@@ -491,11 +493,11 @@ export default function FactionsWeeklyLeaderboard({
           <Tippy
             key="rewards-tippy"
             content={
-              'Rewards are distributed in ADX, JTO, and BONK tokens. USD values are indicative. Prizes are officially attributed at the end of each week and are for information purposes only before then.'
+              t('ranked.rewardsTooltip')
             }
           >
             <div className="opacity-50 flex justify-end" key="rewards">
-              {isMobile ? 'vol / rewards *' : 'rewards *'}
+              {isMobile ? t('ranked.volRewards') : t('ranked.rewardsColumn')}
             </div>
           </Tippy>,
         ].filter(Boolean)}

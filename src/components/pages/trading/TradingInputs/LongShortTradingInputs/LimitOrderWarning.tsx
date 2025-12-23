@@ -1,8 +1,12 @@
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 
 import infoIcon from '../../../../../../public/images/Icons/info.svg';
 
 export default function LimitOrderWarning() {
+
+  const { t } = useTranslation()
+
   return (
     <div className="flex items-start gap-2 relative w-full  text-xs mt-1">
       <Image
@@ -13,7 +17,7 @@ export default function LimitOrderWarning() {
         alt="Info icon"
       />
       <span className="text-sm opacity-50 font-semibold">
-        Limit orders will only execute if sufficient liquidity is available at the time of order execution.
+        {t('trade.limitOrderWarning')}
       </span>
     </div>
   )

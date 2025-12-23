@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { Staking } from '@/types';
 import { nativeToUi } from '@/utils';
@@ -21,6 +23,7 @@ export default function StakingRewardVaults({
   } | null;
   titleClassName?: string;
 }) {
+  const { t } = useTranslation();
   let nextAdxRoundUsdcRewards = 0;
   let nextAdxRoundAdxRewards = 0;
 
@@ -53,11 +56,11 @@ export default function StakingRewardVaults({
     <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
         <p className={titleClassName}>
-          ADX Staking Rewards (available next round)
+          {t('monitoring.adxStakingRewardsNextRound')}
         </p>
 
         <p className="text-xs opacity-50">
-          Accruing, will be available at the end of the current round.
+          {t('monitoring.adxStakingRewardsNextRoundDesc')}
         </p>
       </div>
 

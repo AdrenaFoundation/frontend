@@ -1,4 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
+import { useTranslation } from 'react-i18next';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { RATE_DECIMALS } from '@/constant';
@@ -12,6 +13,7 @@ export default function StakingRewardsWaitingToBeClaimed({
   adxStakingAccount: Staking;
   titleClassName?: string;
 }) {
+  const { t } = useTranslation();
   const adxStakingPendingRewards = adxStakingAccount.resolvedStakingRounds.reduce((acc, round) => {
     if (!round.rate) return acc;
 
@@ -38,10 +40,10 @@ export default function StakingRewardsWaitingToBeClaimed({
     <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
         <p className={titleClassName}>
-          ADX Staking Rewards (available, pending claims)
+          {t('monitoring.adxStakingRewardsPendingClaims')}
         </p>
         <p className="text-xs opacity-50">
-          Rewards from past rounds (resolved), waiting to be claimed.
+          {t('monitoring.adxStakingRewardsPendingClaimsDesc')}
         </p>
       </div>
 

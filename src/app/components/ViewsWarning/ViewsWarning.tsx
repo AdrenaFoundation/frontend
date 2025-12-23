@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useWalletSidebar } from '@/contexts/WalletSidebarContext';
@@ -13,6 +14,7 @@ import infoIcon from '../../../../public/images/Icons/info.svg';
 export default function ViewsWarning() {
   const router = useRouter();
   const { messages } = useMaintenanceMessages();
+  const { t } = useTranslation()
 
   const [closedIds, setClosedIds] = useState<number[]>(() => {
     if (typeof window === 'undefined') return [];
@@ -99,9 +101,9 @@ export default function ViewsWarning() {
       ))}
 
       {!(solBalance > 0.001) &&
-      !solWarningClosed &&
-      walletTokenBalances &&
-      connected ? (
+        !solWarningClosed &&
+        walletTokenBalances &&
+        connected ? (
         <div
           className="flex flex-row items-center justify-center gap-3 p-1 bg-amber-700 w-full z-20 border-b border-b-white/20 cursor-pointer hover:bg-amber-600 transition-colors"
           onClick={openSidebar}
@@ -115,9 +117,9 @@ export default function ViewsWarning() {
               className="w-3.5 h-3.5"
             />
             <span className="text-sm font-semibold text-center">
-              You need at least{' '}
+              {t('common.viewWarningPara1')}{' '}
               <FormatNumber nb={0.001} precision={3} isDecimalDimmed={false} />{' '}
-              SOL to interact with the app, click to open the wallet UI
+              {t('common.viewWarningPara2')}
             </span>
           </div>
           <Image

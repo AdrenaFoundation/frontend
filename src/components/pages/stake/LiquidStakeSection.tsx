@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -20,11 +21,12 @@ export default function LiquidStakeSection({
   onStake,
   liquidStakeLockDuration,
 }: LiquidStakeSectionProps) {
+  const { t } = useTranslation();
   return (
     <div className="pb-8">
       <div className="h-[1px] bg-bcolor w-full my-5" />
       <div className="px-5">
-        <h3 className="text-lg font-semibold mb-2">Liquid stake</h3>
+        <h3 className="text-lg font-semibold mb-2">{t('stake.liquidStake')}</h3>
         <div className="flex flex-col sm:flex-row justify-between items-center border p-3 bg-secondary rounded-md mt-3 shadow-lg">
           <div className="flex items-center">
             <Image
@@ -41,11 +43,11 @@ export default function LiquidStakeSection({
             <Button
               variant="primary"
               size="sm"
-              title="Unstake"
+              title={t('stake.unstake')}
               className={twMerge(
                 'px-5',
                 (!totalLiquidStaked || totalLiquidStaked <= 0) &&
-                  'opacity-50 cursor-not-allowed',
+                'opacity-50 cursor-not-allowed',
               )}
               onClick={onRedeem}
               disabled={!totalLiquidStaked || totalLiquidStaked <= 0}
@@ -56,8 +58,8 @@ export default function LiquidStakeSection({
               size="sm"
               title={
                 totalLiquidStaked && totalLiquidStaked > 0
-                  ? 'Add Stake'
-                  : 'Stake'
+                  ? t('stake.addStake')
+                  : t('stake.stake')
               }
               className="px-5"
               onClick={() => onStake(liquidStakeLockDuration)}

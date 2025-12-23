@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import InputString from '@/components/common/inputString/InputString';
@@ -24,6 +25,7 @@ export default function SearchUserProfiles({
   isOpen,
   onClose,
 }: SearchUserProfilesProps) {
+  const { t } = useTranslation();
   const { allUserProfilesMetadata } = useAllUserProfilesMetadata();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProfile, setSelectedProfile] =
@@ -66,7 +68,7 @@ export default function SearchUserProfiles({
       <AnimatePresence>
         {isOpen && !selectedProfile && (
           <Modal
-            title="Search User Profiles"
+            title={t('footer.searchUserProfiles')}
             close={closeSearchModal}
             className="w-[25rem] h-[40vh] flex flex-col"
           >
@@ -81,7 +83,7 @@ export default function SearchUserProfiles({
                 <div className="relative">
                   <InputString
                     className="w-full pl-8 pr-4 py-2 bg-inputcolor border border-white/20 rounded-md !text-sm font-mono"
-                    placeholder="Search by username or wallet address..."
+                    placeholder={t('footer.searchByUsernameOrWallet')}
                     value={searchQuery}
                     onChange={(value) => setSearchQuery(value || '')}
                   />
@@ -106,10 +108,10 @@ export default function SearchUserProfiles({
                   >
                     <div className="text-6xl mb-2">🔍</div>
                     <h3 className="text-lg font-semibold mb-2">
-                      Search for Traders
+                      {t('footer.searchForTraders')}
                     </h3>
                     <p className="text-sm opacity-70">
-                      Enter a username or wallet address to find user profiles
+                      {t('footer.enterUsernameOrWallet')}
                     </p>
                   </motion.div>
                 )}
@@ -124,10 +126,10 @@ export default function SearchUserProfiles({
                   >
                     <div className="text-6xl mb-2">😔</div>
                     <h3 className="text-lg font-semibold mb-2">
-                      No Results Found
+                      {t('footer.noResultsFound')}
                     </h3>
                     <p className="text-sm opacity-70">
-                      Try searching with a different username or wallet address
+                      {t('footer.tryDifferentSearch')}
                     </p>
                   </motion.div>
                 )}
@@ -210,8 +212,8 @@ export default function SearchUserProfiles({
                       className="text-center text-xs opacity-50 mt-4 pt-4 border-t border-bcolor"
                     >
                       {filteredUsers.length === 50
-                        ? 'Showing first 50 results. Refine your search for better results.'
-                        : `Found ${filteredUsers.length} result${filteredUsers.length === 1 ? '' : 's'}`}
+                        ? t('footer.showingFirst50Results')
+                        : t('footer.foundResults', { count: filteredUsers.length })}
                     </motion.div>
                   </motion.div>
                 )}

@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import addFriendIcon from '@/../public/images/Icons/add-friend.svg';
@@ -46,7 +47,28 @@ function ChatSidebar({
   isChatroomsOpen: boolean;
   setIsChatroomsOpen: (isOpen: boolean) => void;
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
+
+  // Function to translate room names
+  const translateRoomName = useCallback((roomName: string) => {
+    switch (roomName) {
+      case 'General':
+      case 'general':
+        return t('footer.general');
+      case 'Team Jito':
+      case 'team jito':
+        return t('footer.teamJito');
+      case 'Team Bonk':
+      case 'team bonk':
+        return t('footer.teamBonk');
+      case 'Announcements':
+      case 'announcements':
+        return t('footer.announcements');
+      default:
+        return roomName;
+    }
+  }, [t]);
 
   const { verifiedWalletAddresses } = useSelector((s) => s.supabaseAuth);
 
@@ -114,7 +136,7 @@ function ChatSidebar({
         )}
       >
         <ul className="flex flex-col gap-1">
-          <li className="text-xs font-mono opacity-30">Community</li>
+          <li className="text-xs font-mono opacity-30">{t('footer.community')}</li>
           {communityRooms.map((room) => {
             return (
               <RoomButton
@@ -127,13 +149,14 @@ function ChatSidebar({
                 walletAddress={walletAddress}
                 setIsChatroomsOpen={setIsChatroomsOpen}
                 isMobile={isMobile}
+                translateRoomName={translateRoomName}
               />
             );
           })}
 
           {privateRooms.length > 0 && (
             <>
-              <li className="text-xs font-mono opacity-30">Friends</li>
+              <li className="text-xs font-mono opacity-30">{t('footer.friends')}</li>
               {privateRooms.map((room) => {
                 return (
                   <RoomButton
@@ -151,6 +174,7 @@ function ChatSidebar({
                     openVerificationModal={() =>
                       dispatch(setIsAuthModalOpen(true))
                     }
+                    translateRoomName={translateRoomName}
                   />
                 );
               })}
@@ -189,7 +213,7 @@ function ChatSidebar({
                 pendingRequests.length > 0 && 'font-bold opacity-100',
               )}
             >
-              Friend Requests
+              {t('chat.friendRequests')}
             </p>
           </li>
         </div>
@@ -210,6 +234,7 @@ function RoomButton({
   isMobile,
   isVerified,
   openVerificationModal,
+  translateRoomName,
 }: {
   room: Chatroom;
   currentChatroomId: number;
@@ -228,6 +253,7 @@ function RoomButton({
   isMobile: boolean;
   isVerified?: boolean;
   openVerificationModal?: () => void;
+  translateRoomName: (name: string) => string;
 }) {
   const friendWalletAddress =
     room.participants?.filter((w) => w !== walletAddress)[0] || '';
@@ -296,7 +322,7 @@ function RoomButton({
           {room.type === 'community' ? (
             <span className="opacity-50"># </span>
           ) : null}
-          {room.type === 'community' ? `${room.name}` : friendName}
+          {room.type === 'community' ? translateRoomName(room.name || '') : friendName}
         </p>
       </div>
     </li>

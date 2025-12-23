@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import LineRechart from '@/components/ReCharts/LineRecharts';
 
@@ -52,6 +53,7 @@ const genesisEmissionPerDay = genesisAdxRewards / ((genesisEndDate.getTime() - g
 export const fullyLiquidALPStaking = new Date(1742385600000);
 
 export function EmissionsChart({ isSmallScreen }: EmissionsChartProps) {
+  const { t } = useTranslation();
   const emissions: Emissions = useMemo(() => {
     // Generate all timestamps
     const emissions = Array.from({ length: 770 }).reduce((acc: Emissions, _, i) => {
@@ -148,20 +150,20 @@ export function EmissionsChart({ isSmallScreen }: EmissionsChartProps) {
         foundationVesting,
       }) => ({
         time,
-        'ALP LM': alpLiquidityMining,
-        'ADX LM': adxLiquidityMining,
-        'ALP Genesis LM': genesisLiquidityMining,
-        'Investor Vesting': investorVesting,
-        'Launch Team Vesting': launchTeamVesting,
-        'Foundation Vesting': foundationVesting,
+        [t('monitoring.alpLm')]: alpLiquidityMining,
+        [t('monitoring.adxLm')]: adxLiquidityMining,
+        [t('monitoring.alpGenesisLm')]: genesisLiquidityMining,
+        [t('monitoring.investorVesting')]: investorVesting,
+        [t('monitoring.launchTeamVesting')]: launchTeamVesting,
+        [t('monitoring.foundationVesting')]: foundationVesting,
       }))}
       labels={[
-        { name: 'ALP LM', color: '#256281' },
-        { name: 'ADX LM', color: '#a82e2e' },
-        { name: 'ALP Genesis LM', color: '#7ed7c1' },
-        { name: 'Investor Vesting', color: '#9e8cae' },
-        { name: 'Launch Team Vesting', color: '#d4c7df' },
-        { name: 'Foundation Vesting', color: '#eb6672' },
+        { name: t('monitoring.alpLm'), color: '#256281' },
+        { name: t('monitoring.adxLm'), color: '#a82e2e' },
+        { name: t('monitoring.alpGenesisLm'), color: '#7ed7c1' },
+        { name: t('monitoring.investorVesting'), color: '#9e8cae' },
+        { name: t('monitoring.launchTeamVesting'), color: '#d4c7df' },
+        { name: t('monitoring.foundationVesting'), color: '#eb6672' },
       ]}
       scale="sqrt"
       periods={[]}

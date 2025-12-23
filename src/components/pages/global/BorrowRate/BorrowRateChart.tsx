@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
@@ -9,6 +10,7 @@ import { CustodyInfoResponse } from '@/types';
 import { formatSnapshotTimestamp, getGMT, periodModeToSeconds } from '@/utils';
 
 export default function BorrowRateChart() {
+  const { t } = useTranslation();
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
@@ -175,7 +177,7 @@ export default function BorrowRateChart() {
 
   return (
     <LineRechart
-      title="Borrow Rate"
+      title={t('monitoring.borrowRate')}
       extraHeaderContent={
         <div className="text-xs flex gap-2 ml-auto mt-1">
           <div

@@ -1,5 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
@@ -18,6 +19,7 @@ export default function MigrateUserProfileV1Tov2Modal({
     walletPubkey?: PublicKey;
     triggerUserProfileReload: () => void;
 }) {
+    const { t } = useTranslation();
     const [alreadyTakenNicknames, setAlreadyTakenNicknames] = useState<Record<string, boolean>>({});
     const [updatedNickname, setUpdatedNickname] = useState<string | null>(userProfile.nickname);
     const [trimmedUpdatedNickname, setTrimmedUpdatedNickname] = useState<string>(updatedNickname ?? '');
@@ -28,7 +30,7 @@ export default function MigrateUserProfileV1Tov2Modal({
 
     const migrateProfile = useCallback(async () => {
         const notification =
-            MultiStepNotification.newForRegularTransaction('Edit Nickname').fire();
+            MultiStepNotification.newForRegularTransaction(t('profile.editNickname')).fire();
 
         if (trimmedUpdatedNickname.length < 3 || trimmedUpdatedNickname.length > 24) {
             return notification.currentStepErrored(
@@ -64,7 +66,7 @@ export default function MigrateUserProfileV1Tov2Modal({
         } catch (error) {
             console.error('error', error);
         }
-    }, [close, triggerUserProfileReload, trimmedUpdatedNickname, userProfile, walletPubkey]);
+    }, [close, triggerUserProfileReload, trimmedUpdatedNickname, userProfile, walletPubkey, t]);
 
     useEffect(() => {
         if (trimmedUpdatedNickname.length < 3 || trimmedUpdatedNickname.length > 24 || !window.adrena.client.readonlyConnection) {

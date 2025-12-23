@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Button from '@/components/common/Button/Button';
 import SelectOptions from '@/components/common/SelectOptions/SelectOptions';
@@ -30,6 +31,7 @@ export default function ADXStakeToken({
   stakeAmount: () => void;
   errorMessage: string;
 }) {
+  const { t } = useTranslation();
   const lockPeriods = ADX_LOCK_PERIODS.map((lockPeriod) => ({
     title: lockPeriod,
     activeColor: 'border-white',
@@ -40,7 +42,7 @@ export default function ADXStakeToken({
       <div className="flex flex-col gap-5 justify-between w-full px-5">
         <div className="mt-4">
           <div className="flex flex-row items-center justify-between mb-1">
-            <h5 className="font-semibold"> Amount</h5>
+            <h5 className="font-semibold">{t('stake.amount')}</h5>
 
             <div
               className="text-sm flex items-center justify-end h-6 cursor-pointer"
@@ -91,7 +93,7 @@ export default function ADXStakeToken({
               height={18}
               alt="lock icon"
             />
-            <h5 className="text-sm font-semibold">Lock duration (days)</h5>
+            <h5 className="text-sm font-semibold">{t('stake.lockDurationDays')}</h5>
           </div>
 
           <SelectOptions
@@ -106,15 +108,15 @@ export default function ADXStakeToken({
 
       <div className="flex flex-col gap-5 justify-between w-full p-5 ">
         <ul className="flex flex-col gap-2">
-          <li className="text-sm opacity-25">Benefits</li>
+          <li className="text-sm opacity-25">{t('stake.benefits')}</li>
           <li className="flex flex-row justify-between">
-            <p className="text-sm opacity-50"> Days </p>
+            <p className="text-sm opacity-50">{t('stake.days')}</p>
             <p className="text-sm font-mono"> {lockPeriod}</p>
           </li>
 
           {ADX_STAKE_MULTIPLIERS[lockPeriod].usdc ? (
             <li className="flex flex-row justify-between">
-              <p className="text-sm opacity-50">USDC yield</p>
+              <p className="text-sm opacity-50">{t('stake.usdcYield')}</p>
               <p className="text-sm font-mono">
                 {ADX_STAKE_MULTIPLIERS[lockPeriod].usdc}x
               </p>
@@ -123,7 +125,7 @@ export default function ADXStakeToken({
 
           {ADX_STAKE_MULTIPLIERS[lockPeriod].adx ? (
             <li className="flex flex-row justify-between">
-              <p className="text-sm opacity-50">ADX token yield </p>
+              <p className="text-sm opacity-50">{t('stake.adxTokenYield')}</p>
               <p className="text-sm font-mono">
                 {ADX_STAKE_MULTIPLIERS[lockPeriod].adx}x
               </p>
@@ -133,7 +135,7 @@ export default function ADXStakeToken({
           {ADX_STAKE_MULTIPLIERS[lockPeriod].votes ? (
             <li className="flex flex-row justify-between">
               <p className="text-sm opacity-50">
-                Base voting power multiplier{' '}
+                {t('stake.baseVotingPowerMultiplier')}{' '}
               </p>
               <p className="text-sm font-mono">
                 {ADX_STAKE_MULTIPLIERS[lockPeriod].votes}x
@@ -145,7 +147,7 @@ export default function ADXStakeToken({
         <Button
           className="w-full"
           size="lg"
-          title={errorMessage ? errorMessage : '[S]take'}
+          title={errorMessage ? errorMessage : t('stake.stakeADX')}
           disabled={!!errorMessage || !amount}
           onClick={stakeAmount}
         />

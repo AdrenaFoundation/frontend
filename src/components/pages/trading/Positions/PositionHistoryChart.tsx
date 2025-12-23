@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Area,
   AreaChart,
@@ -165,14 +166,14 @@ export default function PositionHistoryChart({
       return {
         time: isLessThan24Hours
           ? time.toLocaleTimeString('en-US', {
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: false,
-            })
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          })
           : time.toLocaleDateString('en-US', {
-              month: 'short',
-              day: '2-digit',
-            }),
+            month: 'short',
+            day: '2-digit',
+          }),
         timestamp,
         price: null,
         priceBeforeEntryPrice: price,
@@ -229,7 +230,7 @@ export default function PositionHistoryChart({
           (isHighPriority && !currentIsHighPriority) ||
           (isHighPriority === currentIsHighPriority &&
             closestDistance <
-              Math.abs(data[closestIndex].timestamp - eventData.timestamp))
+            Math.abs(data[closestIndex].timestamp - eventData.timestamp))
         ) {
           data[closestIndex].eventType = eventData.eventType;
           data[closestIndex].eventColor = eventData.eventColor;
@@ -268,9 +269,9 @@ export default function PositionHistoryChart({
               const pnl =
                 positionHistory.side === 'long'
                   ? (positionHistory.exitPrice - positionHistory.entryPrice) *
-                    (positionHistory.entrySize || 1)
+                  (positionHistory.entrySize || 1)
                   : (positionHistory.entryPrice - positionHistory.exitPrice) *
-                    (positionHistory.entrySize || 1);
+                  (positionHistory.entrySize || 1);
               data[closestIndex].pnl = pnl;
             }
           }
@@ -387,13 +388,13 @@ export default function PositionHistoryChart({
   const breakEvenPrice =
     positionHistory.side === 'long'
       ? positionHistory.entryPrice *
-        (1 +
-          (positionHistory.exitFees + positionHistory.borrowFees) /
-            positionHistory.volume)
+      (1 +
+        (positionHistory.exitFees + positionHistory.borrowFees) /
+        positionHistory.volume)
       : positionHistory.entryPrice *
-        (1 -
-          (positionHistory.exitFees + positionHistory.borrowFees) /
-            positionHistory.volume);
+      (1 -
+        (positionHistory.exitFees + positionHistory.borrowFees) /
+        positionHistory.volume);
 
   // Find open, close, and liquidated points for the connection line
   const openPointIndex = chartData.findIndex((point) => point.isOpen);
@@ -655,6 +656,7 @@ const TokenDetails = ({
 }: {
   positionHistory: EnrichedPositionApi;
 }) => {
+  const { t } = useTranslation()
   return (
     <div className="flex flex-row items-center justify-between">
       <div className="flex flex-row gap-2 items-center">
@@ -705,12 +707,12 @@ const TokenDetails = ({
               : 'bg-red/10 text-redbright border-red',
           )}
         >
-          {positionHistory.status === 'liquidate' ? 'Liquidated' : 'Closed'}
+          {positionHistory.status === 'liquidate' ? t('trade.tradeHistory.liquidated') : t('trade.tradeHistory.closed')}
         </div>
       </div>
 
       <p className="hidden md:flex opacity-50 font-medium text-sm">
-        Position Analysis
+        {t('trade.tradeHistory.positionAnalysis')}
       </p>
     </div>
   );

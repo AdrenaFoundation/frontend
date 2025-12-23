@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Loader from '@/components/Loader/Loader';
 import StakedBarRecharts from '@/components/ReCharts/StakedBarRecharts';
@@ -7,6 +8,7 @@ import { RechartsData } from '@/types';
 import { getGMT } from '@/utils';
 
 export default function LpIntegrationChart() {
+  const { t } = useTranslation();
   const [data, setData] = useState<RechartsData[] | null>(null);
   const [lpIntegrationInfo, setLpIntegrationInfo] = useState<Record<string, number>[] | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
@@ -162,27 +164,27 @@ export default function LpIntegrationChart() {
 
   return (
     <StakedBarRecharts
-      title="ALP Integration"
+      title={t('monitoring.alpIntegration')}
       data={data}
       labels={[
         {
-          name: 'Carrot',
+          name: t('monitoring.carrot'),
           color: '#eb7928',
         },
         {
-          name: 'Kamino',
+          name: t('monitoring.kamino'),
           color: '#96b6e8',
         },
         {
-          name: 'Loopscale',
+          name: t('monitoring.loopscale'),
           color: '#256ed6',
         },
         {
-          name: 'Exponent Finance',
+          name: t('monitoring.exponentFinance'),
           color: '#f5f5f5',
         },
         {
-          name: 'Liquid',
+          name: t('monitoring.liquid'),
           color: '#5e5d5d',
         },
       ]}

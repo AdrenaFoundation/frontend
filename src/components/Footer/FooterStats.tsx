@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCookies } from 'react-cookie';
+import { useTranslation } from 'react-i18next';
 import { Line, LineChart, YAxis } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
@@ -33,6 +34,7 @@ export default function FooterStats({
 }: {
   mainPool: PageProps['mainPool'];
 }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const aumUsd = useAssetsUnderManagement();
   const [cookies, setCookies] = useCookies(['footer-activeToken']);
@@ -244,20 +246,20 @@ export default function FooterStats({
 
   const stats = [
     {
-      label: `${activeToken} Price`,
+      label: `${activeToken} ${t('footer.tokenPrice')}`,
       value: tokenPrices[activeToken],
     },
     {
-      label: `${activeToken} Liquidity`,
+      label: `${activeToken} ${t('footer.tokenLiquidity')}`,
       value:
         custodyLiquidity && tokenPrice ? custodyLiquidity * tokenPrice : null,
     },
     {
-      label: 'OI',
+      label: t('footer.oi'),
       value: (mainPool?.oiLongUsd ?? 0) + (mainPool?.oiShortUsd ?? 0),
     },
-    { label: 'AUM', value: aumUsd },
-    { label: 'VOL', value: volumeData[volumeData.length - 1]?.value || 0 },
+    { label: t('footer.aum'), value: aumUsd },
+    { label: t('footer.vol'), value: volumeData[volumeData.length - 1]?.value || 0 },
   ];
 
   const tokenImg = {
@@ -296,7 +298,7 @@ export default function FooterStats({
               transition={{ duration: 0.3 }}
               className="text-sm font-regular"
             >
-              Open monitoring page
+              {t('footer.openMonitoringPage')}
             </motion.p>
             <motion.span
               initial={{ opacity: 0, x: '1rem', filter: 'blur(2px)' }}
@@ -366,7 +368,7 @@ export default function FooterStats({
                   trigger={
                     <div className="flex flex-row items-center gap-1 mb-1 opacity-50 hover:opacity-100 transition-opacity duration-300">
                       <p className="text-xs font-regular">
-                        24h {activeToken} Price
+                        24h {activeToken} {t('footer.tokenPrice')}
                       </p>
 
                       <Image
@@ -526,7 +528,7 @@ export default function FooterStats({
                 <div>
                   <p className="text-xs opacity-50">
                     {' '}
-                    24h Volume
+                    {t('footer.24hVolume')}
                   </p>
                   <FormatNumber
                     nb={stats[4].value as number}
@@ -553,7 +555,7 @@ export default function FooterStats({
                 }}
               >
                 <div>
-                  <p className="text-xs opacity-50">AUM</p>
+                  <p className="text-xs opacity-50">{t('footer.aum')}</p>
                   <FormatNumber
                     nb={aumUsd}
                     className="text-base"
@@ -580,7 +582,7 @@ export default function FooterStats({
               >
                 <div>
                   <p className="text-xs opacity-50">
-                    Open Interest
+                    {t('footer.openInterest')}
                   </p>
                   <FormatNumber
                     nb={

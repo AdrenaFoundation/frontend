@@ -1,6 +1,7 @@
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -42,7 +43,7 @@ interface PositionBlockProps {
   userProfileMetadata?: UserProfileMetadata;
   setTokenB?: (token: Token) => void;
   userProfile?: UserProfileExtended | false | null;
-  }
+}
 
 export function PositionBlock({
   bodyClassName,
@@ -55,6 +56,7 @@ export function PositionBlock({
   setTokenB,
   userProfile,
 }: PositionBlockProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const blockRef = useRef<HTMLDivElement>(null);
@@ -155,7 +157,7 @@ export function PositionBlock({
   const ownerInfo = (
     <div className="flex flex-col items-center">
       <div className="flex w-full font-mono text-xs text-txtfade justify-center items-center">
-        Owner
+        {t('monitoring.owner')}
       </div>
 
       {position.userProfile && position.userProfile.nickname.length > 0 ? (
@@ -191,7 +193,7 @@ export function PositionBlock({
   const borrowResolve = () => {
     try {
       const notification = MultiStepNotification.newForRegularTransaction(
-        'Position Borrow Resolve',
+        t('monitoring.positionBorrowResolve'),
       ).fire();
 
       window.adrena.client.positionBorrowResolve({
@@ -253,7 +255,7 @@ export function PositionBlock({
             )}
           >
             <ValueColumn
-              label="Time Open"
+              label={t('monitoring.timeOpen')}
               value={formatTimeDifference(
                 getFullTimeDifference(position.openDate, new Date(Date.now())),
               )}
@@ -262,7 +264,7 @@ export function PositionBlock({
             />
 
             <ValueColumn
-              label="Cur. Lev"
+              label={t('monitoring.curLev')}
               value={
                 <FormatNumber
                   nb={position.currentLeverage}
@@ -280,7 +282,7 @@ export function PositionBlock({
             />
 
             <ValueColumn
-              label="Size"
+              label={t('monitoring.size')}
               value={
                 <FormatNumber
                   nb={position.sizeUsd}
@@ -306,13 +308,13 @@ export function PositionBlock({
             />
 
             <ValueColumn
-              label="Collateral"
+              label={t('monitoring.collateral')}
               value={
                 <div
                   className={twMerge(
                     'flex rounded w-fit',
                     !readOnly &&
-                      'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
+                    'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
                   )}
                   onClick={
                     !readOnly
@@ -338,14 +340,14 @@ export function PositionBlock({
                   }
                   suffix={`${getTokenSymbol(
                     position.collateralToken.symbol,
-                  )} (at init.)`}
+                  )} (${t('monitoring.atInit')})`}
                 />
               }
               columnClasses={columnClasses}
             />
 
             <ValueColumn
-              label="Entry"
+              label={t('monitoring.entry')}
               value={
                 <FormatNumber
                   nb={position.price}
@@ -361,7 +363,7 @@ export function PositionBlock({
             />
 
             <ValueColumn
-              label="Market"
+              label={t('monitoring.market')}
               value={
                 <FormatNumber
                   nb={tradeTokenPrice}
@@ -377,13 +379,13 @@ export function PositionBlock({
             />
 
             <ValueColumn
-              label="Liquidation"
+              label={t('monitoring.liquidation')}
               value={
                 <div
                   className={twMerge(
                     'flex rounded w-fit',
                     !readOnly &&
-                      'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
+                    'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
                   )}
                   onClick={
                     !readOnly
@@ -407,7 +409,7 @@ export function PositionBlock({
             />
 
             <ValueColumn
-              label="Break Even"
+              label={t('monitoring.breakEven')}
               value={
                 <FormatNumber
                   nb={position.breakEvenPrice}
@@ -423,13 +425,13 @@ export function PositionBlock({
             />
 
             <ValueColumn
-              label="Take Profit"
+              label={t('monitoring.takeProfit')}
               value={
                 <div
                   className={twMerge(
                     'flex rounded w-fit',
                     !readOnly &&
-                      'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
+                    'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
                   )}
                   onClick={
                     !readOnly
@@ -438,8 +440,8 @@ export function PositionBlock({
                   }
                 >
                   {position.takeProfitIsSet &&
-                  position.takeProfitLimitPrice &&
-                  position.takeProfitLimitPrice > 0 ? (
+                    position.takeProfitLimitPrice &&
+                    position.takeProfitLimitPrice > 0 ? (
                     <>
                       <FormatNumber
                         nb={position.takeProfitLimitPrice}
@@ -471,13 +473,13 @@ export function PositionBlock({
             />
 
             <ValueColumn
-              label="Stop Loss"
+              label={t('monitoring.stopLoss')}
               value={
                 <div
                   className={twMerge(
                     'flex rounded w-fit',
                     !readOnly &&
-                      'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
+                    'cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100',
                   )}
                   onClick={
                     !readOnly
@@ -486,8 +488,8 @@ export function PositionBlock({
                   }
                 >
                   {position.stopLossIsSet &&
-                  position.stopLossLimitPrice &&
-                  position.stopLossLimitPrice > 0 ? (
+                    position.stopLossLimitPrice &&
+                    position.stopLossLimitPrice > 0 ? (
                     <>
                       <FormatNumber
                         nb={position.stopLossLimitPrice}
@@ -521,7 +523,7 @@ export function PositionBlock({
             {readOnly ? (
               positionBorrowFeesShouldBeResolved ? (
                 <Tippy
-                  content={`Settle the position’s $${((position.borrowFeeUsd ?? 0) - position.paidInterestUsd).toFixed(2)} in borrow fees now. Fees are distributed to LPs, stakers, the DAO, and referrals.`}
+                  content={t('monitoring.settleBorrowFees', { amount: `$${((position.borrowFeeUsd ?? 0) - position.paidInterestUsd).toFixed(2)}` })}
                 >
                   <div>
                     <Button
@@ -530,7 +532,7 @@ export function PositionBlock({
                         POSITION_BLOCK_STYLES.button.base,
                         'min-w-[14em] mt-1',
                       )}
-                      title="Resolve Borrow Fees"
+                      title={t('monitoring.resolveBorrowFees')}
                       rounded={false}
                       onClick={() => borrowResolve()}
                     />
@@ -560,7 +562,7 @@ export function PositionBlock({
         <AnimatePresence>
           {isOpen && (
             <Modal
-              title="Share PnL"
+              title={t('monitoring.sharePnl')}
               close={() => setIsOpen(false)}
               className="overflow-y-auto"
               wrapperClassName="h-[80vh] sm:h-auto"

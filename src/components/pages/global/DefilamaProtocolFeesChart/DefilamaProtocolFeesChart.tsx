@@ -1,6 +1,7 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import defillamaImg from '@/../public/images/defillama.png';
 import StakedBarRecharts from '@/components/ReCharts/StakedBarRecharts';
@@ -19,17 +20,11 @@ const protocolsToWatch = [
   'Jupiter Perpetual Exchange',
 ];
 
-const labels = [
-  { name: 'Adrena Protocol', color: '#EE183A' },
-  { name: 'GMX V2 Perps', color: '#00b4d8' },
-  { name: 'FlashTrade', color: '#cec161' },
-  { name: 'Drift Trade', color: '#2775ca' },
-  { name: 'Jupiter Perpetual Exchange', color: '#27385b' },
-];
 
 const ADRENA_LAUNCH_DATE = Date.UTC(2024, 8, 25) / 1000; // 25 Sep 2024 (month is 0-based)
 
 export default function DefilamaProtocolFeesChart({ }: FeesChartProps) {
+  const { t } = useTranslation();
   const [period, setPeriod] = useState<string | null>('3M');
 
   const defilamaFeesData = useDefilamaFeesData();
@@ -95,19 +90,27 @@ export default function DefilamaProtocolFeesChart({ }: FeesChartProps) {
 
   if (!chartData) return null;
 
+  const labels = [
+    { name: t('monitoring.adrenaProtocol'), color: '#EE183A' },
+    { name: t('monitoring.gmxV2Perps'), color: '#00b4d8' },
+    { name: t('monitoring.flashTrade'), color: '#cec161' },
+    { name: t('monitoring.driftTrade'), color: '#2775ca' },
+    { name: t('monitoring.jupiterPerpetualExchange'), color: '#27385b' },
+  ];
+
   return (
     <StakedBarRecharts
       title={<div className='flex flex-col'>
-        <Tippy content="Powered by DefiLlama API" placement="auto">
+        <Tippy content={t('monitoring.poweredByDefilamaApi')} placement="auto">
           <div className='flex gap-2 items-center'>
             <Image src={defillamaImg} alt="DefiLlama" className='h-6 w-6' width={24} height={24} />
 
-            <h2>SOLANA PERPS FEES</h2>
+            <h2>{t('monitoring.solanaPerps Fees')}</h2>
           </div>
         </Tippy>
 
         <div className='text-xxs lowercase opacity-30 cursor-pointer hover:opacity-60'>
-          Source: <a href="https://defillama.com/fees/chain/solana?category=Derivatives" target='_blank'>
+          {t('monitoring.source')}: <a href="https://defillama.com/fees/chain/solana?category=Derivatives" target='_blank'>
             https://defillama.com/fees/chain/solana?category=Derivatives
           </a>
         </div>

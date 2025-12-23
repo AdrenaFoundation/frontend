@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { PROFILE_PICTURES } from '@/constant';
 import { UseFriendReqReturn } from '@/hooks/useFriendReq';
@@ -33,6 +34,7 @@ export default function FriendRequestView({
     }
   >;
 }) {
+  const { t } = useTranslation();
   const pendingRequests = friendRequests.filter(
     (req) => req.status === 'pending' && req.receiver_pubkey === walletAddress,
   );
@@ -126,7 +128,7 @@ export default function FriendRequestView({
         ) : (
           <div className="flex items-center justify-center h-full">
             <p className="opacity-50 text-sm">
-              No incoming friend requests found
+              {t('chat.noIncomingFriendRequests')}
             </p>
           </div>
         )}

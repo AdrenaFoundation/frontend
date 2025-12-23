@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { Staking } from '@/types';
 import { nativeToUi } from '@/utils';
@@ -11,20 +13,21 @@ export default function StakingLockedTokens({
   adxStakingAccount: Staking;
   titleClassName?: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
         <p className={titleClassName}>
-          Locked Stakes Amounts
+          {t('monitoring.lockedStakesAmounts')}
         </p>
         <p className="text-xs opacity-50">
-          Tokens locked in the staking program.
+          {t('monitoring.tokensLockedInStakingProgram')}
         </p>
       </div>
 
       <div className="flex flex-col sm:flex-row">
         <NumberDisplay
-          title="Locked ALP"
+          title={t('monitoring.lockedAlp')}
           nb={nativeToUi(
             alpStakingAccount.nbLockedTokens,
             alpStakingAccount.stakedTokenDecimals,
@@ -34,7 +37,7 @@ export default function StakingLockedTokens({
         />
 
         <NumberDisplay
-          title="Locked ADX"
+          title={t('monitoring.lockedAdx')}
           nb={nativeToUi(
             adxStakingAccount.nbLockedTokens,
             adxStakingAccount.stakedTokenDecimals,

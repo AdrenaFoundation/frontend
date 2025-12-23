@@ -2,6 +2,7 @@ import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import closeBtnIcon from '@/../public/images/Icons/cross.svg';
@@ -29,6 +30,7 @@ export function PickTokenModal({
     pick: (t: Token) => void;
     isDisplayAllTokens?: boolean;
 }) {
+    const { t } = useTranslation();
     const walletTokenBalances = useSelector((state) => state.walletTokenBalances);
     const [tokenSearch, setTokenSearch] = useState<string | null>(null);
     const [displayAllTokens, setDisplayAllTokens] = useState<boolean>(isDisplayAllTokens);
@@ -65,7 +67,7 @@ export function PickTokenModal({
                         className="text-lg relative p-2 rounded-md text-left w-full bg-transparent"
                         value={tokenSearch ?? ''}
                         onChange={setTokenSearch}
-                        placeholder="Token Symbol"
+                        placeholder={t('trade.pickTokenModal.tokenSymbol')}
                         inputFontSize="0.8em"
                         maxLength={24}
                     />
@@ -82,8 +84,8 @@ export function PickTokenModal({
 
                 {recommendedToken ?
                     <div className='flex gap-4 items-center mb-1 w-full'>
-                        <Tippy content={"Using the right asset avoid unnecessary swap."}>
-                            <div className='text-sm text-txtfade ml-1'>Recommended</div>
+                        <Tippy content={t('trade.pickTokenModal.usingRightAssetAvoidSwap')}>
+                            <div className='text-sm text-txtfade ml-1'>{t('trade.pickTokenModal.recommended')}</div>
                         </Tippy>
 
                         <div className='flex items-center cursor-pointer gap-2 rounded-md pr-2 pt-1 pb-1' onClick={() => pick(recommendedToken)}>
@@ -104,7 +106,7 @@ export function PickTokenModal({
 
                 {!isDisplayAllTokens ? <div className='w-full flex gap-2'>
                     <Button
-                        title="Your tokens"
+                        title={t('trade.pickTokenModal.yourTokens')}
                         className={twMerge("text-xs rounded-md", !displayAllTokens ? 'border-white/30 text-white/80 border-2' : 'border-transparent text-white/40 border bg-third')}
                         onClick={() => {
                             setDisplayAllTokens(false);
@@ -113,7 +115,7 @@ export function PickTokenModal({
                     />
 
                     <Button
-                        title="All tokens"
+                        title={t('trade.pickTokenModal.allTokens')}
                         className={twMerge("text-xs rounded-md", displayAllTokens ? 'border-white/30 border-2' : 'border-transparent text-white/40 border bg-third')}
                         onClick={() => {
                             setDisplayAllTokens(true);
@@ -172,7 +174,7 @@ export function PickTokenModal({
                                 />
                             </div>
                         </div> : null}
-                    </div>)) : <div className='text-base mt-8 text-white/60'>No tokens found</div>}
+                    </div>)) : <div className='text-base mt-8 text-white/60'>{t('trade.pickTokenModal.noTokensFound')}</div>}
                 </div>
             </Modal>
         )}

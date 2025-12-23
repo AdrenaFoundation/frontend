@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '@/../public/images/adx.svg';
@@ -23,6 +24,7 @@ export default function WalletSelectionModal({
 }: {
   adapters: WalletAdapterExtended[];
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { modalIsOpen } = useSelector((s) => s.walletState);
 
@@ -35,7 +37,7 @@ export default function WalletSelectionModal({
         <Modal
           close={() => dispatch(openCloseConnectionModalAction(false))}
           className="flex flex-col w-full sm:w-[90vw] md:w-[28em] max-w-[30em] items-center relative overflow-visible"
-          title="Connect now"
+          title={t('common.connectNow')}
         >
           <div className={twMerge("flex flex-col grow items-start gap-6 pb-4 pt-4 w-full")}>
             {privyAdapter && (
@@ -53,13 +55,13 @@ export default function WalletSelectionModal({
                   >
                     <div className='flex flex-col gap-1'>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-sm sm:text-base text-white font-bold">Smart Account</span>
+                        <span className="text-sm sm:text-base text-white font-bold">{t('common.smartAccount')}</span>
                         <Tippy
                           placement='top'
                           content={
                             <div className="space-y-2">
                               <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
-                                Your Smart Account is a self-custodial wallet powered by Privy — fully yours, just easier to use.
+                                {t('common.smartAccountDescription')}
                               </p>
                             </div>
                           }
@@ -81,7 +83,7 @@ export default function WalletSelectionModal({
 
                       {privyAdapter.beta && (
                         <span className="px-2 py-0.5 rounded text-[0.65rem] font-bold uppercase tracking-wide bg-white/10 backdrop-blur-sm text-white/90 border border-white/20 shadow-[0_0_4px_rgba(255,255,255,0.1)]">
-                          NEW
+                          {t('common.new')}
                         </span>
                       )}
                     </div>
@@ -103,15 +105,15 @@ export default function WalletSelectionModal({
                     />
 
                     <div className="absolute bottom-1 right-2 text-xxs font-medium text-[#cbd5e1]/40 mix-blend-screen">
-                      powered by <span className="text-[#cbd5e1]/70">Privy</span>
+                      {t('common.poweredBy')} <span className="text-[#cbd5e1]/70">Privy</span>
                     </div>
                   </button>
 
                   {/* Benefits */}
                   <div className="flex flex-wrap items-center gap-3 sm:gap-5 pt-1">
-                    <BulletPoint text="Auto-confirm" />
-                    <BulletPoint text="Secure" />
-                    <BulletPoint text="Easy to use" />
+                    <BulletPoint text={t('common.autoConfirm')} />
+                    <BulletPoint text={t('common.secure')} />
+                    <BulletPoint text={t('common.easyToUse')} />
 
                     <Link
                       href='https://www.privy.io/wallets'
@@ -120,7 +122,7 @@ export default function WalletSelectionModal({
                         'text-xs opacity-50 hover:opacity-100 transition-opacity duration-300 hover:grayscale-0 flex ml-auto',
                       )}
                     >
-                      Learn more about Privy
+                      {t('common.learnMoreAboutPrivy')}
                     </Link>
                   </div>
                 </div>
@@ -135,9 +137,9 @@ export default function WalletSelectionModal({
                     <div className="w-full border-t border-white/10"></div>
                   </div>
 
-                  <Tippy content='Connect directly to your wallet without any intermediaries.'>
+                  <Tippy content={t('common.directConnectDescription')}>
                     <div className="relative flex justify-center text-xs cursor-help">
-                      <span className="px-3 bg-secondary text-white/50">Direct Connect</span>
+                      <span className="px-3 bg-secondary text-white/50">{t('common.directConnect')}</span>
                     </div>
                   </Tippy>
                 </div>

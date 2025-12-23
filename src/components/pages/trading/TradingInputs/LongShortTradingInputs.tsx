@@ -3,6 +3,7 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import infoIcon from '@/../public/images/Icons/info.svg';
@@ -77,6 +78,7 @@ export default function LongShortTradingInputs({
 
     return null
   }, [walletState?.walletAddress]);
+  const { t } = useTranslation();
 
   const [takeProfitInput, setTakeProfitInput] = useState<number | null>(null);
   const [stopLossInput, setStopLossInput] = useState<number | null>(null);
@@ -138,7 +140,7 @@ export default function LongShortTradingInputs({
   const availableLiquidityShort =
     (positionInfo.custody &&
       positionInfo.custody.maxCumulativeShortPositionSizeUsd -
-        (positionInfo.custody.oiShortUsd ?? 0)) ??
+      (positionInfo.custody.oiShortUsd ?? 0)) ??
     0;
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
@@ -322,7 +324,7 @@ export default function LongShortTradingInputs({
     }
 
     const notification = MultiStepNotification.newForRegularTransaction(
-      side + ' Add Limit Order',
+      t('trade.addLimitOrder', { side: side.charAt(0).toUpperCase() + side.slice(1) }),
     ).fire();
 
     try {
@@ -332,11 +334,11 @@ export default function LongShortTradingInputs({
           inputState.limitOrderSlippage === null
             ? null
             : calculateLimitOrderLimitPrice({
-                limitOrderTriggerPrice: inputState.limitOrderTriggerPrice,
-                tokenDecimals: tokenB.displayPriceDecimalsPrecision,
-                percent: inputState.limitOrderSlippage,
-                side,
-              }),
+              limitOrderTriggerPrice: inputState.limitOrderTriggerPrice,
+              tokenDecimals: tokenB.displayPriceDecimalsPrecision,
+              percent: inputState.limitOrderSlippage,
+              side,
+            }),
         side,
         collateralAmount: uiToNative(inputState.inputA, tokenA.decimals),
         leverage: uiLeverageToNative(inputState.leverage),
@@ -381,8 +383,8 @@ export default function LongShortTradingInputs({
     ) {
       return addNotification({
         type: 'info',
-        title: 'Cannot open position',
-        message: 'Missing information',
+        title: t('trade.cannotOpenPosition'),
+        message: t('trade.missingInformation'),
       });
     }
 
@@ -395,14 +397,14 @@ export default function LongShortTradingInputs({
       if (collateralValue < 9.5) {
         return addNotification({
           type: 'info',
-          title: 'Cannot open position',
-          message: 'Collateral value must be at least $10',
+          title: t('trade.cannotOpenPosition'),
+          message: t('trade.collateralValueMustBeAtLeast10'),
         });
       }
     }
 
     const notification = MultiStepNotification.newForRegularTransaction(
-      side + ' Position Opening',
+      t('trade.positionOpening', { side: side.charAt(0).toUpperCase() + side.slice(1) }),
     ).fire();
 
     // Existing position or not, it's the same
@@ -512,20 +514,20 @@ export default function LongShortTradingInputs({
 
   useEffect(() => {
     // If wallet not connected, then user need to connect wallet
-    if (!connected) return setButtonTitle('Connect wallet');
+    if (!connected) return setButtonTitle(t('common.connectWallet'));
 
     if (positionInfo.insufficientAmount) {
-      return setButtonTitle(`Insufficient ${tokenA.symbol} balance`);
+      return setButtonTitle(t('trade.insufficientBalance', { token: tokenA.symbol }));
     }
 
     if (openedPosition) {
       if (side === 'short') {
-        return setButtonTitle('Increase Short');
+        return setButtonTitle(t('trade.increaseShort'));
       }
-      return setButtonTitle('Increase Position');
+      return setButtonTitle(t('trade.increasePosition'));
     }
 
-    return setButtonTitle('Open Position');
+    return setButtonTitle(t('trade.openPosition'));
   }, [
     connected,
     inputState.inputA,
@@ -536,6 +538,7 @@ export default function LongShortTradingInputs({
     wallet,
     walletTokenBalances,
     positionInfo.insufficientAmount,
+    t,
   ]);
 
   useEffect(() => {
@@ -604,7 +607,7 @@ export default function LongShortTradingInputs({
 
               setPositionInfo((prev) => ({
                 ...prev,
-                errorMessage: 'Cannot find jupiter route',
+                errorMessage: t('trade.cannotFindJupiterRoute'),
                 isInfoLoading: false,
               }));
               return;
@@ -651,7 +654,7 @@ export default function LongShortTradingInputs({
 
               setPositionInfo((prev) => ({
                 ...prev,
-                errorMessage: 'Cannot find jupiter route',
+                errorMessage: t('trade.cannotFindJupiterRoute'),
                 isInfoLoading: false,
               }));
               return;
@@ -699,7 +702,7 @@ export default function LongShortTradingInputs({
         } else {
           setPositionInfo((prev) => ({
             ...prev,
-            errorMessage: 'Error calculating position',
+            errorMessage: t('trade.errorCalculatingPosition'),
           }));
         }
 
@@ -807,7 +810,7 @@ export default function LongShortTradingInputs({
       if (collateralValue < 9.5) {
         setPositionInfo((prev) => ({
           ...prev,
-          errorMessage: 'Collateral value must be at least $10',
+          errorMessage: t('trade.collateralValueMustBeAtLeast10'),
         }));
         return;
       }
@@ -824,7 +827,7 @@ export default function LongShortTradingInputs({
     if (!tokenPriceBTrade) {
       return setPositionInfo((prev) => ({
         ...prev,
-        errorMessage: `Missing ${getTokenSymbol(tokenB.symbol)} price`,
+        errorMessage: t('trade.missingPrice', { symbol: getTokenSymbol(tokenB.symbol) }),
       }));
     }
 
@@ -840,7 +843,7 @@ export default function LongShortTradingInputs({
     if (side === 'long' && fullProjectedSizeUsd > custody.maxPositionLockedUsd)
       return setPositionInfo((prev) => ({
         ...prev,
-        errorMessage: `Position Exceeds Max Size`,
+        errorMessage: t('trade.positionExceedsMaxSize'),
       }));
 
     if (
@@ -850,7 +853,7 @@ export default function LongShortTradingInputs({
     )
       return setPositionInfo((prev) => ({
         ...prev,
-        errorMessage: `Position Exceeds Max Size`,
+        errorMessage: t('trade.positionExceedsMaxSize'),
       }));
 
     if (
@@ -864,7 +867,7 @@ export default function LongShortTradingInputs({
       if (!tokenPriceBTrade || !tokenPrice) {
         return setPositionInfo((prev) => ({
           ...prev,
-          errorMessage: `Cannot verify liquidity - missing price data for ${tokenB.symbol}. Please try again later.`,
+          errorMessage: t('trade.cannotVerifyLiquidity', { symbol: tokenB.symbol }),
         }));
       }
 
@@ -873,7 +876,7 @@ export default function LongShortTradingInputs({
       if (projectedSizeUSD > availableLiquidityUSD) {
         return setPositionInfo((prev) => ({
           ...prev,
-          errorMessage: `Insufficient ${tokenB.symbol} liquidity`,
+          errorMessage: t('trade.insufficientLiquidity', { token: tokenB.symbol }),
         }));
       }
     }
@@ -885,7 +888,7 @@ export default function LongShortTradingInputs({
     ) {
       return setPositionInfo((prev) => ({
         ...prev,
-        errorMessage: `Insufficient USDC liquidity`,
+        errorMessage: t('trade.insufficientLiquidity', { token: 'USDC' }),
       }));
     }
 
@@ -982,8 +985,8 @@ export default function LongShortTradingInputs({
       setTakeProfitInput(null);
       addNotification({
         type: 'info',
-        title: 'Limit Order Mode',
-        message: 'SL/TP is not available in Limit Order mode.',
+        title: t('trade.limitOrderMode'),
+        message: t('trade.sltpNotAvailableInLimitOrderMode'),
       });
     }
 
@@ -1022,8 +1025,8 @@ export default function LongShortTradingInputs({
 
       addNotification({
         type: 'info',
-        title: 'SL/TP Mode',
-        message: 'SL/TP is not available in Limit Order mode.',
+        title: t('trade.sltpMode'),
+        message: t('trade.sltpNotAvailableInLimitOrderMode'),
       });
     }
 
@@ -1078,16 +1081,14 @@ export default function LongShortTradingInputs({
         {doJupiterSwap && recommendedToken ? (
           <>
             <Tippy
-              content={
-                'For fully backed assets, long positions must use the same token as collateral. For shorts or longs on non-backed assets, collateral should be USDC. If a different token is provided, it will be automatically swapped via Jupiter before opening or increasing the position.'
-              }
+              content={t('trade.fullyBackedAssetsTooltip')}
             >
               <div className="text-xs gap-1 flex mt-3 pb-1 w-full items-center opacity-30">
                 <Image src={infoIcon} alt="Info" width={12} height={12} />
                 <span className="font-xs">{tokenA.symbol}</span>
-                <span className="font-xs">auto-swapped to</span>
+                <span className="font-xs">{t('trade.autoSwappedTo')}</span>
                 <span className="font-xs">{recommendedToken.symbol}</span>
-                <span className="font-xs">via Jupiter</span>
+                <span className="font-xs">{t('trade.viaJupiter')}</span>
               </div>
             </Tippy>
 
@@ -1115,6 +1116,7 @@ export default function LongShortTradingInputs({
         />
 
         <ExecutionModeSelector
+          displayTitle={t('trade.limitOrderLabel')}
           isLimitOrder={inputState.isLimitOrder}
           onModeChange={handleModeChange}
         />

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import router, { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import useAPR from '@/hooks/useAPR';
@@ -32,6 +33,7 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
+import LanguageSwitcher from '../LanguageSwitcher';
 import { NotificationBell } from '../Notifications';
 import FormatNumber from '../Number/FormatNumber';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
@@ -81,6 +83,7 @@ export default function BurgerMenu({
   setIsChatOpen: (isChatOpen: boolean) => void;
   isTablet?: boolean;
 }) {
+  const { t } = useTranslation();
   const { pathname } = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -137,8 +140,8 @@ export default function BurgerMenu({
   }, [isOpen]);
 
   const tabletSidebarPages = PAGES.filter((page) =>
-    ['Trade', 'Provide Liquidity', 'Stake', 'Ranked', 'Monitor'].includes(
-      page.name,
+    ['/trade', '/buy_alp', '/stake', '/ranked', '/monitoring'].includes(
+      page.link,
     ),
   );
 
@@ -195,7 +198,12 @@ export default function BurgerMenu({
                 <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
             </button>
+            <div className="flex [@media(min-width:500px)]:hidden size-7 items-center justify-center rounded-lg hover:bg-third/50 transition-colors border border-bcolor">
+              <LanguageSwitcher />
+            </div>
           </div>
+
+
 
           <div className="flex flex-row items-center gap-1">
             <Link href="/buy_alp">
@@ -319,12 +327,14 @@ export default function BurgerMenu({
             </Link>
 
             {
-              <NotificationBell
-                setIsNotificationModalOpen={setIsNotificationModalOpen}
-                isNotificationModalOpen={isNotificationModalOpen}
-                adapters={adapters}
-                isMobile
-              />
+              <div className="flex items-center gap-2">
+                <NotificationBell
+                  setIsNotificationModalOpen={setIsNotificationModalOpen}
+                  isNotificationModalOpen={isNotificationModalOpen}
+                  adapters={adapters}
+                  isMobile
+                />
+              </div>
             }
 
             <button
@@ -469,9 +479,9 @@ export default function BurgerMenu({
                     </div>
                   ) : (
                     <nav className="flex flex-col">
-                      {PAGES.find((p) => p.name === 'Profile') &&
+                      {PAGES.find((p) => p.link === '/profile') &&
                         (() => {
-                          const page = PAGES.find((p) => p.name === 'Profile')!;
+                          const page = PAGES.find((p) => p.link === '/profile')!;
                           const isActive = pathname === page.link;
                           return (
                             <Link
@@ -500,10 +510,10 @@ export default function BurgerMenu({
                                     isActive ? TITLE_ACTIVE : TITLE_DEFAULT,
                                   )}
                                 >
-                                  Profile
+                                  {page.name}
                                 </div>
                                 <div className={SUBTITLE_CLASSES}>
-                                  Your Adrena Profile
+                                  {page.subtitle}
                                 </div>
                               </div>
                             </Link>
@@ -533,10 +543,10 @@ export default function BurgerMenu({
                             <div
                               className={twMerge(TITLE_CLASSES, TITLE_DEFAULT)}
                             >
-                              Chat
+                              {t('layout.chat')}
                             </div>
                             <div className={SUBTITLE_CLASSES}>
-                              Community chat
+                              {t('layout.communityChat')}
                             </div>
                           </div>
                         </button>
@@ -564,18 +574,18 @@ export default function BurgerMenu({
                           <div
                             className={twMerge(TITLE_CLASSES, TITLE_DEFAULT)}
                           >
-                            Priority Fee
+                            {t('layout.priorityFee')}
                           </div>
                           <div className={SUBTITLE_CLASSES}>
-                            Adjust transaction priority
+                            {t('layout.adjustTransactionPriority')}
                           </div>
                         </div>
                       </button>
 
-                      {PAGES.find((p) => p.name === 'Achievements') &&
+                      {PAGES.find((p) => p.link === '/achievements') &&
                         (() => {
                           const page = PAGES.find(
-                            (p) => p.name === 'Achievements',
+                            (p) => p.link === '/achievements',
                           )!;
                           const isActive = pathname === page.link;
                           return (
@@ -605,20 +615,20 @@ export default function BurgerMenu({
                                     isActive ? TITLE_ACTIVE : TITLE_DEFAULT,
                                   )}
                                 >
-                                  Achievements
+                                  {page.name}
                                 </div>
                                 <div className={SUBTITLE_CLASSES}>
-                                  Progress & Milestones
+                                  {page.subtitle}
                                 </div>
                               </div>
                             </Link>
                           );
                         })()}
 
-                      {PAGES.find((p) => p.name === 'Referral') &&
+                      {PAGES.find((p) => p.link === '/referral') &&
                         (() => {
                           const page = PAGES.find(
-                            (p) => p.name === 'Referral',
+                            (p) => p.link === '/referral',
                           )!;
                           const isActive = pathname === page.link;
                           return (
@@ -648,20 +658,20 @@ export default function BurgerMenu({
                                     isActive ? TITLE_ACTIVE : TITLE_DEFAULT,
                                   )}
                                 >
-                                  Referral
+                                  {page.name}
                                 </div>
                                 <div className={SUBTITLE_CLASSES}>
-                                  Refer and earn rewards
+                                  {page.subtitle}
                                 </div>
                               </div>
                             </Link>
                           );
                         })()}
 
-                      {PAGES.find((p) => p.name === 'Leaderboard') &&
+                      {PAGES.find((p) => p.link === '/mutagen_leaderboard') &&
                         (() => {
                           const page = PAGES.find(
-                            (p) => p.name === 'Leaderboard',
+                            (p) => p.link === '/mutagen_leaderboard',
                           )!;
                           const isActive = pathname === page.link;
                           return (
@@ -691,19 +701,19 @@ export default function BurgerMenu({
                                     isActive ? TITLE_ACTIVE : TITLE_DEFAULT,
                                   )}
                                 >
-                                  Leaderboard
+                                  {page.name}
                                 </div>
                                 <div className={SUBTITLE_CLASSES}>
-                                  All-Time Mutagen Leaderboard
+                                  {page.subtitle}
                                 </div>
                               </div>
                             </Link>
                           );
                         })()}
 
-                      {PAGES.find((p) => p.name === 'Learn') &&
+                      {PAGES.find((p) => p.link === 'https://docs.adrena.trade/') &&
                         (() => {
-                          const page = PAGES.find((p) => p.name === 'Learn')!;
+                          const page = PAGES.find((p) => p.link === 'https://docs.adrena.trade/')!;
                           return (
                             <Link
                               key="learn"
@@ -724,10 +734,10 @@ export default function BurgerMenu({
                               )}
                               <div className="flex-1 min-w-0">
                                 <div className="text-sm font-medium mb-0.5 transition-colors text-white/90 group-hover:text-white">
-                                  Learn
+                                  {page.name}
                                 </div>
                                 <div className={SUBTITLE_CLASSES}>
-                                  Documentation & guides
+                                  {page.subtitle}
                                 </div>
                               </div>
                               <Image
@@ -741,9 +751,9 @@ export default function BurgerMenu({
                           );
                         })()}
 
-                      {PAGES.find((p) => p.name === 'Vote') &&
+                      {PAGES.find((p) => p.link === 'https://dao.adrena.trade/') &&
                         (() => {
-                          const page = PAGES.find((p) => p.name === 'Vote')!;
+                          const page = PAGES.find((p) => p.link === 'https://dao.adrena.trade/')!;
                           return (
                             <Link
                               key="vote"
@@ -764,10 +774,10 @@ export default function BurgerMenu({
                               )}
                               <div className="flex-1 min-w-0">
                                 <div className="text-sm font-medium mb-0.5 transition-colors text-white/90 group-hover:text-white">
-                                  Vote
+                                  {page.name}
                                 </div>
                                 <div className={SUBTITLE_CLASSES}>
-                                  DAO governance
+                                  {page.subtitle}
                                 </div>
                               </div>
                               <Image
@@ -1036,12 +1046,14 @@ export default function BurgerMenu({
           </Link>
 
           {
-            <NotificationBell
-              setIsNotificationModalOpen={setIsNotificationModalOpen}
-              isNotificationModalOpen={isNotificationModalOpen}
-              adapters={adapters}
-              isMobile
-            />
+            <div className="flex items-center gap-2">
+              <NotificationBell
+                setIsNotificationModalOpen={setIsNotificationModalOpen}
+                isNotificationModalOpen={isNotificationModalOpen}
+                adapters={adapters}
+                isMobile
+              />
+            </div>
           }
 
           <button
@@ -1124,9 +1136,9 @@ export default function BurgerMenu({
         }}
       >
         <div className="flex-1 overflow-y-auto flex flex-col items-center py-4 gap-2">
-          {PAGES.find((p) => p.name === 'Profile') &&
+          {PAGES.find((p) => p.link === '/profile') &&
             (() => {
-              const page = PAGES.find((p) => p.name === 'Profile')!;
+              const page = PAGES.find((p) => p.link === '/profile')!;
               const isActive = pathname === page.link;
               return (
                 <Link
@@ -1183,9 +1195,9 @@ export default function BurgerMenu({
             />
           </button>
 
-          {PAGES.find((p) => p.name === 'Achievements') &&
+          {PAGES.find((p) => p.link === '/achievements') &&
             (() => {
-              const page = PAGES.find((p) => p.name === 'Achievements')!;
+              const page = PAGES.find((p) => p.link === '/achievements')!;
               const isActive = pathname === page.link;
               return (
                 <Link
@@ -1212,9 +1224,9 @@ export default function BurgerMenu({
               );
             })()}
 
-          {PAGES.find((p) => p.name === 'Referral') &&
+          {PAGES.find((p) => p.link === '/referral') &&
             (() => {
-              const page = PAGES.find((p) => p.name === 'Referral')!;
+              const page = PAGES.find((p) => p.link === '/referral')!;
               const isActive = pathname === page.link;
               return (
                 <Link
@@ -1241,9 +1253,9 @@ export default function BurgerMenu({
               );
             })()}
 
-          {PAGES.find((p) => p.name === 'Leaderboard') &&
+          {PAGES.find((p) => p.link === '/mutagen_leaderboard') &&
             (() => {
-              const page = PAGES.find((p) => p.name === 'Leaderboard')!;
+              const page = PAGES.find((p) => p.link === '/mutagen_leaderboard')!;
               const isActive = pathname === page.link;
               return (
                 <Link
@@ -1270,9 +1282,9 @@ export default function BurgerMenu({
               );
             })()}
 
-          {PAGES.find((p) => p.name === 'Learn') &&
+          {PAGES.find((p) => p.link === 'https://docs.adrena.trade/') &&
             (() => {
-              const page = PAGES.find((p) => p.name === 'Learn')!;
+              const page = PAGES.find((p) => p.link === 'https://docs.adrena.trade/')!;
               return (
                 <Link
                   key="learn"
@@ -1294,9 +1306,9 @@ export default function BurgerMenu({
               );
             })()}
 
-          {PAGES.find((p) => p.name === 'Vote') &&
+          {PAGES.find((p) => p.link === 'https://dao.adrena.trade/') &&
             (() => {
-              const page = PAGES.find((p) => p.name === 'Vote')!;
+              const page = PAGES.find((p) => p.link === 'https://dao.adrena.trade/')!;
               return (
                 <Link
                   key="vote"

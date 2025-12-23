@@ -2,6 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import {
@@ -49,6 +50,7 @@ export default function WalletAdapter({
   setIsChatOpen?: (isOpen: boolean) => void;
   disableChat?: boolean;
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const router = useRouter();
   const { wallet } = useSelector((s) => s.walletState);
@@ -252,7 +254,7 @@ export default function WalletAdapter({
                   }}
                   className="py-2"
                 >
-                  Profile
+                  {t('nav.profile')}
                 </MenuItem>
 
                 {!disableChat ? (
@@ -264,7 +266,7 @@ export default function WalletAdapter({
                       }}
                       className="py-2"
                     >
-                      Chat
+                      {t('layout.chat')}
                     </MenuItem>
                   </>
                 ) : null}
@@ -277,7 +279,7 @@ export default function WalletAdapter({
                   }}
                   className="py-2"
                 >
-                  Achievements
+                  {t('nav.achievements')}
                 </MenuItem>
 
                 <MenuSeparator />
@@ -286,7 +288,7 @@ export default function WalletAdapter({
                   className="py-2"
                   onClick={() => setIsPriorityFeeModalOpen?.(true)}
                 >
-                  Priority Fee
+                  {t('layout.priorityFee')}
                 </MenuItem>
 
                 <MenuSeparator />
@@ -296,7 +298,7 @@ export default function WalletAdapter({
                   target="_blank"
                   linkClassName="py-2"
                 >
-                  Learn
+                  {t('nav.learn')}
                 </MenuItem>
 
                 <MenuSeparator />
@@ -306,7 +308,7 @@ export default function WalletAdapter({
                   target="_blank"
                   linkClassName="py-2"
                 >
-                  Vote
+                  {t('nav.vote')}
                 </MenuItem>
 
                 <MenuSeparator />
@@ -317,7 +319,7 @@ export default function WalletAdapter({
                     setIsSettingsModalOpen?.(true);
                   }}
                 >
-                  Settings
+                  {t('settings')}
                 </MenuItem>
 
                 <MenuSeparator />
@@ -327,7 +329,7 @@ export default function WalletAdapter({
                   }}
                   className="py-2"
                 >
-                  Referral
+                  {t('nav.referral')}
                 </MenuItem>
                 <MenuSeparator />
                 <MenuItem
@@ -336,7 +338,7 @@ export default function WalletAdapter({
                   }}
                   className="py-2"
                 >
-                  Leaderboard
+                  {t('nav.leaderboard')}
                 </MenuItem>
                 <MenuSeparator />
                 <MenuItem
@@ -351,7 +353,7 @@ export default function WalletAdapter({
                     }
                   }}
                 >
-                  Disconnect
+                  {t('common.disconnect')}
                 </MenuItem>
               </>
             </MenuItems>
@@ -365,7 +367,7 @@ export default function WalletAdapter({
             isIconOnly && 'p-0 h-8 w-8 rounded-full',
             isConnecting && 'opacity-50 cursor-not-allowed',
           )}
-          title={!isIconOnly ? (isConnecting ? 'Connecting...' : 'Connect') : null}
+          title={!isIconOnly ? (isConnecting ? t('common.connecting') : t('common.connect')) : null}
           leftIcon={isConnecting ? undefined : walletIcon}
           alt="wallet icon"
           leftIconClassName="w-4 h-4"
@@ -385,7 +387,7 @@ export default function WalletAdapter({
             isIconOnly && 'p-0 h-8 w-8 rounded-full',
             isConnecting && 'opacity-50 cursor-not-allowed',
           )}
-          title={!isIconOnly ? (isConnecting ? 'Connecting...' : 'Connect wallet') : null}
+          title={!isIconOnly ? (isConnecting ? t('common.connecting') : t('common.connectWallet')) : null}
           leftIcon={isConnecting ? undefined : walletIcon}
           alt="wallet icon"
           leftIconClassName="w-4 h-4"

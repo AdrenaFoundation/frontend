@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import { ImageRef, VestExtended } from '@/types';
@@ -14,6 +15,7 @@ export default function MobileNavbar({
   userVest: VestExtended | null | false;
   userDelegatedVest: VestExtended | null | false;
 }) {
+  const { t } = useTranslation();
   const pathname = usePathname();
 
   return (
@@ -21,14 +23,14 @@ export default function MobileNavbar({
       {PAGES.filter(
         (p) =>
           ![
-            'Vote',
-            'Learn',
-            'Profile',
-            'Referral',
-            'Leaderboard',
-            userVest || userDelegatedVest ? null : 'Vest',
-            'Achievements'
-          ].includes(p.name),
+            'https://dao.adrena.trade/',
+            'https://docs.adrena.trade/',
+            '/profile',
+            '/referral',
+            '/mutagen_leaderboard',
+            userVest || userDelegatedVest ? null : '/vest',
+            '/achievements'
+          ].includes(p.link),
       ).map((page) => {
         return (
           <Link
@@ -42,7 +44,7 @@ export default function MobileNavbar({
             key={page.name}
           >
             <h5 className="whitespace-nowrap font-regular">
-              {page.name === 'Provide Liquidity' ? 'Buy ALP' : page.name}
+              {page.link === '/buy_alp' ? `${t('layout.buy')} ALP` : page.name}
             </h5>
           </Link>
         );

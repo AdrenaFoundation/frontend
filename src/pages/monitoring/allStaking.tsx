@@ -2,6 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import Modal from '@/components/common/Modal/Modal';
@@ -23,6 +24,7 @@ import { UserProfileExtended } from '@/types';
 import { getNonUserProfile } from '@/utils';
 
 function AllStakingContent({ view }: { isSmallScreen: boolean; view: string }) {
+  const { t } = useTranslation();
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
     null;
@@ -113,7 +115,7 @@ function AllStakingContent({ view }: { isSmallScreen: boolean; view: string }) {
                 </div>
 
                 <div className="flex flex-col w-full ml-1">
-                  <h2 className="flex mb-5">LOCKED STAKE REPARTITION</h2>
+                  <h2 className="flex mb-5">{t('monitoring.lockedStakeRepartition')}</h2>
 
                   <div className="w-full flex h-[15em] -ml-[0.5rem] items-center justify-center">
                     <StakingChart />
@@ -135,13 +137,13 @@ function AllStakingContent({ view }: { isSmallScreen: boolean; view: string }) {
                   )
                 }
               >
-                <h2 className="flex">STAKED ADX</h2>
+                <h2 className="flex">{t('monitoring.stakedAdx')}</h2>
 
                 {allStakingStats && circulatingSupplyADX ? (
                   <Tippy
                     content={
                       <div className="text-sm flex">
-                        Total ADX staked / ADX circulating supply
+                        {t('monitoring.totalAdxStakedCirculating')}
                       </div>
                     }
                     placement="auto"
@@ -189,7 +191,7 @@ function AllStakingContent({ view }: { isSmallScreen: boolean; view: string }) {
               </div>
 
               <div className="justify-end -mb-4 md:absolute md:top-7 md:right-2 text-sm flex gap-2 ">
-                <div className="text-txtfade">Display as: </div>
+                <div className="text-txtfade">{t('monitoring.displayAs')} </div>
 
                 <div
                   onClick={() => setDisplayStakedAdxAs('amount')}
@@ -198,7 +200,7 @@ function AllStakingContent({ view }: { isSmallScreen: boolean; view: string }) {
                     'cursor-pointer',
                   )}
                 >
-                  Token Amount
+                  {t('monitoring.tokenAmount')}
                 </div>
 
                 <div
@@ -208,7 +210,7 @@ function AllStakingContent({ view }: { isSmallScreen: boolean; view: string }) {
                     'cursor-pointer',
                   )}
                 >
-                  Usd
+                  {t('monitoring.usd')}
                 </div>
               </div>
 
@@ -220,7 +222,7 @@ function AllStakingContent({ view }: { isSmallScreen: boolean; view: string }) {
               </div>
 
               <div className="flex flex-col gap-1 w-full mt-4">
-                <h2 className="flex">ADX STAKING REMAINING TIME</h2>
+                <h2 className="flex">{t('monitoring.adxStakingRemainingTime')}</h2>
 
                 <div className="w-full flex h-[20em]">
                   <UnlockStakingChart allStakingStats={allStakingStats} />
@@ -235,7 +237,7 @@ function AllStakingContent({ view }: { isSmallScreen: boolean; view: string }) {
               className="p-4 flex flex-col h-full"
               bodyClassName="gap-0"
             >
-              <h2 className="text-center">ADX STAKING LEADERBOARD</h2>
+              <h2 className="text-center">{t('monitoring.adxStakingLeaderboard')}</h2>
               <div className="flex-1">
                 <StakingLeaderboard
                   walletAddress={wallet?.walletAddress || null}

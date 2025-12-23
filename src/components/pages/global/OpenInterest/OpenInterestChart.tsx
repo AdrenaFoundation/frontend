@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
@@ -15,6 +16,7 @@ interface OpenInterestChartProps {
 export default function OpenInterestChart({
   isSmallScreen,
 }: OpenInterestChartProps) {
+  const { t } = useTranslation();
   const [data, setData] = useState<RechartsData[] | null>(null);
   const [custodyInfo, setCustodyInfo] = useState<TokenInfo[] | null>(null);
   const [period, setPeriod] = useState<'1d' | '7d' | '1M' | '3M' | '6M' | '1Y' | null>('6M');
@@ -193,12 +195,12 @@ export default function OpenInterestChart({
 
   return (
     <LineRechart
-      title="Open Interest USD"
+      title={t('monitoring.openInterestUsd')}
       subValue={totalOpenInterest}
       data={data}
       labels={[
         {
-          name: 'Total',
+          name: t('monitoring.total'),
           color: '#ff0000',
         },
         {

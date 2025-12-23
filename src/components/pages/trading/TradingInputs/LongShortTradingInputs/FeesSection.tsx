@@ -1,6 +1,7 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import AutoScalableDiv from '@/components/common/AutoScalableDiv/AutoScalableDiv';
@@ -37,10 +38,12 @@ export const FeesSection = ({
 }: FeesSectionProps) => {
     const [displayBorrowRateAsApr, setDisplayBorrowRateAsApr] = useState(false);
 
+    const { t } = useTranslation()
+
     const highSwapFeeTippyContent = (
         <div className="gap-4 flex flex-col">
             <div className='text-txtfade text-sm'>
-                The collateral you provided does not match the assets you&apos;r opening a position for, as such the platform will first have to do a Swap. Swap fees are dynamic and based on the Liquidity Pool&apos;s ratios, and currently that direction isn&apos;t favorable in term of fees. You can decide to go through or change the provided collateral.
+                {t('trade.feesSection.swapFeeTooltip')}
             </div>
         </div>
     );
@@ -56,12 +59,12 @@ export const FeesSection = ({
     return (
         <>
             <h5 className="hidden sm:flex items-center mt-2 mb-2">
-                Fees
+                {t('trade.feesSection.fees')}
                 <span className="ml-1">
                     <Tippy
                         content={
                             <p className="text-txtfade">
-                                0 BPS entry fees - 14 BPS exit fees{newPositionInfo && newPositionInfo.swapFeeUsd ? ' - dynamic swap fees' : ''}. 🎊 NO SIZE FEES! 🎊
+                                {t('trade.feesSection.feeInfoPara1')} {newPositionInfo && newPositionInfo.swapFeeUsd ? t('trade.feesSection.feeInfoPara2') : ''}. 🎊 {t('trade.feesSection.feeInfoPara3')} 🎊
                             </p>
                         }
                     >
@@ -91,7 +94,7 @@ export const FeesSection = ({
                             {openedPosition && (
                                 <>
                                     <TextExplainWrapper
-                                        title="Current Fees"
+                                        title={t('trade.feesSection.currentFees')}
                                         className="flex-col"
                                         position="top"
                                     >
@@ -107,7 +110,7 @@ export const FeesSection = ({
 
                             {newPositionInfo.swapFeeUsd ? (
                                 <TextExplainWrapper
-                                    title={openedPosition ? 'Additional Fees (Swap + Exit)' : 'Fees (Swap + Exit)'}
+                                    title={openedPosition ? t('trade.feesSection.additionalFees') : t('trade.feesSection.feesSwapExit')}
                                     className="flex items-center justify-center"
                                 >
                                     <span className="text-xl">(</span>
@@ -145,7 +148,7 @@ export const FeesSection = ({
                                 </TextExplainWrapper>
                             ) : (
                                 <TextExplainWrapper
-                                    title='Exit Fees'
+                                    title={t('trade.feesSection.exitFees')}
                                     className="flex items-center justify-center"
                                 >
                                     <FormatNumber
@@ -159,7 +162,7 @@ export const FeesSection = ({
                             {newPositionInfo.highSwapFees && (
                                 <Tippy content={highSwapFeeTippyContent}>
                                     <div className='text-xs text-orange font-semibold underline-dashed'>
-                                        warning: high swap fees
+                                        {t('trade.feesSection.warningHighSwapFees')}
                                     </div>
                                 </Tippy>
                             )}
@@ -167,7 +170,7 @@ export const FeesSection = ({
                             <span className="text-base ml-1 mr-1 mb-6">+</span>
 
                             <TextExplainWrapper
-                                title="Dynamic Borrow Rate"
+                                title={t('trade.feesSection.dynamicBorrowRate')}
                                 className="flex-col"
                                 onClick={() => setDisplayBorrowRateAsApr(!displayBorrowRateAsApr)}
                             >

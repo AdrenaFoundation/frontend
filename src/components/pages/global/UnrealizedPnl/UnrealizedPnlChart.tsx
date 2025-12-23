@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
@@ -11,6 +12,7 @@ interface UnrealizedPnlChartProps {
 }
 
 export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
+  const { t } = useTranslation();
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
@@ -191,11 +193,11 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
 
   return (
     <LineRechart
-      title="Traders Unrealized PnL"
+      title={t('monitoring.tradersUnrealizedPnl')}
       subValue={totalUnrealizedPnl}
       data={infos.formattedData}
       labels={[
-        { name: 'Total', color: '#ff0000' },
+        { name: t('monitoring.total'), color: '#ff0000' },
         ...Object.keys(infos.formattedData[0])
           .filter((key) => key !== 'time' && key !== 'Total')
           .map((x, i) => {

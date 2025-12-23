@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -9,6 +10,7 @@ import { formatDate, formatNumber, getTxExplorer } from '@/utils';
 import { ClaimHistoryExtended } from '../../../types';
 
 const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
+    const { t } = useTranslation();
     interface DateDisplayProps {
         date: string | number | Date;
     }
@@ -29,7 +31,7 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                             className="flex items-center"
                         >
                             <span className="text-blue cursor-pointer hover:underline mr-1">
-                                Claimed on
+                                {t('stake.rewardsClaimedOn')}
                             </span>
                             <Image
                                 src={externalLinkLogo}
@@ -43,7 +45,7 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                 </div>
 
                 <div className="flex flex-1 flex-col sm:text-center">
-                    <div className="w-full font-mono text-xxs text-txtfade">Source</div>
+                    <div className="w-full font-mono text-xxs text-txtfade">{t('stake.source')}</div>
                     <p
                         className={`text-xs font-mono opacity-50 ${claim.source === 'manual' ? 'text-orange' : 'text-blue'
                             }`}
@@ -53,7 +55,7 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                 </div>
 
                 <div className="flex-1 sm:text-center">
-                    <div className="block sm:hidden w-full font-mono text-xxs text-txtfade">USDC reward</div>
+                    <div className="block sm:hidden w-full font-mono text-xxs text-txtfade">{t('stake.usdcReward')}</div>
                     <FormatNumber
                         nb={claim.rewards_usdc}
                         format="number"
@@ -65,7 +67,7 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                 </div>
 
                 <div className="flex-1 flex flex-col sm:items-end">
-                    <div className="block sm:hidden w-full font-mono text-xxs text-txtfade text-left">ADX reward</div>
+                    <div className="block sm:hidden w-full font-mono text-xxs text-txtfade text-left">{t('stake.adxReward')}</div>
 
                     <div className={`w-full flex sm:justify-end text-gray-400 text-xs ${claim.rewards_adx_genesis > 0 ? 'underline-dashed' : ''}`}>
                         <FormatNumber

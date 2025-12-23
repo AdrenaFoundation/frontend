@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { PoolExtended } from '@/types';
@@ -12,10 +13,11 @@ export default function PositionsNow({
   mainPool: PoolExtended;
   titleClassName?: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="flex flex-row gap-2 w-full border-b p-3">
-        <p className={titleClassName}>Positions Live</p>
+        <p className={titleClassName}>{t('monitoring.positionsLive')}</p>
 
         <Image
           src={liveIcon}
@@ -28,21 +30,21 @@ export default function PositionsNow({
 
       <div className="grid sm:grid-cols-2">
         <NumberDisplay
-          title="Long positions"
+          title={t('monitoring.longPositions')}
           nb={mainPool.nbOpenLongPositions}
           precision={0}
           className='rounded-none border-t-0 border-l-0 border-r-0 border-b sm:border-r'
         />
 
         <NumberDisplay
-          title="Short positions"
+          title={t('monitoring.shortPositions')}
           nb={mainPool.nbOpenShortPositions}
           precision={0}
           className='rounded-none border-t-0 border-l-0 border-r-0 border-b'
         />
 
         <NumberDisplay
-          title="Open Interest Long"
+          title={t('monitoring.openInterestLong')}
           nb={mainPool.longPositions}
           precision={0}
           format='currency'
@@ -50,7 +52,7 @@ export default function PositionsNow({
         />
 
         <NumberDisplay
-          title="Open Interest Short"
+          title={t('monitoring.openInterestShort')}
           nb={mainPool.shortPositions}
           precision={0}
           format='currency'

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import { PoolInfo } from '@/hooks/usePoolInfo';
@@ -10,10 +11,11 @@ export default function PoolRatios({
   poolInfo: PoolInfo | null;
   titleClassName?: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
-        <p className={titleClassName}>Pool Ratios</p>
+        <p className={titleClassName}>{t('monitoring.poolRatios')}</p>
       </div>
 
       <div className="grid md:grid-cols-2">
@@ -70,11 +72,11 @@ export default function PoolRatios({
                   >
                     <div className="bg-third rounded-md h-3 w-full relative overflow-visible">
                       <div className="absolute left-0 -bottom-8 font-mono text-sm text-gray-500">
-                        Min: {minRatio}%
+                        {t('monitoring.min')}: {minRatio}%
                       </div>
 
                       <div className="absolute right-0 -bottom-8 font-mono text-sm text-gray-500">
-                        Max: {maxRatio}%
+                        {t('monitoring.max')}: {maxRatio}%
                       </div>
 
                       <>
@@ -84,7 +86,7 @@ export default function PoolRatios({
                             left: `${targetRatioPercentage + 5}%`,
                           }}
                         >
-                          Target: {targetRatio}%
+                          {t('monitoring.target')}: {targetRatio}%
                         </div>
 
                         <div
@@ -107,7 +109,7 @@ export default function PoolRatios({
                         {currentRatio < minRatio ? (
                           <div className="mr-1 font-semibold">{'<<<'}</div>
                         ) : null}
-                        Current Ratio: {currentRatio}%
+                        {t('monitoring.currentRatio')}: {currentRatio}%
                         {currentRatio > maxRatio ? (
                           <div className="ml-1 font-semibold">{'>>>'}</div>
                         ) : null}

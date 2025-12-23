@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
@@ -12,12 +13,13 @@ export default function AUMBreakdown({
   custodies: CustodyExtended[];
   titleClassName?: string;
 }) {
+  const { t } = useTranslation();
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   return (
     <div className="bg-[#050D14] border rounded-md flex-1 shadow-xl">
       <div className="w-full border-b p-3">
-        <p className={titleClassName}>AUM Breakdown</p>
+        <p className={titleClassName}>{t('monitoring.aumBreakdown')}</p>
       </div>
 
       <div className='grid md:grid-cols-4'>

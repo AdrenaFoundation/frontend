@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
 import FactionsDocs from '@/components/pages/ranked/factions/FactionsDocs';
@@ -14,6 +15,7 @@ export default function Factions({
   triggerUserProfileReload: () => void;
   jtoPrice: number | null;
 }) {
+  const { t } = useTranslation();
   const searchParams = useMemo(
     () => new URLSearchParams(window.location.search),
     [],
@@ -64,7 +66,7 @@ export default function Factions({
                 'bg-[linear-gradient(110deg,#5AA6FA_40%,#B9EEFF_60%,#5AA6FA)]',
               )}
             >
-              {activeTab === 'leaderboard' ? 'DOCUME' : 'LEADER'}
+              {activeTab === 'leaderboard' ? t('ranked.documentationPart1') : t('ranked.leaderboardPart1')}
             </div>
             <div
               className={twMerge(
@@ -72,7 +74,7 @@ export default function Factions({
                 'bg-[linear-gradient(110deg,#FA6724_40%,#FFD97C_60%,#FA6724)]',
               )}
             >
-              {activeTab === 'leaderboard' ? 'NTATION' : 'BOARD'}
+              {activeTab === 'leaderboard' ? t('ranked.documentationPart2') : t('ranked.leaderboardPart2')}
             </div>
           </div>
         </button>
