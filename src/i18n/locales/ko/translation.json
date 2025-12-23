@@ -1218,7 +1218,22 @@
     "rewards": "보상",
     "jto": "JTO",
     "bonk": "BONK",
-    "zeroUsd": "$0"
+    "zeroUsd": "$0",
+    "tradingSeason": "트레이딩 시즌",
+    "leveragedTrading": "레버리지 거래",
+    "tradingSeasonDescription": "퀘스트, 스트릭을 완료하고 뮤타젠을 획득하며, 10주간 반복되는 이벤트에서 다른 사람들과 대결하여 보상을 획득하세요.",
+    "leveragedTradingDescription": "플랫폼에서 레버리지 거래를 실행하여 지속적으로 뮤타젠을 획득하세요. 크기와 레버리지가 높을수록 더 많은 뮤타젠을 획득합니다. 뮤타젠은 플랫폼 출시 이후 모든 트레이더에게 대해 소급 생성됩니다.",
+    "startsFebruary1st": "2월 1일 시작",
+    "mutagenDescription": "뮤타젠은 거래, 퀘스트, 스트릭 및 돌연변이를 통해 획득하는 희귀한 자원입니다. 이를 축적하여 에어드랍 지분과 리더보드에서의 순위를 높이세요.",
+    "allSeasons": "모든 시즌",
+    "earned": "획득",
+    "breakdownPerSeason": "시즌별 분석",
+    "inbetweenSeasons": "시즌 사이",
+    "protocolLaunch": "프로토콜 출시",
+    "preSeasonAwakening": "프리시즌: 어웨이크닝",
+    "interseason1": "인터시즌 1",
+    "interseason2": "인터시즌 2",
+    "season1Expanse": "시즌 1: 익스팬스"
   },
   "footer": {
     "auditedBy": "감사 기관",

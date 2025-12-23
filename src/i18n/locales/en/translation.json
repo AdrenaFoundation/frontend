@@ -1204,7 +1204,22 @@
     "rewards": "Rewards",
     "jto": "JTO",
     "bonk": "BONK",
-    "zeroUsd": "$0"
+    "zeroUsd": "$0",
+    "tradingSeason": "Trading Season",
+    "leveragedTrading": "Leveraged Trading",
+    "tradingSeasonDescription": "Complete quests, streaks and earn Mutagen, battle against others to win rewards in our 10 weeks long recurring events.",
+    "leveragedTradingDescription": "Continuously earn Mutagen by executing leveraged trades on the platform. The higher the size and leverage, the more Mutagen. Mutagen is retro-generated since platform launch for all traders.",
+    "startsFebruary1st": "Starts February 1st",
+    "mutagenDescription": "Mutagen is an elusive resource earned through trading, quests, streaks and mutations. Accumulate it to increase your Airdrop share and your rank in the leaderboard.",
+    "allSeasons": "All seasons",
+    "earned": "Earned",
+    "breakdownPerSeason": "Breakdown Per Season",
+    "inbetweenSeasons": "Inbetween seasons",
+    "protocolLaunch": "Protocol Launch",
+    "preSeasonAwakening": "Pre-season: Awakening",
+    "interseason1": "Inter-season 1",
+    "interseason2": "Inter-season 2",
+    "season1Expanse": "Season 1: Expanse"
   },
   "footer": {
     "auditedBy": "Audited by",
